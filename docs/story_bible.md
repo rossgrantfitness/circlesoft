@@ -109,12 +109,40 @@ Red, Otis and Mox are the vertical slice party. Vela joins at the end of Act 1; 
   - *"I've been flying the long way around the Rim for eleven years. Turns out I was just waiting for somebody stubborn enough to go straight."*
 
 ## Villains
-### [Name]
-- **Role:**
-- **Look:**
-- **Motive:**
-- **Arc:**
-- **Sample line:**
+> 🟡 DRAFT: awaiting Ross's approval
+
+### Admiral Sarrow Vane
+- **Role:** Main villain, commander of the Hegemony Navy and the man who built it out of salvage. Mostly a voice on broadcasts and a face on posters in the slice; arrives on Harrow in person in Act 1 with maximum fanfare to lock the moon down; holds the Rim blockade in Act 2; chases the party into the Quiet in Act 3 and becomes the final big wall between Red and the call.
+- **Look:** Chibi white lion: round and short like everyone else, with an enormous silver mane combed back into big dramatic swoops. A white Navy greatcoat with gray trim, shoulder boards far too wide for him, and a hem that drags on the floor unless someone is billowing it. A plumed white bicorne hat sitting on top of the mane. Signature item: a slim white conductor's baton he uses to cue his own fanfare, which doubles as his fleet command rod. Always one step behind him: Ensign Dobb, a nervous junior officer with a hand-crank bellows whose whole job is the billow. Silhouette: a huge mane, a huge hat and a coat flaring out behind a very small admiral.
+- **Motive:** Thirty years ago Vane built a navy out of hulls dragged off the edge of the Quiet, and he has wanted the place they came from ever since: whatever lies at its heart, for his fleet, and a statue of himself next to it, visible from orbit. Officially he silences the call "for safety." Privately, it is the only broadcast in the Marches louder than his speeches, and he cannot stand the competition. He wants to be the one name the whole frontier remembers forever.
+- **Personality:** A born showman who treats every room like an opera house: monologues, encores, and dramatic pauses long enough to make his officers check their watches. Quirk: he cannot begin anything, including a sentence, until his fanfare finishes, and he restarts it if anybody interrupts. The edge is under the sequins: he is genuinely brilliant at fleets, he never forgets a slight, and he spends crews like pocket change, because to Vane everyone else is either audience or scenery.
+- **Boss fight:** He conducts the battle with his baton: his fanfare swells a few beats before he strikes, and he waits for the party's longest Relay chain to start before slamming in a "Grand Finale" counter timed to break it; when a chain breaks, he picks up the dropped handoff and runs his own chain through his officers. Act 3 rig: the *Magnificent*, his flagship-sized titan, a gray colossus wearing a white greatcoat (Ensign Dobb now runs a very large bellows).
+- **Arc:** Vane starts the game as a punchline in a fancy coat and ends it as the most dangerous person in the galaxy: every time Red embarrasses him in public, he stops performing a little more and starts hunting her for real, until by Act 3 the jokes have run out and only the threat is left. He would rather own the dark than let anyone come home through it. (twist-related beats: see RESTRICTED section)
+- **Sample lines:**
+  - *"Strike the fanfare! No, the long version. The one with the choir. Ensign Dobb: billow."*
+  - *"Keep your little lamp, courier. Shine it all you like. I own the dark you're pointing it at."*
+
+### Sergeant Kasp
+- **Role:** Vertical slice boss. The Signals Corps sergeant in charge of fitting a jammer to Harrow's mast at the Old Relay Tower. He shoves Otis's dockhands around, writes up the Tenders, and waits at the top of the tower in the slice finale. He comes back at the end of Act 1 in an upgraded rig, just in time to be on the receiving end of Vela's resignation, in triplicate.
+- **Look:** Chibi wombat: square, stocky and solid, like a filing cabinet with ears. A pressed blue-gray Signals Corps uniform stretched tight over his belly, one oversized sergeant's stripe on each sleeve, giant headphones and an antenna pin. A clipboard with a built-in mug holder, a lanyard of laminated access cards that clacks when he walks, and a whistle he blows at anything that makes noise. Signature item: the Hushmaster, his spider-legged jammer rig, which he boards like a throne. Silhouette: a little box with headphones riding on eight skinny metal legs under a big jammer dish.
+- **Motive:** Promotion. Kasp has been passed over for Lieutenant eleven years running, and jamming Harrow's mast on time and under budget is his ticket out of middle management. He doesn't care about the call one way or the other. It's a line item, and he is going to close it.
+- **Personality:** A blustering manager who talks in memos ("let's circle back to your surrender") and believes the Hushmaster makes him the most important person on Harrow. Quirk: he cannot stop reciting the rig's specs, mid-fight, mid-threat, mid-sentence: eight legs, hydraulic knees, heated seat, cupholder. The edge is that he's petty with real power: he docks his own crew's pay for coughing, threatens to arrest a whole row of elderly Tenders, and if he can't jam the mast, he is perfectly willing to knock it down and file the form afterward.
+- **Boss fight:** Every few turns the Hushmaster's dish charges a "Quiet Hours" jam pulse that cancels any Relay handoff in progress; the eight legs can be knocked out one by one (Otis's Heave-Ho flips them), and each one lost weakens the pulse until the rig topples and Kasp has to fight on foot with his clipboard. Rig: the Hushmaster, spider-legged jammer walker.
+- **Arc:** Kasp is the first face of the Hegemony that Red punches, and the first proof the empire can be beaten. He loses the tower, then loses his stripe, then spends the rest of the game turning up at a lower rank each time, filing complaints about Red that nobody reads.
+- **Sample lines:**
+  - *"Eight legs. Hydraulic knees. Heated seat. Cupholder. You are about to be defeated by a cupholder, courier."*
+  - *"Every one of those bells is a noise violation, grandma. Keep ringing and I'll write up the whole mast. Then I'll take it down. The paperwork's already signed."*
+
+### Tilly Ransome
+- **Role:** Recurring rival across Acts 1 and 2. A Coldrunner bounty hunter who makes her living bringing answerers back from the Rim for the Hegemony's reward money. She's the Coldrunner who sells Red out during the Act 1 escape off Harrow, keeps turning up in Act 2 every time Red's bounty goes up, and has a long, loud feud with Ruo.
+- **Look:** Chibi mouse: tiny, round, with huge round ears that stick out past the edges of her helmet. A patched-up orange pressure suit covered in tally stickers (one per capture), a dark Coldrunner scarf, and a chunky pair of flight boots. Signature item: a net cannon twice her size, slung over her back, with a little handwritten price tag on it. She keeps a folder of Red's wanted posters and updates it every time the reward goes up. Silhouette: two giant ears, one giant cannon, very little mouse in between.
+- **Motive:** Money, and the record. Tilly has never once failed to collect a bounty, and Red's keeps climbing, which makes her the best payday on the frontier. She thinks Coldrunner style scoring is for show-offs: a boring getaway still gets paid, and that's what counts.
+- **Personality:** Cheerful, chatty and completely unbothered by anything, including being punched through a wall. Quirk: she's Red's biggest fan, gasps with delight at every new wanted poster, and asks Red to sign them before trying to net her. The edge is that she's very, very good: she has brought in every answerer who ever tried the Rim on her watch, she always has an exit planned, and she'll smile at you while she sells you to the Navy.
+- **Boss fight:** She aims her net at whoever is about to receive the Relay handoff, so chains fall short unless the party passes to someone unexpected, and she bails out with a smoke bomb once she's taken enough damage (she's never really beaten until Act 2). Rig: the *Fine Print*, a twitchy two-seat Coldrunner hopper walker that springs between platforms.
+- **Arc:** Tilly sells Red out in Act 1, chases her all through Act 2, and keeps cashing in on the Hegemony until Red's legend gets bigger than any bounty. At the Rim blockade she finally has to decide what Red is worth, and whether Vane was ever going to pay. Ruo once scored one of her getaways a "two," and she has never forgiven him.
+- **Sample lines:**
+  - *"Forty thousand credits?! Red, sweetie, you have never looked better. Sign this for me? Then hold still."*
+  - *"Nothing personal, Red. I've brought back every answerer who ever tried the Rim. You're just the first one I liked."*
 
 ## Act 1 outline
 -

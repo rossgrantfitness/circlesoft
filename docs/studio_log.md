@@ -4,6 +4,7 @@
 
 ## 2026-10-05
 
+- **Villains drafted:** Admiral Sarrow Vane (white lion), Sergeant Kasp (wombat, slice boss), Tilly Ransome (mouse bounty hunter, recurring rival). Sent to Ross for approval.
 - **Main cast approved.** Ross renamed the hero **Red** and changed Vela to a **bunny**; edits made directly. Creative Director now drafting the Villains.
 - **Recast drafted:** Tally Kincaid (silent hero, mutt pup), Otis Kettle (brown bear tank), Vela Quist (chinchilla healer). Mox and Ruo kept as approved. Hero and healer names swapped into the approved Logline, World & history and Factions for Ross's OK. Sent to Ross.
 - **Ross's notes on the Main cast:** silent protagonist who is a clear hero animal (dog or cat); Mox and Ruo approved; walrus and heron cut; all species must be easy, cute and furry. Logged. Creative Director is reworking the hero, the tank (replacing Osric) and the healer (replacing Wren), and updating the hero's name in the approved sections.
