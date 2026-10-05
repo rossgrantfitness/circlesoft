@@ -1,0 +1,25 @@
+# Godot 4 editor cache and imported-asset cache (regenerated automatically)
+.godot/
+*.translation
+
+# Godot 3-era caches, in case they ever appear
+.import/
+
+# Exported game builds
+builds/
+export/
+*.pck
+*.exe
+*.x86_64
+*.zip
+
+# Godot / Mono generated
+.mono/
+data_*/
+mono_crash.*.json
+
+# OS clutter
+.DS_Store
+Thumbs.db
+*~
+*.tmp
