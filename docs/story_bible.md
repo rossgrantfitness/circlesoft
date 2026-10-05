@@ -187,13 +187,67 @@ Nobody gets to the Admiral without getting through his opening acts first, and V
   - *"Nothing personal, Red. I've brought back every answerer who ever tried the Rim. You're just the first one I liked."*
 
 ## Act 1 outline
--
+> 🟡 DRAFT: awaiting Ross's approval
+
+Beats 1–4 marked **[SLICE]** are the vertical slice: Harrow Landing, the Old Relay Tower, Sgt. Kasp, party Red/Otis/Mox, all on foot, about 30 minutes.
+
+1. **[SLICE] Harrow Landing, night.** *Scale: on foot.* Red does her lamp check, grabs a courier job to the Old Relay Tower, and finds Sgt. Kasp's Signals crew shoving Otis's dockhands around. Before Otis can finish asking for help, Red is already swinging, and Otis joins in, apologizing to everyone he flattens.
+2. **[SLICE] The road to the tower.** *Scale: on foot.* Halfway there, Red's delivery crate starts bragging: Mox pops out, gets sent home, and is back in a crate by the next scene, so he's in. At the foot of the mast the Tenders' bell-ringing sit-in is driving Kasp's crew up the wall, and the old-timers show Red a back way in.
+3. **[SLICE] The Old Relay Tower.** *Scale: on foot.* The party climbs the half-buried mast past white-flag-waving grunts and Signals drones while the game teaches Relay battles, and the call gets louder with every floor.
+4. **[SLICE] Boss: Sgt. Kasp in the Hushmaster.** *Scale: on foot.* The crew flips the rig's eight legs out from under Kasp mid-spec-recital, and in the wreck Red finds a beacon part that plays the call clearly for the first time: it's her mom's voice (first clue of the reveal; see RESTRICTED section). The slice ends with Red holding the part up to her window lamp, her up-ear standing as tall as it goes.
+5. **The lockdown.** *Scale: on foot.* Admiral Vane lands on Harrow in person with maximum fanfare (Ensign Dobb billowing for his life), seals the moon, confiscates the beacon part, busts Kasp down a stripe and puts a bounty on Red; she answers his "keep your little lamp" speech with a thumbs-up. Vane leaves Lt. Brunt and the Landing Corps to finish the job, and Signals specialist Vela Quist is ordered to listen to the beacon part so the Corps can jam it properly.
+6. **Harrow under curfew.** *Scale: on foot.* The crew sneaks through Landing Corps checkpoints to steal the beacon part back and gets caught red-handed by Vela, who has been listening to it for two days straight; she writes Red a noise ticket instead of raising the alarm, and keeps the part "as evidence." Around town the barflies' tales of Red grow by the hour, and Marchfolk start slipping her supplies in the open.
+7. **Tilly's way out.** *Scale: on foot.* Cheerful Coldrunner Tilly Ransome offers the only ride off Harrow, leads the party through the old ore tunnels under the Landing to her hidden pad, asks Red to sign a wanted poster, and sells her to the troopers waiting there. Boss: Tilly in the *Fine Print*, who smoke-bombs out once she has her fee and leaves the party in cuffs.
+8. **Vela's resignation, in triplicate.** *Scale: on foot.* The crew breaks out of the Signals compound (nobody searched all of Mox's pockets) and runs straight into a freshly demoted Kasp in the upgraded Hushmaster Mk II. Mid-fight, Vela marches in, hands Kasp her resignation form in triplicate, stamps the party back to full health and joins on the spot, beacon part in her pocket.
+9. **Borrowing Biscuit.** *Scale: big robot.* Red "borrows" Otis's cargo walker Biscuit, Otis climbs in to make sure nobody scratches the paint, and the crew stomps through Harrow Landing while the Tenders ring every bell and the Marchfolk drag containers into the street to block the troopers.
+10. **Boss: Lt. Brunt in the *Title Shot*.** *Scale: big robot.* In the floodlit cargo yard, with her troopers cheering from the stacks, Brunt calls every punch and still loses the bout. When the *Title Shot* topples, Red swings Biscuit around to catch it before it lands on Brunt's own fans, and Brunt is thrilled: finally, a real opponent.
+11. **Off Harrow.** *Scale: big robot.* Biscuit clambers into the hold of the last ore freighter as it lifts, and from the closing hatch Red watches every window on Harrow light up at once. On every screen in the Marches, Vane triples the bounty, and somewhere Tilly gasps with delight.
+
+**Act goal:** Stop the jammer, then bust off a locked-down Harrow to go answer the call.
+**Ends on:** Red leaves home for the first time, wanted across the whole Marches, and Vane is now taking her personally.
+**Approx. length:** About 3 hours (the slice is about 30 minutes of it).
 
 ## Act 2 outline
--
+> 🟡 DRAFT: awaiting Ross's approval
+
+1. **Wobble Station.** *Scale: on foot.* The freighter drops the crew at a ring station that has spun slightly wrong for forty years, and the only captain crazy enough to fly for the Rim is Ruo Vantell. He runs a dockside getaway with them through a Navy sweep (and through Tilly, which restarts their feud at full volume), scores it a seven, and signs on with the *Low Profile* "strictly for the fee."
+2. **Moon-hopping.** *Scale: on foot / big robot.* The *Low Profile* hops the jump lanes moon to moon, lane-songs at every jump and Biscuit in the hold, while the crew busts up Signals jammer crews and Vela compares her notes on the call with each moon's Tenders' old records (clue; see RESTRICTED section). Moon by moon the Marchfolk come over, and every barfly's version of Red is a little taller.
+3. **A rematch nobody scheduled.** *Scale: big robot.* Brunt turns up in a patched *Title Shot* for a fair rematch, and halfway through Vane, watching on broadcast, orders a barrage onto the whole field, her own troopers included. Red plants Biscuit over Brunt's grunts to shield them, and Brunt calls off the fight and quietly stops filling out Vane's paperwork.
+4. **The plan.** *Scale: on foot.* Ruo lays it out: nothing small gets through Sorrell's blockade, and the biggest thing in the Marches is the Hegemony's prize titan in Lt. Calloway's Salvage Works at the Yards. Mox panics for four seconds, then starts drawing the plan on a napkin.
+5. **Heist at the Yards.** *Scale: on foot.* The crew slips into the Hegemony's capital as a delivery crew (Red's courier papers, Vela's forms, Mox in a crate by tradition), past Kasp, now a private writing noise tickets at the gate. Deep in the Salvage Works, the titan stands among hulls nobody can explain (see RESTRICTED section).
+6. **Stealing the titan.** *Scale: giant robot.* Mox hot-wires the prize titan, the crew takes its stations, and they punch out through the Yards' docks, renaming it the *Second Helping* on the way out.
+7. **Boss: Lt. Calloway in the *Second Draft*.** *Scale: giant robot.* Calloway chases them off the Yards in her scaffold-wrapped giant robot, bolting on a new experimental arm every round and cheering every time the party scraps one. She loses her titan and her own robot in the same week and has never been happier.
+8. **Notes in the hatches.** *Scale: giant robot.* The *Low Profile* tows the *Second Helping* down the lanes (Ruo scores it a ten), and the titan frees moon after moon from Landing Corps garrisons while Mox finds Calloway's maintenance notes and secretly writes back. When Vane orders the titan scrapped by remote, Calloway "loses" the code, and Vane stops performing and starts hunting Red for real.
+9. **The last lane.** *Scale: giant robot.* On the run to the end of the last jump lane, Ruo finally admits he was always going to the Rim, and his "reading lamp" stays lit in the cockpit. Ahead waits the Rim blockade: a wall of gray hulls under Lt. Sorrell, with Tilly circling the edges for Vane's biggest bounty yet.
+10. **Boss: Lt. Sorrell at the Rim.** *Scale: giant robot.* The *Second Helping* duels the *Riposte* on the bow of the blockade's lead battleship while Tilly works the edges, works out Vane was never going to pay, and cuts her net loose from the titan. Sorrell loses fair and square, Vane orders the blockade to fire straight through her, and she parries her own side's barrage wide and waves the crew across the Rim, losing her commission in one flourish.
+11. **Into the Quiet: the *Supper's On*.** *Scale: giant spaceship.* Past the Rim, compasses spin and radios hiss, and following the call leads the crew to Red's mom's ship, the *Supper's On*, a huge old deep-hauler adrift and dark with its log too scrambled to read. Red lights the lamp on its bridge, Mox gets the engines roaring with every trick from Calloway's notes, and the titan docks into its cargo cradle: the crew has a giant spaceship.
+12. **Boss: Admiral Vane in the *Magnificent*.** *Scale: giant spaceship.* Vane storms across the Rim with the long fanfare (the one with the choir) and conducts the battle in three movements, remixing all three lieutenants' tricks, until the crew outlasts his Grand Finale and the *Magnificent* goes down. In that same moment the reveal (see RESTRICTED section) lands and the real enemy (see RESTRICTED section) takes the stage, bigger than anything anyone has ever seen.
+
+**Act goal:** Cross the Marches, get something big enough to break the Rim blockade, and reach the Quiet to answer the call.
+**Ends on:** Vane falls, and the reveal and the real enemy (see RESTRICTED section) turn the whole game over.
+**Approx. length:** About 4 hours.
+
+_Note for Ross: the pitch saved Red's mom's ship for Act 3, but the approved villain ladder has Vane's flagship fight the party's giant spaceship at the end of Act 2, so the crew claims her ship just before that fight._
 
 ## Act 3 outline
--
+> 🟡 DRAFT: awaiting Ross's approval
+
+1. **The first to cross.** *Scale: on foot.* The crew falls back to the Rim, and Brunt arrives with every grunt who will follow her (all of them) and her trophy cup, the first foe to cross over: a debt is a debt, and a rematch needs both fighters standing. Sorrell offers Red her rapier hilt-first and, for the first time in the game, has no quotation ready.
+2. **The Admiral's encore.** *Scale: giant spaceship.* Vane crawls out of the *Magnificent*'s wreck, absolutely furious about being upstaged, and offers what's left of his fleet for reasons that are about ninety percent vanity. He cues his fanfare, shouts "Fleet! Follow the coat!", then steps aside for Red: "After you. Do not get used to it."
+3. **Engineers and enlistments.** *Scale: giant spaceship.* Calloway crosses over in a heartbeat and she and Mox, loudly not admitting they're pen pals, refit the *Supper's On* with salvage from the titan, the *Second Draft* and anything else that isn't welded down. Vela hands Kasp an enlistment form in triplicate, and the rebuilt Hushmaster gets bolted to the hull, aimed at something worth all eight legs.
+4. **Tilly's price tag.** *Scale: on foot.* Tilly signs on, having worked out that the biggest payday in history is whatever's behind all this, and sticks a little handwritten price tag on a picture of the real enemy. She and Ruo get paired on scouting runs and score each other out loud the whole way.
+5. **Rallying the Marches.** *Scale: giant spaceship.* The *Supper's On* flies the lanes home to gather a fleet: Marchfolk haulers, Coldrunner runners, Tenders with their bells, and Hegemony gray hulls next to ships that were shooting at them last week. Vane's speeches rally the doubters, and on Harrow every lamp is lit as the crew passes overhead.
+6. **Into the Quiet.** *Scale: giant spaceship.* The combined fleet charges past the Rim on Vane's fanfare, a hundred mismatched ships moving like one orchestra, and the campaign opens on many fronts at once: Brunt boarding, Sorrell holding the line, Calloway on repairs, Tilly and Ruo flying cold as scouts.
+7. **Every scale at once.** *Scale: on foot / big robot / giant robot / giant spaceship.* The deeper they go, the more the crew fights at every scale it has climbed (on foot in boarding actions, Biscuit in the holds, the *Second Helping* on the hulls, the *Supper's On* in the fleet line). Along the way they start freeing those the real enemy holds (see RESTRICTED section), and everyone freed joins the fight.
+8. **Otis gets loud.** *Scale: giant spaceship.* At the edge of the real enemy's reach the fleet stalls, crews backing off one by one, until Otis raises his voice for the only time in the game and rattles the speakers. Nobody backs off after that.
+9. **Final battle: the real enemy.** *Scale: intergalactic god.* A huge multi-phase climax against the real enemy (see RESTRICTED section), with the whole team-up in it: Vane's fanfare cuing every charge, Kasp's Hushmaster finally earning its specs, and Relay chains running across the whole fleet.
+10. **Red's choice.** *Scale: intergalactic god.* At the last moment, Red makes the final choice (see RESTRICTED section) without a word, just goggles down and a thumbs-up to the crew. The real enemy loses its hold, and the dark breaks open.
+11. **Coming home.** *Scale: giant spaceship.* The whole fleet, and everyone freed, flies out of the Quiet together; Vane, just once, lets someone else take the bow. On the way, Red promotes Kasp to Lieutenant with a thumbs-up (commanding a unit of one), and it is the proudest moment of his life.
+12. **Lights out.** *Scale: on foot.* Back on Harrow, Red does her lamp check one last time: lights it, taps the glass twice, and blows it out, the first person ever to get to. Across the Marches, window after window goes dark because everyone's home, and the last frame has the whole crew in the shot beside her.
+
+**Act goal:** Unite every former enemy and the whole frontier, fly into the Quiet, beat the real enemy and bring everyone home.
+**Ends on:** The lamps go out all across the Marches, because nobody needs them anymore.
+**Approx. length:** About 3 hours.
 
 ---
 

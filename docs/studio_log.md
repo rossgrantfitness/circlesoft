@@ -4,6 +4,7 @@
 
 ## 2026-10-05
 
+- **Act 1 / 2 / 3 outlines drafted** (11 + 12 + 12 beats, ~3 h + 4 h + 3 h; slice = Act 1 beats 1–4). Taste Keeper recording its prediction, then to Ross.
 - **Taste Keeper hired** and Ross's Playbook adopted (rule added to CLAUDE.md). Creative Director now drafting the Act 1 / 2 / 3 outlines; Taste Keeper logging today's decisions.
 - **Villains approved** with Ross's species picks: Kasp = beaver, Lt. Brunt = rhino, Lt. Calloway = heron, Lt. Celestine Sorrell = hyena (now female), Vane = lion. Species rule amended: strict for the party; villains by Ross's choice.
 - **Taste Keeper proposed:** new agent (.claude/agents/taste-keeper.md) and Ross's Playbook (docs/ross_playbook.md), seeded with everything Ross has decided and said so far. Waiting on Ross to hire it and approve the autonomy rules.
