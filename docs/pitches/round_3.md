@@ -1,6 +1,6 @@
 # Pitch Round 3
 
-> Status: **IN PROGRESS** · Creative Director done · Technical Director and Producer reviewing · then to Ross for sign-off.
+> Status: **WAITING ON ROSS** · Creative Director, Technical Director and Producer done · Ross to pick one (or mix them).
 
 ## Ross's brief (2026-10-05)
 
@@ -66,6 +66,10 @@
 
 **Stays original:** No machines running a reset, no numbered chosen one, no hero turned tyrant, no sacrifice that buys a few years of peace, no drills or spirals. Here the cycle is rescuers lost one after another, and it's broken by the first crew to come home.
 
+**🔧 Technical Director: Medium.** The slice is straightforward, and Relay is just a turn-passing rule that works the same in every vehicle. The trickiest piece is the climax fleet of hundreds of ships. To lower the risk, show the fleet in a cutscene reusing a few ship models, and have the player fight only a handful.
+
+**🎨 Producer (slice art): Medium.** 3 hero chibis (Pell, Osric, Mox) plus 5–6 townsfolk; 4 portraits (including Sgt. Kasp); 2–3 Hegemony trooper and drone enemies; a boss on a spider-legged walker (the legs are tricky to animate); 2 sets: Harrow Landing and the Old Relay Tower. Unusual: night lighting with a glowing lamp in every window.
+
 ### Pitch B: THE LAST CROWN (alt: EVER AFTER)
 **Logline:** A noodle-delivery kid on a backwater space station rises to overthrow the Gilded Prince, the tyrant who rules a whole cluster of worlds from his golden fleet.
 
@@ -97,6 +101,10 @@
 
 **Stays original:** No machines running a reset, no numbered chosen one, no hero turned tyrant (each tyrant is a new, desperate person, and the old heroes simply went home), no sacrifice for a few years of peace, no drills or spirals. Here the cycle is winning without finishing the job, and the fake ending is our own trick.
 
+**🔧 Technical Director: Hard.** The slice is fine, but every enemy needs its own map of breakable parts, art for each broken part, and new tactics as it loses pieces. The trickiest piece is that art and tuning load. To lower the risk, give full part maps to bosses only and one or two parts to ordinary enemies.
+
+**🎨 Producer (slice art): Heavy for a slice.** 3 hero chibis (Tobin, Ottoline, Mags) plus Okke and townsfolk; 5 portraits (including Okke and Skell); 2–3 tithe-man enemies; a boss in a collector walker; 2 sets: Port Sundry and the Tithe Depot. Unusual: every enemy needs breakable parts with damaged versions, plus several painted hero murals and an old photo.
+
 ### Pitch C: DIMSTAR (alt: SUNCHASERS)
 **Logline:** When the sun over a frozen mining moon starts going dark, a young lineman sets out across the star system to find out why, and runs straight into a ruler who wants to turn the cause into a weapon.
 
@@ -127,6 +135,10 @@
 **Vertical slice:** Town is Lampwick, a mining town on Gloam strung with heater cables, its market huddled around one huge furnace under a weak brown sun. Dungeon is the Furnace Works, the town's heat plant, which the Margrave's soldiers are stripping; boss is Lieutenant Graw, a chibi wolverine in a pumping rig rebuilt as a walker. Party is Lio, Peb and Quill, all on foot. First clue: Quill's chart shows a line of dead stars curving across the sky toward Calder. He calls it a coincidence, and nobody argues.
 
 **Stays original:** No machines running a reset, no numbered chosen one, no hero turned tyrant, no sacrifice, and no monster that keeps coming back to the same place. Here every hero in history won, the god moves on instead of returning, and the cycle breaks when someone finally lets it rest. No drills or spirals.
+
+**🔧 Technical Director: Medium.** Tracking near, middle and far is simple. The trickiest piece is making enemies choose sensibly when to close in or back off, at every scale. To lower the risk, give each enemy a "favorite ring" in its data file and test the battle screen early with colored boxes.
+
+**🎨 Producer (slice art): Medium.** 3 hero chibis (Lio, Peb, Quill) plus townsfolk; 4 portraits (including Lt. Graw); 2–3 soldier enemies; a boss in a pumping-rig walker; 2 sets: Lampwick and the Furnace Works. Unusual: frost and furnace-glow lighting under a dim brown sun, a "hero holding up a sun" statue, and a star-chart prop.
 
 ### Creative Director's recommendation
 LIGHTS LEFT ON. It's the most classic hero's journey of the three, the twist hits the hero personally (the call she followed is the cycle itself), and a thousand years of lost crews flying home together is the biggest, most earned climax. THE LAST CROWN is the bold alternative: a fake ending at the midpoint is the kind of stunt players remember for decades.
