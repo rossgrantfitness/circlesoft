@@ -12,7 +12,7 @@
 ## In Progress
 | Task | Assigned to | Started | Notes |
 |---|---|---|---|
-| Story bible: THE TWIST + twist clues (restricted) | Creative Director drafts, Ross approves | 2026-10-05 | Act outlines approved. |
+| Naming pass: sci-fi military group names (Tenders + others) | Creative Director proposes, Ross picks | 2026-10-05 | "Like Bravo Company." |
 | Set up the lights-left-on repository | Ross (GitHub clicks), then studio floor moves game files over | 2026-10-05 | Merge PR #1 → mark circlesoft as template → create lights-left-on from it. |
 
 ## Done
@@ -25,6 +25,7 @@
 | Story bible: Villains | Creative Director | 2026-10-05 | Approved: the ladder, the Overture, Vane, Kasp, Tilly; species per Ross. |
 | Taste Keeper hired, Ross's Playbook adopted | Studio floor | 2026-10-05 | All areas at autonomy Level 0. |
 | Story bible: Act 1 / 2 / 3 outlines | Creative Director | 2026-10-05 | Approved as drafted. |
+| Story bible: THE TWIST + clues | Creative Director | 2026-10-05 | Approved as revised: the Keeper, beatdown finale, mom = Eurydice "Dee" Kincaid. |
 | Decide how to keep games separate | Technical Director, Ross | 2026-10-05 | Separate repository per game. |
 
 ## Later
