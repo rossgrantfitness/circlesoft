@@ -5,6 +5,9 @@
 
 | Date | Decision | Options considered | Why |
 |---|---|---|---|
+| 2026-10-05 | **Silent protagonist.** The hero doesn't speak; the party carries the dialogue. The hero must be a clear hero animal (dog, cat or similar). Pell Arden (fennec fox) is replaced. | (Direct instruction from Ross) | Classic JRPG silent-hero feel; a species that reads as heroic at a glance. |
+| 2026-10-05 | **Cast species rule:** all characters use easy, cute, furry critters that are simple to model and animate. No awkward anatomy such as tusks, long necks, long legs, wings or beaks (so no walrus, no heron). | (Direct instruction from Ross) | Ross is the only artist; simple, furry, chibi-friendly shapes keep the art doable and cute. |
+| 2026-10-05 | Main cast: **Mox** (ferret kid mechanic) and **Ruo Vantell** (raccoon smuggler captain) approved. **Osric** (walrus) and **Wren** (heron) cut and to be replaced with new characters in the same party roles. | Approve / approve with changes / redo | Ross liked Mox and Ruo; the walrus and heron are too hard to animate. |
 | 2026-10-05 | Story bible approved after tone pass: **Logline**, **World & history**, **Factions** (Hegemony Navy, Signals Corps, Marchfolk, Coldrunners, Tenders). | Approve / approve with changes / redo | Approved as drafted. |
 | 2026-10-05 | **Tone rule for Lights Left On:** goofier, louder, less serious. The story doesn't take itself too seriously and is never grimdark. Rad, hot-blooded, righteous-dude-awesome energy: big swagger, big grins, big heart. Ross: the factions and story were "too far up its own ass." Factions to be redone, and the approved Logline and World & history get a tone pass and come back to Ross. | (Direct instruction from Ross) | Ross wants fun and swagger, not grim self-importance. |
 | 2026-10-05 | Story bible approved: **Logline** and **World & history** (Lights Left On). | Approve / approve with changes / redo | Approved as drafted. |

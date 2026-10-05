@@ -4,6 +4,7 @@
 
 ## 2026-10-05
 
+- **Ross's notes on the Main cast:** silent protagonist who is a clear hero animal (dog or cat); Mox and Ruo approved; walrus and heron cut; all species must be easy, cute and furry. Logged. Creative Director is reworking the hero, the tank (replacing Osric) and the healer (replacing Wren), and updating the hero's name in the approved sections.
 - **Story bible: Main cast drafted** (Pell, Osric, Mox, Wren, Ruo). Sent to Ross for approval.
 - **Ross approved the tone pass** (Logline, World & history, Factions). Creative Director now drafting the Main cast.
 - **Tone pass done:** Logline, World & history and Factions rewritten louder and goofier; a Tone line added to the top of the story bible. Sent to Ross for approval.
