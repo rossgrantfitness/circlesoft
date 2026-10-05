@@ -4,6 +4,7 @@
 
 ## 2026-10-05
 
+- **THE TWIST and twist clues drafted** (restricted section): the real enemy is the Holdfast; 14 clues, 5 inside the slice. Taste Keeper predicting, then to Ross.
 - **Act outlines approved** as drafted. Taste Keeper scoring its prediction; Creative Director now drafting THE TWIST and the twist clues (restricted section).
 - **Act 1 / 2 / 3 outlines drafted** (11 + 12 + 12 beats, ~3 h + 4 h + 3 h; slice = Act 1 beats 1–4). Taste Keeper recording its prediction, then to Ross.
 - **Taste Keeper hired** and Ross's Playbook adopted (rule added to CLAUDE.md). Creative Director now drafting the Act 1 / 2 / 3 outlines; Taste Keeper logging today's decisions.
