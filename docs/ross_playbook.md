@@ -90,6 +90,7 @@ Studio recommendations vs. Ross's actual choice, used to calibrate. From now on,
 | R11 | 2026-10-05 | Villains | Approve as drafted | Rework: shounen ladder | ❌ | Ross thinks in anime structures. |
 | R12 | 2026-10-05 | Villain rework | Approve | Approved with species swaps | ⚠️ | Ross has specific animals in mind; offer species choices. |
 | R13 | 2026-10-05 | Taste Keeper model | A: hire on Sonnet | A | ✅ | Low-stakes process call; he took the recommendation and said go. |
+| R14 | 2026-10-05 | Act 1/2/3 outlines | Approve as drafted | | | **PREDICTION (confidence: medium, recorded before Ross saw it):** Approve with changes, not a full send-back, since the outlines follow his approved cast, ladder and goofy tone. Most likely pushes: (1) the twist and big reveal land at the end of Act 2, about 7 of 10 hours in, and he asked for the twist "in the middle" (F7); (2) Act 1 is about 3 hours entirely on Harrow, and he wants space "at least partially" and a faster climb (F8, F2, F3); (3) a possible tone or theme note, either the Act 3 "lights out" ending and the Tilly/Vela/Kasp comic business being too soft or too pointed against "unspoken, understated" (F7), or the heavy fanfare and redeemed-villain beats needing more shounen punch (F16). Based on: creative drafts are usually tweaked (R3-R12). |
 
 ---
 
