@@ -1,6 +1,6 @@
 # Pitch Round 2
 
-> Status: **WAITING ON ROSS** · Creative Director, Technical Director and Producer done · Ross to pick one (or mix them).
+> Status: **REJECTED 2026-10-05** · See round_3.md for the new direction.
 
 ## Ross's brief (2026-10-05)
 
