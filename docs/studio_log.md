@@ -4,6 +4,7 @@
 
 ## 2026-10-05
 
+- **Story bible: Main cast drafted** (Pell, Osric, Mox, Wren, Ruo). Sent to Ross for approval.
 - **Ross approved the tone pass** (Logline, World & history, Factions). Creative Director now drafting the Main cast.
 - **Tone pass done:** Logline, World & history and Factions rewritten louder and goofier; a Tone line added to the top of the story bible. Sent to Ross for approval.
 - **Ross sent back Factions: too serious.** New tone rule: goofier, not grimdark, rad righteous-dude energy. Logged in decisions.md. Creative Director is reworking Logline, World & history and Factions in the new tone.
