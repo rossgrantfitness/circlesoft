@@ -1,0 +1,114 @@
+# Ross's Playbook
+
+> **What this is:** the studio's memory of Ross's taste: every decision and piece of feedback he gives, distilled into principles the studio can follow. It's the guiding force for creative work, and the evidence Ross uses to decide when the studio can work on its own.
+> **Keeper:** the Taste Keeper agent (logs, distills, predicts). **Authority:** Ross. Nothing here overrides a fresh instruction from him.
+> **Every agent:** read the Principles before any creative or design work. If the Playbook doesn't cover something, ask Ross; don't guess.
+
+---
+
+## 1. Autonomy ledger
+
+How much the studio may decide on its own, area by area. **Only Ross changes a level.** The Taste Keeper proposes a raise when the prediction record earns it.
+
+| Level | What it means |
+|---|---|
+| **0: Ross decides** | Every decision goes to Ross in the sign-off format. |
+| **1: Small calls** | The studio makes small calls that clearly follow the Playbook (a name, a prop, a line of dialogue), logs each one in decisions.md, and Ross can overturn any of them later. Bigger calls still go to Ross. |
+| **2: Show after** | The studio drafts and finalizes whole pieces in the area (a side character, a dungeon layout), then shows Ross after. Anything that touches the main story, main cast or a Playbook principle still goes to Ross first. |
+| **3: Milestone review** | The studio runs the area on its own; Ross reviews at milestones. |
+
+| Area | Level | Since | Prediction record (last 10) |
+|---|---|---|---|
+| Story & structure | 0 | 2026-10-05 | not started |
+| Tone & humor | 0 | 2026-10-05 | not started |
+| Characters (personality, names) | 0 | 2026-10-05 | not started |
+| Character look & species | 0 | 2026-10-05 | not started |
+| Dialogue & writing | 0 | 2026-10-05 | not started |
+| Game design & battle | 0 | 2026-10-05 | not started |
+| Game feel | 0 | 2026-10-05 | not started |
+| Art direction | 0 | 2026-10-05 | not started |
+| Audio direction | 0 | 2026-10-05 | not started |
+| Studio process | 0 | 2026-10-05 | not started |
+
+---
+
+## 2. Principles
+
+Distilled from the Feedback Log. Each cites its source entries (F#). Newest evidence wins when they conflict.
+
+### Story & structure
+- **Classic JRPG hero's journey over high-concept premises.** A hero, a call to adventure, a party gathered on the road, a world to save. Clever "the hero becomes the robot" or "court battles" premises get rejected. (F4, F7)
+- **The signature twist: the heroes aren't the first.** It's all happened before, over and over, and our heroes are the ones who break the cycle. It lands in the middle of the game, followed by a huge climax. (F7)
+- **Escalating scale is non-negotiable:** on foot → big robot → giant robot → giant spaceship → intergalactic god. More robots and spaceships, not fewer. (F4, F7)
+- **Space, at least partly.** Not one planet that reaches space only at the end. (F8)
+- **Shounen ladder:** the big villain is guarded by charismatic lieutenants; beat them, beat him, then reveal a greater evil, and all former foes join the heroes. (F16)
+- **Death and rebirth are themes, never mechanics, and never said out loud.** Understated, left for players to interpret. (F7)
+- **Touchstones:** Gurren Lagann, The Matrix Reloaded, Dark Souls, Buddhist rebirth; FF7, MGS1, Fallout 3, Chrono Trigger, Chrono Cross, FF8, FF9, FFX, DQ7. Long cutscenes. Look of Mega Man Legends / Fear Effect. Inspired by, never copied. (F2)
+
+### Tone & humor
+- **Loud, goofy, rad, big-hearted. Never grimdark, never self-serious.** "Too far up its own ass" is the failure mode. Default is awesome; sincerity is saved for when it counts. (F11)
+- **Villains are fun to hate:** theatrical, charismatic, each distinct. (F16)
+
+### Characters
+- **Chibi anthropomorphic animals, always.** But the story treats them with full human gravity and never makes a point of them being animals: no animal gimmicks, no "nine lives" mechanics. "Forget" they're animals in the writing, never in the art. (F3, F5, F6)
+- **Silent protagonist,** and a clear hero animal: dog, cat or similar. (F13)
+- **Party species: cute, furry, easy to model and animate.** No tusks, long necks or legs, wings, beaks. Villains may break this only by Ross's own choice (he picked a rhino and a heron for lieutenants). (F13, F17)
+- **Party-based:** a main character with a real supporting cast. (F5)
+- **Short, punchy names win:** he renamed the hero "Red." (F15)
+- **What he liked straight away:** Mox (boastful ferret kid gadgeteer who panics for four seconds, then fixes everything) and Ruo (raccoon smuggler who scores everything for style). Quirky, specific, funny characters with a sincere core. (F13)
+
+### Art direction
+- **Ross is the only artist, so practicality is taste.** Designs he can actually model and animate beat clever anatomy. (F13)
+- **PSX look:** low-poly, low-res textures, Mega Man Legends / Fear Effect. (F2)
+
+### Studio process
+- **Show the work as it happens,** in plain language, with decisions at the top. (F5)
+- **Keep games separate:** circlesoft is the studio's master copy; each game gets its own repository. (F10)
+- **How Ross gives feedback:** fast and blunt. He rejects at the *premise* level when a concept feels too clever, too precious or too gloomy, and tweaks at the *detail* level (a species, a name) when the concept is right. When he tweaks, apply exactly what he said and don't reinterpret. (F4, F7, F13, F15, F17)
+
+---
+
+## 3. Recommendation and prediction record
+
+Studio recommendations vs. Ross's actual choice, used to calibrate. From now on, the Taste Keeper also records a **prediction** before each decision.
+
+| # | Date | Decision | Studio recommended | Ross chose | Hit? | Lesson |
+|---|---|---|---|---|---|---|
+| R1 | 2026-10-05 | Keep Godot installed | A: auto-install script | A | ✅ | |
+| R2 | 2026-10-05 | Merge setup to main | A: merge | A | ✅ | |
+| R3 | 2026-10-05 | Pitch round 1 | A: Ninth Life | none (new direction) | ❌ | Animal gimmicks; not enough robots/space. |
+| R4 | 2026-10-05 | Pitch round 2 | B: Five Funerals | none (new direction) | ❌ | Too high-concept; theme stated outright and turned into mechanics. |
+| R5 | 2026-10-05 | Pitch round 3 | A: Lights Left On | A | ✅ | Classic journey + cycle twist landed. |
+| R6 | 2026-10-05 | Keep games separate | A: repo per game | A | ✅ | |
+| R7 | 2026-10-05 | First story bible sections | Approve as drafted | Approved, then tone sent back | ⚠️ | Approved early; the tone problem surfaced one section later. |
+| R8 | 2026-10-05 | Factions | Approve as drafted | Redo: too serious | ❌ | Default to goofier. |
+| R9 | 2026-10-05 | Main cast | Approve as drafted | Kept 2 of 5; silent hero; easier species | ❌ | Check species practicality; JRPG heroes are silent. |
+| R10 | 2026-10-05 | Recast | Approve | Approved with rename (Red) and bunny swap | ⚠️ | |
+| R11 | 2026-10-05 | Villains | Approve as drafted | Rework: shounen ladder | ❌ | Ross thinks in anime structures. |
+| R12 | 2026-10-05 | Villain rework | Approve | Approved with species swaps | ⚠️ | Ross has specific animals in mind; offer species choices. |
+
+---
+
+## 4. Feedback log
+
+Ross's words, verbatim where possible, newest at the bottom.
+
+| # | Date | Reacting to | Ross said / chose |
+|---|---|---|---|
+| F1 | 2026-10-05 | Phase 0 | Chose the startup-script option to keep Godot installed. "go option a" |
+| F2 | 2026-10-05 | Pitch meeting input | "anthropomorphic anime style characters, like usagi yojimbo" · "space opera high fantasy with swords and magic" · "buddhist theory of rebirth, the matrix reloaded, gurren lagann, dark souls, when you die you restart… games are all about trying dying and trying again, that circular life and death and rebirth" · "FF7 metal gear solid 1 fallout 3 chrono cross chrono trigger ff8 ff9 ffx dq7" · "long cutscenes" · "looks like megaman legends or fear effect" · Described the climb: start underground, find a giant robot, break out, conquer the overworld, then space, then the universe, fight an intergalactic god and become god. |
+| F3 | 2026-10-05 | Pitch round 1 | "i dont like any of those, i want to go from on foot to big robo to giant robo to giant spaceship to intergalactic god in a sci fi setting - forget theyre animals in the sense that they need some kind of 9 lives or something, theyre humanoids first and foremost" |
+| F4 | 2026-10-05 | Pitch round 1 | "I want a party based RPG… It's a sci-fi world with fantasy and animal anime elements to it" · Wants to see work as it happens. |
+| F5 | 2026-10-05 | Round 2 brief | "I still want all of our protagonists to be anime anthropomorphic chibi animal characters but I just dont want there to be a huge emphasis on the fact they're animals… treat them with the same gravity as people, but they ARE animals" |
+| F6 | 2026-10-05 | Pitch round 2 | Rejected all three. |
+| F7 | 2026-10-05 | Round 3 brief | "We want a classic JRPG hero's journey… an unexpected twist in the middle and huge climax · Death and rebirth are thematic ideas - not gameplay systems · Do not directly call attention to the theme, the theme is unspoken, understated, up to the players interpretation · …we find out the heroes arent the first ones to do what theyre trying to do and that these events have played out infinitely throughout history but our heroes are the ones to break the cycle - THIS IS THE MAIN IDEA" |
+| F8 | 2026-10-05 | Round 3 brief | "Also it takes place in space at least partially!!!" |
+| F9 | 2026-10-05 | Pitch round 3 | Chose A: Lights Left On. |
+| F10 | 2026-10-05 | Keeping games separate | Approved a separate lights-left-on repository. |
+| F11 | 2026-10-05 | Factions draft | "the factions are too serious, the story is too far up its own ass, make it so that it is a little goofier or less serious, doenst take itself too seriously not so grimdark - a little more dudebro awesome man totally bro righteous dude wicked awesome" |
+| F12 | 2026-10-05 | Tone pass | "APPROVED" |
+| F13 | 2026-10-05 | Main cast draft | "we want a silent protagonist, I dont want a fennec fox either · not a walrus · the ferret kid is cool approved · heron no · raccoon approved · Protag = needs to be a hero kind of animal, like a dog or cat or a clear hero animal · dont pick animals that will be hard to animate and make, pick easier cuter furrier critters" |
+| F14 | 2026-10-05 | Recast | Approved the dog hero, the bear and the approach. |
+| F15 | 2026-10-05 | Recast | Named the hero "Red"; "how about bunny for the chinchilla"; Otis approved. |
+| F16 | 2026-10-05 | Villains draft | "follow a shounen anime trope and have the admiral be guarded by his 3 lieutenants and they are all charismatic in their own way and once you have beaten the 3 then you get to face the admiral but after you defeat him, oh no, the real enemy is an intergalactic god and all your former foes join you to conquer a greater evil - you can keep the rival too" |
+| F17 | 2026-10-05 | Villain rework | "kasp - beaver, brunt - rhino, calloway - heron, sorrell - hyena (make it a female), vane - lion" · Asked for this Playbook so the studio can work more autonomously over time. |

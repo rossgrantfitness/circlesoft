@@ -4,6 +4,8 @@
 
 ## 2026-10-05
 
+- **Villains approved** with Ross's species picks: Kasp = beaver, Lt. Brunt = rhino, Lt. Calloway = heron, Lt. Celestine Sorrell = hyena (now female), Vane = lion. Species rule amended: strict for the party; villains by Ross's choice.
+- **Taste Keeper proposed:** new agent (.claude/agents/taste-keeper.md) and Ross's Playbook (docs/ross_playbook.md), seeded with everything Ross has decided and said so far. Waiting on Ross to hire it and approve the autonomy rules.
 - **Villains reworked** as a shounen ladder: Kasp → the Overture (Lt. Brunt, badger; Lt. Calloway, squirrel; Lt. Sorrell, otter) → Admiral Vane → the real enemy, then everyone teams up. Tilly kept. One-line fix to the Factions Navy row to match. Sent to Ross.
 - **Ross sent back the Villains:** wants the shounen ladder: three charismatic lieutenants guard Vane; beat them, beat Vane, then an intergalactic god is revealed as the real enemy and all former foes join the party. Tilly stays. Logged. Creative Director is reworking the Villains.
 - **Villains drafted:** Admiral Sarrow Vane (white lion), Sergeant Kasp (wombat, slice boss), Tilly Ransome (mouse bounty hunter, recurring rival). Sent to Ross for approval.
