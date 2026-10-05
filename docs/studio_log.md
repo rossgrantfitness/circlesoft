@@ -4,6 +4,7 @@
 
 ## 2026-10-05
 
+- **Ross approved** the Logline and World & history, and chose a separate `lights-left-on` repository for the game, with circlesoft staying the studio's master copy. Creative Director now drafting Factions.
 - **Story bible: Logline and World & history drafted** by the Creative Director (marked DRAFT in docs/story_bible.md). Sent to Ross for approval.
 - **Technical Director's game-separation options sent to Ross:** A) keep circlesoft as the studio's master copy and make a new `lights-left-on` repository from it (recommended); B) one repository with a folder per game; C) rename this repository to the game. Creative Director still drafting Logline and World & history.
 - **Ross chose LIGHTS LEFT ON.** Logged in decisions.md. Now: the Technical Director is drafting options for keeping each game separate, and the Creative Director is drafting the first story bible sections (Logline, World & history) for Ross's approval.

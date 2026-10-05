@@ -4,12 +4,12 @@
 > **Secrecy:** The section marked RESTRICTED is for the Creative Director and Writer only. All other agents: read only the sections you need and skip it.
 
 ## Logline
-> 🟡 DRAFT: awaiting Ross's approval
+> ✅ APPROVED by Ross, 2026-10-05
 
 Ten years after her mother flew into the starless Quiet to answer a distress call no one else would, scrap courier Pell Arden still lights a lamp in her window every night. When the Hegemony lands on her dust moon to silence the call for good, she goes to answer it herself, and has to fight an empire to get there.
 
 ## World & history
-> 🟡 DRAFT: awaiting Ross's approval
+> ✅ APPROVED by Ross, 2026-10-05
 
 **The Outer Marches.** The far edge of the galaxy, where the stars thin out. A frontier of dust moons, ring stations and trading ports: poor, windblown and stubborn. People patch what they own, live on scrap and salvage, and look out for their neighbors because nobody else will. Harrow, Pell's home, is one dust moon among hundreds.
 
