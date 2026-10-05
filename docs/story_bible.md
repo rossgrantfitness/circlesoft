@@ -33,7 +33,7 @@ Ten years ago, scrap courier Red Kincaid's mom roared off into the starless Quie
 - **Now:** Hegemony crews start bolting jammers onto the old relay masts, starting with Harrow's. Big mistake.
 
 ## Factions
-> 🟡 One-line update (Navy row now matches the villain ladder): awaiting Ross's OK
+> ✅ APPROVED by Ross, 2026-10-05 (tone pass; names updated; Navy row matches villain ladder)
 
 | Faction | What they want | Look / symbol | Role in story |
 |---|---|---|---|
