@@ -5,6 +5,7 @@
 
 | Date | Decision | Options considered | Why |
 |---|---|---|---|
+| 2026-10-05 | **Main cast approved:** Red Kincaid (silent hero, scrappy red mutt pup; default name "Red", player can rename), Otis Kettle (brown bear tank), Mox (ferret kid mechanic), Vela Quist (**bunny** healer, changed from chinchilla by Ross), Ruo Vantell (raccoon captain). Slice party: Red, Otis, Mox. Name updates in Logline, World & history and Factions approved. | Draft cast; hero alternates: tuxedo cat, tiger cub | Ross renamed the hero Red and swapped Vela to a bunny. |
 | 2026-10-05 | **Silent protagonist.** The hero doesn't speak; the party carries the dialogue. The hero must be a clear hero animal (dog, cat or similar). Pell Arden (fennec fox) is replaced. | (Direct instruction from Ross) | Classic JRPG silent-hero feel; a species that reads as heroic at a glance. |
 | 2026-10-05 | **Cast species rule:** all characters use easy, cute, furry critters that are simple to model and animate. No awkward anatomy such as tusks, long necks, long legs, wings or beaks (so no walrus, no heron). | (Direct instruction from Ross) | Ross is the only artist; simple, furry, chibi-friendly shapes keep the art doable and cute. |
 | 2026-10-05 | Main cast: **Mox** (ferret kid mechanic) and **Ruo Vantell** (raccoon smuggler captain) approved. **Osric** (walrus) and **Wren** (heron) cut and to be replaced with new characters in the same party roles. | Approve / approve with changes / redo | Ross liked Mox and Ruo; the walrus and heron are too hard to animate. |
