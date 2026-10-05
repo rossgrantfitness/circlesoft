@@ -5,6 +5,7 @@
 
 | Date | Decision | Options considered | Why |
 |---|---|---|---|
+| 2026-10-05 | Story bible approved after tone pass: **Logline**, **World & history**, **Factions** (Hegemony Navy, Signals Corps, Marchfolk, Coldrunners, Tenders). | Approve / approve with changes / redo | Approved as drafted. |
 | 2026-10-05 | **Tone rule for Lights Left On:** goofier, louder, less serious. The story doesn't take itself too seriously and is never grimdark. Rad, hot-blooded, righteous-dude-awesome energy: big swagger, big grins, big heart. Ross: the factions and story were "too far up its own ass." Factions to be redone, and the approved Logline and World & history get a tone pass and come back to Ross. | (Direct instruction from Ross) | Ross wants fun and swagger, not grim self-importance. |
 | 2026-10-05 | Story bible approved: **Logline** and **World & history** (Lights Left On). | Approve / approve with changes / redo | Approved as drafted. |
 | 2026-10-05 | Keep games separate: **circlesoft** stays the studio's master copy (rules, staff, templates); each game gets its own repository made from it, starting with **lights-left-on**. Game files (pitches, game decisions, story bible) move to the new repository and circlesoft's copies reset to blank templates. | A: studio master + new repository per game · B: one repository, folder per game · C: rename this repository to the game | Each game and its secrets stay apart; sessions open straight into the right game. |

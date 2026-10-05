@@ -5,12 +5,12 @@
 > **Tone:** Loud, rad, goofy and big-hearted. Never grimdark, never self-serious. Sincere when it counts, awesome by default. (Ross, 2026-10-05)
 
 ## Logline
-> 🟡 DRAFT (tone pass): awaiting Ross's approval
+> ✅ APPROVED by Ross, 2026-10-05 (tone pass)
 
 Ten years ago, scrap courier Pell Arden's mom roared off into the starless Quiet to answer a distress call nobody else had the guts to touch. Now the Hegemony wants that call shut up for good, so Pell is going to answer it herself, and if an entire empire wants to stand in her way, that's honestly the empire's problem.
 
 ## World & history
-> 🟡 DRAFT (tone pass): awaiting Ross's approval
+> ✅ APPROVED by Ross, 2026-10-05 (tone pass)
 
 **The Outer Marches.** The ragged edge of the galaxy, where the stars thin out and the people get tougher. Dust moons, ring stations, rowdy trading ports. Everybody's broke, everything's held together with tape, and anybody will lend you a wrench. Harrow, Pell's home, is one dust moon out of hundreds, and by local accounts the loudest.
 
@@ -33,7 +33,7 @@ Ten years ago, scrap courier Pell Arden's mom roared off into the starless Quiet
 - **Now:** Hegemony crews start bolting jammers onto the old relay masts, starting with Harrow's. Big mistake.
 
 ## Factions
-> 🟡 DRAFT (tone pass): awaiting Ross's approval
+> ✅ APPROVED by Ross, 2026-10-05 (tone pass)
 
 | Faction | What they want | Look / symbol | Role in story |
 |---|---|---|---|
