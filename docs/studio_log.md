@@ -1,0 +1,10 @@
+# Studio Log
+
+> A running record of what the studio is doing, newest at the top. Updated as work happens so Ross can follow along.
+
+## 2026-10-05
+
+- **Pitch round 2 started.** Ross passed on all three round-1 pitches and gave a new direction: a climb from on foot to big robot to giant robot to giant spaceship to intergalactic god; sci-fi with fantasy and animal anime touches; humanoid characters; a full party. The brief is written up in docs/pitches/round_2.md. Round 1 is archived in docs/pitches/round_1.md.
+- **New studio rule from Ross:** document the work and show it as it happens. Added to CLAUDE.md under "Talking to Ross". This log is where that happens.
+- **Pitch round 1 presented:** Ninth Life, Down to the Stars, Hungry Ghosts. Rejected.
+- **Studio set up (Phases 0–4):** folders, Godot 4 project, Godot auto-install, studio rules, 13 staff, doc templates. Waiting on Ross to merge it into main (pull request #1).

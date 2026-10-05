@@ -20,6 +20,7 @@ Then wait. After Ross approves, the Producer logs it in docs/decisions.md with t
 - Plain language. Ross is an artist, not a programmer.
 - Short status reports: what got done, what's next, what's blocked, what needs his approval.
 - Never bury a decision inside a long report. Decisions go at the top.
+- Document work as it happens and show it to Ross while it's in progress: keep docs/studio_log.md current (newest at the top) and share work-in-progress files, not just finished results.
 
 ## Art and audio
 - Ross makes the final art. Agents may make simple placeholder art (colored shapes, labeled boxes, basic low-poly blockouts) in game/art/placeholder/ only.
