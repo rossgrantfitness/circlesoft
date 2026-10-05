@@ -4,6 +4,7 @@
 
 ## 2026-10-05
 
+- **Taste Keeper hired** and Ross's Playbook adopted (rule added to CLAUDE.md). Creative Director now drafting the Act 1 / 2 / 3 outlines; Taste Keeper logging today's decisions.
 - **Villains approved** with Ross's species picks: Kasp = beaver, Lt. Brunt = rhino, Lt. Calloway = heron, Lt. Celestine Sorrell = hyena (now female), Vane = lion. Species rule amended: strict for the party; villains by Ross's choice.
 - **Taste Keeper proposed:** new agent (.claude/agents/taste-keeper.md) and Ross's Playbook (docs/ross_playbook.md), seeded with everything Ross has decided and said so far. Waiting on Ross to hire it and approve the autonomy rules.
 - **Villains reworked** as a shounen ladder: Kasp → the Overture (Lt. Brunt, badger; Lt. Calloway, squirrel; Lt. Sorrell, otter) → Admiral Vane → the real enemy, then everyone teams up. Tilly kept. One-line fix to the Factions Navy row to match. Sent to Ross.

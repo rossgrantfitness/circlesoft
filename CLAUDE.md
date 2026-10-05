@@ -22,6 +22,11 @@ Then wait. After Ross approves, the Producer logs it in docs/decisions.md with t
 - Never bury a decision inside a long report. Decisions go at the top.
 - Document work as it happens and show it to Ross while it's in progress: keep docs/studio_log.md current (newest at the top) and share work-in-progress files, not just finished results.
 
+## Ross's Playbook and autonomy
+- docs/ross_playbook.md records Ross's taste: his decisions, his feedback in his own words, and the principles distilled from them. Every agent reads its Principles before any creative or design work.
+- After every Ross decision or piece of feedback, the Taste Keeper logs it in the Playbook and updates the Principles. Before Ross decides something, the Taste Keeper records a prediction of his choice.
+- The Playbook's Autonomy ledger says how much the studio may decide on its own in each area (Level 0–3). Only Ross changes a level. Everything starts at Level 0: Ross decides.
+
 ## Art and audio
 - Ross makes the final art. Agents may make simple placeholder art (colored shapes, labeled boxes, basic low-poly blockouts) in game/art/placeholder/ only.
 - When the game needs an art asset, add it to docs/art_requests.md with: name, what it's for, size/resolution, poly budget if 3D, palette notes, file format, and where it goes in the project.
