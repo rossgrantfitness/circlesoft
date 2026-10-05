@@ -4,6 +4,7 @@
 
 ## 2026-10-05
 
+- **Story bible: Logline and World & history drafted** by the Creative Director (marked DRAFT in docs/story_bible.md). Sent to Ross for approval.
 - **Technical Director's game-separation options sent to Ross:** A) keep circlesoft as the studio's master copy and make a new `lights-left-on` repository from it (recommended); B) one repository with a folder per game; C) rename this repository to the game. Creative Director still drafting Logline and World & history.
 - **Ross chose LIGHTS LEFT ON.** Logged in decisions.md. Now: the Technical Director is drafting options for keeping each game separate, and the Creative Director is drafting the first story bible sections (Logline, World & history) for Ross's approval.
 - **Pitch round 3 started.** Ross passed on round 2. New main idea: a classic hero's journey where, midway, the heroes learn they aren't the first and the cycle has repeated forever, and they're the ones who break it. Death and rebirth stay unspoken themes, not mechanics. Brief in docs/pitches/round_3.md (Ross added: the game is at least partly set in space). Creative Director drafted Lights Left On (CD's pick), The Last Crown, and Dimstar. Technical Director and Producer notes added. Sent to Ross for sign-off.
