@@ -4,6 +4,7 @@
 
 ## 2026-10-05
 
+- **Ross sent back the Villains:** wants the shounen ladder: three charismatic lieutenants guard Vane; beat them, beat Vane, then an intergalactic god is revealed as the real enemy and all former foes join the party. Tilly stays. Logged. Creative Director is reworking the Villains.
 - **Villains drafted:** Admiral Sarrow Vane (white lion), Sergeant Kasp (wombat, slice boss), Tilly Ransome (mouse bounty hunter, recurring rival). Sent to Ross for approval.
 - **Main cast approved.** Ross renamed the hero **Red** and changed Vela to a **bunny**; edits made directly. Creative Director now drafting the Villains.
 - **Recast drafted:** Tally Kincaid (silent hero, mutt pup), Otis Kettle (brown bear tank), Vela Quist (chinchilla healer). Mox and Ruo kept as approved. Hero and healer names swapped into the approved Logline, World & history and Factions for Ross's OK. Sent to Ross.
