@@ -19,7 +19,7 @@ How much the studio may decide on its own, area by area. **Only Ross changes a l
 
 | Area | Level | Since | Prediction record (last 10) |
 |---|---|---|---|
-| Story & structure | 0 | 2026-10-05 | not started |
+| Story & structure | 0 | 2026-10-05 | 0 of 1 (R14 miss). No raise: far below 8 of 10. |
 | Tone & humor | 0 | 2026-10-05 | not started |
 | Characters (personality, names) | 0 | 2026-10-05 | not started |
 | Character look & species | 0 | 2026-10-05 | not started |
@@ -38,10 +38,11 @@ Distilled from the Feedback Log. Each cites its source entries (F#). Newest evid
 
 ### Story & structure
 - **Classic JRPG hero's journey over high-concept premises.** A hero, a call to adventure, a party gathered on the road, a world to save. The high-concept round 2 pitches were all rejected for this. (F6, F7)
-- **The signature twist: the heroes aren't the first.** It's all happened before, over and over, and our heroes are the ones who break the cycle. It lands in the middle of the game, followed by a huge climax. (F7)
+- **The signature twist: the heroes aren't the first.** It's all happened before, over and over, and our heroes are the ones who break the cycle. He asked for it "in the middle of the game, followed by a huge climax" (F7), but then approved an outline with it about 7 of 10 hours in (F19, newer), so the exact timing is not a hard rule. (F7, F19)
 - **Escalating scale is non-negotiable:** on foot → big robot → giant robot → giant spaceship → intergalactic god. More robots and spaceships, not fewer: round 1 was rejected partly for not delivering this. (F2, F3; carried into F7 per decisions.md)
 - **Space, at least partly.** Not one planet that reaches space only at the end. (F8)
 - **Shounen ladder:** the big villain is guarded by charismatic lieutenants; beat them, beat him, then reveal a greater evil, and all former foes join the heroes. (F16)
+- **Once he has shaped the structure himself, he accepts what follows from it.** The three-act outline was approved in one word, with the twist at about 7 hours in (not "in the middle", F7), a 3-hour Act 1 on Harrow (F8), and the "lights out" ending all flagged and all left alone. Don't expect him to reopen the consequences of structure he already set (cast F13-F15, villain ladder F16-F17). Early evidence (one data point): treat the "twist in the middle" and "space at least partly" lines as loose intent, not hard timing rules, unless he raises them again. Still check that a draft really is built from his own choices; new studio inventions still get tweaked. (F19, R14)
 - **Death and rebirth are themes, never mechanics, and never said out loud.** Understated, left for players to interpret. (F7)
 - **Touchstones:** Gurren Lagann, The Matrix Reloaded, Dark Souls, Buddhist rebirth; FF7, MGS1, Fallout 3, Chrono Trigger, Chrono Cross, FF8, FF9, FFX, DQ7. Long cutscenes. Look of Mega Man Legends / Fear Effect. Inspired by, never copied. (F2)
 
@@ -64,7 +65,7 @@ Distilled from the Feedback Log. Each cites its source entries (F#). Newest evid
 ### Studio process
 - **Show the work as it happens,** in plain language, with decisions at the top. (F4)
 - **Momentum: he approves in a few words and expects work to carry on.** "go option a", then "option a now proceed with the acts." Don't stall after an approval; start the next step. (F1, F18)
-- **Studio recommendations on process and setup have all been taken (4 of 4). On creative drafts, "approve as drafted" is usually sent back or tweaked (R3, R4, R8, R9, R11 misses; R7, R10, R12 partial).** So for creative work, expect changes, and don't present a draft as nearly final. (R1-R13)
+- **Studio recommendations on process and setup have all been taken (4 of 4). On creative drafts, "approve as drafted" is usually sent back or tweaked (R3, R4, R8, R9, R11 misses; R7, R10, R12 partial).** So for creative work, expect changes, and don't present a draft as nearly final. First exception: the act outlines (R14) were approved untouched in one word, because they were built from structure he had already set (F19). Still too early to call that a pattern. (R1-R14)
 - **Keep games separate:** circlesoft is the studio's master copy; each game gets its own repository. (F10)
 - **How Ross gives feedback:** fast and blunt. He rejects at the *premise* level when a concept is off (round 1 and 2 pitches, the too-serious factions), and tweaks at the *detail* level (a species, a name) when the concept is right. When he tweaks, apply exactly what he said and don't reinterpret. (F3, F6, F7, F11, F13, F15, F17)
 
@@ -90,7 +91,7 @@ Studio recommendations vs. Ross's actual choice, used to calibrate. From now on,
 | R11 | 2026-10-05 | Villains | Approve as drafted | Rework: shounen ladder | ❌ | Ross thinks in anime structures. |
 | R12 | 2026-10-05 | Villain rework | Approve | Approved with species swaps | ⚠️ | Ross has specific animals in mind; offer species choices. |
 | R13 | 2026-10-05 | Taste Keeper model | A: hire on Sonnet | A | ✅ | Low-stakes process call; he took the recommendation and said go. |
-| R14 | 2026-10-05 | Act 1/2/3 outlines | Approve as drafted | | | **PREDICTION (confidence: medium, recorded before Ross saw it):** Approve with changes, not a full send-back, since the outlines follow his approved cast, ladder and goofy tone. Most likely pushes: (1) the twist and big reveal land at the end of Act 2, about 7 of 10 hours in, and he asked for the twist "in the middle" (F7); (2) Act 1 is about 3 hours entirely on Harrow, and he wants space "at least partially" and a faster climb (F8, F2, F3); (3) a possible tone or theme note, either the Act 3 "lights out" ending and the Tilly/Vela/Kasp comic business being too soft or too pointed against "unspoken, understated" (F7), or the heavy fanfare and redeemed-villain beats needing more shounen punch (F16). Based on: creative drafts are usually tweaked (R3-R12). |
+| R14 | 2026-10-05 | Act 1/2/3 outlines | Approve as drafted | Approved as drafted, no changes ("approved", F19), even after seeing the studio's three flags | ❌ miss (predicted approve-with-changes) | **LESSON:** I expected pushback on the twist timing, the 3-hour Act 1 on Harrow, and the "lights out" ending. He took all three as they were. Likely reason: he had already shaped the structure himself (cast, villain ladder), so the outlines were just those choices laid out in order, and he accepted the consequences (twist ~7 h in, not "in the middle") instead of reopening them. One data point only: I may also have over-weighted his old "twist in the middle" and "space at least partly" lines. Next time, ask whether a draft is mostly his own approved choices stacked together (expect a quick yes) or new material from the studio (expect changes). **PREDICTION (confidence: medium, recorded before Ross saw it):** Approve with changes, not a full send-back, since the outlines follow his approved cast, ladder and goofy tone. Most likely pushes: (1) the twist and big reveal land at the end of Act 2, about 7 of 10 hours in, and he asked for the twist "in the middle" (F7); (2) Act 1 is about 3 hours entirely on Harrow, and he wants space "at least partially" and a faster climb (F8, F2, F3); (3) a possible tone or theme note, either the Act 3 "lights out" ending and the Tilly/Vela/Kasp comic business being too soft or too pointed against "unspoken, understated" (F7), or the heavy fanfare and redeemed-villain beats needing more shounen punch (F16). Based on: creative drafts are usually tweaked (R3-R12). |
 
 ---
 
@@ -120,3 +121,4 @@ Ross's words, verbatim where possible, newest at the bottom.
 | F16 | 2026-10-05 | Villains draft | "follow a shounen anime trope and have the admiral be guarded by his 3 lieutenants and they are all charismatic in their own way and once you have beaten the 3 then you get to face the admiral but after you defeat him, oh no, the real enemy is an intergalactic god and all your former foes join you to conquer a greater evil - you can keep the rival too" |
 | F17 | 2026-10-05 | Villain rework | "kasp - beaver, brunt - rhino, calloway - heron, sorrell - hyena (make it a female), vane - lion" · Asked for this Playbook so the studio can work more autonomously over time. |
 | F18 | 2026-10-05 | Taste Keeper proposal (A: hire on Sonnet; B: Opus; studio recommended A) | "option a now proceed with the acts" |
+| F19 | 2026-10-05 | Act 1/2/3 outlines, with the studio's three flags (twist lands ~7 h in vs "in the middle"; Act 1 is ~3 h on Harrow before space; the "lights out" ending may be too pointed) | "approved" (no changes; approved the full three-act structure as drafted, flags and all) |
