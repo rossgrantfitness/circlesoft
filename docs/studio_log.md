@@ -5,7 +5,7 @@
 ## 2026-10-05
 
 - **Ross clarified the characters:** every protagonist IS an anime anthropomorphic chibi animal. The writing treats them like people and never leans on them being animals. Sent to the Creative Director mid-draft and logged in decisions.md.
-- **Round 2 pitches drafted** by the Creative Director: Ironwood, Five Funerals (CD's pick), The Long Appeal. Technical Director (build difficulty) and Producer (art load) reviewing now.
+- **Round 2 pitches drafted** by the Creative Director: Ironwood, Five Funerals (CD's pick), The Long Appeal. Technical Director (build difficulty) and Producer (art load) notes added. Sent to Ross for sign-off.
 - **Pitch round 2 started.** Ross passed on all three round-1 pitches and gave a new direction: a climb from on foot to big robot to giant robot to giant spaceship to intergalactic god; sci-fi with fantasy and animal anime touches; humanoid characters; a full party. The brief is written up in docs/pitches/round_2.md. Round 1 is archived in docs/pitches/round_1.md.
 - **New studio rule from Ross:** document the work and show it as it happens. Added to CLAUDE.md under "Talking to Ross". This log is where that happens.
 - **Pitch round 1 presented:** Ninth Life, Down to the Stars, Hungry Ghosts. Rejected.

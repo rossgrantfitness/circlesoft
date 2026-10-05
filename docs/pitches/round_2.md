@@ -1,6 +1,6 @@
 # Pitch Round 2
 
-> Status: **IN PROGRESS** · Creative Director done · Technical Director and Producer reviewing · then to Ross for sign-off.
+> Status: **WAITING ON ROSS** · Creative Director, Technical Director and Producer done · Ross to pick one (or mix them).
 
 ## Ross's brief (2026-10-05)
 
@@ -39,6 +39,8 @@ All three: every character is a chibi anthro animal (big head, small body, expre
 **Twist (kind):** The seeds weren't gifts. Someone planted them for a reason, and Juni's isn't the first one to grow.
 **Vertical slice:** Town is Saltgrass Terrace, a terraced orchard village under a cracked dome during harvest festival. Dungeon is the Thresher, a crashed harvester walker in the orchards where raiders have taken the seed. Boss is Foreman Gall, a raider in an armored loader. Mid-fight the seed sprouts and Sprig stands up for the final blow, the first taste of the robot.
 **Stays original:** Growth comes from tending, grafting and seasons, not willpower energy. Roots, not drills. The seed is a shrine heirloom, not a buried find. No combining, and no mentor death.
+**🔧 Technical Director: Hard.** The slice is Medium, but the full game is Hard. The trickiest piece is running two battles at once (the robot's fight and the party's fight on its body) and having each one affect the other. To de-risk it, make the robot's side a simple power meter that the party's actions fill.
+**🎨 Producer (slice art): Medium.** About 4 cast chibis plus 4–6 villagers and raiders, 4 portraits, 3–4 raider and machine enemies, the boss Foreman Gall in an armored loader, 1 robot (Sprig, plus the seed), and 2 sets (the festival orchard town under a dome, the crashed harvester dungeon). Unusual: the sprouting cutscene in the middle of the boss fight.
 
 ### Pitch B: FIVE FUNERALS (alt: WAKE UP BIGGER)
 **Logline:** On a mining moon where the dead keep working inside machines, a courier dies and wakes up as a robot. Her mind won't fade like everyone else's. It keeps growing, and every body she's given gets too small.
@@ -58,6 +60,8 @@ All three: every character is a chibi anthro animal (big head, small body, expre
 **Twist (kind):** Every body Seri wakes up in was built before she died, and someone is already building the next one.
 **Vertical slice:** Town is Low Haven Shaft 4, a mining town of dead-run machines and lantern shrines. Dungeon is the Echo Kiln, the transfer plant, overrun after a core breach. Boss is the Unclaimed, a scrap giant made of minds nobody came to collect. Seri dies in the fight, and the slice ends with her first funeral, then she wakes as the loader-frame and finishes the boss in one big robot turn.
 **Stays original:** The robot isn't found or piloted, she becomes it. The one who dies is the hero, on screen, every act, not a mentor. No drills, no energy motif, no combining.
+**🔧 Technical Director: Medium.** The slice is Easy (a normal battle with one scripted robot turn). The full game is Hard, because battles change shape every act (giant ally, then stations, then ship defense). To de-risk it, build one battle system where each of Seri's bodies is just a data file listing its moves.
+**🎨 Producer (slice art): Heavy.** About 4 cast chibis (Seri needs alive and robot versions), 4–5 portraits, NPCs that are working machines (crane, tram), 3–4 enemies, a large, complex scrap-giant boss, 1 robot (the loader-frame), and 2–3 sets (mining town, transfer plant, funeral). Unusual: death and funeral cutscenes.
 
 ### Pitch C: THE LONG APPEAL (alt: ORDEAL OF STARS)
 **Logline:** A condemned thief is executed in the opening scene and revived for her appeal. She fights her case up through every court in the galaxy, each with bigger champions, until she stands before the god who judges them all.
@@ -77,6 +81,8 @@ All three: every character is a chibi anthro animal (big head, small body, expre
 **Twist (kind):** Calla is guilty, just not of the crime on the charge sheet, and the god on the bench knows exactly what she did.
 **Vertical slice:** Town is Penance Row, a rainy court district where every street corner is a tribunal. Dungeon is the Evidence Vault, broken into the night before the appeal to steal back proof. Boss is the magistrate's champion, Bailiff Corvane, in the first Ordeal. Calla wins on foot, and the slice ends with her first District hearing in Exhibit B.
 **Stays original:** The robots are court-assigned champions, not dug up or stolen. The escalation is legal appeals. No drills, no energy motif, no combining, no mentor death.
+**🔧 Technical Director: Easy.** The simplest of the three, slice and full game. The trickiest piece is Motions, where any skill can rewrite any fight rule without breaking something. To de-risk it, keep a fixed short list of rule types in data files and test every combination automatically. The bigger fights are mostly bigger art on the same system.
+**🎨 Producer (slice art): Medium, the lightest of the three.** About 4 cast chibis plus the magistrate, 5 portraits, 3–4 bailiff and guard enemies, a regular-size chibi boss (Bailiff Corvane), 1 robot used only at the end (Exhibit B), and 2–3 sets (rainy court district, evidence vault, Ordeal arena). Unusual: an execution cutscene and rain effects.
 
 ### Creative Director's recommendation
 FIVE FUNERALS. It builds Ross's death-and-rebirth theme into the climb itself, and a slice that ends with the hero's funeral and her waking up as a robot is a hook players won't forget. It's also the hardest to build, so if the Technical Director flags the body-switching as too risky, THE LONG APPEAL is the best fallback for style and tone.
