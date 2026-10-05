@@ -12,6 +12,7 @@
 - **An unexpected twist in the middle:** the cycle reveal above.
 - **A huge climax.**
 - **The climb in scale:** on foot → big robot → giant robot → giant spaceship → intergalactic god.
+- **Space!** The game takes place in space, at least partly: planets, moons, stations, starships, travel between worlds. Not a single planet that only reaches space at the very end.
 
 ### Theme
 - **Death and rebirth are themes, not gameplay systems.** No dying-as-a-mechanic, no rebirth rules, no retry gimmicks.
