@@ -5,6 +5,7 @@
 
 | Date | Decision | Options considered | Why |
 |---|---|---|---|
+| 2026-10-05 | **Act 1, 2 and 3 outlines approved** as drafted (Act 1 ≈ 3 h on Harrow, slice = beats 1–4; Act 2 ≈ 4 h across the Marches, ends with Vane's defeat + the reveal; Act 3 ≈ 3 h team-up, final battle, lights out). Flags raised (twist lands ~7 h in; long Act 1 before space; pointed ending) were noted, and Ross approved without changes. | Approve / approve with changes / redo | Approved as drafted. |
 | 2026-10-05 | **Taste Keeper hired** (Sonnet) and **Ross's Playbook** adopted, with autonomy levels 0–3 per area (all start at Level 0). Rule added to CLAUDE.md. | A: Sonnet · B: Opus | Logging and distilling don't need the top model; upgrade later if predictions are weak. |
 | 2026-10-05 | **Villains approved with species changes:** Vane = lion (kept), Kasp = **beaver**, Lt. Brunt = **rhino**, Lt. Calloway = **heron**, Lt. Sorrell = **hyena, now female**. Ladder structure, the Overture, and Tilly (mouse) approved. Factions Navy-row fix approved. | Draft villain rework | Ross's picks. |
 | 2026-10-05 | **Species rule amended:** the easy-to-animate rule (no tusks, long necks or legs, wings, beaks, horns) applies strictly to the **party**; villains and other characters may break it **only by Ross's explicit choice** (currently the rhino and the heron). | Strict for all / party only | Party members are on screen constantly; villains appear in fewer scenes. Ross chose a rhino and a heron for lieutenants. |

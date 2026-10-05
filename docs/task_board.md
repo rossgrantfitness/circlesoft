@@ -5,14 +5,14 @@
 ## To Do
 | Task | Assigned to | Depends on | Notes |
 |---|---|---|---|
-| Story bible for the vertical slice, remaining sections one at a time | Creative Director drafts, Ross approves each | Pitch chosen ✅ | Next after the act outlines: THE TWIST (restricted), twist clues, glossary. |
+| Story bible for the vertical slice, remaining sections one at a time | Creative Director drafts, Ross approves each | Pitch chosen ✅ | Next after the twist: Glossary. Then the design doc. |
 | Design doc for the vertical slice, one section at a time | Creative Director drafts, Ross approves each | Story bible underway | |
 | Steam/trademark check on the title "Lights Left On" | Producer | | Working title until checked. |
 
 ## In Progress
 | Task | Assigned to | Started | Notes |
 |---|---|---|---|
-| Story bible: Act 1 / 2 / 3 outlines | Creative Director drafts, Ross approves | 2026-10-05 | Drafting. |
+| Story bible: THE TWIST + twist clues (restricted) | Creative Director drafts, Ross approves | 2026-10-05 | Act outlines approved. |
 | Set up the lights-left-on repository | Ross (GitHub clicks), then studio floor moves game files over | 2026-10-05 | Merge PR #1 → mark circlesoft as template → create lights-left-on from it. |
 
 ## Done
@@ -24,6 +24,7 @@
 | Story bible: Main cast | Creative Director | 2026-10-05 | Approved: Red, Otis, Mox, Vela (bunny), Ruo. |
 | Story bible: Villains | Creative Director | 2026-10-05 | Approved: the ladder, the Overture, Vane, Kasp, Tilly; species per Ross. |
 | Taste Keeper hired, Ross's Playbook adopted | Studio floor | 2026-10-05 | All areas at autonomy Level 0. |
+| Story bible: Act 1 / 2 / 3 outlines | Creative Director | 2026-10-05 | Approved as drafted. |
 | Decide how to keep games separate | Technical Director, Ross | 2026-10-05 | Separate repository per game. |
 
 ## Later

@@ -187,7 +187,7 @@ Nobody gets to the Admiral without getting through his opening acts first, and V
   - *"Nothing personal, Red. I've brought back every answerer who ever tried the Rim. You're just the first one I liked."*
 
 ## Act 1 outline
-> 🟡 DRAFT: awaiting Ross's approval
+> ✅ APPROVED by Ross, 2026-10-05
 
 Beats 1–4 marked **[SLICE]** are the vertical slice: Harrow Landing, the Old Relay Tower, Sgt. Kasp, party Red/Otis/Mox, all on foot, about 30 minutes.
 
@@ -208,7 +208,7 @@ Beats 1–4 marked **[SLICE]** are the vertical slice: Harrow Landing, the Old R
 **Approx. length:** About 3 hours (the slice is about 30 minutes of it).
 
 ## Act 2 outline
-> 🟡 DRAFT: awaiting Ross's approval
+> ✅ APPROVED by Ross, 2026-10-05
 
 1. **Wobble Station.** *Scale: on foot.* The freighter drops the crew at a ring station that has spun slightly wrong for forty years, and the only captain crazy enough to fly for the Rim is Ruo Vantell. He runs a dockside getaway with them through a Navy sweep (and through Tilly, which restarts their feud at full volume), scores it a seven, and signs on with the *Low Profile* "strictly for the fee."
 2. **Moon-hopping.** *Scale: on foot / big robot.* The *Low Profile* hops the jump lanes moon to moon, lane-songs at every jump and Biscuit in the hold, while the crew busts up Signals jammer crews and Vela compares her notes on the call with each moon's Tenders' old records (clue; see RESTRICTED section). Moon by moon the Marchfolk come over, and every barfly's version of Red is a little taller.
@@ -230,7 +230,7 @@ Beats 1–4 marked **[SLICE]** are the vertical slice: Harrow Landing, the Old R
 _Note for Ross: the pitch saved Red's mom's ship for Act 3, but the approved villain ladder has Vane's flagship fight the party's giant spaceship at the end of Act 2, so the crew claims her ship just before that fight._
 
 ## Act 3 outline
-> 🟡 DRAFT: awaiting Ross's approval
+> ✅ APPROVED by Ross, 2026-10-05
 
 1. **The first to cross.** *Scale: on foot.* The crew falls back to the Rim, and Brunt arrives with every grunt who will follow her (all of them) and her trophy cup, the first foe to cross over: a debt is a debt, and a rematch needs both fighters standing. Sorrell offers Red her rapier hilt-first and, for the first time in the game, has no quotation ready.
 2. **The Admiral's encore.** *Scale: giant spaceship.* Vane crawls out of the *Magnificent*'s wreck, absolutely furious about being upstaged, and offers what's left of his fleet for reasons that are about ninety percent vanity. He cues his fanfare, shouts "Fleet! Follow the coat!", then steps aside for Red: "After you. Do not get used to it."
