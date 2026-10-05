@@ -4,6 +4,7 @@
 
 ## 2026-10-05
 
+- **Ross chose LIGHTS LEFT ON.** Logged in decisions.md. Now: the Technical Director is drafting options for keeping each game separate, and the Creative Director is drafting the first story bible sections (Logline, World & history) for Ross's approval.
 - **Pitch round 3 started.** Ross passed on round 2. New main idea: a classic hero's journey where, midway, the heroes learn they aren't the first and the cycle has repeated forever, and they're the ones who break it. Death and rebirth stay unspoken themes, not mechanics. Brief in docs/pitches/round_3.md (Ross added: the game is at least partly set in space). Creative Director drafted Lights Left On (CD's pick), The Last Crown, and Dimstar. Technical Director and Producer notes added. Sent to Ross for sign-off.
 - **Round 2 rejected** and logged.
 - **Ross clarified the characters:** every protagonist IS an anime anthropomorphic chibi animal. The writing treats them like people and never leans on them being animals. Sent to the Creative Director mid-draft and logged in decisions.md.

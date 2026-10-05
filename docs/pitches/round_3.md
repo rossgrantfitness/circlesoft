@@ -1,6 +1,6 @@
 # Pitch Round 3
 
-> Status: **WAITING ON ROSS** · Creative Director, Technical Director and Producer done · Ross to pick one (or mix them).
+> Status: **DECIDED 2026-10-05** · Ross chose **Pitch A: LIGHTS LEFT ON**.
 
 ## Ross's brief (2026-10-05)
 

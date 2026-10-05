@@ -5,18 +5,20 @@
 ## To Do
 | Task | Assigned to | Depends on | Notes |
 |---|---|---|---|
-| Phase 5 pitch meeting: three pitches for Ross | Creative Director, Technical Director, Producer | Ross's input | |
-| Decide how to keep each game separate (separate fork, new repository, or branch) | Technical Director proposes, Ross decides | Ross picks a pitch | Ross's request: raise this at the pitch decision. |
+| Story bible for the vertical slice, one section at a time | Creative Director drafts, Ross approves each | Pitch chosen ✅ | Starting with Logline and World & history. |
+| Design doc for the vertical slice, one section at a time | Creative Director drafts, Ross approves each | Story bible underway | |
+| Steam/trademark check on the title "Lights Left On" | Producer | | Working title until checked. |
 
 ## In Progress
 | Task | Assigned to | Started | Notes |
 |---|---|---|---|
-| | | | |
+| Options for keeping each game separate (fork, new repository, or folder) | Technical Director proposes, Ross decides | 2026-10-05 | Ross's request at the pitch decision. |
 
 ## Done
 | Task | Done by | Finished | Notes |
 |---|---|---|---|
-| | | | |
+| Studio setup (Phases 0–4) | Studio floor | 2026-10-05 | Waiting on Ross to merge pull request #1. |
+| Pitch meeting (3 rounds) | Creative Director, Technical Director, Producer | 2026-10-05 | Ross chose Lights Left On. |
 
 ## Later
 _Ideas beyond the vertical slice. Not to be built until Ross approves the slice._
