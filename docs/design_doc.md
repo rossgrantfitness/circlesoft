@@ -764,7 +764,7 @@ Party: Red + any 2 of the five. Guests take a field spot for their own mission (
 - **Where your art time goes:** Act 2 is about half of it (Slipway Prime, the Navy hull kit, the titan, the *Supper's On*). The hull kit pays for itself three times: Act 2's Navy, the blockade wreck, and the Quiet.
 
 ## Vertical slice scope
-> 🟡 DRAFT: awaiting Ross's approval
+> ✅ APPROVED by Ross, 2026-10-06. Builds for Windows and Mac.
 
 **The slice in one paragraph:** Night on Harrow Landing. Red does her lamp check, takes a courier job to the Old Relay Tower and wades into Kasp's crew at the docks; Otis joins. On the road her delivery crate starts bragging: Mox is in. Watch Zero's old-timers show the back way in, and the crew climbs about 5 floors of fights, Clutch lessons and light puzzles while the call gets louder. At the top: Kasp in the Hushmaster. In the wreck Red finds the beacon part, hears the call clearly, and holds it up to her window lamp. About 30 minutes, no filler.
 
