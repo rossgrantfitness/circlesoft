@@ -716,7 +716,7 @@ func _draw_tag(origin: Vector2i) -> void:
 	_overlay.draw_rect(Rect2(rect.grow(-1)), _accent)
 	var luminance: float = _accent.get_luminance()
 	var text_color: Color = ink if luminance > 0.33 else _palette["chalk"]
-	var baseline: float = float(rect.position.y + 1) + float((tag_h - 2 - _font_tag_size) / 2) + float(_font_tag_size)
+	var baseline: float = float(rect.position.y) + float(tag_h) / 2.0 + float(_font_tag_size) * 0.36
 	var tag_at: Vector2 = Vector2(rect.position.x + int(bub["tag_pad_x"]), baseline)
 	if luminance > 0.33:
 		_overlay.draw_string(_font_tag, tag_at, _name_text, HORIZONTAL_ALIGNMENT_LEFT, -1, _font_tag_size, text_color)

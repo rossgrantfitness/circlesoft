@@ -165,7 +165,7 @@ Each signature move uses Clutch in its own way.
 - **Wobbly:** hits a random target, sometimes a friend.
 - **Tangled:** stuck in a net or cable; skips turns until it wears off.
 - **Butterfingers:** timing windows get smaller.
-- **Fired Up** (a good one): hits harder and timing windows get bigger. Red's up-ear perks all the way up.
+- **Fired Up** (a good one): hits harder and timing windows get bigger. Red's ears perk straight up and her curled tail wags.
 - **Down for the Count:** knocked out at 0 HP. Bring them back with an item or skill.
 
 ### Enemies and bosses

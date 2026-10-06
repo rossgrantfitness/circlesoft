@@ -72,8 +72,24 @@ func _setup_talking() -> void:
 
 
 func _exit_tree() -> void:
-	# The UI lives on the shared stage, so it has to be taken down with the room.
+	# The UI lives on the shared stage, so it has to be taken down with the room: a bubble or the
+	# menu left behind would keep the "busy" lock on for good.
+	if runner != null and is_instance_valid(runner):
+		runner.stop()
+	var tree: SceneTree = get_tree()
+	if tree == null:
+		return
+	var stage: UiStage = tree.get_first_node_in_group(UiStage.GROUP) as UiStage
+	if stage != null:
+		for child: Node in stage.get_stage_root().get_children():
+			if child is SpeechBubble:
+				_drop_from_stage(child)
 	if field_menu != null and is_instance_valid(field_menu):
-		field_menu.queue_free()
+		_drop_from_stage(field_menu)
 	if prompt != null and is_instance_valid(prompt):
 		prompt.queue_free()
+
+
+static func _drop_from_stage(node: Node) -> void:
+	node.remove_from_group(UiStage.MODAL_GROUP)
+	node.queue_free()

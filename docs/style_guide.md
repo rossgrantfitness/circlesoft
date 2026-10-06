@@ -219,7 +219,7 @@ That is about 17 clips for Otis and Mox and 22 for Red. Wave 1 first; later wave
 *For dialogue and menus. Subject to Decision 2 (this section assumes Option A).*
 - **Size:** **96×96 pixels**, one PNG per expression, transparent background (1-bit cut-out edges).
 - **Style:** 2D **anime**: big expressive eyes, simple clean line, 2 to 3 shades per area, a dithered shadow. **32 colors max** per character set, taken from the master palette plus that character's own colors.
-- **Framing:** head and shoulders, turned about a quarter toward the dialogue. Eyes sit on the same line (about 40% down) in every expression so swapping looks smooth. Leave **6 pixels above the head** for ears and hats (Red's up-ear needs it).
+- **Framing:** head and shoulders, turned about a quarter toward the dialogue. Eyes sit on the same line (about 40% down) in every expression so swapping looks smooth. Leave **6 pixels above the head** for ears and hats (Red's pointy ears need it).
 - **Safe face box:** keep eyes and mouth inside the middle **64×48** of the portrait. The menus and the turn-order and party panels crop that box, so nothing needs re-drawing.
 - **How to draw:** one shared body and hair layer, plus one layer per face. Only the eyes, brows, mouth and ears change between expressions. Export one PNG per expression.
 - **Expressions (slice):**

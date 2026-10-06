@@ -28,7 +28,7 @@
   "text_shadow": {
     "_note": "The reusable text style: every label and drawn string gets this drop shadow, down and right. on_light is used for dark text on the chalk speech bubble.",
     "color": "#0B0A14",
-    "on_light": "#B9B39A",
+    "on_light": "#D3CDB7",
     "offset_x": 1,
     "offset_y": 1
   },

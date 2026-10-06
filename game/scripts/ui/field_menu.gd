@@ -133,9 +133,9 @@ func _build() -> void:
 	for id: String in _command_ids:
 		rows.append({"id": id, "label": str(commands[id]["label"])})
 	_main_list.set_items(rows)
-	_place_label = _make_label(_place_window, "menu", "text_dim", Vector2(10, 7))
+	_place_label = _make_label(_place_window, "menu", "text_dim", Vector2(10, 1))
 	_place_label.text = str(_text["place"]["title"])
-	var place_name: Label = _make_label(_place_window, "menu", "text", Vector2(10, 19))
+	var place_name: Label = _make_label(_place_window, "menu", "text", Vector2(10, 13))
 	place_name.text = str(_text["place"]["name"])
 	_info_label = _make_label(_info_window, "body", "text", Vector2(10, 6))
 	_info_label.size = Vector2(float(_layout["info_window"]["w"]) - 20.0, 24.0)
