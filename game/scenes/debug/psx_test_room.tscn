@@ -5,6 +5,7 @@
 [ext_resource type="Shader" path="res://shaders/psx_unlit.gdshader" id="3_unlit"]
 [ext_resource type="Shader" path="res://shaders/psx_fade.gdshader" id="4_fade"]
 [ext_resource type="Texture2D" path="res://art/placeholder/textures/checker_64.png" id="5_tex64"]
+[ext_resource type="Texture2D" path="res://art/placeholder/textures/checker_128.png" id="8_tex128"]
 [ext_resource type="Texture2D" path="res://art/placeholder/textures/checker_256.png" id="6_tex256"]
 [ext_resource type="Texture2D" path="res://art/placeholder/textures/wall_128.png" id="7_wall"]
 
@@ -12,7 +13,7 @@
 background_mode = 1
 background_color = Color(0.12156863, 0.14509805, 0.2509804, 1)
 ambient_light_source = 2
-ambient_light_color = Color(0.45, 0.45, 0.7, 1)
+ambient_light_color = Color(0.7, 0.7, 0.95, 1)
 
 [sub_resource type="ShaderMaterial" id="Mat_floor"]
 shader = ExtResource("2_lit")
@@ -40,18 +41,18 @@ shader_parameter/affine_amount = 1.0
 
 [sub_resource type="ShaderMaterial" id="Mat_pillar"]
 shader = ExtResource("4_fade")
-shader_parameter/albedo_texture = ExtResource("5_tex64")
+shader_parameter/albedo_texture = ExtResource("8_tex128")
 shader_parameter/uv_scale = Vector2(1, 4)
 shader_parameter/albedo_tint = Color(0.85, 0.65, 0.3, 1)
 
 [sub_resource type="ShaderMaterial" id="Mat_crate"]
 shader = ExtResource("2_lit")
-shader_parameter/albedo_texture = ExtResource("5_tex64")
+shader_parameter/albedo_texture = ExtResource("8_tex128")
 shader_parameter/albedo_tint = Color(0.8, 0.5, 0.35, 1)
 
 [sub_resource type="ShaderMaterial" id="Mat_lamp_post"]
 shader = ExtResource("2_lit")
-shader_parameter/albedo_texture = ExtResource("5_tex64")
+shader_parameter/albedo_texture = ExtResource("8_tex128")
 shader_parameter/uv_scale = Vector2(1, 3)
 shader_parameter/albedo_tint = Color(0.85, 0.64, 0.25, 1)
 
@@ -116,9 +117,9 @@ size = Vector3(0.8, 4, 0.8)
 [node name="RoomLook" type="Node" parent="."]
 script = ExtResource("1_look")
 fog_color = Color(0.12156863, 0.14509805, 0.2509804, 1)
-fog_near = 17.0
-fog_far = 27.0
-ambient_color = Color(0.45, 0.45, 0.7, 1)
+fog_near = 14.0
+fog_far = 22.0
+ambient_color = Color(0.7, 0.7, 0.95, 1)
 ambient_energy = 1.0
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
@@ -203,7 +204,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 0.5)
 [node name="CameraRig" type="Node3D" parent="."]
 
 [node name="Camera3D" type="Camera3D" parent="CameraRig"]
-transform = Transform3D(0.819152, -0.383798, 0.42625, 0, 0.743145, 0.669131, -0.573576, -0.54812, 0.608749, 6.8, 10.7, 9.7)
+transform = Transform3D(0.819152, -0.383798, 0.42625, 0, 0.743145, 0.669131, -0.573576, -0.54812, 0.608749, 3.97, 7.5, 5.9)
 fov = 30.0
 near = 0.5
 far = 60.0

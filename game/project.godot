@@ -38,7 +38,11 @@ window/stretch/mode="canvas_items"
 [importer_defaults]
 
 scene={
-"import_script/path": "res://scripts/tools/psx_post_import.gd"
+"animation/fps": 15,
+"import_script/path": "res://scripts/tools/psx_post_import.gd",
+"meshes/create_shadow_meshes": false,
+"meshes/ensure_tangents": false,
+"meshes/generate_lods": false
 }
 texture={
 "compress/mode": 0,

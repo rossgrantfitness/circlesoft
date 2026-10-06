@@ -23,13 +23,13 @@ const PATCH_METAL: Color = Color("6A5B5B")
 
 ## name, size in pixels, cell size in pixels, color A, color B
 const TEXTURES: Array[Dictionary] = [
-	{"name": "checker_64", "size": 64, "cell": 8, "a": DUSK, "b": NIGHT},
+	{"name": "checker_64", "size": 64, "cell": 8, "a": DUSK, "b": DUST},
 	{"name": "checker_128", "size": 128, "cell": 16, "a": SLATE, "b": SLATE_LIGHT},
 	{"name": "checker_256", "size": 256, "cell": 32, "a": DUST, "b": PATCH_METAL},
 	{"name": "wall_128", "size": 128, "cell": 32, "a": SIGNALS_BLUE, "b": SLATE},
 ]
 const GRID_LINE_PX: int = 1
-const MARK_CELLS: int = 1
+const MARK_PX: int = 8 # side of the amber corner mark (or the whole cell if smaller)
 
 
 func _initialize() -> void:
@@ -60,8 +60,8 @@ func _make_checker(spec: Dictionary) -> Image:
 			var color: Color = color_a if (cx + cy) % 2 == 0 else color_b
 			if x % cell < GRID_LINE_PX or y % cell < GRID_LINE_PX:
 				color = INK
-			# Top-left cell: amber mark (flip / rotation check). Center cell edge: chalk.
-			if cx < MARK_CELLS and cy < MARK_CELLS and x % cell >= GRID_LINE_PX and y % cell >= GRID_LINE_PX:
+			# Top-left cell: amber mark (flip / rotation check).
+			if x < mini(MARK_PX, cell) and y < mini(MARK_PX, cell) and x % cell >= GRID_LINE_PX and y % cell >= GRID_LINE_PX:
 				color = LAMP_AMBER if (x + y) % 2 == 0 else BRASS
 			image.set_pixel(x, y, color)
 	# Chalk border so tiling seams are visible when the texture repeats.
