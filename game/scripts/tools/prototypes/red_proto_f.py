@@ -182,7 +182,7 @@ def L(v):
     return LEAN @ Vector(v)
 
 
-TAIL_PTS = [Vector(p) for p in ((0.09, 0.17, 0.25), (0.20, 0.30, 0.31), (0.24, 0.34, 0.47), (0.17, 0.29, 0.63))]
+TAIL_PTS = [Vector(p) for p in ((0.07, 0.16, 0.26), (0.15, 0.285, 0.34), (0.17, 0.32, 0.49), (0.09, 0.26, 0.61))]
 
 JOINTS = {
     "root": ((0, 0, 0), (0, 0, 0.05)),
@@ -334,6 +334,11 @@ def paint_face():
                     near = [img.getpixel((ox + min(max(x + dx, 0), 63), min(max(y + dy, 0), 63))) for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))]
                     if here == cream and any(c in (tawny, tawny_shade) for c in near):
                         img.putpixel((ox + x, y), tawny_shade if y > step_row else tawny)
+        # cream in the shade rows is the warm shade cream, never a cold or grey one
+        for y in range(step_row + 1, FACE_CELL):
+            for x in range(FACE_CELL):
+                if img.getpixel((ox + x, y)) == cream:
+                    img.putpixel((ox + x, y), cream_shade)
         # muzzle cap: cream, nose, mouth
         a0, b0 = P(-MUZZLE_RX * 1.05, mz + MUZZLE_RZ * 1.1)
         a1, b1 = P(MUZZLE_RX * 1.05, mz - MUZZLE_RZ * 1.1)
@@ -342,9 +347,11 @@ def paint_face():
         na1, nb1 = P(0.036, mz + 0.022)
         d.ellipse([na0, nb0, na1, nb1], fill=ink)
         d.rectangle([na0 + 2, nb0 + 1, na0 + 4, nb0 + 1], fill=chalk)
-        d.line([P(0.0, mz + 0.022), P(0.0, mz + 0.0)], fill=ink, width=1)
         if not grin:
-            d.line([P(-0.045, mz + 0.012), P(-0.022, mz - 0.012), P(0.0, mz + 0.0), P(0.022, mz - 0.012), P(0.045, mz + 0.012)], fill=ink, width=2)
+            for k in (-1, 1):                       # two small arcs under the nose: the shiba "w" smile
+                ax0, ay0 = P(min(0.0, 0.055 * k), mz + 0.004)
+                ax1, ay1 = P(max(0.0, 0.055 * k), mz - 0.04)
+                d.arc([ax0, ay0, ax1, ay1], 15, 165, fill=ink, width=2)
         else:
             ma0, mb0 = P(-0.058, mz + 0.0)
             ma1, mb1 = P(0.058, mz - 0.07)
@@ -364,8 +371,8 @@ def paint_face():
             else:
                 pts = [P(ex - 0.035, ez - 0.02), P(ex - 0.015, ez + 0.02), P(ex, ez + 0.032), P(ex + 0.015, ez + 0.02), P(ex + 0.035, ez - 0.02)]
                 d.line(pts, fill=ink, width=3)
-            da0, db0 = P(ex - 0.02, ez + 0.105 + (0.012 if grin else 0.0))
-            da1, db1 = P(ex + 0.02, ez + 0.073 + (0.012 if grin else 0.0))
+            da0, db0 = P(ex - 0.02, ez + 0.09 + (0.012 if grin else 0.0))
+            da1, db1 = P(ex + 0.02, ez + 0.065 + (0.012 if grin else 0.0))
             d.ellipse([da0, db0, da1, db1], fill=cream)
     img.save(FACE_PATH)
 
@@ -435,9 +442,9 @@ def build_body(jacket_probe=None, head_probe_obj=None):
         mid = (a + b) / 2
         direction = (b - a).normalized()
         basis = Vector((0, 0, 1)).rotation_difference(direction).to_matrix().to_4x4()
-        r = 0.078 if i < 2 else 0.074
-        pm.add("tail", SLOT_BODY, "ell", center=tuple(mid), basis=basis, uv=P("tawny"), seg=6, rings=3,
-               radii=(r, r, (b - a).length / 2 + 0.035))
+        r = (0.084, 0.088, 0.078)[i]
+        pm.add("tail", SLOT_BODY, "ell", center=tuple(mid), basis=basis, uv=planar_z("tawny", 0.20, 0.72), seg=6, rings=4,
+               radii=(r, r, (b - a).length / 2 + 0.05))
 
     # Satchel (back right hip) and the chunky brass lamp bulb at the left hip front (on the hips bone).
     pm.add("hips", SLOT_BODY, "box", center=(-0.175, 0.15, 0.30), rot=(0, 0, -8), uv=P("tan"), size=(0.08, 0.15, 0.13))
