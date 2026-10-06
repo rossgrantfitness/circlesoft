@@ -11,11 +11,11 @@ Recommendation: A. The PSX look is deliberately simple, and A means the game run
 
 ## Part 1: For Ross
 
-**What's inside.** The game is built like labeled parts bins. Each system (walking around, talking, battles, menus, saving, sound) has its own folder. Every number and every line of text lives in plain data files, so writers and designers can change a price or a line without touching code. The 3D world draws at a tiny PSX-sized picture and gets blown up with crisp, chunky pixels. Shaders add the wobbly vertices, warped textures and dithering. Menus and portraits draw sharp on top.
+**What's inside.** Each system (walking, talking, battles, menus, saving, sound) has its own folder. Every number and line of text lives in plain data files, so prices and dialogue change without touching code. The 3D world draws at a tiny PSX-sized picture, blown up with crisp chunky pixels and shaders for the wobble, warp and dither. Menus and portraits stay sharp on top.
 
-**Testing with nobody watching.** A robot tester runs every system with no screen at all. It plays thousands of battles four ways: as a perfect player, a decent player, someone who never presses, and Auto-Timing. Then it checks that fights are winnable and the right length. We can also grab screenshots in the cloud to show you work in progress.
+**Testing with nobody watching.** A robot tester runs every system with no screen. It plays thousands of battles as a perfect player, a decent player, a never-presses player and Auto-Timing, and checks that fights are winnable and the right length. We can also grab screenshots in the cloud to show you progress.
 
-**Getting builds.** We export a Windows program and a Mac app and send you a download link. Neither build is signed with a paid certificate at first. On a Mac, double-click it, close the warning, then go to System Settings > Privacy & Security and click "Open Anyway" (only the first time). On Windows, click "More info" > "Run anyway".
+**Getting builds.** You get a download link for a Windows program and a Mac app. Neither is signed at first. On a Mac, double-click it, close the warning, then go to System Settings > Privacy & Security and click "Open Anyway" (first time only). On Windows, click "More info" > "Run anyway".
 
 ---
 
@@ -224,7 +224,7 @@ Red's line: `{"id": "dock_05", "speaker": "red", "gesture": "thumbs_up", "next":
 ```
 
 ### The PSX look (Godot 4)
-- **Low internal resolution:** `scenes/core/psx_screen.tscn` holds a SubViewport (the 3D world) at an internal size such as 320×240, 426×240 or 480×270 (the style guide picks). A TextureRect shows it scaled up with nearest-neighbor filtering, and the post shader runs on that TextureRect.
+- **Low internal resolution:** `scenes/core/psx_screen.tscn` holds a SubViewport (the 3D world) at an internal size such as 384×216 (style guide recommendation), 320×240, 426×240 or 480×270 (the style guide picks). A TextureRect shows it scaled up with nearest-neighbor filtering, and the post shader runs on that TextureRect.
 - **UI and portraits** draw on a CanvasLayer above at full window resolution (base 1280×720, stretch mode `canvas_items`), so text and anime portraits stay sharp.
 - **Shader files (`game/shaders/`):**
   - `psx_common.gdshaderinc`: shared functions. **Vertex snap:** compute the clip position, snap xy/w to the internal-resolution grid, write `POSITION`. **Affine warp:** pass `UV*w` and `w` as varyings and divide in `fragment()` (strength uniform). **Per-vertex fog**.
@@ -285,7 +285,7 @@ Goal: Ross walks a placeholder Red around a PSX diorama room on his own Windows 
 | 2 | Test runner and framework. | `tests/run_all.gd`, `tests/framework/test_case.gd`, `tests/unit/test_runner_selfcheck.gd` | Headless run exits 0; a deliberately failing test exits 1 (then removed). |
 | 3 | DataDB minimal: load and validate JSON/CSV; first data file. | `scripts/core/data_db.gd`, `data/world/field_tuning.json` | `tests/unit/test_data_db.gd`: all data parses; a bad file is reported by name. |
 | 4 | PSX shaders. | `shaders/psx_common.gdshaderinc`, `psx_lit`, `psx_unlit`, `psx_fade`, `psx_post` (`.gdshader`) | Test room renders under Xvfb with no shader errors; each effect visibly changes the screenshot when toggled. |
-| 5 | PSX screen: SubViewport world + scaled nearest display + post shader + sharp UI layer. | `scenes/core/psx_screen.tscn`, `scenes/core/main.tscn` | Internal resolution switchable at runtime between 320×240, 426×240 and 480×270; UI text stays sharp. |
+| 5 | PSX screen: SubViewport world + scaled nearest display + post shader + sharp UI layer. | `scenes/core/psx_screen.tscn`, `scenes/core/main.tscn` | Internal resolution switchable at runtime between 384×216, 320×240, 426×240 and 480×270; UI text stays sharp. |
 | 6 | Test room: floor and two back walls, checker textures at 64/128/256 px, one large unsubdivided floor quad (shows the warp), a tall pillar (fade test), a lamp, fog, and a bigger wing so the camera has to slide. | `scenes/debug/psx_test_room.tscn`, `art/placeholder/textures/*.png` | Loads headless; every mesh uses a psx shader (`tests/integration/test_psx_materials.gd`); no texture over 256 px. |
 | 7 | Diorama camera rig + bounds. | `scripts/field/diorama_camera.gd` | `tests/integration/test_diorama_camera.gd`: never rotates, keeps Red in the safe frame, clamps to the bounds. |
 | 8 | Prop fader. | `scripts/field/prop_fader.gd` | `tests/integration/test_prop_fader.gd`: the pillar fades in front of Red and returns when clear. |
