@@ -1,0 +1,16 @@
+{
+  "_about": "Battle-only item effects, keyed by the same ids as items/items.json (names repeat here so battles never depend on the field item list). Effects: heal_hp, heal_hp_pct, restore_juice, restore_juice_pct, revive_hp_pct, cure (status ids), damage (fixed, ignores defense), statuses, escape. Items never need a Clutch press.",
+  "items": [
+    {"id": "ration_bar", "name": "Ration Bar", "target": "one_ally", "effect": {"heal_hp": 30}},
+    {"id": "can_of_chili", "name": "Can of Chili", "target": "one_ally", "effect": {"heal_hp": 70}},
+    {"id": "canned_coffee", "name": "Canned Coffee", "target": "one_ally", "effect": {"restore_juice": 6}},
+    {"id": "juice_box", "name": "Juice Box", "target": "one_ally", "effect": {"restore_juice": 14}},
+    {"id": "smelling_salts", "name": "Smelling Salts", "target": "one_down_ally", "effect": {"revive_hp_pct": 25}},
+    {"id": "burn_gel", "name": "Burn Gel", "target": "one_ally", "effect": {"cure": ["burnt_toast"]}},
+    {"id": "appeal_form", "name": "Appeal Form", "target": "one_ally", "effect": {"cure": ["noise_ticket"]}},
+    {"id": "ginger_chews", "name": "Ginger Chews", "target": "one_ally", "effect": {"cure": ["wobbly"]}},
+    {"id": "firecracker_string", "name": "Firecracker String", "target": "all_enemies", "effect": {"damage": 12}},
+    {"id": "hot_sauce_bomb", "name": "Hot Sauce Bomb", "target": "one_enemy", "effect": {"damage": 18, "statuses": [{"id": "burnt_toast", "chance": 1.0}]}},
+    {"id": "smoke_bomb", "name": "Smoke Bomb", "target": "self", "effect": {"escape": true}}
+  ]
+}

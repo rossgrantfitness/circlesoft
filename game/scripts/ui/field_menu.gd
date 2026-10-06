@@ -36,7 +36,7 @@ const RELEASE_FRAMES: int = 2
 const DIM_STEP: int = 3
 const PATH_GAME_STATE: NodePath = ^"/root/GameState"
 const PATH_CONFIG: NodePath = ^"/root/Config"
-const CONFIG_ROWS: PackedStringArray = ["text_speed", "voice_volume", "auto_timing"]
+const CONFIG_ROWS: PackedStringArray = ["text_speed", "voice_volume", "auto_timing", "wide_windows", "timing_offset"]
 
 ## Red, frozen while the menu is open (released two frames after it closes).
 var player: PlayerController = null
@@ -672,6 +672,10 @@ func _config_rows() -> Array[Dictionary]:
 			"value": "< %d%% >" % int(round(float(cfg.get("voice_volume")) * 100.0))})
 	rows.append({"id": "auto_timing", "label": str(strings["auto_timing"]),
 			"value": "< %s >" % str(strings["on"] if bool(cfg.get("auto_timing")) else strings["off"])})
+	rows.append({"id": "wide_windows", "label": str(strings["wide_windows"]),
+			"value": "< %s >" % str(strings["on"] if bool(cfg.get("wide_windows")) else strings["off"])})
+	rows.append({"id": "timing_offset", "label": str(strings["timing_offset"]),
+			"value": "< %s >" % str(strings["ms_format"]).replace("{ms}", "%+d" % int(cfg.get("timing_offset_ms")))})
 	return rows
 
 
@@ -702,6 +706,16 @@ func _change_config(direction: int, wrap: bool = false) -> void:
 		"auto_timing":
 			cfg.call("set_auto_timing", not bool(cfg.get("auto_timing")))
 			changed = true
+		"wide_windows":
+			cfg.call("set_wide_windows", not bool(cfg.get("wide_windows")))
+			changed = true
+		"timing_offset":
+			var before_ms: int = int(cfg.get("timing_offset_ms"))
+			var moved: bool = bool(cfg.call("step_timing_offset", direction))
+			if not moved and wrap:
+				# A confirm press at the end of the range jumps back to the other end.
+				cfg.call("set_timing_offset_ms", int(cfg.call("get_timing_offset_min_ms")) if direction > 0 else int(cfg.call("get_timing_offset_max_ms")))
+			changed = int(cfg.get("timing_offset_ms")) != before_ms
 	if changed:
 		audio.sfx("tick")
 		_page_list.set_items(_config_rows(), true)

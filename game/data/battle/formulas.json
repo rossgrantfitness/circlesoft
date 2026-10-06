@@ -1,0 +1,24 @@
+{
+  "_about": "Damage, healing, status, run, pacing and reward constants. damage = power * atk * atk / (atk + defense * defense_weight), then variance, rating bonus, Defend and block. Nothing here is hard-coded in the scripts.",
+  "damage": {"defense_weight": 1.0, "variance_pct": 8, "min_damage": 1, "defend_mult": 0.5},
+  "heal": {"variance_pct": 0},
+  "rating_power": {"miss": 1.0, "nice": 1.1, "rad": 1.25, "totally_rad": 1.4},
+  "status": {"luck_per_point": 0.02, "min_chance": 0.05, "max_chance": 0.95},
+  "drops": {"luck_per_point": 0.03, "max_chance": 1.0},
+  "juice": {"defend_gain": 3},
+  "run": {"base_chance": 0.55, "per_speed_point": 0.04, "min_chance": 0.25, "max_chance": 0.95},
+  "pacing": {
+    "between_actions_ms": 250,
+    "ko_beat_ms": 700,
+    "flee_ms": 800,
+    "skip_turn_ms": 500,
+    "item_timeline_ms": {"windup": 250, "impact": 600, "end": 900},
+    "defend_timeline_ms": {"windup": 100, "impact": 300, "end": 600},
+    "run_timeline_ms": {"windup": 200, "impact": 700, "end": 1000}
+  },
+  "rewards": {
+    "flee": {"xp": 1.0, "credits": 1.0, "drops": 0.0},
+    "after_win_revive_pct": 10
+  },
+  "first_turn_values": ["normal", "party", "enemies"]
+}

@@ -16,12 +16,14 @@ const KEY_DEFAULT_PARTY: String = "default_party"
 const KEY_MEMBERS: String = "members"
 const KEY_STARTING_ITEMS: String = "starting_items"
 const KEY_ITEMS: String = "items"
+const MEMBER_SAVE_KEYS: Array[String] = ["level", "xp", "hp", "hp_max", "juice", "juice_max"]
 
 var _bag: Dictionary[String, int] = {}
 var _flags: Dictionary[String, bool] = {}
 var _party_ids: Array[String] = []
 var _members: Dictionary[String, Dictionary] = {}
 var _starting_items: Dictionary[String, int] = {}
+var _credits: int = 0
 
 
 func _ready() -> void:
@@ -49,6 +51,7 @@ func load_party(doc: Dictionary) -> void:
 func reset() -> void:
 	_bag.clear()
 	_flags.clear()
+	_credits = 0
 	for id: String in _starting_items:
 		_bag[id] = clampi(_starting_items[id], 0, MAX_STACK)
 
@@ -148,10 +151,39 @@ func get_party_ids() -> Array[String]:
 	return _party_ids.duplicate()
 
 
+## Merges fields (level, xp, hp, hp_max, juice, juice_max, ...) into a party member. Used by the
+## battle results; unknown members are ignored.
+func update_member(member_id: String, fields: Dictionary) -> void:
+	if not _members.has(member_id):
+		return
+	var member: Dictionary = _members[member_id]
+	for key: String in fields:
+		member[key] = fields[key]
+
+
+# ---- credits ----
+
+func get_credits() -> int:
+	return _credits
+
+
+func add_credits(amount: int) -> void:
+	_credits = maxi(_credits + amount, 0)
+
+
 # ---- save round trip ----
 
 func to_dict() -> Dictionary:
-	return {"bag": _bag.duplicate(), "flags": _flags.duplicate(), "party": _party_ids.duplicate()}
+	var member_state: Dictionary = {}
+	for id: String in _members:
+		var member: Dictionary = _members[id]
+		var kept: Dictionary = {}
+		for key: String in MEMBER_SAVE_KEYS:
+			if member.has(key):
+				kept[key] = member[key]
+		member_state[id] = kept
+	return {"bag": _bag.duplicate(), "flags": _flags.duplicate(), "party": _party_ids.duplicate(),
+		"credits": _credits, "member_state": member_state}
 
 
 func from_dict(data: Dictionary) -> void:
@@ -163,6 +195,10 @@ func from_dict(data: Dictionary) -> void:
 	var flags: Dictionary = data.get("flags", {})
 	for id: String in flags:
 		_flags[id] = bool(flags[id])
+	_credits = int(data.get("credits", 0))
+	var member_state: Dictionary = data.get("member_state", {})
+	for id: String in member_state:
+		update_member(id, member_state[id])
 	var party: Array = data.get("party", [])
 	if not party.is_empty():
 		_party_ids.clear()

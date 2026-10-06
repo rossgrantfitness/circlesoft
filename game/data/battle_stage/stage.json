@@ -1,0 +1,228 @@
+{
+  "_about": "Battle stage tunables (Technical Artist). Distances are world units (Red is 1.0 tall, about 40 screen pixels at 384x216). Times are milliseconds. Positions are [x, y, z]: +x is screen right, +z is toward the camera. Colors are hex. Read by scripts/battle/view/battle_stage_tuning.gd; every value here has a test.",
+  "camera": {
+    "_note": "Fixed diorama camera: it never rotates. Push-ins slide it toward look_at; shake only moves it sideways and up/down.",
+    "fov_deg": 30.0,
+    "pitch_deg": 26.0,
+    "yaw_deg": 0.0,
+    "distance": 9.0,
+    "look_at": [-0.1, 0.5, 0.45],
+    "near": 0.5,
+    "far": 60.0,
+    "push_in": {
+      "_note": "A slight push-in for big moments. amount is how far the camera slides toward look_at.",
+      "big_hit": {"amount": 0.6, "in_ms": 110, "hold_ms": 140, "out_ms": 300},
+      "boss_tell": {"amount": 1.1, "in_ms": 320, "hold_ms": 500, "out_ms": 400},
+      "ko": {"amount": 1.4, "in_ms": 90, "hold_ms": 340, "out_ms": 520},
+      "victory": {"amount": 0.7, "in_ms": 500, "hold_ms": 1800, "out_ms": 400},
+      "boss_tell_min_windup_ms": 900
+    }
+  },
+  "formation": {
+    "_note": "Party on the right facing left, enemies on the left facing right, both turned part way toward the camera so faces show. Slot order = combatant slot number.",
+    "party": [[1.1, 0.0, 0.5], [3.3, 0.0, -0.45], [2.2, 0.0, 1.35]],
+    "enemy": [[-1.2, 0.0, 0.6], [-3.3, 0.0, 0.2], [-2.3, 0.0, -0.9], [-2.3, 0.0, 1.6]],
+    "party_facing_deg": -52.0,
+    "enemy_facing_deg": 52.0,
+    "marker": {
+      "radius": 0.52,
+      "party_color": "#EDEAD8",
+      "enemy_color": "#8D97A5",
+      "active_color": "#FFB347",
+      "target_color": "#E8456A",
+      "texture_px": 32
+    },
+    "shadow": {"radius": 0.42, "color": "#14121F", "texture_px": 16}
+  },
+  "model": {
+    "_note": "How combatant models are found and lit. enemy_rules: the first rule whose text appears in the enemy kind id picks the model when the snapshot's own path will not load. tint multiplies every material (the dim ambient greys warm palettes, see npc.gd light_compensation).",
+    "tint": [1.18, 1.08, 0.95],
+    "idle_clip": "idle",
+    "party_models": {
+      "red": "res://art/placeholder/characters/red/red_shiba.glb",
+      "otis": "res://art/placeholder/characters/otis/chr_otis.glb",
+      "mox": "res://art/placeholder/characters/mox/chr_mox.glb"
+    },
+    "enemy_rules": [
+      {"contains": "drone_variant", "model": "res://art/placeholder/enemies/drone_variant/enm_drone_variant.glb"},
+      {"contains": "buzzkill", "model": "res://art/placeholder/enemies/drone_variant/enm_drone_variant.glb"},
+      {"contains": "whistle", "model": "res://art/placeholder/enemies/grunt_variant/enm_grunt_variant.glb"},
+      {"contains": "drone", "model": "res://art/placeholder/enemies/signals_drone/enm_signals_drone.glb"},
+      {"contains": "variant", "model": "res://art/placeholder/enemies/grunt_variant/enm_grunt_variant.glb"},
+      {"contains": "grunt", "model": "res://art/placeholder/enemies/signals_grunt/enm_signals_grunt.glb"}
+    ],
+    "default_enemy_model": "res://art/placeholder/enemies/signals_grunt/enm_signals_grunt.glb",
+    "fallback_colors": {"party": "#C8322A", "enemy": "#6F8BA8"},
+    "flyer_min_height": 0.25,
+    "boss_scale": 1.0
+  },
+  "motion": {
+    "_note": "Every attack, hit and K.O. is a code tween on the model's idle clip: no authored clips.",
+    "lunge": {
+      "stop_distance": 1.05,
+      "lean_back": 0.28,
+      "lean_back_fraction": 0.7,
+      "crouch": [1.1, 0.84, 1.1],
+      "stretch": [0.9, 1.14, 0.9],
+      "dash_min_ms": 110,
+      "jab": 0.22,
+      "jab_ms": 90,
+      "return_ms": 260
+    },
+    "cast": {"hop": 0.35, "squash": [1.12, 0.82, 1.12], "windup_fraction": 0.8, "return_ms": 200},
+    "defend": {"crouch": [1.12, 0.8, 1.12], "lean_deg": 10.0, "in_ms": 120},
+    "item": {"hop": 0.2, "ms": 220},
+    "styles": {
+      "_note": "Which procedural move an action uses: by the action's anim id first, then by its kind. Styles: lunge, cast, defend, item, none.",
+      "by_anim": {},
+      "by_kind": {"attack": "lunge", "skill": "cast", "item": "item", "defend": "defend", "run": "none"}
+    },
+    "hit": {
+      "recoil": 0.34,
+      "recoil_big": 0.6,
+      "recoil_ms": 230,
+      "squash": [1.14, 0.8, 1.14],
+      "squash_ms": 140,
+      "flash_ms": 70,
+      "face_swap_ms": 380,
+      "block_push": 0.12,
+      "perfect_block_flash_ms": 110,
+      "payback_lunge": 0.7,
+      "heal_hop": 0.22,
+      "heal_color": "#9BE35A"
+    },
+    "turn_ready": {"hop": 0.12, "ms": 160},
+    "victory_hop": {"height": 0.5, "ms": 320, "count": 2, "stagger_ms": 90},
+    "ko_fall": {
+      "ms": 520,
+      "pitch_deg": -86.0,
+      "sink": 0.16,
+      "blink_ms": 420,
+      "blink_hz": 15.0,
+      "crash_spin_deg": 540.0,
+      "crash_ms": 480
+    },
+    "flag": {
+      "raise_ms": 420,
+      "wave_deg": 18.0,
+      "wave_count": 3,
+      "wave_ms": 540,
+      "arm_raise_deg": 168.0,
+      "walk_off_ms": 900,
+      "walk_off_distance": 6.0,
+      "zip_off_ms": 420
+    },
+    "revive": {"ms": 300, "hop": 0.3}
+  },
+  "cue": {
+    "_note": "The cue: one moment (t0 + cue_ms) drives the flash, the battle_ding sfx and the '!' together.",
+    "flash_ms": 70,
+    "flash_color": [2.6, 2.5, 2.2],
+    "marker_height_gap": 0.12,
+    "marker_ms": 520,
+    "marker_scale": 1.0,
+    "marker_scale_boss": 1.5,
+    "marker_color": "#FF5A36",
+    "marker_outline": "#FFFFFF",
+    "marker_px": 32
+  },
+  "shake": {
+    "_note": "amplitude is world units (about 40 px per unit); step_hz is how often the offset jumps (stepped, PSX style).",
+    "totally_rad": {"amplitude": 0.11, "duration_ms": 260, "step_hz": 30.0, "hit_stop_ms": 70},
+    "block_perfect": {"amplitude": 0.05, "duration_ms": 140, "step_hz": 30.0, "hit_stop_ms": 0},
+    "big_damage": {"amplitude": 0.06, "duration_ms": 180, "step_hz": 30.0, "hit_stop_ms": 0, "min_damage_fraction": 0.3}
+  },
+  "ko": {
+    "_note": "The K.O. beat: the last hit freezes the whole stage for freeze_ms while the camera pushes in and the screen flashes.",
+    "freeze_ms": 480,
+    "flash_ms": 80,
+    "flash_color": "#FFFFFF"
+  },
+  "static": {
+    "_note": "Radio-static transition (screen_static.gdshader). *_ms is the whole cover or reveal. hold_ms is how long it stays fully covered. Boss fights use the longer pair.",
+    "in_ms": 620,
+    "out_ms": 480,
+    "hold_ms": 160,
+    "boss_in_ms": 1500,
+    "boss_out_ms": 900,
+    "boss_hold_ms": 450,
+    "steps": 8,
+    "frame_hz": 24.0,
+    "band_rows": 6,
+    "block_px": [3, 2],
+    "dark": "#14121F",
+    "mid": "#5B6573",
+    "light": "#EDEAD8",
+    "tint": "#6F8BA8",
+    "tint_amount": 0.18,
+    "boss_flicker": true
+  },
+  "end": {"hold_s": 3.0, "hud_done_signals": ["finished", "closed", "dismissed", "continue_requested", "done"]},
+  "backdrop_aliases": {"harrow_docks": "harrow", "relay_tower_floor": "tower", "road_edge": "road"},
+  "backdrops": {
+    "_note": "Placeholder sets in the house style. The snapshot's backdrop id picks one; an unknown id uses default. Each is a floor, two back walls, lamps and a few crates.",
+    "default": {
+      "floor_a": "#4A3F46",
+      "floor_b": "#3C3340",
+      "floor_trim": "#6A5B5B",
+      "wall_a": "#6A5B5B",
+      "wall_b": "#564A52",
+      "wall_rust": "#9C4A2E",
+      "wall_rivet": "#A89A92",
+      "patches": ["#C8643B", "#E0A93B", "#6E9A5A"],
+      "void": "#1F2540",
+      "ambient": "#B3B3F2",
+      "ambient_energy": 1.0,
+      "key_color": "#FFF0E0",
+      "key_energy": 0.55,
+      "key_dir_deg": [-48.0, 28.0],
+      "fog_near": 17.0,
+      "fog_far": 30.0,
+      "size": {"floor": [16.0, 11.0], "back_wall_z": -4.4, "left_wall_x": -5.8, "wall_height": 3.6},
+      "lamps": [
+        {"pos": [-5.2, 0.0, -3.4], "height": 2.2, "color": "#FFB347", "energy": 6.0, "range": 8.0},
+        {"pos": [4.9, 0.0, -3.6], "height": 2.2, "color": "#FFB347", "energy": 6.0, "range": 8.0},
+        {"pos": [0.2, 0.0, -3.9], "height": 2.6, "color": "#FFB347", "energy": 4.0, "range": 7.0}
+      ],
+      "crates": [
+        {"pos": [-4.3, 0.0, -3.5], "size": [0.9, 0.9, 0.9], "yaw_deg": 8.0},
+        {"pos": [-3.3, 0.0, -3.7], "size": [0.7, 0.7, 0.7], "yaw_deg": -22.0},
+        {"pos": [3.6, 0.0, -3.5], "size": [1.0, 1.0, 1.0], "yaw_deg": -6.0},
+        {"pos": [5.6, 0.0, -2.6], "size": [0.8, 0.8, 0.8], "yaw_deg": 20.0}
+      ]
+    },
+    "harrow": {
+      "floor_a": "#4A3F46",
+      "floor_b": "#3C3340",
+      "floor_trim": "#6A5B5B",
+      "wall_a": "#6A5B5B",
+      "wall_b": "#564A52",
+      "wall_rust": "#9C4A2E",
+      "wall_rivet": "#A89A92",
+      "patches": ["#C8643B", "#E0A93B", "#6E9A5A"],
+      "void": "#1F2540"
+    },
+    "road": {
+      "floor_a": "#5A4A3E",
+      "floor_b": "#4A3C34",
+      "floor_trim": "#7A6A52",
+      "wall_a": "#5E5647",
+      "wall_b": "#4A4439",
+      "wall_rust": "#8A5A32",
+      "wall_rivet": "#9A9082",
+      "patches": ["#C9A23A", "#8E6A44", "#6E9A5A"],
+      "void": "#1A2038"
+    },
+    "tower": {
+      "floor_a": "#3B3F4A",
+      "floor_b": "#2F333D",
+      "floor_trim": "#5E8C7A",
+      "wall_a": "#3B3F4A",
+      "wall_b": "#2F333D",
+      "wall_rust": "#5E8C7A",
+      "wall_rivet": "#8D97A5",
+      "patches": ["#5E8C7A", "#D9A441", "#5B6573"],
+      "void": "#14121F"
+    }
+  }
+}

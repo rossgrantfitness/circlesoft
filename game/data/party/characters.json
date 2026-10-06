@@ -1,0 +1,39 @@
+{
+  "_about": "The slice party. Stats per level live in growth.csv; the XP curve in xp_curve.csv. skills_by_level: signature move and 1 basic from level 1, the third around level 4. rules: bench-XP and late-joiner catch-up are built and tested but switched off until Vela and Ruo exist.",
+  "rules": {
+    "bench_xp": {"enabled": false, "share": 1.0},
+    "catch_up": {"enabled": false, "level_offset": 0}
+  },
+  "characters": [
+    {
+      "id": "red", "name": "Red", "role": "Quick front-line hitter",
+      "model": "res://art/placeholder/characters/red/red_shiba.glb",
+      "attack_skill": "red_attack", "signature_skill": "porch_light",
+      "skills_by_level": [
+        {"level": 1, "skill": "porch_light"},
+        {"level": 1, "skill": "double_swing"},
+        {"level": 4, "skill": "sunrise_slash"}
+      ]
+    },
+    {
+      "id": "otis", "name": "Otis", "role": "Tank",
+      "model": "res://art/placeholder/characters/otis/chr_otis.glb",
+      "attack_skill": "otis_attack", "signature_skill": "heave_ho",
+      "skills_by_level": [
+        {"level": 1, "skill": "heave_ho"},
+        {"level": 1, "skill": "door_slam"},
+        {"level": 4, "skill": "cough_drop"}
+      ]
+    },
+    {
+      "id": "mox", "name": "Mox", "role": "Gadget wildcard",
+      "model": "res://art/placeholder/characters/mox/chr_mox.glb",
+      "attack_skill": "mox_attack", "signature_skill": "patent_pending",
+      "skills_by_level": [
+        {"level": 1, "skill": "patent_pending"},
+        {"level": 1, "skill": "pocket_sparkler"},
+        {"level": 4, "skill": "duct_tape"}
+      ]
+    }
+  ]
+}

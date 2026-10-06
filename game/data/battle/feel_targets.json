@@ -1,0 +1,34 @@
+{
+  "_about": "What the battle simulator checks. Fight time = virtual-clock timeline ms plus menu_ms_per_command for every party command. Tiers are set per encounter in encounters.json. Win-rate floors/ceilings are per player type and tier.",
+  "menu_ms_per_command": 2000,
+  "fight_seconds": {
+    "tutorial": {"min": 25, "max": 90},
+    "regular":  {"min": 60, "max": 180},
+    "tough":    {"min": 90, "max": 240},
+    "boss":     {"min": 300, "max": 480}
+  },
+  "win_rate": {
+    "tutorial": {"perfect": [0.99, 1.0], "good": [0.97, 1.0], "auto": [0.9, 1.0], "miss": [0.8, 1.0]},
+    "regular":  {"perfect": [0.97, 1.0], "good": [0.85, 1.0], "auto": [0.7, 1.0], "miss": [0.3, 1.0]},
+    "tough":    {"perfect": [0.9, 1.0],  "good": [0.8, 1.0], "auto": [0.5, 1.0], "miss": [0.0, 0.6]}
+  },
+  "perfect_beats_miss_by": 0.1,
+  "level_at_kasp": 6,
+  "credits_at_kasp": 1500,
+  "walkthrough": {
+    "order": ["grunt_solo", "grunt_pair", "grunt_pair", "grunt_pair", "drone_flock", "drone_flock", "squad_four",
+      "drone_flock", "squad_four", "drone_flock", "squad_four", "ambush_no_exit", "squad_four", "drone_flock"],
+    "final_level": [6, 6],
+    "battle_credits": [800, 1300],
+    "min_completed_rate": {"perfect": 0.95, "good": 0.8, "auto": 0.5, "miss": 0.0}
+  },
+  "sim": {
+    "good_sigma_ms": 40,
+    "good_lapse_chance": 0.08,
+    "hold_lead_ms": 450,
+    "start_bag": {"ration_bar": 4, "can_of_chili": 1, "canned_coffee": 2, "smelling_salts": 1, "burn_gel": 1},
+    "heal_below_pct": 40,
+    "checks_runs": 200,
+    "full_runs": 5000
+  }
+}

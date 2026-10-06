@@ -1,0 +1,10 @@
+{
+  "_about": "Test encounters for the slice systems. tier picks the feel target (tutorial / regular / tough). suggested_level is the party level the simulator uses by default. Backdrop and music ids are placeholders for the stage and audio work.",
+  "encounters": [
+    {"id": "grunt_solo", "name": "Lone Grunt", "enemies": ["signals_grunt"], "can_run": true, "is_boss": false, "backdrop": "harrow_docks", "music": "battle_regular", "tier": "tutorial", "suggested_level": 1},
+    {"id": "grunt_pair", "name": "Grunt Patrol", "enemies": ["signals_grunt", "signals_grunt"], "can_run": true, "is_boss": false, "backdrop": "harrow_docks", "music": "battle_regular", "tier": "tutorial", "suggested_level": 2},
+    {"id": "drone_flock", "name": "Drone Flock", "enemies": ["signals_drone", "signals_drone", "whistle_blower"], "can_run": true, "is_boss": false, "backdrop": "relay_tower_floor", "music": "battle_regular", "tier": "regular", "suggested_level": 3},
+    {"id": "squad_four", "name": "Full Signals Squad", "enemies": ["signals_grunt", "signals_grunt", "signals_drone", "buzzkill_drone"], "can_run": true, "is_boss": false, "backdrop": "relay_tower_floor", "music": "battle_regular", "tier": "regular", "suggested_level": 4, "enemy_scale": {"hp": 1.2}},
+    {"id": "ambush_no_exit", "name": "Quota Ambush", "enemies": ["whistle_blower", "buzzkill_drone", "whistle_blower"], "can_run": false, "is_boss": false, "backdrop": "relay_tower_floor", "music": "battle_tough", "tier": "tough", "suggested_level": 4, "enemy_scale": {"hp": 1.3, "attack": 1.5}}
+  ]
+}

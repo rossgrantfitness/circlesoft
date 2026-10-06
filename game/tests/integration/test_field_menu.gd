@@ -283,10 +283,12 @@ func test_config_rows_show_the_current_values() -> void:
 	_config.call("set_text_speed", "slow")
 	_open_page(menu, 2)
 	var rows: Array[Dictionary] = menu.get_page_list().get_items()
-	assert_eq(rows.size(), 3)
+	assert_eq(rows.size(), 5, "text speed, voice, Auto-Timing, Wide Windows, Timing Offset")
 	assert_true(str(rows[0]["value"]).contains("Slow"))
 	assert_true(str(rows[1]["value"]).contains("80"))
 	assert_true(str(rows[2]["value"]).contains("Off"))
+	assert_true(str(rows[3]["value"]).contains("Off"))
+	assert_true(str(rows[4]["value"]).contains("+0 ms"))
 
 
 func test_leaving_the_config_page_saves_the_file() -> void:
