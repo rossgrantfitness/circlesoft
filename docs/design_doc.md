@@ -20,7 +20,113 @@ LIGHTS LEFT ON is a classic 90s JRPG hero's journey. Ten years ago Red's mom fle
    *This means we DON'T* add high-concept gimmicks, turn the themes into systems (no death or rebirth mechanics), or pick anything that's hard to build just because it's clever.
 
 ## Exploration
-_Movement, camera, towns, dungeons, world map, interaction, encounters._
+> 🟡 DRAFT: awaiting Ross's approval
+
+### New ideas needing Ross's OK
+Everything else in this section is classic 90s JRPG basics. These two are studio ideas, so they're yours to call.
+
+**DECISION NEEDED: Can weak grunts give up on the map once the party is much stronger?**
+- **Option A: Yes.** Once the party clearly outclasses a group, Hegemony grunts on the map wave a white flag. Walk into them and you win on the spot (XP and credits, no fight). Pros: saves time when you walk back through an area; pays off the approved white-flag joke; cheap to build. Cons: one more rule to tune.
+- **Option B: No.** Every fight plays out. Dodging on the map and Run are enough. Pros: simplest, purely classic. Cons: easy fights late in an area can get tedious.
+- **Recommendation:** A, but put it on the Later list. In the slice the party never outclasses anything, and this turns the grunts' joke into a time-saver rather than a new system.
+
+**DECISION NEEDED: Does Red's lamp light up dark rooms?**
+- **Option A: Yes.** A few dungeon rooms are dark; Red's lamp lights a small circle around her and shows hidden chests. Pros: the lamp becomes her tool everywhere, and it's on-theme. Cons: new lighting work for every dark room, and a puzzle type we'd have to keep reusing.
+- **Option B: No.** The lamp is her weapon in battle and her rest/save animation, and dungeons are lit normally. Pros: classic, less to build. Cons: we miss a small on-theme touch.
+- **Recommendation:** B. Classic, Not Clever: the lamp already does plenty. It can go on the Later list if you like it.
+
+### Movement & camera
+- **Moving:** Red runs with the stick or d-pad; tilt lightly to walk. Brisk speed, no stamina, no dash.
+- **One button does it all:** talk, examine, pick up, open.
+- **No jump button.** Ladders, ledges and small gaps get climbed or hopped with that same button at marked spots, like the big 3D JRPGs of the era.
+- **The crew follows Red** in a short line in towns and dungeons, so they're always on screen (Pillar 2). They pass through each other and never block her.
+- **Rooms load** with a quick fade to black, PSX-style.
+- **Camera: a follow camera from a high three-quarter angle, which the player can turn in 90-degree steps with the shoulder buttons.** Some rooms lock it to one angle for a better shot.
+  - *Why it suits the look:* looking down on chibi critters shows off their big heads and faces, and low-poly rooms read cleanly from above, like a diorama. Fog hides the far distance, the way PSX games did.
+  - *Why it suits one artist:* each room only has to look good from four directions. Ross never has to build ceilings or far horizons.
+  - *Also considered:* a free-turning camera (most freedom, but every corner of every room gets seen, so more art and more camera bugs) and fixed movie-style angles in every room (very stylish, but every room needs hand-set shots and players get turned around). We use the movie-style framing in cutscenes instead.
+
+### Towns
+**What you do:** talk to everyone (their lines change after every story beat), shop, rest, find hidden items and pick up small side jobs.
+
+**Harrow Landing (the slice town),** at night, with lamps in the windows:
+- **Red's home:** her window lamp. Rest (full heal) and save, free.
+- **Courier office:** the job board. The main job to the Old Relay Tower, plus one or two small side deliveries for credits and items.
+- **The docks and Otis's dock office:** where the first fight happens. Otis's desk has things to examine.
+- **The bar:** barflies, gossip, rumors and the bets board (just flavor in the slice).
+- **General store** (healing items) and a **junk-and-gear shop** (weapons and armor, all scavenged).
+- **Signals Corps checkpoint:** Kasp's crew being awful; story scenes.
+- **Hidden items** behind crates and down alleys.
+
+**Talking with a silent hero:**
+- NPCs talk to Red, and Red answers with her face: a quick expression on her portrait, or a little pop-up over her head (ear perk, thumbs-up, shrug).
+- When the game needs a yes or no, it shows up as two gestures: thumbs-up or head shake.
+- **The party chimes in** after key lines, each in their own way: Mox narrates what Red is "obviously" thinking (always wrong, always heroic); Otis reads her right in one look. Vela and Ruo join in once they're in the party.
+- Named characters get a portrait; crowd NPCs talk in plain boxes (less art for Ross).
+
+### Dungeons
+- **Layout:** a short chain of hand-built rooms with one main path and small side branches for treasure. Easy to read, hard to get lost in.
+- **Puzzles, classic and light:** switches that power a lift or open a door, key cards for locked doors, pushing a crate to make a path. None should take more than a minute or two.
+- **Treasure:** chests are crates. Gray Hegemony supply crates (ring-and-bar stencil), and Coldrunner stashes marked with a chalked shuttered lantern, so sharp-eyed players learn to search wherever they see chalk.
+- **Save points:** a lamp in a little wall niche. Red does her lamp check to save. One at the entrance, one before the boss.
+
+**The Old Relay Tower (the slice dungeon):**
+- Watch Zero's back way leads into the half-buried bottom floor, then up about 5 floors around the old mast to Kasp and the Hushmaster at the top.
+- The early floors teach battles and Clutch with easy fights. The call gets louder with every floor (audio).
+- **Puzzles:** Kasp's laminated access cards (grunts drop them; every card has his photo on it) open Signals doors; a power switch runs the old cage lift; one crate push opens a side path. **Optional:** ring the Zeroes' bells in the order of the tune an old Zero hums, for a bonus chest.
+- **Things to examine:** the Writer gives the level builder the list (some carry story details).
+- **Before the boss:** a save lamp, and an old Zero with a thermos who heals the party once.
+
+### Encounters
+- **Visible enemies on the map. No random battles.** *Why:* you see every fight coming and can take it or dodge it, which keeps things snappy, and the grunts and drones get to be characters on the map (grumbling on patrol, chasing Red, giving up out of breath).
+- **Starting a fight:** touch an enemy. The screen hisses into radio static for a beat, then snaps into battle with a music sting. Same transition every time; bosses get a longer, louder one.
+- **Who goes first:** touch an enemy from behind and the party gets a free first turn. Get caught from behind and the enemies go first. (A standard of visible-enemy JRPGs.)
+- **Running and avoiding:** dodge them on the map, or use Run in battle (regular fights only). After any fight or escape, Red blinks for a couple of seconds and can't be caught again right away.
+- **Respawning:** enemies come back when you leave an area and return. Bosses and story fights don't.
+
+### Getting around the Marches
+- **Act 1 (Harrow, on foot):** no world map. Harrow's places are joined by short paths you walk (the Landing, the road to the tower, later the ore tunnels).
+- **Biscuit (end of Act 1):** a story stomp through the Landing, not free roaming. Red drives and Biscuit steps over crates and fences. Afterward it rides in the ship's hold.
+- **The *Low Profile* (Act 2): the lane chart.** A simple map of the Marches, with moons and stations as dots joined by jump lanes (Ruo's family chart). Pick a destination, watch a short jump (the crew belts a lane-song; skippable after the first time) and land at that place's dock. New lanes light up as the story opens them. No random fights in space; ship fights are story set pieces.
+- **The titan (Act 2):** towed behind the *Low Profile*. On some moons you unload it for titan stages: same controls, camera pulled way back, stomping Hardfall Corps garrisons.
+- **The *Supper's On* (end of Act 2 and Act 3):** becomes home base, a big ship you walk around: crew quarters, the hold with Biscuit and the titan, and the bridge with its lamp (rest and save). In Act 3 every former foe hangs around on board to talk to. The lane chart zooms out to the whole Marches and reaches into the Quiet.
+- *Also considered:* flying the ship freely around a 3D space map. More freedom, but much more to build, and the lane chart fits the lore: whoever holds the lanes holds the Marches.
+
+### Interaction
+- **One button:** talk, examine, pick up, open. A small icon pops over Red's head when something nearby can be used (speech bubble = talk, "?" = examine, hand = take). We don't use "!" here, because "!" is the battle timing cue.
+- **Examine:** a line of text, and sometimes a crew member comments (Mox asks the questions, Otis answers them).
+- **Pick up:** items glint. A box says what you got.
+- **Doors:** walk into a door to go through. Locked doors tell you what they need ("Signals access only").
+- **The lamp check (rest and save):** at Red's home window, at inns and at save lamps. She lights the brass lamp, taps the glass twice and gives the sky a thumbs-up, then the save screen opens. Full length the first time each session, a short version after that; one press skips it.
+
+### Cutscenes
+- **Long, and plenty of them** (Ross's call), played **in-engine** with the same chibi models as the field. Camera moves, close-ups and wide shots are staged like a movie.
+- **Dialogue:** text boxes with 2D anime portraits that change expression mid-line. Each speaker has their own little text "blip" sound. No voice acting.
+- **Red's lines are her face:** her portrait shows the expression but never a text box, and her ears do the talking.
+- **Big moments get big staging:** slow push-ins, freeze-frames and a chunky title card when a boss arrives.
+- **Player controls:** press to advance; hold to fast-forward; text speed and auto-advance settings; any cutscene can be skipped by holding Start (held, so it never happens by accident).
+- **Portrait budget for Ross (slice):** about 5 expressions each for Red, Otis and Mox; about 3 for Kasp and key NPCs; none for crowd NPCs. These go into docs/art_requests.md once approved.
+
+### Vertical slice needs vs Later
+**In the slice:**
+- Run/walk, one-button interaction, climb and hop spots, the crew following Red.
+- The three-quarter follow camera with 90-degree turns and per-room locks.
+- Harrow Landing: Red's home, courier office, docks and Otis's office, bar, general store, gear shop, checkpoint; NPC lines that change after each story beat; one or two side deliveries; hidden items.
+- The road to the tower (a short walk) and the Old Relay Tower (about 5 floors): switches, access cards, a crate push, the optional bell chest, two save lamps.
+- Visible enemies, the static transition, first-turn rules, Run, the blink after a fight, respawning.
+- Treasure crates, chalk stashes and item pickups.
+- The lamp check for rest and save.
+- In-engine cutscenes with portraits, text blips, fast-forward, text speed and skip.
+- All dialogue, shop stock, chest contents and enemy placements in game/data/, with headless tests in game/tests/ (interaction, doors, pickups, fight starts, save and load).
+
+**Later (task board "Later" list):**
+- The lane chart, travel between moons, and the *Low Profile*.
+- The Biscuit stomp, titan stages and the *Supper's On* home base.
+- Dungeon maps in the menu.
+- White-flag instant wins (if approved) and lamp-lit dark rooms (if approved).
+- The bets board as a playable minigame.
+- A theater for rewatching cutscenes.
+- Pre-rendered movie scenes: probably never, maybe one or two for the very biggest moments.
 
 ## Battle system
 > ✅ APPROVED by Ross, 2026-10-06 (names: Clutch, Juice)
