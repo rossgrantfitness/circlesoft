@@ -45,7 +45,7 @@ FACE_CELL = 64
 # ---- palette: E's brightest version of the style guide palette, one shade step each ----
 COL = {
     "tawny": ("#D79448", "#A9693A"),
-    "cream": ("#F7E8C6", "#D8BF98"),
+    "cream": ("#FBE9C0", "#EBC48E"),     # warm even in shade: no grey, no cold
     "jacket": ("#D6382E", "#8E2536"),
     "tan": ("#D5B07C", "#A48560"),
     "brass": ("#E3AC45", "#A9742E"),
@@ -151,9 +151,22 @@ LEAN = Matrix.Translation(HIP_PIVOT) @ rot_matrix((LEAN_DEG, 0, 0)) @ Matrix.Tra
 LEAN_INV = LEAN.inverted()
 
 HEAD_C = Vector((0.0, 0.0, 0.80))
-HEAD_R = (0.235, 0.205, 0.20)
-MUZZLE_Y0, MUZZLE_Y1, MUZZLE_Z = -0.13, -0.27, 0.75
-MUZZLE_RX, MUZZLE_RZ = 0.11, 0.082                  # half width, half height of the front cap
+HEAD_R = (0.25, 0.205, 0.205)               # wider than tall: a bean, not a ball
+MUZZLE_Y0, MUZZLE_Y1, MUZZLE_Z = -0.12, -0.265, 0.735
+MUZZLE_RX, MUZZLE_RZ = 0.115, 0.082
+
+
+def bean(p):
+    """Bean / kidney head from a squashed ball (p is already scaled to HEAD_R, centered on 0):
+    a soft dip at the top between the ears, fuller cheeks at the sides and bottom, a slightly
+    narrower brow, and a gently pushed-out lower front for the muzzle to grow from."""
+    ux, uy, uz = p.x / HEAD_R[0], p.y / HEAD_R[1], p.z / HEAD_R[2]
+    upper = max(uz, 0.0)
+    cheek = math.exp(-(((uz + 0.35) / 0.5) ** 2))
+    x = p.x * (1.0 - 0.06 * upper * upper) * (1.0 + 0.15 * cheek)
+    y = p.y * (1.0 + 0.05 * cheek) - 0.012 * max(-uy, 0.0) * cheek
+    z = p.z - 0.20 * HEAD_R[2] * math.exp(-((ux / 0.34) ** 2)) * upper ** 3
+    return Vector((x, y, z))                  # half width, half height of the front cap
 SHOULDER_R, SHOULDER_L = Vector((-0.15, 0.0, 0.51)), Vector((0.15, 0.0, 0.51))
 ELBOW_R, HAND_R = Vector((-0.25, -0.04, 0.40)), Vector((-0.21, -0.19, 0.49))
 ELBOW_L, HAND_L = Vector((0.23, -0.01, 0.39)), Vector((0.255, -0.05, 0.25))
@@ -169,15 +182,15 @@ def L(v):
     return LEAN @ Vector(v)
 
 
-TAIL_PTS = [Vector(p) for p in ((0.085, 0.15, 0.26), (0.12, 0.28, 0.33), (0.105, 0.34, 0.48), (0.05, 0.26, 0.61))]
+TAIL_PTS = [Vector(p) for p in ((0.09, 0.17, 0.25), (0.20, 0.30, 0.31), (0.24, 0.34, 0.47), (0.17, 0.29, 0.63))]
 
 JOINTS = {
     "root": ((0, 0, 0), (0, 0, 0.05)),
     "hips": ((0, 0, 0.22), tuple(L((0, 0, 0.30)))),
     "spine": (tuple(L((0, 0, 0.30))), tuple(L((0, 0, 0.58)))),
     "head": (tuple(L((0, 0, 0.60))), tuple(L((0, 0, 0.99)))),
-    "ear_r": (tuple(L((-0.125, 0, 0.95))), tuple(L((-0.17, -0.04, 1.14)))),
-    "ear_l": (tuple(L((0.125, 0, 0.95))), tuple(L((0.17, -0.04, 1.14)))),
+    "ear_r": (tuple(L((-0.165, 0, 0.93))), tuple(L((-0.185, -0.015, 1.095)))),
+    "ear_l": (tuple(L((0.165, 0, 0.93))), tuple(L((0.185, -0.015, 1.095)))),
     "tail": (tuple(L(TAIL_PTS[0])), tuple(L(TAIL_PTS[3]))),
     "upper_arm_r": (tuple(L(SHOULDER_R)), tuple(L(ELBOW_R))),
     "forearm_r": (tuple(L(ELBOW_R)), tuple(L(HAND_R))),
@@ -235,7 +248,7 @@ def jacket_uv(co, n, bb):
     return planar_z("jacket", JACKET_Z[0], COLLAR_TOP)(co, n, bb)
 
 
-FACE_X_HALF = 0.235
+FACE_X_HALF = 0.27
 FACE_Z_RANGE = (HEAD_C.z - 0.20, HEAD_C.z + 0.20)
 
 
@@ -311,9 +324,9 @@ def paint_face():
             d.ellipse([a0, b0, a1, b1], fill=cream)
 
         # urajiro: cream lower face and cheeks, with a dithered edge toward the tawny
-        cream_blob(0.0, HEAD_C.z - 0.15, 0.17, 0.09)
-        cream_blob(-0.135, HEAD_C.z - 0.085, 0.075, 0.06)
-        cream_blob(0.135, HEAD_C.z - 0.085, 0.075, 0.06)
+        cream_blob(0.0, HEAD_C.z - 0.14, 0.22, 0.10)
+        cream_blob(-0.175, HEAD_C.z - 0.07, 0.09, 0.075)
+        cream_blob(0.175, HEAD_C.z - 0.07, 0.09, 0.075)
         for x in range(FACE_CELL):
             for y in range(FACE_CELL):
                 if (x + y) % 2 == 0:
@@ -341,18 +354,18 @@ def paint_face():
             d.ellipse([ta0, tb0, ta1, tb1], fill=red)
         # eyes (friendly almond-ish ovals), cream eyebrow dots above them
         for sx in (-1, 1):
-            ex, ez = 0.09 * sx, HEAD_C.z + 0.04
+            ex, ez = 0.105 * sx, HEAD_C.z + 0.045
             if not grin:
-                a0, b0 = P(ex - 0.027, ez + 0.043)
-                a1, b1 = P(ex + 0.027, ez - 0.043)
+                a0, b0 = P(ex - 0.031, ez + 0.049)
+                a1, b1 = P(ex + 0.031, ez - 0.049)
                 d.ellipse([a0, b0, a1, b1], fill=ink)
                 d.rectangle([a0 + 2, b0 + 2, a0 + 4, b0 + 5], fill=chalk)
                 d.point([(a1 - 3, b1 - 3)], fill=chalk)
             else:
                 pts = [P(ex - 0.035, ez - 0.02), P(ex - 0.015, ez + 0.02), P(ex, ez + 0.032), P(ex + 0.015, ez + 0.02), P(ex + 0.035, ez - 0.02)]
                 d.line(pts, fill=ink, width=3)
-            da0, db0 = P(ex - 0.018, ez + 0.1 + (0.012 if grin else 0.0))
-            da1, db1 = P(ex + 0.018, ez + 0.07 + (0.012 if grin else 0.0))
+            da0, db0 = P(ex - 0.02, ez + 0.105 + (0.012 if grin else 0.0))
+            da1, db1 = P(ex + 0.02, ez + 0.073 + (0.012 if grin else 0.0))
             d.ellipse([da0, db0, da1, db1], fill=cream)
     img.save(FACE_PATH)
 
@@ -361,7 +374,7 @@ def paint_face():
 def add_jacket(pm):
     """C's teardrop jacket: hem band widest, shoulders narrow, hem swinging off the left side."""
     J = planar_z("jacket", JACKET_Z[0], COLLAR_TOP)
-    pm.tube("spine", SLOT_BODY, (0, 0, 0.17), (0, 0, 0.35), 0.235, 0.20, seg=8, sxy=(1.0, 0.86), uv=jacket_uv,
+    pm.tube("spine", SLOT_BODY, (0, 0, 0.17), (0, 0, 0.35), 0.25, 0.205, seg=8, sxy=(1.0, 0.86), uv=jacket_uv,
             drop_caps=("start", "end"), spin=22.5)
     pm.tube("spine", SLOT_BODY, (0, 0, 0.35), (0, 0, 0.57), 0.20, 0.135, seg=8, sxy=(1.0, 0.86), uv=jacket_uv,
             drop_caps=("start", "end"), spin=22.5)
@@ -375,33 +388,32 @@ def build_body(jacket_probe=None, head_probe_obj=None):
 
     # --- planted: thin legs and glossy boots (C's legs, E's gloss) ---
     for sx, side, hip, knee, foot in ((-1, "r", HIP_R, KNEE_R, FOOT_R), (1, "l", HIP_L, KNEE_L, FOOT_L)):
-        pm.tube("thigh_" + side, SLOT_BODY, tuple(hip), tuple(knee), 0.056, 0.053, seg=6, uv=P("tawny"), drop_caps=("start", "end"))
-        pm.tube("shin_" + side, SLOT_BODY, tuple(knee), tuple(foot), 0.053, 0.053, seg=6, uv=P("tawny"), drop_caps=("start", "end"))
-        pm.add("shin_" + side, SLOT_BODY, "ell", center=(0.075 * sx, -0.035, 0.075), uv=P("rust_gloss"), seg=8, rings=4,
-               radii=(0.105, 0.15, 0.088))
+        pm.tube("thigh_" + side, SLOT_BODY, tuple(hip), tuple(knee), 0.072, 0.07, seg=6, uv=P("tawny"), drop_caps=("start", "end"))
+        pm.tube("shin_" + side, SLOT_BODY, tuple(knee), tuple(foot), 0.07, 0.07, seg=6, uv=P("tawny"), drop_caps=("start", "end"))
+        pm.add("shin_" + side, SLOT_BODY, "ell", center=(0.078 * sx, -0.045, 0.092), uv=P("rust_gloss"), seg=8, rings=4,
+               radii=(0.125, 0.175, 0.105))
 
     # --- leaning upper body ---
     pm.set_group_transform(LEAN)
     add_jacket(pm)
-    pm.add("spine", SLOT_BODY, "box", center=(0.205, 0.0, 0.235), rot=(0, -14, 0), uv=J, size=(0.12, 0.25, 0.15), taper=0.9)
     pm.tube("spine", SLOT_BODY, (0, 0, 0.565), (0, 0, COLLAR_TOP), 0.145, 0.125, seg=8, sxy=(1.0, 0.9), uv=P("tan"),
             drop_caps=("start", "end"), spin=22.5)
     # chest tuft (urajiro): a cream bib peeking over the collar under the chin
     pm.add("spine", SLOT_BODY, "ell", center=(0.0, -0.11, 0.605), uv=P("cream"), seg=6, rings=3, radii=(0.10, 0.07, 0.065))
 
     # Head (front-facing triangles carry the face sheet) and the flat-fronted shiba muzzle.
-    pm.add("head", head_slot, "ell", center=tuple(HEAD_C), uv=head_uv, seg=10, rings=7, radii=HEAD_R)
+    pm.add("head", head_slot, "ell", center=tuple(HEAD_C), uv=head_uv, seg=10, rings=7, radii=HEAD_R, deform=bean)
     pm.tube("head", muzzle_slot, (0, MUZZLE_Y0, MUZZLE_Z), (0, MUZZLE_Y1, MUZZLE_Z), MUZZLE_RX, MUZZLE_RX * 0.9, seg=8,
             sxy=(1.0, MUZZLE_RZ / MUZZLE_RX), uv=muzzle_uv, drop_caps=("start",), spin=22.5)
     # Shiba ears: short, pointy, upright pyramids set wide on top of the head, leaning slightly out.
     for sx, bone in ((-1, "ear_r"), (1, "ear_l")):
-        pm.tube(bone, SLOT_BODY, (0.125 * sx, 0.0, 0.93), (0.168 * sx, -0.04, 1.14), 0.095, 0.0, seg=4,
-                sxy=(1.0, 0.62), uv=ear_uv, drop_caps=("start", "end"), spin=45)
+        pm.tube(bone, SLOT_BODY, (0.165 * sx, 0.015, 0.90), (0.185 * sx, -0.015, 1.095), 0.16, 0.025, seg=4,
+                sxy=(1.0, 0.72), uv=ear_uv, drop_caps=("start",), spin=45)
     # Goggles pushed up on the forehead between the ears: brass strap bar and two glow lenses.
-    pm.add("head", SLOT_BODY, "box", center=(0.0, -0.045, 0.975), rot=(40, 0, 0), uv=P("brass_gloss"), size=(0.3, 0.04, 0.045))
+    pm.add("head", SLOT_BODY, "box", center=(0.0, -0.05, 0.955), rot=(40, 0, 0), uv=P("brass_gloss"), size=(0.2, 0.04, 0.045))
     for sx in (-1, 1):
-        pm.add("head", SLOT_BODY, "tube", center=(0.062 * sx, -0.085, 0.955), rot=(52, 0, 0), uv=P("glow"),
-               drop_caps=("bottom",), seg=6, r0=0.05, r1=0.05, length=0.05, sxy=(1, 1))
+        pm.add("head", SLOT_BODY, "tube", center=(0.052 * sx, -0.09, 0.945), rot=(52, 0, 0), uv=P("glow"),
+               drop_caps=("bottom",), seg=6, r0=0.046, r1=0.046, length=0.05, sxy=(1, 1))
 
     # Arms: C's tapered sleeves, fat tan cuffs, bigger glossy mitts (E) with a thumb bump.
     def arm(S, E, H, side, thumb):
@@ -423,7 +435,7 @@ def build_body(jacket_probe=None, head_probe_obj=None):
         mid = (a + b) / 2
         direction = (b - a).normalized()
         basis = Vector((0, 0, 1)).rotation_difference(direction).to_matrix().to_4x4()
-        r = 0.068 if i < 2 else 0.064
+        r = 0.078 if i < 2 else 0.074
         pm.add("tail", SLOT_BODY, "ell", center=tuple(mid), basis=basis, uv=P("tawny"), seg=6, rings=3,
                radii=(r, r, (b - a).length / 2 + 0.035))
 

@@ -121,6 +121,8 @@ class PartMesh:
             verts = res["verts"]
             for v in verts:
                 v.co = Vector((v.co.x * p["radii"][0], v.co.y * p["radii"][1], v.co.z * p["radii"][2]))
+                if p.get("deform"):
+                    v.co = p["deform"](v.co)     # e.g. the bean-shaped shiba head (red_proto_f.py)
         elif kind == "tube":
             res = bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=p["seg"],
                                         radius1=1.0, radius2=1.0, depth=1.0)
