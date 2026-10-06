@@ -764,10 +764,48 @@ Party: Red + any 2 of the five. Guests take a field spot for their own mission (
 - **Where your art time goes:** Act 2 is about half of it (Slipway Prime, the Navy hull kit, the titan, the *Supper's On*). The hull kit pays for itself three times: Act 2's Navy, the blockade wreck, and the Quiet.
 
 ## Vertical slice scope
-_One town, one dungeon, one boss, three party members, the full battle system, about 30 minutes of story._
-- Town:
-- Dungeon:
-- Boss:
-- Party members (3):
-- Story covered:
-- Out of scope (goes to "Later" on the task board):
+> 🟡 DRAFT: awaiting Ross's approval
+
+**The slice in one paragraph:** Night on Harrow Landing. Red does her lamp check, takes a courier job to the Old Relay Tower and wades into Kasp's crew at the docks; Otis joins. On the road her delivery crate starts bragging: Mox is in. Watch Zero's old-timers show the back way in, and the crew climbs about 5 floors of fights, Clutch lessons and light puzzles while the call gets louder. At the top: Kasp in the Hushmaster. In the wreck Red finds the beacon part, hears the call clearly, and holds it up to her window lamp. About 30 minutes, no filler.
+
+**IN the slice (the build list):**
+- [ ] **Places:** Harrow Landing (home, courier office, docks and Otis's office, bar, two shops, checkpoint), the road, the Old Relay Tower (~5 floors).
+- [ ] **Party:** Red, Otis, Mox; levels 1–6; 3 skills each.
+- [ ] **Battle:** Attack, Skills, Items, Defend, Run; turn-order row; Juice; Clutch on every hit and block (all 3 presses, ratings, Payback); signature moves; Burnt Toast, Noise Ticket, Wobbly, Down for the Count; ~4 enemy types; Kasp's jam pulse, legs breaking in pairs, then Kasp on foot; victory screen.
+- [ ] **Exploration:** fixed diorama camera, one button, crew follows, visible enemies, 2 save lamps + Red's home, the lamp check, card doors, lift switch, crate push, optional bell chest.
+- [ ] **Menus and save:** all but Lane Chart and Swap; 3 slots + auto-save.
+- [ ] **Gear:** 7 weapons, 5 armor, 4 charms, 13 items, 6 key items.
+- [ ] **Economy:** two shops, sell at half, 1–2 side deliveries, ~1,500 credits by Kasp.
+- [ ] **Story:** ~6 in-engine cutscenes; all dialogue in game/data/; the slice's twist clues per the story bible (Creative Director/Writer own).
+- [ ] **Audio:** 8 music tracks and jingles (title, Harrow at night, tower, battle, Kasp, victory, game over, the call); ~40 SFX (Clutch ding, ratings, hits, static transition, menu ticks, text blips, lamp check, bells, Hushmaster).
+- [ ] **Options:** Auto-Timing, Wide Windows, timing offset, Retry battle.
+
+**OUT of the slice (goes to Later):** everything on the task board's Later list. Biggest cuts: Vela and Ruo, Swap, robots/ships/god fights, travel off Harrow, inns, instant wins, Act 1 from the lockdown on.
+
+**Ross's art list for the slice (41 assets).** The look: PSX style, Mega Man Legends, Tail Concerto, MGS1, FF7.
+1. Party models, rigged (3): Red, Otis (with door shield), Mox (with Tuesday).
+2. Weapon props (3): sword, hammer, wrench-mace; shop weapons are recolors.
+3. Portrait sets (6): Red, Otis, Mox ×5 expressions; Kasp + 2 key NPCs ×3 (21 images).
+4. Enemy models (4): Signals grunt, Signals drone, 2 more (variants of those two save you work).
+5. Boss (2): Kasp; the Hushmaster rig (8 legs, dish, toppled state).
+6. Townsfolk models (4): old Zero, dockhand, Marchfolk, shopkeeper; recolored for crowds.
+7. Environment sets (4): Landing streets and docks; 6 interiors; the road and mast foot; tower kit with cage lift and roof. Battle backdrops reuse these.
+8. Props (8): delivery crate, supply crate, chalk mark, save-lamp niche, bells, power switch, card-reader door, beacon part.
+9. UI art (7): item and status icons (~16); turn-order heads (8); rating lettering; field pop-ups and Red's gestures; Kasp's title card; title screen and logo; menu window and cursor.
+
+**Done means:**
+1. Playable from title screen to the lamp at the window in ~30 minutes, no dead ends.
+2. All tests in game/tests/ pass headless; the battle simulator hits the Feel targets.
+3. Full QA pass (no crash or major bugs open), text and asset checks, and a playtest report.
+4. Ross's art in everywhere (placeholders only with his OK).
+5. Ross plays a build on his own computer and signs off.
+
+**Rough build order** (placeholders until each art drop):
+- **First:** the full docs/style_guide.md (palette, proportions, PSX rendering rules, UI windows, fonts) is drafted and approved by Ross before his final art starts; placeholders until then.
+1. PSX look (Mega Man Legends, Tail Concerto, MGS1, FF7) + diorama camera test room.
+2. Battle system and simulator. *Art in: party models, weapons.*
+3. Harrow Landing: exploration, menus, shops, saves. *Art in: Harrow sets, townsfolk, portraits.*
+4. The road and the tower. *Art in: enemies, tower kit, props.*
+5. Kasp and the Hushmaster. *Art in: the boss.*
+6. Story, cutscenes, dialogue, audio.
+7. Polish and QA. *Art in: UI.*
