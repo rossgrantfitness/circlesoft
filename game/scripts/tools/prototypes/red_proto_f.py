@@ -488,7 +488,10 @@ def build_sword():
     return pm
 
 
-def main():
+def build():
+    """Builds the whole of F in the open Blender scene and returns (armature, body, sword) objects.
+    Split out of main() so red_shiba.py (the animated placeholder) can reuse it. Nothing changes
+    in what F looks like."""
     os.makedirs(OUT_DIR, exist_ok=True)
     bpy.ops.wm.read_factory_settings(use_empty=True)
     paint_body()
@@ -505,7 +508,13 @@ def main():
     attach(sword_obj, arm_obj, [mats[0]])
     print("F body: %d drawn" % triangle_count(body_obj))
     print("F sword: %d drawn" % triangle_count(sword_obj))
+    return arm_obj, body_obj, sword_obj
+
+
+def main():
+    build()
     export_glb(os.path.join(OUT_DIR, NAME + ".glb"))
 
 
-main()
+if __name__ == "__main__":
+    main()

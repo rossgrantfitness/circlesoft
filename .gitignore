@@ -23,3 +23,7 @@ mono_crash.*.json
 Thumbs.db
 *~
 *.tmp
+
+# Python bytecode caches (Blender tool scripts)
+__pycache__/
+*.pyc

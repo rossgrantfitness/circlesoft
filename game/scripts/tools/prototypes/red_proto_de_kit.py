@@ -281,11 +281,16 @@ def make_material(name, image_path=None, color=None, alpha=False):
     return mat
 
 
-def export_glb(path):
+def export_glb(path, animations=False):
+    """animations=True writes the NLA tracks as named clips (red_shiba.py uses it); the prototypes
+    keep the default (no animation)."""
+    extra = dict(export_animation_mode="NLA_TRACKS", export_force_sampling=False,
+                 export_optimize_animation_size=False) if animations else {}
     bpy.ops.export_scene.gltf(
         filepath=path, export_format="GLB", export_yup=True, export_apply=False,
-        export_skins=True, export_animations=False, export_image_format="AUTO",
+        export_skins=True, export_animations=animations, export_image_format="AUTO",
         export_materials="EXPORT", export_cameras=False, export_lights=False, export_extras=False,
+        **extra,
     )
     print("wrote", path)
 
