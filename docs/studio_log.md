@@ -4,6 +4,7 @@
 
 ## 2026-10-06
 
+- **Milestone 2 (battle) underway in parallel:** Battle Programmer on the battle rules, Clutch timing, skills, enemies, rewards and the simulator; Technical Artist on the battle stage, camera, static transition and 4 enemy blockouts; UI Programmer on the battle HUD and victory screen; Audio Designer on placeholder battle sounds. Shared contract: docs/battle_api.md. Clutch button added (Space / Z / E / Enter, controller A).
 - **Ross: art stays in-house for now; build the battle system, no questions until there's a build he can run.** Milestone 2 (battle) starting; the studio makes and logs its own calls.
 - **Art pipeline options sent to Ross** (he asked about Higgsfield / fal.ai): A in-house, B hybrid AI via fal.ai with a ~$20 Otis pilot (recommended), C human outsourcing. Cost estimates: ~$50–200 for the slice, ~$500–2,000 full game. fal.ai and Higgsfield are currently blocked by this environment's network policy. Taste Keeper recorded prediction R34.
 - **Studio rule changed (Ross): "Borrow what works, transform it."** Copy proven systems, story shapes, character roles and spirit; always change names, designs, dialogue, music and assets. CLAUDE.md and the Creative Director / Audio Designer briefs updated.
