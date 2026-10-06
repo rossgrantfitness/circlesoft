@@ -137,7 +137,7 @@ func test_player_scene_points_at_the_shiba_and_attaches_it() -> void:
 	assert_eq(player.get_current_animation(), &"idle")
 
 
-func _make_world() -> void:
+func _make_world() -> void:   # a coroutine: await it
 	var floor_body: StaticBody3D = StaticBody3D.new()
 	var shape: CollisionShape3D = CollisionShape3D.new()
 	var box: BoxShape3D = BoxShape3D.new()
@@ -151,6 +151,13 @@ func _make_world() -> void:
 	_player.position = Vector3(0.0, 0.02, 0.0)
 	add_to_root(_player)
 	_player.set_tuning(FieldTuning.from_db(tree.root.get_node("DataDB")))
+	# B2: Red's own physics is switched off once the floor is registered, and step() is called by hand,
+	# so the test counts exact steps instead of real frames (frame-time independent, like B1).
+	await tree.physics_frame
+	await tree.physics_frame
+	_player.set_physics_process(false)
+	_player.position = Vector3(0.0, 0.02, 0.0)
+	_player.velocity = Vector3.ZERO
 
 
 func _steps(count: int) -> void:
@@ -159,8 +166,7 @@ func _steps(count: int) -> void:
 
 
 func test_movement_states_map_to_clips_with_the_real_model() -> void:
-	await tree.process_frame
-	_make_world()
+	await _make_world()
 	_steps(SETTLE_STEPS)
 	assert_eq(_player.get_current_animation(), &"idle")
 	_player.stick = Vector2(0.0, -0.5)
@@ -177,8 +183,7 @@ func test_movement_states_map_to_clips_with_the_real_model() -> void:
 
 
 func test_jump_fall_and_land_play_their_clips_and_land_returns_to_idle() -> void:
-	await tree.process_frame
-	_make_world()
+	await _make_world()
 	_steps(SETTLE_STEPS)
 	_player.jump_held = true
 	_player.request_jump()
@@ -201,8 +206,7 @@ func test_jump_fall_and_land_play_their_clips_and_land_returns_to_idle() -> void
 
 
 func test_landing_while_moving_skips_the_land_squash() -> void:
-	await tree.process_frame
-	_make_world()
+	await _make_world()
 	_steps(SETTLE_STEPS)
 	_player.stick = Vector2(0.0, -1.0)
 	_player.run_held = true

@@ -212,9 +212,11 @@ func test_cursor_moves_and_wraps() -> void:
 	_press(&"move_down")
 	assert_eq(title.get_cursor_index(), 1)
 	_press(&"move_down")
+	assert_eq(title.get_cursor_index(), 2)
+	_press(&"move_down")
 	assert_eq(title.get_cursor_index(), 0, "wraps to the top")
 	_press(&"move_up")
-	assert_eq(title.get_cursor_index(), 1, "wraps to the bottom")
+	assert_eq(title.get_cursor_index(), 2, "wraps to the bottom")
 
 
 func test_controller_stick_moves_once_per_push() -> void:
@@ -232,7 +234,7 @@ func test_controller_stick_moves_once_per_push() -> void:
 	release.axis_value = 0.0
 	tree.root.push_input(release)
 	tree.root.push_input(push)
-	assert_eq(title.get_cursor_index(), 0, "pushes again after returning to center")
+	assert_eq(title.get_cursor_index(), 2, "pushes again after returning to center")
 
 
 func test_cancel_backs_out_to_press_start() -> void:
