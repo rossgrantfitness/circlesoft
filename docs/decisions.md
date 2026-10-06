@@ -5,6 +5,7 @@
 
 | Date | Decision | Options considered | Why |
 |---|---|---|---|
+| 2026-10-06 | **Studio calls for the demo (Ross: no questions until playable):** title menu = START DEMO / QUIT in caps; version v0.1.0; fonts Press Start 2P (title/menus, sizes in multiples of 8) and Pixelify Sans (small text), both verified SIL OFL 1.1, stored in art/final/ui/fonts/; F1 PSX options overlay starts hidden; F9 cycles FOV 30 / FOV 45 / orthographic; invisible barriers on the test room's open edges; Esc returns to title. | Studio's calls | Logged for Ross to overturn after playing. |
 | 2026-10-06 | **Demo start screen added to Milestone 1.** A title screen for the demo build (logo, "press start", Start / Quit) that leads into the playable room. | (Direct instruction from Ross) | "I want there to be some kind of demo start screen" |
 | 2026-10-06 | **Work without questions until there's a playable moment.** The studio makes the remaining Milestone 1 calls itself, logs each here, and comes back to Ross only with a playable build (Windows + Mac) he can run. Ross can overturn any call afterward. | (Direct instruction from Ross) | "Dont ask me anything else until you have a playable moment" |
 | 2026-10-06 | **Studio rule:** share screenshots of visual progress now and then, only when relevant (added to CLAUDE.md; saved under docs/screenshots/). | (Direct instruction from Ross) | "provide intermittent screenshots occasionally so I can see what you're doing - only if relevant" |

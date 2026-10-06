@@ -200,7 +200,7 @@ That is about 17 clips for Otis and Mox and 22 for Red. Wave 1 first; later wave
 - **Title screen:** the LIGHTS LEFT ON logo is chunky, beveled sign letters with a warm window-lamp glow, over the night view of Harrow. Ross designs it; spec goes to docs/art_requests.md.
 
 ## Fonts and text box limits
-- **Open licenses only.** Both candidates are on Google Fonts under the **SIL Open Font License 1.1**. The Technical Artist confirms the license text and tests pixel-exact rendering (antialiasing off) before Ross locks the pick; the license file ships in game/art/final/fonts/.
+- **Open licenses only.** Both candidates are on Google Fonts under the **SIL Open Font License 1.1**. The Technical Artist confirms the license text and tests pixel-exact rendering (antialiasing off) before Ross locks the pick; the license file ships in game/art/final/ui/fonts/.
 - **Dialogue font (candidate 1): Pixelify Sans** (SIL OFL 1.1). Has lowercase, friendly letterforms, and extra Latin characters.
 - **Menu font and numbers (candidate 2): Press Start 2P** (SIL OFL 1.1). A true 8×8 pixel grid, very sharp, all-caps friendly, great for numbers, battle command names and headers. If candidate 1 fails the pixel test, candidate 2 does both jobs.
 - **Sizes:** tested at line heights of 10 and 12 pixels; the numbers below assume **12-pixel line spacing**.
@@ -259,7 +259,7 @@ That is about 17 clips for Otis and Mox and 22 for Red. Wave 1 first; later wave
   - `game/art/final/environments/harrow_landing/`, `.../road/`, `.../old_relay_tower/` (one folder per place, kit pieces inside)
   - `game/art/final/portraits/<character>/`
   - `game/art/final/ui/` (`windows/`, `cursor/`, `ratings/`, `gestures/`, `icons/`, `digits/`)
-  - `game/art/final/fonts/`
+  - `game/art/final/ui/fonts/`
 - **Placeholders** go in `game/art/placeholder/` with the **same file name** as the final asset, so Ross's art is a drop-in replacement. Placeholders follow the same budgets and palette.
 - **Working files** (.blend, .kra, .aseprite) stay in `game/art/source/`, or on Ross's own machine. Only exports go in `final/`.
 - **Imports:** the Technical Artist sets filtering to nearest and turns off mipmaps and compression once, project-wide. Ross never touches import settings.
