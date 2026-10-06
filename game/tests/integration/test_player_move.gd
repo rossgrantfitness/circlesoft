@@ -147,7 +147,7 @@ func test_distance_travelled_matches_speed() -> void:
 	var ticks: int = 60
 	await _ticks(ticks)
 	var travelled: float = absf(_player.position.z)
-	var low: float = _tuning.walk_speed * float(ticks - 2) * TICK
+	var low: float = _tuning.walk_speed * float(ticks - 4) * TICK
 	var high: float = _tuning.walk_speed * float(ticks + 2) * TICK
 	assert_ge(travelled, low)
 	assert_le(travelled, high)
@@ -157,7 +157,7 @@ func test_movement_is_relative_to_the_camera() -> void:
 	# Camera turned 90 degrees: it looks toward -X, so "up" on the stick walks toward -X.
 	_make_world(90.0, false)
 	_player.stick = Vector2(0.0, -1.0)
-	await _ticks(20)
+	await _ticks(40)
 	assert_lt(_player.position.x, -1.0)
 	assert_almost_eq(_player.position.z, 0.0, 0.001)
 

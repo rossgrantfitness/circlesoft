@@ -210,7 +210,8 @@ func test_jump_buffer_fires_a_press_made_just_before_landing() -> void:
 func test_press_too_early_before_landing_is_forgotten() -> void:
 	await _make_world()
 	_player.position.y = 3.0
-	_player.step(TICK)
+	_steps(10)
+	assert_gt(_player.position.y, 1.0, "still falling")
 	var jumped_events: Array[bool] = [false]
 	_player.jumped.connect(func() -> void: jumped_events[0] = true)
 	_player.request_jump()
@@ -244,7 +245,7 @@ func test_no_double_jump() -> void:
 func test_lands_on_top_of_a_crate_and_stays_there() -> void:
 	await _make_world()
 	var crate_face_x: float = 2.0
-	add_to_root(_box_body(Vector3(crate_face_x + 0.75, CRATE_HEIGHT * 0.5, 0.0), Vector3(1.5, CRATE_HEIGHT, 3.0)))
+	add_to_root(_box_body(Vector3(crate_face_x + 2.0, CRATE_HEIGHT * 0.5, 0.0), Vector3(4.0, CRATE_HEIGHT, 3.0)))
 	await tree.physics_frame
 	await tree.physics_frame
 	_player.stick = Vector2(1.0, 0.0)
@@ -374,7 +375,7 @@ func test_camera_does_not_bob_while_jumping() -> void:
 
 func test_camera_eases_up_when_red_lands_on_a_crate() -> void:
 	await _make_world()
-	add_to_root(_box_body(Vector3(2.75, CRATE_HEIGHT * 0.5, 0.0), Vector3(1.5, CRATE_HEIGHT, 3.0)))
+	add_to_root(_box_body(Vector3(4.0, CRATE_HEIGHT * 0.5, 0.0), Vector3(4.0, CRATE_HEIGHT, 3.0)))
 	await tree.physics_frame
 	await tree.physics_frame
 	var rig: DioramaCamera = DioramaCamera.new()
@@ -392,6 +393,8 @@ func test_camera_eases_up_when_red_lands_on_a_crate() -> void:
 	for i: int in 240:
 		_player.step(TICK)
 		rig.update_camera(TICK)
+		if i > 3 and _player.is_on_floor():
+			_player.stick = Vector2.ZERO
 	assert_almost_eq(_player.position.y, CRATE_HEIGHT, 0.03)
 	assert_almost_eq(rig.get_focus().y, CRATE_HEIGHT + rig.target_anchor_height, 0.05, "camera settles at the crate's height")
 

@@ -9,6 +9,8 @@ const MAX_TICKS_PER_LEG: int = 600
 const SETTLE_TICKS: int = 45
 const PILLAR_SHADOW_SPOT: Vector3 = Vector3(1.3, 0.0, -0.3)
 const TOP_RIGHT_WING: Vector3 = Vector3(12.5, 0.0, -3.5)
+## Open floor in front of the wing platform, so the straight walk to the wing does not hit it.
+const WING_APPROACH: Vector3 = Vector3(9.0, 0.0, -2.4)
 
 var _room: FieldRoom = null
 
@@ -114,7 +116,7 @@ func test_red_can_walk_the_whole_room_including_the_wing_and_the_camera_slides()
 	_load_room()
 	var start_focus: Vector3 = _room.camera_rig.get_focus()
 	var start_basis: Basis = _room.camera_rig.global_basis
-	var legs: Array[Vector3] = [Vector3(-1.0, 0.0, -1.5), TOP_RIGHT_WING, Vector3(12.5, 0.0, 3.5),
+	var legs: Array[Vector3] = [Vector3(-1.0, 0.0, -1.5), WING_APPROACH, TOP_RIGHT_WING, Vector3(12.5, 0.0, 3.5),
 			Vector3(-4.5, 0.0, 3.5), Vector3(-4.5, 0.0, -3.5)]
 	for goal: Vector3 in legs:
 		await _walk_to(goal)

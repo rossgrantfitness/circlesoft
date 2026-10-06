@@ -1,0 +1,257 @@
+{
+  "_about": "Gibberish voice data. Placeholder syllables are built by scripts/tools/make_voice_syllables.py from the 'timbres' block; final voices TBD (docs/audio_requests.md). Red has no voice (silent_speakers): only gesture sounds in sfx.json.",
+  "format_version": 1,
+  "folder": "res://audio/voice",
+  "settings": {
+    "consonant_gain": 0.8,
+    "pause_letters": 1,
+    "uppercase_boost_db": 1.5,
+    "uppercase_boost_semitones": 1.0,
+    "pool_size": 4,
+    "fallback_voice": "townsfolk"
+  },
+  "silent_speakers": [
+    "red"
+  ],
+  "aliases": {
+    "zero": "zero_old",
+    "old_zero": "zero_old",
+    "npc": "townsfolk",
+    "crowd": "townsfolk"
+  },
+  "punctuation": {
+    "pause": ",;:-",
+    "long_pause": ".",
+    "rise": "?",
+    "punch": "!"
+  },
+  "timbres": {
+    "round": {
+      "dir": "round",
+      "ref_hz": 110.0,
+      "about": "soft sine-ish hum; warm"
+    },
+    "chirp": {
+      "dir": "chirp",
+      "ref_hz": 440.0,
+      "about": "narrow pulse wave with a pitch flick; bright and zippy"
+    },
+    "creak": {
+      "dir": "creak",
+      "ref_hz": 150.0,
+      "about": "buzzy saw with pitch drift and a flutter; old and creaky"
+    },
+    "honk": {
+      "dir": "honk",
+      "ref_hz": 180.0,
+      "about": "bright saw with a nasal hump; bluster"
+    },
+    "prim": {
+      "dir": "prim",
+      "ref_hz": 400.0,
+      "about": "clean bell-like partials; short and tidy"
+    },
+    "smooth": {
+      "dir": "smooth",
+      "ref_hz": 150.0,
+      "about": "triangle with slow vibrato and a lazy droop; suave"
+    },
+    "plain": {
+      "dir": "plain",
+      "ref_hz": 220.0,
+      "about": "plain square-ish voice; generic"
+    }
+  },
+  "letters": {
+    "a": {
+      "syllable": "v_a",
+      "pitch": 0.0
+    },
+    "b": {
+      "syllable": "c_plosive",
+      "pitch": -0.4
+    },
+    "c": {
+      "syllable": "c_plosive",
+      "pitch": 0.2
+    },
+    "d": {
+      "syllable": "c_plosive",
+      "pitch": -0.2
+    },
+    "e": {
+      "syllable": "v_e",
+      "pitch": 0.2
+    },
+    "f": {
+      "syllable": "c_fricative",
+      "pitch": 0.5
+    },
+    "g": {
+      "syllable": "c_plosive",
+      "pitch": -0.6
+    },
+    "h": {
+      "syllable": "c_fricative",
+      "pitch": -0.2
+    },
+    "i": {
+      "syllable": "v_i",
+      "pitch": 0.8
+    },
+    "j": {
+      "syllable": "c_fricative",
+      "pitch": 0.7
+    },
+    "k": {
+      "syllable": "c_plosive",
+      "pitch": 0.4
+    },
+    "l": {
+      "syllable": "c_liquid",
+      "pitch": 0.3
+    },
+    "m": {
+      "syllable": "c_nasal",
+      "pitch": -0.5
+    },
+    "n": {
+      "syllable": "c_nasal",
+      "pitch": 0.0
+    },
+    "o": {
+      "syllable": "v_o",
+      "pitch": -0.3
+    },
+    "p": {
+      "syllable": "c_plosive",
+      "pitch": 0.1
+    },
+    "q": {
+      "syllable": "c_plosive",
+      "pitch": 0.7
+    },
+    "r": {
+      "syllable": "c_liquid",
+      "pitch": -0.3
+    },
+    "s": {
+      "syllable": "c_fricative",
+      "pitch": 0.9
+    },
+    "t": {
+      "syllable": "c_plosive",
+      "pitch": 0.6
+    },
+    "u": {
+      "syllable": "v_u",
+      "pitch": -0.7
+    },
+    "v": {
+      "syllable": "c_liquid",
+      "pitch": 0.1
+    },
+    "w": {
+      "syllable": "c_liquid",
+      "pitch": -0.6
+    },
+    "x": {
+      "syllable": "c_fricative",
+      "pitch": 0.4
+    },
+    "y": {
+      "syllable": "c_liquid",
+      "pitch": 0.5
+    },
+    "z": {
+      "syllable": "c_fricative",
+      "pitch": 0.8
+    }
+  },
+  "voices": {
+    "otis": {
+      "note": "Gentle big bear: low, slow, warm, narrow melody.",
+      "timbre": "round",
+      "base_pitch_hz": 95.0,
+      "pitch_range_semitones": 3.0,
+      "every_nth_letter": 3,
+      "vowel_shift_semitones": -1.0,
+      "vowel_spread": 0.8,
+      "volume": 0.9,
+      "punch_boost_db": 1.0,
+      "rise_semitones": 3.0
+    },
+    "mox": {
+      "note": "Hyper ferret kid: high, zippy, wide melody.",
+      "timbre": "chirp",
+      "base_pitch_hz": 620.0,
+      "pitch_range_semitones": 10.0,
+      "every_nth_letter": 2,
+      "vowel_shift_semitones": 0.0,
+      "vowel_spread": 1.3,
+      "volume": 0.7,
+      "punch_boost_db": 3.0,
+      "rise_semitones": 7.0
+    },
+    "zero_old": {
+      "note": "Creaky old-timer: low-mid, crackly, drifting pitch.",
+      "timbre": "creak",
+      "base_pitch_hz": 125.0,
+      "pitch_range_semitones": 5.0,
+      "every_nth_letter": 3,
+      "vowel_shift_semitones": 0.0,
+      "vowel_spread": 1.2,
+      "volume": 0.85,
+      "punch_boost_db": 1.5,
+      "rise_semitones": 3.0
+    },
+    "kasp": {
+      "note": "Blustering beaver sergeant: nasal, loud punch on every !.",
+      "timbre": "honk",
+      "base_pitch_hz": 165.0,
+      "pitch_range_semitones": 6.0,
+      "every_nth_letter": 2,
+      "vowel_shift_semitones": 1.0,
+      "vowel_spread": 1.0,
+      "volume": 0.8,
+      "punch_boost_db": 4.0,
+      "rise_semitones": 4.0
+    },
+    "vela": {
+      "note": "Prim bunny: tidy, bell-like, even, stiff little rises.",
+      "timbre": "prim",
+      "base_pitch_hz": 430.0,
+      "pitch_range_semitones": 7.0,
+      "every_nth_letter": 2,
+      "vowel_shift_semitones": 2.0,
+      "vowel_spread": 0.6,
+      "volume": 0.75,
+      "punch_boost_db": 1.5,
+      "rise_semitones": 6.0
+    },
+    "ruo": {
+      "note": "Smooth-talking smuggler: lazy vibrato, drawling droop.",
+      "timbre": "smooth",
+      "base_pitch_hz": 150.0,
+      "pitch_range_semitones": 5.0,
+      "every_nth_letter": 2,
+      "vowel_shift_semitones": 0.0,
+      "vowel_spread": 1.0,
+      "volume": 0.85,
+      "punch_boost_db": 2.0,
+      "rise_semitones": 6.0
+    },
+    "townsfolk": {
+      "note": "Generic villager: plain mid voice; pitch it up or down per NPC with the optional pitch_semitones.",
+      "timbre": "plain",
+      "base_pitch_hz": 235.0,
+      "pitch_range_semitones": 4.0,
+      "every_nth_letter": 3,
+      "vowel_shift_semitones": 0.0,
+      "vowel_spread": 1.0,
+      "volume": 0.75,
+      "punch_boost_db": 2.0,
+      "rise_semitones": 4.0
+    }
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "conversations": {
+
+    "otis_talk": [
+      {"speaker": "otis", "text": "Red! There you are. Welcome to the\ntest room, friend."},
+      {"speaker": "otis", "text": "Sorry about the mat. It says WELCOME,\nbut it's upside down. Nobody told it."},
+      {"speaker": "red", "gesture": "question"},
+      {"speaker": "otis", "text": "Mm-hm. That's the 'what is all this?'\nface. Fair question."},
+      {"speaker": "otis", "text": "I can give you the grand tour. Or you\ncan poke things and see what happens.",
+        "choice": ["Thumbs-up: Grand tour", "Head shake: I'll poke"],
+        "next": ["long_briefing", "otis_poke"]}
+    ],
+
+    "otis_talk_again": [
+      {"speaker": "otis", "text": "Back already? Good. I was just counting\nthe room."},
+      {"speaker": "otis", "text": "Sorry, I lost count at the crates.\nThey all look like crates."},
+      {"speaker": "red", "gesture": "heart"},
+      {"speaker": "otis", "text": "Aw. That one needs no translating.\nSorry, I got a little misty. Dust."}
+    ],
+
+    "otis_poke": [
+      {"speaker": "otis", "text": "Ha! Poking is the oldest science there is."},
+      {"speaker": "otis", "text": "Sorry in advance if something pokes back."},
+      {"speaker": "red", "gesture": "thumbs_up"},
+      {"speaker": "otis", "text": "That's 'thanks, Otis' and 'don't wait up.'\nBoth received. Go on, then."}
+    ],
+
+    "long_briefing": [
+      {"speaker": "otis", "text": "Right! The grand tour. Hold on to your\nhat. I'm holding on to mine."},
+      {"speaker": "mox", "text": "DIBS on narrating! This is a TEST ROOM.\nFor testing! Like me!"},
+      {"speaker": "otis", "text": "Mox. How did you get in here?"},
+      {"speaker": "mox", "text": "Crate. Next question."},
+      {"speaker": "otis", "text": "Sorry, friend, I'll make it quick. Talk to\nfolks. Examine things. Grab what glints."},
+      {"speaker": "red", "gesture": "exclaim"},
+      {"speaker": "mox", "text": "She's saying 'Mox is a genius.' I can\ntell. It's all in the ears."},
+      {"speaker": "otis", "text": "She's saying there's a shiny crate up on\nthat platform. Go on. Up you go."}
+    ],
+
+    "mox_talk": [
+      {"speaker": "mox", "text": "Red! Behold! My Automatic Door-Opener-\nCloser-Opener! It's forty percent finished!"},
+      {"speaker": "mox", "text": "And the forty percent that works is\nINCREDIBLE. Tuesday, stay off the button."},
+      {"speaker": "mox", "text": "TUESDAY! NOT THE BUTTON! ...Oh no. It's\nsmoking. IT'S SMOKING! AAAAAAAAH!"},
+      {"speaker": "mox", "text": "...one... two... three... four. Okay.\nI'm fine. Smoke is a feature."},
+      {"speaker": "red", "gesture": "dots"},
+      {"speaker": "mox", "text": "I know that look! 'Mox, I would wrestle a\ncomet for your machine.' Aw! Please don't.\nIt's not rated for comets."},
+      {"speaker": "red", "gesture": "head_shake"},
+      {"speaker": "mox", "text": "Modest! She's being modest! So, should I\npress the button or not press the button?",
+        "choice": ["Thumbs-up: Press it", "Head shake: Don't press it"],
+        "next": ["mox_press", "mox_nopress"]}
+    ],
+
+    "mox_talk_again": [
+      {"speaker": "mox", "text": "Shh! I'm adding a second button."},
+      {"speaker": "mox", "text": "It's a panic button. For the first button."},
+      {"speaker": "red", "gesture": "exclaim"},
+      {"speaker": "mox", "text": "I know! 'Mox, that is the safest thing\nanyone has ever built.' Thanks! I'm touched.\nDon't touch the first button."}
+    ],
+
+    "mox_press": [
+      {"speaker": "mox", "text": "Pressing it! Pressing it! ...Whoa."},
+      {"speaker": "mox", "text": "CONFETTI! It's confetti! That was\nsupposed to be a rocket!"},
+      {"speaker": "mox", "text": "But confetti is... part of the forty percent."},
+      {"speaker": "red", "gesture": "thumbs_up"},
+      {"speaker": "mox", "text": "She loves it! I knew she would. Obviously."}
+    ],
+
+    "mox_nopress": [
+      {"speaker": "mox", "text": "Smart. Super smart. I would have pressed it."},
+      {"speaker": "red", "gesture": "sweat"},
+      {"speaker": "mox", "text": "Don't worry, it's only a little bit\nexplosive. ...A medium little bit."},
+      {"speaker": "mox", "text": "Fine! We'll just stand here and admire\nthe smoke. It's very good smoke."}
+    ],
+
+    "zero_talk": [
+      {"speaker": "zero_old", "text": "Watch Zero, SOUND OFF! *DING-DING!*\nThat's me. I'm all of Watch Zero today."},
+      {"speaker": "zero_old", "text": "You, kid! Stand still when I'm talking!"},
+      {"speaker": "zero_old", "text": "The Signals Corps wrote me up for noise.\nIn a room built for testing noise! *DING!*"},
+      {"speaker": "zero_old", "text": "I've out-shouted a sergeant. Twice.\nBefore breakfast. *DING!*"},
+      {"speaker": "zero_old", "text": "You've got the look of someone who runs\ntoward trouble. Good. Take this."},
+      {"speaker": "zero_old", "text": "Canned Coffee. Drink it before something\nneeds yelling at. *DING!*",
+        "give_item": "canned_coffee", "set_flag": "zero_gift"},
+      {"speaker": "red", "gesture": "thumbs_up"},
+      {"speaker": "zero_old", "text": "Don't thank me! Gratitude is noisy!\n*DING!* ...You're welcome."},
+      {"speaker": "zero_old", "text": "And keep that lamp of yours lit. The old\ncustoms don't keep themselves."}
+    ],
+
+    "zero_talk_again": [
+      {"speaker": "zero_old", "text": "Still here? Good. Somebody has to hear\nme complain. *DING!*"},
+      {"speaker": "zero_old", "text": "No, there's no more coffee. I am not a\nvending machine! *DING-DING!*"},
+      {"speaker": "red", "gesture": "dots"},
+      {"speaker": "zero_old", "text": "Don't give me that look. ...Fine. Sit.\nListen to the bell. It's soothing."},
+      {"speaker": "zero_old", "text": "That's the sound of a mast nobody has\njammed. Sweetest noise there is. *ding*"}
+    ],
+
+    "examine_pillar": [
+      {"speaker": "narrator", "text": "A stone pillar. It holds up nothing in\nparticular and is very proud of it."},
+      {"speaker": "narrator", "text": "Scratched in at Mox height:\nMOX WUZ HERE."}
+    ],
+
+    "examine_lamp": [
+      {"speaker": "narrator", "text": "A brass lamp on a stand. Warm to the\ntouch. Slightly crooked."},
+      {"speaker": "narrator", "text": "Red taps the glass twice before she\nnotices. Habit."}
+    ],
+
+    "examine_crate": [
+      {"speaker": "narrator", "text": "A plain crate, stenciled:\nCONTENTS: NOTHING (TESTED)."},
+      {"speaker": "narrator", "text": "You knock. Nobody knocks back. Mox is not\nin this one. Probably."}
+    ],
+
+    "examine_prize_crate": [
+      {"speaker": "narrator", "text": "A shiny crate on the raised platform.\nA tiny flag on top reads WINNER."},
+      {"speaker": "narrator", "text": "You jumped up here, so you win. Inside:\na Ration Bar. It tastes like the wrapper.",
+        "give_item": "ration_bar", "set_flag": "prize_crate_taken"}
+    ],
+
+    "examine_prize_crate_again": [
+      {"speaker": "narrator", "text": "The prize crate is empty. A note inside:\nTHANKS FOR PLAYING."}
+    ],
+
+    "examine_sign": [
+      {"speaker": "sign", "text": "TEST ROOM\nPLEASE DO NOT TEST THE TEST ROOM"},
+      {"speaker": "sign", "text": "Management has noted that you are\ncurrently testing this sign."},
+      {"speaker": "sign", "text": "Management thanks you for your testing.\nPlease stop."}
+    ],
+
+    "examine_window": [
+      {"speaker": "narrator", "text": "A window, painted onto the back wall. The\npainted stars are doing their best."},
+      {"speaker": "narrator", "text": "In the corner: a tiny painted lamp in a\ntiny painted window. Red gives it a thumbs-up."}
+    ]
+
+  }
+}

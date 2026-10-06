@@ -1,4 +1,4 @@
-[gd_scene load_steps=47 format=3]
+[gd_scene load_steps=46 format=3]
 
 [ext_resource type="Script" path="res://scripts/core/psx_room_look.gd" id="1_look"]
 [ext_resource type="Shader" path="res://shaders/psx_lit.gdshader" id="2_lit"]
@@ -255,20 +255,14 @@ mesh = SubResource("Mesh_ledge")
 surface_material_override/0 = SubResource("Mat_ledge")
 
 [node name="WingPlatform" type="MeshInstance3D" parent="." groups=["jumpable"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.5, 0.45, -2.6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.8, 0.45, -1.0)
 mesh = SubResource("Mesh_platform")
 surface_material_override/0 = SubResource("Mat_platform")
 
 [node name="RewardCrate" type="MeshInstance3D" parent="." groups=["jumpable"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.5, 1.1, -2.6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.8, 1.1, -1.0)
 mesh = SubResource("Mesh_reward")
 surface_material_override/0 = SubResource("Mat_reward")
-
-[node name="RewardGlint" type="OmniLight3D" parent="RewardCrate"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0.3)
-light_color = Color(1, 0.8, 0.3, 1)
-light_energy = 2.5
-omni_range = 3.0
 
 [node name="Collision" type="StaticBody3D" parent="."]
 
@@ -313,11 +307,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 0.35, -3.55)
 shape = SubResource("Box_ledge")
 
 [node name="WingPlatformShape" type="CollisionShape3D" parent="Collision"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.5, 0.45, -2.6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.8, 0.45, -1.0)
 shape = SubResource("Box_platform")
 
 [node name="RewardCrateShape" type="CollisionShape3D" parent="Collision"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.5, 1.1, -2.6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.8, 1.1, -1.0)
 shape = SubResource("Box_reward")
 
 [node name="PlayerSpawn" type="Marker3D" parent="."]

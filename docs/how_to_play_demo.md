@@ -22,9 +22,10 @@ This is a small test build. It has a title screen and one little test room where
 | What | Keyboard | Controller |
 |---|---|---|
 | Move Red | W A S D or the arrow keys | Left stick or d-pad |
-| Run | (automatic, Red runs by default) | Push the stick all the way, or hold the run button (X / West) |
-| Walk | Hold **Shift** | Tilt the stick lightly |
-| Confirm / pick a menu item | Space, Z or E | A button |
+| Run | Hold **Shift** (let go to walk) | Hold **X** (the west button) |
+| Jump | **Space** | **A** |
+| Talk / interact in a room | E or Z | **B** |
+| Confirm / pick a menu item | Enter, Z or E | A button |
 | Start / go back | Enter or Esc | Start button |
 | PSX options panel | **F1** | (keyboard only) |
 
