@@ -7,6 +7,8 @@
 
 **Priority follows the build order:** P1 = party and weapons (battle, M2; Red first) · P2 = Harrow Landing: portraits, townsfolk, town sets (M3) · P3 = road and tower: sets, enemies, props (M4) · P4 = the boss (M5) · P5 = UI (M7).
 
+**Portraits: 24 images in 6 sets** (Red, Otis, Mox × 5 expressions = 15; Kasp + 2 key NPCs × 3 = 9). Crowd NPCs get none.
+
 **Shared notes:** 3D models as .glb, textures as .png, nearest-neighbor, low color count (per the style guide). Characters are chibi animals. Weapons are separate props held in the hand, so models need a hand attach point. Animation lists come from the Technical Artist with the tech plan. Final art goes under game/art/final/ (exact folders confirmed by the tech plan); agents' placeholders stay in game/art/placeholder/.
 
 | # | Name | What it's for | Size / resolution | Poly budget (3D) | Palette notes | File format | Destination path | Priority | Status |
