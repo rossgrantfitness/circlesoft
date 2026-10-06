@@ -17,7 +17,6 @@
 ### Milestone 1: PSX look, diorama camera test room, pipeline test
 | ID | Task | Assigned to | Depends on | Ross sign-off | Notes |
 |---|---|---|---|---|---|
-| M1-1 | Godot 4 project skeleton: folder layout per the tech plan, JSON data loader for game/data/, headless test runner for game/tests/ | Gameplay Programmer | Technical plan (In Progress) | No | Technical Director reviews. Move into the lights-left-on repo once it exists. |
 | M1-2 | PSX shader set: low internal resolution scaled up, nearest-neighbor filtering, vertex jitter/snapping, affine texture warping, dithering | Technical Artist | M1-1; style guide rendering rules | No | Shown to Ross in M1-5. |
 | M1-3 | Diorama camera test room: one placeholder room (floor + two back walls), fixed angle that slides with a placeholder Red, tall props fade, fade-to-black room change; plus a debug room with a cheat menu (jump to any room) | Gameplay Programmer | M1-1, M1-2 | No | Later tasks add their own cheats (start any fight, set level, give items, jump to floor). |
 | M1-4 | Windows and Mac export of the test room, including the Mac signing step, so Ross can run it on his own computer | Gameplay Programmer | M1-3 | No | Technical Director reviews. If Mac signing needs Ross's account or a purchase, bring it to Ross as a decision. |
@@ -102,6 +101,7 @@
 ## Done
 | Task | Done by | Finished | Notes |
 |---|---|---|---|
+| M1-1 Project skeleton (tech plan steps 1-3): project settings, autoload stubs, DataDB, headless test runner | Gameplay Programmer | 2026-10-06 | 28 headless tests pass (`godot --headless --path game -s res://tests/run_all.gd`). Awaiting Technical Director review and the studio-floor commit. |
 | Slice task board, art requests (41 assets) and audio requests drawn up | Producer | 2026-10-06 | Includes the weapon-model art requests (Red sword, Otis hammer, Mox wrench-mace); Vela's and Ruo's weapons are Later. |
 | Studio setup (Phases 0–4) | Studio floor | 2026-10-05 | Waiting on Ross to merge pull request #1. |
 | Pitch meeting (3 rounds) | Creative Director, Technical Director, Producer | 2026-10-05 | Ross chose Lights Left On. |

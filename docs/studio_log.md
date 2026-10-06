@@ -4,6 +4,7 @@
 
 ## 2026-10-06
 
+- **M1 steps 1–3 built** (Gameplay Programmer): Godot project configured (Compatibility, 384×216 PSX globals, input map, debug keys F1–F10, autoloads), headless test runner, DataDB data loader. **28 tests, all passing.** Next, in parallel: Technical Artist on PSX shaders, the low-res screen, the test room and placeholder Red; Gameplay Programmer on the diorama camera, prop fading and Red's movement.
 - **Style guide approved** (384×216; 96×96 pixel-art portraits; one model per character) and **technical plan approved** (Compatibility renderer). **Milestone 1 started:** Gameplay Programmer setting up the Godot project, the headless test runner and the data loader. Taste Keeper scoring R28–R29.
 - **Technical plan written** (docs/tech_plan.md): plain-language part for Ross, architecture, data formats, PSX shader approach, headless tests + battle simulator, Milestone 1 in 15 steps, Windows and Mac exports. One decision for Ross: the renderer (Compatibility recommended). Test room will switch between 384×216 and other resolutions so Ross can compare.
 - **Slice broken into 45 tasks** on the task board (M0 style guide → M7 polish/builds). Art requests filled (41 assets, 24 portraits); audio requests filled (8 tracks, 40 SFX). Waiting on Ross for the style guide; technical plan still drafting.

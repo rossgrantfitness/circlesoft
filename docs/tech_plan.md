@@ -26,6 +26,8 @@ Recommendation: A. The PSX look is deliberately simple, and A means the game run
 - Game logic is plain `RefCounted` classes with no nodes, no `Time` and no global `randf()`. A seeded `RandomNumberGenerator` and a clock are passed in. Scenes only show and feed the logic. *Why: the tests and the simulator can run that logic thousands of times without a screen.*
 - All tunables live in `game/data/` (JSON for nested data, CSV for tables). Code never contains a stat, price, string or timing value.
 - Autoloads (singletons), kept few: `DataDB`, `GameState`, `SaveManager`, `Config`, `SceneRouter`, `AudioManager`.
+- **CSV rule (found in M1 setup):** Godot imports every `.csv` as a translation by default. Every data CSV needs a sibling `X.csv.import` with `importer="keep"` (a test enforces this), and export presets must include `*.json, *.csv` so data ships in builds.
+- **JSON numbers load as floats** (Godot behavior); DataDB converts integer-looking CSV cells to int. Cast explicitly in code.
 - Commit rule: run the tests before every commit, keep commits small, and never commit a red test suite to main.
 
 ### Folder layout (under `game/`)
