@@ -119,6 +119,15 @@ One system the whole game. Same commands, same three presses, same cues and rati
 - Robot, giant robot, spaceship and god-scale fights.
 - Other bosses' gimmicks.
 
+### Technical Director's review
+- **Feasibility for the slice: Medium.** Turn-based battles are well-trodden; only the timed presses need real care.
+- **Trickiest pieces:**
+  - *Fair timing on any computer:* presses are timed by a clock, not screen updates, so slow machines get the same window.
+  - *Flash and "ding" landing together:* both fire from the same moment in the attack's data, plus a "timing offset" setting for laggy TVs and headphones.
+  - *Kasp's jam pulse:* cues scramble, but the real window never moves, so learned rhythm still works.
+- **Automatic testing:** press-judging runs without graphics. The simulator plays thousands of fights as a "perfect," "good," "miss" and Auto-Timing player, and checks win rates and fight lengths against the Feel targets.
+- **Simplify:** Kasp's eight legs break in four pairs (all eight still on screen). Later, not slice: Tilly's net costs a turn on a miss, which breaks "missing never hurts."
+
 ## Party & progression
 _Party size and swapping, levels, XP, stats, skill learning, character growth._
 
