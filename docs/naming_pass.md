@@ -1,6 +1,6 @@
 # Naming Pass (proposal)
 
-> Status: PROPOSAL from the Creative Director, 2026-10-05. Nothing here is final until Ross approves. The story bible is unchanged.
+> Status: **APPROVED by Ross, 2026-10-06** ("D1 a d2 yes"): Relay Watch Zero, plus all toughen picks and the HNS prefix.
 > Ross's brief: "change the name of the tenders, remember this is scifi fantasy so some of these names need to be like fucking bravo company or something"
 
 ---

@@ -2,6 +2,10 @@
 
 > A running record of what the studio is doing, newest at the top. Updated as work happens so Ross can follow along.
 
+## 2026-10-06
+
+- **Naming pass approved:** Relay Watch Zero, Hardfall Corps, Scrapforge Division, Slipway Prime, HNS ship prefix. Creative Director applying the names across the story bible and drafting the Glossary; Taste Keeper scoring R17.
+
 ## 2026-10-05
 
 - **Naming pass proposed** (docs/naming_pass.md): Tenders → Relay Watch Zero (pick); toughen Landing Corps → Hardfall Corps, Salvage Works → Scrapforge Division, the Yards → Slipway Prime; optional HNS ship prefix; ship joke names kept. Sent to Ross.

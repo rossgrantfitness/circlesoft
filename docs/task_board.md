@@ -12,7 +12,7 @@
 ## In Progress
 | Task | Assigned to | Started | Notes |
 |---|---|---|---|
-| Naming pass: sci-fi military group names (Tenders + others) | Creative Director proposes, Ross picks | 2026-10-05 | "Like Bravo Company." |
+| Apply approved names + draft Glossary (last story bible section) | Creative Director drafts, Ross approves | 2026-10-06 | Naming pass approved. |
 | Set up the lights-left-on repository | Ross (GitHub clicks), then studio floor moves game files over | 2026-10-05 | Merge PR #1 → mark circlesoft as template → create lights-left-on from it. |
 
 ## Done

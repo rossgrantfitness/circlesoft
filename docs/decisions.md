@@ -5,6 +5,7 @@
 
 | Date | Decision | Options considered | Why |
 |---|---|---|---|
+| 2026-10-06 | **Naming pass approved:** the Tenders → **Relay Watch Zero** (callsign "Zero", members "Zeroes"); Landing Corps → **Hardfall Corps**; Salvage Works → **Scrapforge Division**; the Yards → **Slipway Prime**; Hegemony ships get the **HNS** prefix. Kept: Hegemony Navy, Signals Corps, Rim Guard, the Overture, Coldrunners, Marchfolk, and all joke ship names. | Tenders: A Relay Watch Zero · B Iron Bell Battery · C First Mast Company; toughen the rest: yes / no | Studio recommendations taken. |
 | 2026-10-05 | **Red's mom is Eurydice "Dee" Kincaid** (the Orpheus-and-Eurydice nod: Red goes into the dark for her and never looks back). Chosen despite the flag that a recent hit game has a character named Eurydice; it's a name from Greek myth. | A Hesper (recommended) · B Hero · C Eurydice "Dee" · D Henrietta "Etta" | Ross's pick. |
 | 2026-10-05 | **THE TWIST approved as revised:** the god is the Keeper; five-phase beatdown finale ending god vs. god; Red keeps the power long enough to throw the stars back, then blows out her lamp at home. Clue table approved. | Approve / approve with changes / redo | Approved. |
 | 2026-10-05 | **Naming direction:** group and faction names should sound sci-fi military, "like fucking Bravo Company", not soft or folksy. The Tenders must be renamed; other soft names get a pass. | (Direct instruction from Ross) | It's sci-fi fantasy; names should hit hard. |
