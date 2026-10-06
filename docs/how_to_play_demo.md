@@ -1,6 +1,6 @@
 # LIGHTS LEFT ON: Milestone 1 demo (how to play)
 
-This is a small test build. It has a title screen and one little test room where you can walk, run and jump with Red, talk to Otis, Mox and an old Zero, examine things, open the field menu, and flip the old-PlayStation graphics effects on and off. There is no story or battle yet. We want to know how the look and the camera feel to you.
+This is a small test build. It has a title screen and one little test room where you can walk, run and jump with Red, talk to Otis, Mox and an old Zero, examine things, open the field menu, and flip the old-PlayStation graphics effects on and off. There is no story yet, but there are four enemies standing in the room that you can fight (see "Fighting" below). We want to know how the look and the camera feel to you.
 
 ## Opening it on Windows
 
@@ -27,10 +27,22 @@ This is a small test build. It has a title screen and one little test room where
 | Talk / examine / take (the icon over Red's head shows when you can) | E or Z | **B** |
 | Field menu (Items, Status, Config, Save, Close) | Tab or C | **Y** |
 | Confirm / pick a menu item | Enter, Z or E | A button |
+| **Clutch** (the timing button in a fight) | Space, Z, E or Enter | **A** |
 | Start / go back | Enter or Esc | Start button |
 | PSX options panel | **F1** | (keyboard only) |
 
-Esc (or Start) in the room takes you back to the title screen.
+Esc (or Start) in the room takes you back to the title screen. It does nothing while a speech bubble, the menu or a fight is up.
+
+## Fighting
+
+Four enemies stand in the room: a Grunt, a Drone, a Squad Boss and the Quota Enforcer (the tough one: you can't run from it). Walk up to one until the little speech-bubble icon shows over Red's head, then press the talk button (E / Z / B). The enemy shouts a silly challenge and asks **Fight?** Pick **Fight!** to start the battle, or "Not now" to walk away.
+
+- **Timing.** Press the Clutch button right as your hit lands to hit harder. Press it right as an enemy's hit lands on you to block it. Miss and nothing bad happens, you just don't get the bonus.
+- **Winning** puts you back in the room exactly where you stood, and that enemy is gone until you start the demo again. **Running away** puts you back too, and the enemy is still there. **Losing** asks whether to **Retry** (the same fight, from the moment before it started) or go back to the title screen.
+- **Making timing easier.** Open the field menu (Tab / C / Y), then **Config**. There are three timing options:
+  - **Auto-Timing**: the game presses for you, so you can just watch (off by default).
+  - **Wide Windows**: the moment that counts is longer. You still press.
+  - **Timing Offset**: nudges the timing earlier or later, for laggy TVs and wireless headphones.
 
 ## The PSX options panel (press F1)
 

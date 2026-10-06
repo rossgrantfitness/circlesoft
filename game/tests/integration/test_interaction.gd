@@ -125,7 +125,7 @@ func test_between_otis_and_mox_red_picks_the_one_she_faces() -> void:
 
 func test_nothing_to_pick_in_the_open() -> void:
 	_load_room()
-	await _stand(Vector3(8.0, 0.0, 2.5), Vector3(9.0, 0.0, 2.5))
+	await _stand(Vector3(0.0, 0.0, 0.5), Vector3(1.0, 0.0, 0.5))
 	assert_null(_room.interactor.get_target())
 	assert_false(_room.prompt.is_showing())
 

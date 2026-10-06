@@ -136,7 +136,7 @@ func teardown() -> void:
 		fights.shut_down()
 	if runner != null and is_instance_valid(runner):
 		runner.stop()
-	var tree: SceneTree = get_tree()
+	var tree: SceneTree = get_tree() if is_inside_tree() else Engine.get_main_loop() as SceneTree
 	if tree == null:
 		return
 	var stage: UiStage = tree.get_first_node_in_group(UiStage.GROUP) as UiStage

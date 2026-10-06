@@ -451,7 +451,7 @@ model_path = "res://art/placeholder/enemies/signals_grunt/enm_signals_grunt.glb"
 reach = 1.8
 
 [node name="DroneEnemy" parent="." instance=ExtResource("15_enemy")]
-transform = Transform3D(0.3227, 0, -0.9465, 0, 1, 0, 0.9465, 0, 0.3227, 3.4, 0, -1.0)
+transform = Transform3D(0.2195, 0, -0.9756, 0, 1, 0, 0.9756, 0, 0.2195, 3.0, 0, -0.4)
 speaker_id = "enemy_drone"
 fight_id = "drone"
 model_path = "res://art/placeholder/enemies/signals_drone/enm_signals_drone.glb"
