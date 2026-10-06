@@ -1,5 +1,5 @@
 """Builds the placeholder Red: a ~300-triangle chibi blockout with a 17-bone rig and
-idle / walk / run animations, plus its 128 px texture, and exports a .glb.
+idle / walk / run / jump / fall / land animations, plus its 128 px texture, and exports a .glb.
 
 Placeholder only (docs/style_guide.md "placeholder rule"): made from boxes and one sphere.
 Ross's final Red replaces game/art/placeholder/characters/red/red_blockout.glb.
@@ -383,11 +383,100 @@ def pose_gait(rig, t, thigh, knee, arm, elbow, bob, lean):
     rig.rotate("ear_r", y=-6 * math.sin(phase * 2 - 0.3))
 
 
+def lerp(a, b, k):
+    return a + (b - a) * k
+
+
+def smooth(k):
+    k = max(0.0, min(1.0, k))
+    return k * k * (3 - 2 * k)
+
+
+def pose_crouch(rig, amount, lean=0.0):
+    """Shared squash: hips drop, thighs come forward, knees fold so the boots stay on the ground.
+    amount 0 = standing, 1 = full crouch."""
+    rig.move("hips", z=-0.07 * amount)
+    rig.rotate("spine", x=lean + 10 * amount)
+    rig.rotate("head", x=-(lean + 10 * amount) * 0.6)
+    for side in ("r", "l"):
+        rig.rotate("thigh_" + side, x=-55 * amount)
+        rig.rotate("shin_" + side, x=90 * amount)
+
+
+def pose_jump(rig, t):
+    """One-shot takeoff: a quick crouch (t 0 to 0.3), then launch into a stretched, rising pose
+    (arms thrown up, front knee tucked, back leg trailing) that the last key holds while Red
+    is going up. Does not loop."""
+    rig.reset()
+    crouch = 1.0 - smooth(t / 0.3)
+    rise = smooth((t - 0.2) / 0.8)
+    pose_crouch(rig, crouch, lean=0.0)
+    # Rising pose, blended in as the crouch lets go.
+    rig.move("hips", z=-0.07 * crouch + 0.01 * rise)
+    rig.rotate("spine", x=10 * crouch - 6 * rise)
+    rig.rotate("head", x=-6 * crouch + 8 * rise)
+    rig.rotate("thigh_l", x=-55 * crouch - 70 * rise)    # front leg: knee up
+    rig.rotate("shin_l", x=90 * crouch + 20 * rise)
+    rig.rotate("thigh_r", x=-55 * crouch + 18 * rise)    # back leg: trails behind
+    rig.rotate("shin_r", x=90 * crouch + 5 * rise)
+    rig.rotate("upper_arm_l", x=-135 * rise, y=-12 * rise)   # free arm thrown up
+    rig.rotate("forearm_l", x=-15 * rise)
+    rig.rotate("upper_arm_r", x=-60 * rise)                  # sword arm up less, blade stays put
+    rig.rotate("tail", x=-25 * rise, z=0)
+    rig.rotate("ear_l", x=-30 * rise)                        # ears trail down on the way up
+    rig.rotate("ear_r", x=-12 * rise)
+
+
+def pose_fall(rig, t):
+    """Looping fall: arms flung out and up, legs dangling and paddling a little, ears and
+    tail streaming up."""
+    phase = 2 * math.pi * t
+    s = math.sin(phase)
+    c = math.cos(phase)
+    rig.reset()
+    rig.move("hips", z=0.005 * s)
+    rig.rotate("spine", x=-3 + 1.5 * s)
+    rig.rotate("head", x=-4, z=3 * s)
+    rig.rotate("thigh_l", x=-30 + 12 * s)
+    rig.rotate("shin_l", x=45 + 15 * s)
+    rig.rotate("thigh_r", x=8 - 12 * s)
+    rig.rotate("shin_r", x=35 - 15 * s)
+    rig.rotate("upper_arm_l", x=-95 + 18 * s, y=-35)
+    rig.rotate("forearm_l", x=-20 * c)
+    rig.rotate("upper_arm_r", x=-55 + 10 * s)
+    rig.rotate("tail", x=30, z=10 * s)
+    rig.rotate("ear_l", x=35 + 12 * s)
+    rig.rotate("ear_r", x=18 + 8 * c, y=-8 * s)
+
+
+def pose_land(rig, t):
+    """One-shot landing squash: drops into a crouch by t 0.4 with arms swinging down, then
+    springs back to the standing rest pose. Ends exactly on the idle rest pose."""
+    rig.reset()
+    if t < 0.4:
+        k = smooth(t / 0.4)
+    else:
+        k = 1.0 - smooth((t - 0.4) / 0.6)
+    pose_crouch(rig, k)
+    rig.rotate("upper_arm_l", x=-30 * k)
+    rig.rotate("upper_arm_r", x=-15 * k)
+    rig.rotate("tail", x=-20 * k)
+    rig.rotate("ear_l", x=25 * k)
+    rig.rotate("ear_r", x=10 * k)
+
+
 ANIMATIONS = {
-    # name: (frames in one loop, pose function)
-    "idle": (22, lambda rig, t: pose_idle(rig, t)),
-    "walk": (12, lambda rig, t: pose_gait(rig, t, thigh=30, knee=38, arm=26, elbow=10, bob=0.018, lean=3)),
-    "run": (9, lambda rig, t: pose_gait(rig, t, thigh=52, knee=75, arm=50, elbow=45, bob=0.04, lean=12)),
+    # name: (frames, pose function, loops)
+    # Loops: `frames` keys, then one extra key equal to the first so the loop closes.
+    # One-shots: pose(t) runs from t = 0 to t = 1 inclusive; the last key is held.
+    "idle": (22, lambda rig, t: pose_idle(rig, t), True),
+    "walk": (12, lambda rig, t: pose_gait(rig, t, thigh=30, knee=38, arm=26, elbow=10, bob=0.018, lean=3), True),
+    # Run: a long, driving stride with a big forward lean and pumping arms (walk is 30 deg
+    # thigh swing and 3 deg lean; run is 66 and 20).
+    "run": (9, lambda rig, t: pose_gait(rig, t, thigh=66, knee=100, arm=70, elbow=75, bob=0.05, lean=20), True),
+    "jump": (6, lambda rig, t: pose_jump(rig, t), False),      # 0.4 s, holds the rising pose
+    "fall": (8, lambda rig, t: pose_fall(rig, t), True),       # 0.53 s loop
+    "land": (4, lambda rig, t: pose_land(rig, t), False),      # 0.27 s squash and recover
 }
 
 
@@ -398,13 +487,18 @@ def build_animations(arm_obj):
     rig = Rig(arm_obj)
     anim = arm_obj.animation_data_create()
     actions = []
-    for name, (frames, pose) in ANIMATIONS.items():
+    lowest_by_clip = {}
+    for name, (frames, pose, loops) in ANIMATIONS.items():
         action = bpy.data.actions.new(name)
         action.use_fake_user = True
         anim.action = action
-        for frame in range(frames + 1):          # last key repeats the first so the loop closes
-            pose(rig, (frame % frames) / frames)
+        for frame in range(frames + 1):
+            # Loops: the last key repeats the first so the loop closes. One-shots: it is the end pose.
+            pose(rig, (frame % frames) / frames if loops else frame / frames)
             rig.key(frame)
+            bpy.context.view_layer.update()
+            lowest = min((arm_obj.matrix_world @ arm_obj.pose.bones[b].tail).z for b in ("shin_r", "shin_l"))
+            lowest_by_clip[name] = min(lowest_by_clip.get(name, 9.0), lowest)
         actions.append((name, action, frames))
     # One NLA track per clip, so the exporter writes one named animation each.
     anim.action = None
@@ -414,6 +508,9 @@ def build_animations(arm_obj):
         strip = track.strips.new(name, 0, action)
         strip.name = name
     rig.reset()
+    # Sanity print: the lowest shin tip (rest is 0.04, the top of the boot); a boot sole sits 0.04 below.
+    for clip, low in lowest_by_clip.items():
+        print("lowest shin tip in %s: %.3f" % (clip, low))
     return actions
 
 
