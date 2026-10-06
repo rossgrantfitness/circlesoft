@@ -1,6 +1,6 @@
 # LIGHTS LEFT ON: Milestone 1 demo (how to play)
 
-This is a small test build. It has a title screen and one little test room where you can walk Red around and flip the old-PlayStation graphics effects on and off. There is no story or battle yet. We want to know how the look and the camera feel to you.
+This is a small test build. It has a title screen and one little test room where you can walk, run and jump with Red, talk to Otis, Mox and an old Zero, examine things, open the field menu, and flip the old-PlayStation graphics effects on and off. There is no story or battle yet. We want to know how the look and the camera feel to you.
 
 ## Opening it on Windows
 
@@ -52,6 +52,9 @@ F1 shows or hides a list of the graphics effects. Press the key to flip each one
 - **The camera.** It never turns. It just slides with Red. Walk to the far right to follow Red into the long wing of the room, and watch how she stays in frame.
 - **The pillar.** Walk behind the tall pillar (near the middle of the room). It dithers away so you can still see Red, then comes back when she steps out.
 - **The PSX look.** Turn each effect off and on with F2 to F7. Which ones do you love, and which are too much? Try F8 and F9 too.
+- **Talking.** Walk up to Otis, Mox or the old Zero (placeholder shapes for now) and press E. They turn to face Red and talk in comic speech bubbles with gibberish voices. Mox asks you a yes/no question.
+- **Examining.** Try the pillar, the lamp, the crates, the sign and the window. The gold prize crate on the raised platform needs a jump to reach.
+- **The field menu.** Press Tab (or Y). Try Config to change text speed and voice volume.
 - **Red.** This is a placeholder model, built from simple shapes. Does her size on screen and her walk and run feel right?
 
 Tell us what you think. All of it goes straight into the style guide.
