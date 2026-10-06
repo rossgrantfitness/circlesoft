@@ -39,6 +39,7 @@ window/stretch/mode="canvas_items"
 
 scene={
 "animation/fps": 15,
+"gltf/embedded_image_handling": 3,
 "import_script/path": "res://scripts/tools/psx_post_import.gd",
 "meshes/create_shadow_meshes": false,
 "meshes/ensure_tangents": false,

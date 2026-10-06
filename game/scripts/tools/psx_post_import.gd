@@ -19,24 +19,33 @@ const LOOPING_CLIPS: PackedStringArray = ["idle", "walk", "run", "battle_ready",
 
 
 func _post_import(scene: Node) -> Object:
-	print("PSXIMPORT start ", scene.get_class())
 	_convert_node(scene)
 	return scene
 
 
 func _convert_node(node: Node) -> void:
-	print("PSXIMPORT node ", node.name, " ", node.get_class())
-	if node is ImporterMeshInstance3D:
+	if node is MeshInstance3D:
+		var mesh: Mesh = (node as MeshInstance3D).mesh
+		if mesh != null:
+			_convert_mesh(mesh)
+	elif node is ImporterMeshInstance3D:
 		var importer_mesh: ImporterMesh = (node as ImporterMeshInstance3D).mesh
 		if importer_mesh != null:
-			_convert_mesh(importer_mesh)
+			_convert_importer_mesh(importer_mesh)
 	elif node is AnimationPlayer:
 		_convert_animations(node as AnimationPlayer)
 	for child: Node in node.get_children():
 		_convert_node(child)
 
 
-func _convert_mesh(mesh: ImporterMesh) -> void:
+# Godot hands import scripts finished meshes (MeshInstance3D); older paths use ImporterMesh.
+func _convert_mesh(mesh: Mesh) -> void:
+	for surface: int in mesh.get_surface_count():
+		var source: Material = mesh.surface_get_material(surface)
+		mesh.surface_set_material(surface, make_psx_material(source))
+
+
+func _convert_importer_mesh(mesh: ImporterMesh) -> void:
 	for surface: int in mesh.get_surface_count():
 		var source: Material = mesh.get_surface_material(surface)
 		mesh.set_surface_material(surface, make_psx_material(source))

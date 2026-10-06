@@ -20,6 +20,7 @@ global uniform float psx_vertex_lighting;
 uniform sampler2D albedo_texture : source_color, filter_nearest, repeat_enable;
 uniform vec4 albedo_tint : source_color = vec4(1.0, 1.0, 1.0, 1.0);
 uniform vec2 uv_scale = vec2(1.0, 1.0);
+uniform vec2 uv_offset = vec2(0.0, 0.0);
 // How much of the global affine warp this material takes. Characters and props: about 0.75.
 // Floors and walls built from small pieces can stay high; one big floor quad shows it most.
 uniform float affine_amount : hint_range(0.0, 1.0) = 0.75;
@@ -48,7 +49,7 @@ vec4 psx_snap(vec4 clip) {
 // does: v_uv = psx_tiled_uv(UV); v_uv_w = v_uv * clip.w; v_clip_w = clip.w;
 //       v_fog = psx_fog_at(-view.z);
 vec2 psx_tiled_uv(vec2 uv) {
-	return uv * uv_scale;
+	return uv * uv_scale + uv_offset;
 }
 
 // Distance fog 0..1 for a point view_depth units in front of the camera (switch: psx_fog_enabled).

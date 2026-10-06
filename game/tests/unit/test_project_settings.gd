@@ -16,6 +16,10 @@ const SHADER_GLOBALS: Dictionary[String, int] = {
 	"psx_fog_color": RenderingServer.GLOBAL_VAR_TYPE_COLOR,
 	"psx_fog_near": RenderingServer.GLOBAL_VAR_TYPE_FLOAT,
 	"psx_fog_far": RenderingServer.GLOBAL_VAR_TYPE_FLOAT,
+	"psx_fog_enabled": RenderingServer.GLOBAL_VAR_TYPE_FLOAT,
+	"psx_vertex_lighting": RenderingServer.GLOBAL_VAR_TYPE_FLOAT,
+	"psx_dither_enabled": RenderingServer.GLOBAL_VAR_TYPE_FLOAT,
+	"psx_color_depth_enabled": RenderingServer.GLOBAL_VAR_TYPE_FLOAT,
 }
 const WARNING_LEVEL_ERROR: int = 2
 const TEXTURE_FILTER_NEAREST: int = 0
@@ -111,8 +115,13 @@ func test_autoloads_registered_and_running() -> void:
 		assert_not_null(tree.root.get_node_or_null(autoload_name), "autoload node " + autoload_name)
 
 
-func test_no_main_scene_yet() -> void:
-	assert_false(ProjectSettings.has_setting("application/run/main_scene") and not str(_setting("application/run/main_scene")).is_empty())
+func test_main_scene_is_the_psx_screen_main() -> void:
+	assert_eq(_setting("application/run/main_scene"), "res://scenes/core/main.tscn")
+
+
+func test_models_import_through_the_psx_import_script() -> void:
+	var scene_defaults: Dictionary = _setting("importer_defaults/scene")
+	assert_eq(scene_defaults.get("import_script/path"), "res://scripts/tools/psx_post_import.gd")
 
 
 func _type_name(global_type: int) -> String:
