@@ -4,6 +4,7 @@
 
 ## 2026-10-06
 
+- **Ross: don't over-invest in animation; character models may be outsourced.** Red's animation cut to a bare movement set (no gestures); NPCs get a simple idle. Technical Artists now focus on a clean model contract so outside models can drop straight in.
 - **Ross locked Red's look (A, as is).** Style guide character section being rewritten to it; Technical Artists starting Red's animations and the NPC blockouts (Otis, Mox, old Zero) in the same style. Taste Keeper scoring R33.
 - **🎮 New demo build sent to Ross** (Windows + Mac; 421 tests passed before export): run and jump, NPCs that talk in speech bubbles with gibberish voices, examinable objects, the field menu, the new font. Same download steps (Windows 2 parts, Mac 3 parts). How-to-play updated.
 - **Polished shiba Red done** (Technical Artist; 884 tris with sword; 421 tests pass): chunkier legs and bigger boots, clean round hem, warm apricot cream, fluffier tail, ears ~2× wider and set further apart, bean-shaped head (wider than tall, fuller cheeks, short muzzle). Before/after: docs/screenshots/red_prototypes/f_polish_before_after.png. Taste Keeper recorded prediction R33. Sent to Ross to lock the look.
