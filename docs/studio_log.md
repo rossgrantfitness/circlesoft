@@ -4,6 +4,7 @@
 
 ## 2026-10-06
 
+- **Ross played/looked at the first build: "add a run and jump."** Logged; Exploration updated. Gameplay Programmer adding run (hold) + jump; Technical Artist adding jump/fall animations to placeholder Red and jumpable crates/steps to the test room. New build + screenshots to follow.
 - **🎮 First playable build delivered to Ross** (Milestone 1 demo): Windows (.exe, 93 MB) and Mac (.app, 61 MB, universal, unsigned) exported with tools/build.sh after all 162 tests passed; packaged game smoke-tested under xvfb. Title screen → test room with Red, diorama camera, pillar fade, F1 PSX options. How to play: docs/how_to_play_demo.md. Next: Ross's feedback, then Milestone 2 (battle system).
 - **Demo start screen built** (UI Programmer): pixel-font logo with a glowing amber "ON", DEMO tag, night skyline with relay mast and a flickering window lamp, chamfered menu window with a flame cursor, dithered fade to black. Fonts Press Start 2P + Pixelify Sans, both SIL OFL 1.1 (verified). **162 tests passing.** Screenshot: docs/screenshots/m1_title_screen.png. Next: Windows + Mac builds.
 - **Test room is playable (integration):** Red walks the whole room with the diorama camera sliding; the pillar dithers away when she's behind it; Shift walks on keyboard; F1 PSX options overlay (F2–F7 effects, F8 resolution, F9 camera FOV 30/45/orthographic); main flow title → room, Esc back to title. Screenshot: docs/screenshots/m1_room_playable.png. Waiting on the title screen's last two tests, then Windows/Mac exports.

@@ -29,7 +29,7 @@ LIGHTS LEFT ON is a classic 90s JRPG hero's journey. Ten years ago Red's mom fle
 ### Movement & camera
 - **Moving:** Red runs with the stick or d-pad; tilt lightly to walk. Brisk speed, no stamina, no dash.
 - **One button does it all:** talk, examine, pick up, open.
-- **No jump button.** Ladders, ledges and small gaps get climbed or hopped with that same button at marked spots, like the big 3D JRPGs of the era.
+- **Run and jump (Ross, 2026-10-06).** Hold the run button to run; release to walk at a brisk pace. Red can **jump**: onto crates and ledges, over small gaps. Keep jump use light and fun in dungeons (shortcuts, hidden crates on ledges); no precision platforming, per Classic, Not Clever.
 - **The crew follows Red** in a short line in towns and dungeons, so they're always on screen (Pillar 2). They pass through each other and never block her.
 - **Rooms load** with a quick fade to black, PSX-style.
 - **Camera: a fixed diorama camera (Ross, 2026-10-06).** One high angle per room that never rotates, showing the floor and the two back walls; the front walls are cut away, like looking into a toy box. Rooms are real low-poly 3D in Godot, so the full PSX look applies. The camera slides along with Red in bigger rooms so she never walks off-screen, and tall props in front of her fade out.
