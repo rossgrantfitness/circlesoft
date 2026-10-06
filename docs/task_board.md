@@ -12,6 +12,7 @@
 | Task | Assigned to | Started | Notes |
 |---|---|---|---|
 | Design doc: Vertical slice scope (Ross approves) | Producer drafts, Technical Director checks | 2026-10-06 | Last design doc section. |
+| Style guide (full draft): visual pillars, palette, proportions, PSX rendering rules, UI windows, fonts | Technical Artist + Creative Director draft, Ross approves | | References: Mega Man Legends, Tail Concerto, MGS1, FF7. Must be approved before Ross's final art. |
 | Art requests: weapon models for Red (sword), Otis (hammer), Mox (wrench-mace), Vela (stamp-staff), Ruo (twin knives) | Producer / Technical Artist write specs | | Add to docs/art_requests.md when the slice art list is drawn up. |
 | Set up the lights-left-on repository | Ross (GitHub clicks), then studio floor moves game files over | 2026-10-05 | Merge PR #1 → mark circlesoft as template → create lights-left-on from it. |
 
