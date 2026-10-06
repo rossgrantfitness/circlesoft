@@ -23,6 +23,7 @@ const CAPTION_COLOR: Color = Color(0.93, 0.92, 0.85)
 
 func _initialize() -> void:
 	var main: Node = (load(MAIN_SCENE) as PackedScene).instantiate()
+	main.set("show_title", false)  # the demo opens on the title screen; we want the room
 	root.add_child(main)
 	for i: int in SETTLE_FRAMES:
 		await process_frame

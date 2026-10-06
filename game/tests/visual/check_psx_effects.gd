@@ -17,6 +17,7 @@ var _failed: bool = false
 
 func _initialize() -> void:
 	var main: Node = (load(MAIN_SCENE) as PackedScene).instantiate()
+	main.set("show_title", false)  # the demo opens on the title screen; we want the room
 	root.add_child(main)
 	await _settle()
 	PsxLook.reset_effects()
