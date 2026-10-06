@@ -2,12 +2,8 @@ extends TestCase
 ## Milestone 1 step 1: the key project settings, input map, shader globals and autoloads.
 
 const REQUIRED_ACTIONS: Array[String] = [
-	"move_up", "move_down", "move_left", "move_right", "run", "confirm", "cancel", "menu", "start",
+	"move_up", "move_down", "move_left", "move_right", "run", "jump", "interact", "confirm", "cancel", "menu", "start",
 ]
-## Keyboard players run by default and hold Shift (walk) to walk, so `run` is gamepad-only and
-## `walk` is keyboard-only (a gamepad walks with a light stick tilt).
-const GAMEPAD_ONLY_ACTIONS: Array[String] = ["run"]
-const KEYBOARD_ONLY_ACTIONS: Array[String] = ["walk"]
 const DEBUG_ACTIONS: Array[String] = [
 	"debug_overlay", "debug_jitter", "debug_warp", "debug_dither", "debug_color_depth", "debug_fog",
 	"debug_vertex_lighting", "debug_resolution", "debug_camera_mode", "debug_free_camera",
@@ -76,15 +72,13 @@ func test_importer_defaults_are_lossless_without_mipmaps() -> void:
 func test_input_actions_exist_with_keyboard_and_gamepad() -> void:
 	var all_actions: Array[String] = REQUIRED_ACTIONS.duplicate()
 	all_actions.append_array(DEBUG_ACTIONS)
-	all_actions.append_array(KEYBOARD_ONLY_ACTIONS)
 	for action: String in all_actions:
 		assert_true(InputMap.has_action(action), "missing action " + action)
 		var has_key: bool = false
 		for event: InputEvent in InputMap.action_get_events(action):
 			if event is InputEventKey:
 				has_key = true
-		if not GAMEPAD_ONLY_ACTIONS.has(action):
-			assert_true(has_key, "no keyboard binding for " + action)
+		assert_true(has_key, "no keyboard binding for " + action)
 	for action: String in REQUIRED_ACTIONS:
 		var has_pad: bool = false
 		for event: InputEvent in InputMap.action_get_events(action):
@@ -105,6 +99,42 @@ func test_move_actions_have_both_wasd_and_arrows() -> void:
 				keys.append((event as InputEventKey).physical_keycode)
 		for key: int in expected[action]:
 			assert_has(keys, key, "%s should bind key %d" % [action, key])
+
+
+func _keys_of(action: String) -> Array[int]:
+	var keys: Array[int] = []
+	for event: InputEvent in InputMap.action_get_events(action):
+		if event is InputEventKey:
+			keys.append((event as InputEventKey).physical_keycode)
+	return keys
+
+
+func _buttons_of(action: String) -> Array[int]:
+	var buttons: Array[int] = []
+	for event: InputEvent in InputMap.action_get_events(action):
+		if event is InputEventJoypadButton:
+			buttons.append((event as InputEventJoypadButton).button_index)
+	return buttons
+
+
+func test_run_jump_and_interact_button_map() -> void:
+	assert_false(InputMap.has_action("walk"), "walk is gone: Red walks by default, hold run to run")
+	assert_eq(_keys_of("run"), [KEY_SHIFT])
+	assert_eq(_buttons_of("run"), [JOY_BUTTON_X])
+	assert_eq(_keys_of("jump"), [KEY_SPACE])
+	assert_eq(_buttons_of("jump"), [JOY_BUTTON_A])
+	assert_has(_keys_of("interact"), KEY_E)
+	assert_has(_keys_of("interact"), KEY_Z)
+	assert_eq(_buttons_of("interact"), [JOY_BUTTON_B])
+	assert_does_not_have(_keys_of("interact"), KEY_SPACE)
+
+
+func test_menus_confirm_with_enter_z_e_and_a_but_not_space() -> void:
+	for key: int in [KEY_ENTER, KEY_Z, KEY_E]:
+		assert_has(_keys_of("confirm"), key)
+	assert_has(_buttons_of("confirm"), JOY_BUTTON_A)
+	assert_does_not_have(_keys_of("confirm"), KEY_SPACE, "Space is jump; it must not leak from the title screen into the room")
+	assert_has(_buttons_of("cancel"), JOY_BUTTON_B)
 
 
 func test_shader_globals_declared() -> void:

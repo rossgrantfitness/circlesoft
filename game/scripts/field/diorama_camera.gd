@@ -194,8 +194,13 @@ func is_target_in_safe_frame() -> bool:
 
 # ---- internals ----
 
+## The point the camera follows. A target that knows its ground height (Red) is followed at that
+## height, so jumping does not make the camera bob; the view eases up or down once she lands.
 func _anchor() -> Vector3:
-	return target.global_position + Vector3.UP * target_anchor_height
+	var base: Vector3 = target.global_position
+	if target.has_method("get_ground_height"):
+		base.y = float(target.call("get_ground_height"))
+	return base + Vector3.UP * target_anchor_height
 
 
 func _bounded(point: Vector3) -> Vector3:

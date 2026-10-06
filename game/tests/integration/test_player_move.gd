@@ -19,7 +19,7 @@ func before_each() -> void:
 
 
 func after_each() -> void:
-	for action: StringName in [&"move_left", &"move_right", &"move_up", &"move_down", &"run", &"walk"]:
+	for action: StringName in [&"move_left", &"move_right", &"move_up", &"move_down", &"run", &"jump"]:
 		Input.action_release(action)
 
 
@@ -73,13 +73,10 @@ func test_scene_has_required_nodes_and_capsule_stand_in() -> void:
 	assert_eq(player.collision_mask & 1, 1, "collides with the world layer")
 
 
-func test_no_jump_action_exists() -> void:
-	assert_false(InputMap.has_action("jump"))
-
-
-func test_run_speed_at_full_tilt_comes_from_data() -> void:
+func test_run_speed_while_run_is_held_comes_from_data() -> void:
 	_make_world(0.0, false)
 	_player.stick = Vector2(0.0, -1.0)
+	_player.run_held = true
 	await _ticks(30)
 	assert_almost_eq(_flat_speed(), _tuning.run_speed, SPEED_TOLERANCE)
 	assert_true(_player.is_running())
@@ -87,50 +84,61 @@ func test_run_speed_at_full_tilt_comes_from_data() -> void:
 	assert_almost_eq(_player.position.x, 0.0, 0.001)
 
 
-func test_walk_speed_on_a_light_tilt_and_run_button_overrides() -> void:
+func test_full_tilt_alone_walks_and_run_only_while_held() -> void:
 	_make_world(0.0, false)
-	_player.stick = Vector2(0.0, -0.5)
+	_player.stick = Vector2(0.0, -1.0)
 	await _ticks(10)
-	assert_almost_eq(_flat_speed(), _tuning.walk_speed, SPEED_TOLERANCE)
+	assert_almost_eq(_flat_speed(), _tuning.walk_speed, SPEED_TOLERANCE, "full tilt alone is a walk")
 	assert_false(_player.is_running())
 	_player.run_held = true
 	await _ticks(3)
-	assert_almost_eq(_flat_speed(), _tuning.run_speed, SPEED_TOLERANCE, "run button runs even on a light tilt")
+	assert_almost_eq(_flat_speed(), _tuning.run_speed, SPEED_TOLERANCE, "holding run runs")
+	assert_true(_player.is_running())
+	_player.run_held = false
+	await _ticks(3)
+	assert_almost_eq(_flat_speed(), _tuning.walk_speed, SPEED_TOLERANCE, "letting go goes back to walking")
+	assert_false(_player.is_running())
 
 
-func test_walk_action_exists_and_is_shift_on_keyboard() -> void:
-	assert_true(InputMap.has_action("walk"))
+func test_run_action_is_shift_on_keyboard_and_west_on_gamepad() -> void:
+	assert_true(InputMap.has_action("run"))
 	var has_shift: bool = false
-	for event: InputEvent in InputMap.action_get_events("walk"):
+	var has_west: bool = false
+	for event: InputEvent in InputMap.action_get_events("run"):
 		var key: InputEventKey = event as InputEventKey
 		if key != null and key.physical_keycode == KEY_SHIFT:
 			has_shift = true
-	assert_true(has_shift, "Shift walks on a keyboard")
-	for event: InputEvent in InputMap.action_get_events("run"):
-		var key: InputEventKey = event as InputEventKey
-		assert_true(key == null or key.physical_keycode != KEY_SHIFT, "Shift no longer runs")
+		var pad: InputEventJoypadButton = event as InputEventJoypadButton
+		if pad != null and pad.button_index == JOY_BUTTON_X:
+			has_west = true
+	assert_true(has_shift, "hold Shift to run")
+	assert_true(has_west, "hold X / west to run")
 
 
-func test_keyboard_runs_by_default_and_walks_while_walk_is_held() -> void:
+func test_keyboard_walks_by_default_and_runs_while_run_action_is_held() -> void:
 	_make_world(0.0, false)
 	_player.read_engine_input = true
 	Input.action_press(&"move_up")
 	await _ticks(10)
-	assert_almost_eq(_flat_speed(), _tuning.run_speed, SPEED_TOLERANCE, "a keyboard (full tilt) runs")
-	Input.action_press(&"walk")
+	assert_almost_eq(_flat_speed(), _tuning.walk_speed, SPEED_TOLERANCE, "a keyboard walks by default")
+	Input.action_press(&"run")
 	await _ticks(3)
-	assert_almost_eq(_flat_speed(), _tuning.walk_speed, SPEED_TOLERANCE, "holding walk walks")
-	assert_false(_player.is_running())
-	Input.action_release(&"walk")
+	assert_almost_eq(_flat_speed(), _tuning.run_speed, SPEED_TOLERANCE, "holding run runs")
+	assert_true(_player.is_running())
+	Input.action_release(&"run")
 	await _ticks(3)
-	assert_almost_eq(_flat_speed(), _tuning.run_speed, SPEED_TOLERANCE, "letting go runs again")
+	assert_almost_eq(_flat_speed(), _tuning.walk_speed, SPEED_TOLERANCE, "letting go walks again")
 
 
-func test_walk_wins_over_run_and_full_tilt() -> void:
-	assert_false(PlayerMotion.is_running(Vector2(0, -1), true, 0.85, true))
-	assert_true(PlayerMotion.is_running(Vector2(0, -1), false, 0.85, false))
-	assert_almost_eq(PlayerMotion.target_speed(Vector2(0, -1), true, 2.4, 4.8, 0.85, true), 2.4, 0.0001)
-	assert_almost_eq(PlayerMotion.target_speed(Vector2(0, -1), false, 2.4, 4.8, 0.85), 4.8, 0.0001)
+func test_run_needs_movement_and_speeds_are_brisk() -> void:
+	assert_false(PlayerMotion.is_running(Vector2.ZERO, true))
+	assert_true(PlayerMotion.is_running(Vector2(0, -1), true))
+	assert_false(PlayerMotion.is_running(Vector2(0, -1), false))
+	assert_almost_eq(PlayerMotion.target_speed(Vector2(0, -0.3), false, 3.0, 5.2), 3.0, 0.0001)
+	assert_almost_eq(PlayerMotion.target_speed(Vector2(0, -0.3), true, 3.0, 5.2), 5.2, 0.0001)
+	assert_almost_eq(PlayerMotion.target_speed(Vector2.ZERO, true, 3.0, 5.2), 0.0, 0.0001)
+	assert_ge(_tuning.walk_speed, 2.8, "walk is brisk")
+	assert_gt(_tuning.run_speed, _tuning.walk_speed * 1.5, "run is clearly faster")
 
 
 func test_distance_travelled_matches_speed() -> void:
@@ -179,7 +187,7 @@ func test_stands_on_the_floor_and_falls_onto_it() -> void:
 	await _ticks(90)
 	assert_true(_player.is_on_floor())
 	assert_almost_eq(_player.position.y, 0.0, 0.02)
-	assert_almost_eq(_player.velocity.y, 0.0, 0.001, "no jump, no drift")
+	assert_almost_eq(_player.velocity.y, 0.0, 0.001, "standing still, no drift")
 
 
 func test_idle_when_there_is_no_input() -> void:
@@ -246,6 +254,7 @@ func test_model_slot_replaces_capsule_and_plays_animations() -> void:
 	_player.step(TICK)
 	assert_eq(_player.get_current_animation(), &"walk")
 	_player.stick = Vector2(0.0, -1.0)
+	_player.run_held = true
 	_player.step(TICK)
 	assert_eq(_player.get_current_animation(), &"run")
 	_player.stick = Vector2.ZERO

@@ -25,6 +25,7 @@ func _ready() -> void:
 	player = player_scene.instantiate() as PlayerController
 	add_child(player)
 	player.global_transform = Transform3D(Basis.IDENTITY, spawn.global_position)
+	player.reset_ground_height()
 	player.set_camera(camera_rig.get_camera())
 
 	var bounds: CameraBounds = get_node_or_null(bounds_name) as CameraBounds

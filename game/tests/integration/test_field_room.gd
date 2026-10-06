@@ -14,7 +14,7 @@ var _room: FieldRoom = null
 
 
 func after_each() -> void:
-	for action: StringName in [&"move_left", &"move_right", &"move_up", &"move_down", &"walk", &"run"]:
+	for action: StringName in [&"move_left", &"move_right", &"move_up", &"move_down", &"run", &"jump"]:
 		Input.action_release(action)
 
 
@@ -93,6 +93,7 @@ func test_red_plays_idle_then_walk_then_run_from_the_model() -> void:
 	await _ticks(3)
 	assert_eq(_room.player.get_current_animation(), &"walk")
 	_room.player.stick = Vector2(0.0, -1.0)
+	_room.player.run_held = true
 	await _ticks(3)
 	assert_eq(_room.player.get_current_animation(), &"run")
 

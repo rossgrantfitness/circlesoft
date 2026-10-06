@@ -48,6 +48,7 @@ var _air_time: float = 0.0
 var _jumped_this_air: bool = false
 var _was_airborne: bool = false
 var _ground_y: float = 0.0
+var _has_ground_y: bool = false
 var _visual: Node3D = null
 var _animation_player: AnimationPlayer = null
 var _current_animation: StringName = &""
@@ -57,7 +58,6 @@ var _running: bool = false
 
 func _ready() -> void:
 	_tuning = FieldTuning.from_db(get_node_or_null("/root/DataDB"))
-	_ground_y = global_position.y if is_inside_tree() else position.y
 	_visual = get_node_or_null(NODE_VISUAL) as Node3D
 	if ResourceLoader.exists(MODEL_PATH):
 		var model_scene: PackedScene = load(MODEL_PATH) as PackedScene
@@ -104,7 +104,14 @@ func is_airborne() -> bool:
 ## The height of the ground Red last stood on (or her own height if she has dropped below it). The
 ## camera follows this instead of her feet so a jump does not bob the view.
 func get_ground_height() -> float:
+	if not _has_ground_y:
+		return global_position.y
 	return minf(_ground_y, global_position.y)
+
+
+## Forget the remembered ground height (after a teleport or a respawn).
+func reset_ground_height() -> void:
+	_has_ground_y = false
 
 
 func get_current_animation() -> StringName:
@@ -135,6 +142,7 @@ func step(delta: float) -> void:
 		_air_time = 0.0
 		_jumped_this_air = false
 		_ground_y = global_position.y
+		_has_ground_y = true
 	else:
 		_coyote_left -= delta
 		_air_time += delta
