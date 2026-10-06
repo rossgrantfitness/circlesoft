@@ -4,6 +4,7 @@
 
 ## 2026-10-06
 
+- **Equipment & items finalized by the studio** (first Level 2 section): weapons, armor, accessories, FF7–9-style items with original names, machine upgrades. Red's sword applied across the story bible and design doc. Save lamps save only (Camp Stove to rest). Shown to Ross as an FYI. Creative Director starting Economy.
 - **Ross set the equipment direction and the studio's first autonomy grant:** Red gets a sword, the party gets fantasy weapons, items mirror FF7–9 (original names), and Equipment & items moves to **Level 2: the studio finalizes item lists and shows Ross after**. Creative Director redirected mid-draft; Taste Keeper updating the Playbook ledger.
 - **Camera decided: fixed diorama (B).** **Party & progression approved** (shared Hull bar; former foes as guests). Design doc updated. Creative Director now drafting Equipment & items; Taste Keeper scoring R22 and R23.
 - **Camera options sent to Ross** (docs/camera_decision.md; Technical Director recommends the fixed diorama camera, B). **Party & progression drafted:** level cap 50, 7 stats incl. new "Heart", ~8 skills each, Act 3 former foes as guests, one flagged choice (shared Hull bar in machines). Sent to Ross.

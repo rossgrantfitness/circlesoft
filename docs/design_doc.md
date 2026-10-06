@@ -24,7 +24,7 @@ LIGHTS LEFT ON is a classic 90s JRPG hero's journey. Ten years ago Red's mom fle
 
 ### Ross's calls on the new ideas (2026-10-06)
 - **Instant wins (Later list):** yes, and fast, the way EarthBound did it. Once the party clearly outclasses a group, Hegemony grunts on the map wave a white flag; walk into them and there's no battle screen at all: a quick jingle, a one-line "The grunts surrender!" pop-up with the XP and credits, and you keep walking. Never in the slice.
-- **Red's lamp lighting dark rooms:** no. The lamp stays her weapon and her rest/save animation; dungeons are lit normally.
+- **Red's lamp lighting dark rooms:** no. The lamp stays her signature item (at her hip), her Porch Light flare and her rest/save animation; dungeons are lit normally.
 
 ### Movement & camera
 - **Moving:** Red runs with the stick or d-pad; tilt lightly to walk. Brisk speed, no stamina, no dash.
@@ -87,7 +87,7 @@ LIGHTS LEFT ON is a classic 90s JRPG hero's journey. Ten years ago Red's mom fle
 - **Examine:** a line of text, and sometimes a crew member comments (Mox asks the questions, Otis answers them).
 - **Pick up:** items glint. A box says what you got.
 - **Doors:** walk into a door to go through. Locked doors tell you what they need ("Signals access only").
-- **The lamp check (rest and save):** at Red's home window, at inns and at save lamps. She lights the brass lamp, taps the glass twice and gives the sky a thumbs-up, then the save screen opens. Full length the first time each session, a short version after that; one press skips it.
+- **The lamp check (rest and save):** at Red's home window and at inns (full heal + save), and at save lamps (save only; use a Camp Stove there to rest). She lights the brass lamp, taps the glass twice and gives the sky a thumbs-up, then the save screen opens. Full length the first time each session, a short version after that; one press skips it.
 
 ### Cutscenes
 - **Long, and plenty of them** (Ross's call), played **in-engine** with the same chibi models as the field. Camera moves, close-ups and wide shots are staged like a movie.
@@ -153,7 +153,7 @@ LIGHTS LEFT ON is a classic 90s JRPG hero's journey. Ten years ago Red's mom fle
 
 ### Skills
 Each signature move uses Clutch in its own way.
-- **Red, Porch Light:** a **tap** when the lamp flares blinds the enemy, then a **hold and let go** at the top of her spin adds a second, bigger wallop. Red never shouts the name; it just slams onto the screen while she grins.
+- **Red, Porch Light:** a **tap** when the lamp at her hip flares blinds the enemy, then a **hold and let go** at the top of her sword spin adds a second, bigger slash. Red never shouts the name; it just slams onto the screen while she grins.
 - **Otis, Heave-Ho:** **hold** while he lifts the enemy and **let go** at the top to slam it onto a second enemy, hurting both. A perfect release stuns them.
 - **Mox, Patent Pending:** a slot-machine wheel of gadget results spins over his head; a **tap** stops it. Good timing lands the better results, and "TOTALLY RAD!" always lands the amazing one.
 - **Vela, Approved in Triplicate:** a **string** of three stamps. Each good stamp heals the whole party more; three perfect stamps also clear everyone's bad status effects.
@@ -272,7 +272,7 @@ Seven stats, plain names, shown as numbers on the status screen.
 - **Signature moves** are known from the moment each character joins, and get stronger with level.
 - **Every new skill uses one of the three approved press types** (tap, hold and let go, string). No new kinds of press.
 - **Who learns what:**
-  - **Red (quick front-line hitter):** lamp swings and flares. Big single hits, fast double swings, blinding enemies, firing herself up.
+  - **Red (quick front-line hitter):** sword swings and lamp flares. Big single hits, fast double swings, blinding enemies, firing herself up.
   - **Otis (tank):** guarding allies, drawing hits onto himself, shield bashes, stunning throws, toughening up the party.
   - **Mox (gadget wildcard):** traps, gadget buffs, quick patch-ups (small heals), weakening enemies and the odd small explosion, each with a timing gamble.
   - **Vela (healer and support):** heals, revives, cures, shields, and writing enemies a Noise Ticket (no Skills for a few turns).
@@ -308,7 +308,187 @@ Seven stats, plain names, shown as numbers on the status screen.
 - Machine stations, Hull, size boost, machine versions of skills, and upgrades.
 
 ## Equipment & items
-_Equipment slots, item categories, key items, crafting (if any)._
+> ✅ Direction set by Ross, 2026-10-06 (Red: sword; party: fantasy weapons; items mirror FF7–9 with original names). Item lists are the studio's call; Ross reviews after, no sign-off needed for individual items.
+
+### Notes
+- **No new mechanics.** Everything here is standard FF7–9-style gear and items with our own names. No gear ever changes Clutch timing (approved rule: timing stays the player's skill).
+- **Weapon types (studio's call under Ross's "appropriate fantasy weapons"):** Red a **sword** (Ross), Otis a **hammer** (door shield kept), Mox a **wrench-mace**, Vela a **staff with a rubber stamp for a head**, Ruo **twin knives** (flare pistols kept for Ten Out of Ten). Each keeps the item already in their approved look. *Alternative Ross can swap to any time:* axe / crossbow / plain healer's rod / pistol-sabre (more textbook fantasy).
+- **Save lamps save; they don't heal.** Resting means using a Camp Stove at a save lamp (the classic FF7–9 pattern). Red's home window and inns heal for free.
+
+### The basics
+- **One shared bag.** Up to 99 of each item, no weight limits. Key items get their own tab and can't be sold or dropped.
+- **Equip from the field menu** any time outside battle. Shops show an up or down arrow next to each fighter so you can see at a glance who an item suits.
+- **Guests don't take gear** (approved in Party & progression).
+- **Icons:** one small icon per kind of thing (sword, hammer, mace, staff, knives, vest, charm, food, can, bottle, bomb, part), recolored per item. About 12 icons for Ross, not one per item.
+
+### Equipment slots
+Three slots, FF7-style.
+- **Weapon:** one, the character's own type only. Raises Attack (staffs raise Heart too).
+- **Armor:** one. Raises Defense, some also HP. Light armor fits anyone, heavy armor is Otis only, and a few pieces belong to one character.
+- **Charm:** one (the accessory slot). A stat bump, protection from a status effect, or a bigger Clutch payoff. Marchfolk hang lucky charms on everything; ours actually work.
+
+### Weapons by character
+- **About 7 per character:** a new one every few levels, plus a hidden ultimate weapon at the end of a late side job (classic).
+- Weapons give Attack (staffs also Heart) and at most one small perk, like a chance to land a status effect.
+- **How weapons show on the 3D model (cheap for Ross):** weapons are separate props held in the hand, so swapping one never touches the character model. Each character gets **3 weapon models for the whole game** (starter, Act 2, Act 3). Every weapon in between reuses the nearest model with a new color; the ultimate reuses the Act 3 model with a special color. The slice needs only the starter models, plus recolors.
+
+**Red: swords** (the brass lamp stays clipped at her hip for Porch Light and the lamp check)
+- **Scrap Sword** (starter): hammered out of a hull plate, grip wrapped in tape.
+- **Rebar Blade** (slice shop): heavier, hits harder.
+- **Bread Knife, Extremely Large** (slice, the optional bell chest): a little Luck. Nobody asks where it came from.
+- **Hull-Plate Broadsword** (the Act 2 model).
+- **Coldrunner Cutlass:** a little Speed.
+- **Lamplighter** (the Act 3 model).
+- **Wicked Awesome** (ultimate): the sword every barfly on Harrow swears is real.
+
+**Otis: hammers** (his door shield is part of his model and never changes)
+- **Dock Mallet** (starter).
+- **Rivet Hammer** (slice shop).
+- **Sledge, Gently Used.**
+- **Pile Driver** (the Act 2 model).
+- **Anchor on a Stick:** a chance to stun.
+- **Big Friendly Hammer** (the Act 3 model).
+- **Mostly Structural** (ultimate): "Nothing personal."
+
+**Mox: wrench-maces** (his gadgets still come out of his pockets as Skills)
+- **Big Wrench** (starter): nearly as tall as he is, with a weight welded on the end.
+- **Pipe Wrench, Slightly Bent** (slice shop): "It's supposed to be like that."
+- **Lug-Nut Morningstar** (the Act 2 model): lug nuts welded on like spikes.
+- **Torque Wrench With Opinions:** clicks very loudly.
+- **Hot Wrench:** a chance of Burnt Toast.
+- **Wrench-and-a-Half** (the Act 3 model): two wrenches welded together, MOX WUZ HERE on the join.
+- **Patent Still Pending** (ultimate).
+
+**Vela: stamp-staffs** (her clipboard is part of her model and never changes)
+- **Approval Staff** (starter): a brass rod with an APPROVED stamp on top.
+- **Self-Inking Staff.**
+- **Signals Antenna Staff:** pulled off her old post. Picks up lane-songs.
+- **Notary Rod** (the Act 2 model): embosses.
+- **Express Mail Staff:** a little Speed.
+- **Triplicate Staff** (the Act 3 model): three stamp heads.
+- **Final Notice** (ultimate).
+
+**Ruo: twin knives** (his flare pistols stay on his belt for Ten Out of Ten)
+- **Coldrunner Knives** (starter).
+- **Butter Knives (Sharpened).**
+- **Galley Cleavers.**
+- **Lane-Cutters** (the Act 2 model).
+- **Getaway Knives:** better odds on steals.
+- **Showstoppers** (the Act 3 model).
+- **Perfect Ten** (ultimate): he scored them himself.
+
+### Armor
+- **Armor never changes the 3D model.** Red's jacket, Otis's coveralls and everyone's look stay exactly as Ross models them; armor only shows in the menu.
+- **Light (anyone):** Padded Work Vest, Hi-Vis Vest (a little Luck: "They see you coming. Somehow that helps."), Dust Duster, Spacer's Flight Suit, Rim Runner Coat, Starlight Lining (late, best light armor).
+- **Heavy (Otis only):** Lucky Coveralls (starter; never been washed, never been beaten), Steel-Toe Everything, Surplus Plate (Numbers Filed Off), Dockmaster's Harness.
+- **One character only:** Quilted Lining (Red's starter, sewn inside Mom's jacket), Too-Many-Pockets Vest (Mox's starter), Pressed Uniform (Vela's starter; still pressed after she quit), Dramatic Scarf (Ruo's starter; a little Speed).
+
+### Charms
+- **Stats:** Lucky Bolt (Luck), Weightlifting Belt (Attack), Knee Pads (Defense), Lucky Locket (Heart), Running Shoes (Speed).
+- **Status protection:** Earplugs (Noise Ticket), Oven Mitts (Burnt Toast), Sea-Legs Band (Wobbly), Pocketknife (Tangled), Grippy Gloves (Butterfingers), **Zero's Sleeve Bell** (late and rare: protects from every bad status; it rings when trouble's near).
+- **Clutch payoff:** Sore Loser Patch (Payback hits harder), Encore Pin (a "Rad!" or better gives a bigger sip of Juice).
+- **Other:** Spare Battery (start every fight with some Juice), Gold Star Sticker (more XP), Tip Jar (more credits), Pep Rally Pennant (start every fight Fired Up).
+- Charms don't show on the model.
+
+### Items
+The same structure and tiers as FF7–9, with our own names. Anyone can use any item. Items never need a Clutch press: pick it, it works (classic).
+
+**HP heals (one fighter):**
+- **Ration Bar:** small. Tastes like the wrapper.
+- **Can of Chili:** medium.
+- **Dock Diner Special:** large.
+- **Sunday Roast:** full HP.
+
+**Juice:**
+- **Canned Coffee:** small.
+- **Juice Box:** medium. Yes, really.
+- **Thermos of Cold Brew:** full Juice.
+
+**HP and Juice together (rare):**
+- **The Whole Enchilada:** full HP and Juice, one fighter.
+- **Block Party Platter:** full HP and Juice, whole party. Very rare.
+
+**Revive (Down for the Count):**
+- **Smelling Salts:** back up with a little HP.
+- **Jumper Cables:** back up with full HP.
+- **Air Horn:** everyone who's Down gets back up with a little HP. Rare.
+
+**Status cures:**
+- **Burn Gel:** Burnt Toast.
+- **Appeal Form:** Noise Ticket (voids it, in triplicate).
+- **Ginger Chews:** Wobbly.
+- **Box Cutter:** Tangled.
+- **Grip Tape:** Butterfingers.
+- **Snake-Oil Tonic:** cures everything. It works, weirdly.
+
+**Rest:**
+- **Camp Stove:** use it at a save lamp and the whole party gets full HP and Juice. Sold in towns, a few hidden in dungeons.
+
+**Throwables** (fixed damage, so they're useful at any level):
+- **Firecracker String:** small hit on every enemy.
+- **Scrap Grenade:** big hit on one enemy.
+- **Hot Sauce Bomb:** a hit plus Burnt Toast.
+- **Static Can:** gives an enemy a Noise Ticket.
+- **Fizz Bomb:** a shaken-up soda; makes an enemy Wobbly.
+- **Cable Bolas:** Tangles an enemy.
+- **Smoke Bomb:** escape a regular fight (a Coldrunner favorite; never works on bosses).
+
+**Boosters (rare, raise a stat for good):**
+- **Cod Liver Oil** (max HP), **Triple Espresso** (max Juice), **Protein Shake** (Attack), **Hardtack** (Defense), **Hot Cocoa** (Heart), **Energy Drink** (Speed), **Four-Leaf Clover** (Luck).
+
+**Battle boosts:**
+- **Pep Talk Tape:** one fighter gets Fired Up.
+
+**Key items (slice):**
+- **Courier Job Slip:** the delivery to the Old Relay Tower.
+- **Delivery Crate:** heavier than expected (Mox is inside).
+- **Side-job parcels:** one or two, for the small deliveries in Harrow Landing.
+- **Kasp's Access Cards:** laminated, his photo on every one; grunts drop them and they open Signals doors. Shows a count.
+- **Bell Tune Napkin:** the old Zero's tune written down, for the optional bell chest.
+- **Beacon part:** from the Hushmaster's wreck. The Writer writes its description, and the Creative Director checks it against the twist clues before it goes in.
+
+### Machine upgrades
+No crafting and no slots. Each part is a one-time find, and Mox fits it in the hold the next time the crew rests. Every part raises the Hull, the size boost, or both (as approved). Parts are just numbers: no new commands, and no changes to the machine models.
+
+**How you get them:** crates, dock shops and story gifts: Calloway's hatch notes lead to titan parts, and every former foe who crosses over in Act 3 brings one part for the *Supper's On*.
+
+**Biscuit (big robot), about 4 parts:**
+- **Extra Cargo Plating:** more Hull.
+- **Bigger Mitts:** bigger size boost.
+- **Fresh Hydraulics:** a little of both.
+- **Steel-Toe Feet:** more Hull.
+
+**The *Second Helping* (giant robot), about 5 parts:**
+- **Scrapforge Plating:** more Hull.
+- **Arm Number Nine:** salvaged from Calloway's fight. Bigger size boost.
+- **Coolant Valve (Kick Gently):** from one of Calloway's hatch notes. A little of both.
+- **Heavier Fists** and **Bigger Reactor:** size boost.
+
+**The *Supper's On* (giant spaceship), about 7 parts (the Act 3 refit):**
+- **Titan Salvage Plating:** more Hull.
+- **Hushmaster Dish (Rebuilt):** Kasp's rig bolted to the hull (approved Act 3 beat).
+- One part from each former foe: **Title Belt Armor** (Brunt), **Arm Number Ten** (Calloway), **Riposte Ram** (Sorrell), **Fanfare Horns** (Vane), **Price-Tagged Net Cannon** (Tilly).
+
+### Crafting
+**None.** You find things, buy things, or get given things. Mox fits machine parts, but it happens on its own, not in a crafting menu. Nothing here seemed worth flagging as a new idea: crafting would add a whole system to a 10-hour classic game and break "Classic, Not Clever."
+
+### Vertical slice needs vs Later
+**In the slice:**
+- Weapon, armor and charm slots for Red, Otis and Mox; the equip menu and shop arrows.
+- **Weapons: 7** (Red: Scrap Sword, Rebar Blade, Bread Knife; Otis: Dock Mallet, Rivet Hammer; Mox: Big Wrench, Pipe Wrench). **Weapon models: 3** (sword, hammer, wrench-mace), the rest are recolors.
+- **Armor: 5** (Quilted Lining, Lucky Coveralls, Too-Many-Pockets Vest, Padded Work Vest, Hi-Vis Vest).
+- **Charms: 4** (Lucky Bolt, Earplugs, Oven Mitts, Sore Loser Patch).
+- **Items: 13** (Ration Bar, Can of Chili, Canned Coffee, Juice Box, Smelling Salts, Burn Gel, Appeal Form, Ginger Chews, Camp Stove, Firecracker String, Hot Sauce Bomb, Smoke Bomb, and one Protein Shake hidden in the tower). These cover the slice's four status effects.
+- **Key items: 6.**
+- **Icons:** about 12.
+- All gear and items in game/data/ (JSON), with headless tests in game/tests/: equipping changes stats correctly, weapons lock to their owner, charms block their status, every item works in and out of battle, the Camp Stove only works at save lamps, boosters raise stats for good, the 99 cap, and key items can't be sold.
+- Art needs (3 weapon props, recolors, icons; Otis's hammer is a new prop in his hand) go into docs/art_requests.md.
+
+**Later (task board "Later" list):**
+- Vela's and Ruo's weapons; the Act 2 and Act 3 weapon models; ultimate weapons.
+- The bigger item tiers (Dock Diner Special, Sunday Roast, Thermos of Cold Brew, The Whole Enchilada, Block Party Platter, Jumper Cables, Air Horn), the Tangled and Butterfingers cures and charms, Snake-Oil Tonic, Pep Talk Tape, the other throwables and boosters, and later armor and charms.
+- All machine upgrades.
+- Rough full-game counts: about 35 weapons (7 per character), about 15 armor, about 17 charms, about 35 items, about 16 machine parts.
 
 ## Economy
 _Gold sources and sinks, shop pricing, rewards curve._
