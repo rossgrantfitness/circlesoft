@@ -4,6 +4,7 @@
 
 ## 2026-10-06
 
+- **M1 steps 4, 5, 6, 10, 11 built** (Technical Artist): PSX shaders (vertex snap, affine warp, vertex lighting, stepped fog, Bayer dither + 15-bit color, fade), low-res PsxScreen with runtime resolution switching, the diorama test room, and placeholder Red (304 tris, 17 bones, idle/walk/run) made in real Blender. **106 tests passing.** Screenshot: docs/screenshots/m1_test_room.png. Export templates for Windows + Mac installed. Gameplay Programmer now wiring it all together.
 - **Ross: add a demo start screen, and no more questions until there's a playable moment.** The studio is now heads-down on Milestone 1 + title screen + Windows/Mac builds, making and logging its own calls. UI Programmer starting the title screen.
 - **M1 steps 7–9 built** (Gameplay Programmer): diorama camera, prop fader, Red's player controller; 22 new tests pass. Wiring issues to fix in integration: fade-parameter mismatch with the TA's shader, an outdated "no main scene" test. Level 1 small call logged: keyboard runs by default, Shift walks.
 - **M1 steps 1–3 built** (Gameplay Programmer): Godot project configured (Compatibility, 384×216 PSX globals, input map, debug keys F1–F10, autoloads), headless test runner, DataDB data loader. **28 tests, all passing.** Next, in parallel: Technical Artist on PSX shaders, the low-res screen, the test room and placeholder Red; Gameplay Programmer on the diorama camera, prop fading and Red's movement.
