@@ -392,7 +392,25 @@ func _on_action_started(action: Dictionary) -> void:
 	if _mode != Mode.KO and _mode != Mode.VICTORY and _mode != Mode.GAME_OVER:
 		_mode = Mode.PLAYING
 	if bool(action.get("show_name", false)):
-		show_skill_name(str(action.get("name", "")))
+		var slam: BattlePopup = show_skill_name(str(action.get("name", "")))
+		var first_cue_ms: float = _earliest_cue_ms(presses)
+		if slam != null and first_cue_ms >= 0.0:
+			# Out of the way before the first press matters, so ratings and numbers land on a clear view.
+			slam.fit_to((first_cue_ms - BattleUiData.ui_float("slam.clear_before_cue_ms", 150.0)) / 1000.0)
+
+
+## The soonest moment (ms after the action starts) the player sees a cue, or -1 with no presses.
+## A scrambled cue shows at `shown_cue_ms`; the real window stays at `cue_ms`.
+func _earliest_cue_ms(presses: Array) -> float:
+	var earliest: float = -1.0
+	for entry: Variant in presses:
+		var press: Dictionary = entry
+		var shown: float = float(press.get("shown_cue_ms", press.get("cue_ms", -1.0)))
+		var real: float = float(press.get("cue_ms", shown))
+		var soonest: float = minf(shown, real)
+		if soonest >= 0.0 and (earliest < 0.0 or soonest < earliest):
+			earliest = soonest
+	return earliest
 
 
 func _on_action_finished(_action_info: Dictionary) -> void:

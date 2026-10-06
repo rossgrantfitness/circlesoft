@@ -155,11 +155,11 @@ func _ratings_shot() -> void:
 	await _save("m2_battle_hud_ratings.png")
 	_hud.call("tick", 3.0)
 	# The rest of the set: Nice!, Blocked!, and the skill name slam.
-	_stub.emit_signal("press_judged", {"actor": "red", "index": 0, "side": "attack", "rating": "nice", "delta_ms": 90})
-	_stub.emit_signal("press_judged", {"actor": "e1", "index": 1, "side": "block", "rating": "rad", "delta_ms": 40, "owner_id": "otis"})
-	_hud.call("show_skill_name", "Porch Light")
+	# The slam is squeezed to be gone 150 ms before the first cue, so it lands first and then clears the view.
+	_stub.emit_signal("action_started", {"actor": "red", "kind": "skill", "skill_id": "porch_light", "name": "Porch Light", "targets": ["e1"], "presses": [{"index": 0, "type": "tap", "side": "attack", "cue_ms": 900, "owner_id": "red"}], "show_name": true})
 	for popup: Node in _hud.call("get_popups"):
-		popup.call("set_age", 0.45)
+		if popup.get("text") == "Porch Light":
+			popup.call("set_age", 0.3)
 	_hud.call("tick", 0.0)
 	await _save("m2_battle_hud_slam.png")
 	_hud.call("tick", 3.0)

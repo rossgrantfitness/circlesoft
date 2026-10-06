@@ -17,6 +17,12 @@ var _environment: Environment = null
 
 
 func _ready() -> void:
+	apply()
+
+
+## Sets the fog, background and ambient light. Called on load, and again when a room that waited
+## in memory during a battle comes back.
+func apply() -> void:
 	PsxLook.set_fog(fog_color, fog_near, fog_far)
 	var world_environment: WorldEnvironment = get_parent().get_node_or_null("WorldEnvironment") as WorldEnvironment
 	if world_environment == null:

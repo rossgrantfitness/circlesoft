@@ -67,6 +67,10 @@
     "mox": {"name": "Mox", "accent": "#C9A23A", "head_height": 1.37, "style": "bubble", "voice": true},
     "zero_old": {"name": "Old Zero", "accent": "#CBA878", "head_height": 1.16, "style": "bubble", "voice": true},
     "sign": {"name": "Sign", "accent": "#8D97A5", "head_height": 1.0, "style": "box", "voice": false},
-    "narrator": {"name": "", "accent": "chalk", "head_height": 1.0, "style": "box", "voice": false}
+    "narrator": {"name": "", "accent": "chalk", "head_height": 1.0, "style": "box", "voice": false},
+    "enemy_grunt": {"name": "Grunt", "accent": "#8D97A5", "head_height": 1.7, "style": "bubble", "voice": true},
+    "enemy_drone": {"name": "Drone", "accent": "#6F8BA8", "head_height": 1.4, "style": "bubble", "voice": true},
+    "enemy_squad": {"name": "Squad Boss", "accent": "#C9A23A", "head_height": 1.7, "style": "bubble", "voice": true},
+    "enemy_tough": {"name": "Enforcer", "accent": "#C8322A", "head_height": 1.4, "style": "bubble", "voice": true}
   }
 }

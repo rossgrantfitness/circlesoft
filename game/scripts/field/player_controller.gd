@@ -49,6 +49,7 @@ var camera: Camera3D = null
 
 var _tuning: FieldTuning = FieldTuning.new()
 var _vy: float = 0.0
+var _jump_blocked_frames: int = 0
 var _coyote_left: float = 0.0
 var _buffer_left: float = 0.0
 var _air_time: float = 0.0
@@ -81,7 +82,9 @@ func _physics_process(delta: float) -> void:
 		stick = Input.get_vector(ACTION_LEFT, ACTION_RIGHT, ACTION_UP, ACTION_DOWN)
 		run_held = Input.is_action_pressed(ACTION_RUN)
 		jump_held = Input.is_action_pressed(ACTION_JUMP)
-		if Input.is_action_just_pressed(ACTION_JUMP):
+		if _jump_blocked_frames > 0:
+			_jump_blocked_frames -= 1
+		elif Input.is_action_just_pressed(ACTION_JUMP):
 			press_jump()
 	step(delta)
 
@@ -134,6 +137,12 @@ func press_jump() -> void:
 	if is_inside_tree() and UiStage.is_busy(get_tree()):
 		return
 	request_jump()
+
+
+## Ignores the jump button for a few physics frames (coming back from a battle, where the same button
+## dismissed the victory screen).
+func block_jump_for_frames(frames: int) -> void:
+	_jump_blocked_frames = maxi(_jump_blocked_frames, frames)
 
 
 ## Asks for a jump. If Red cannot jump yet (in the air past coyote time) the request is remembered

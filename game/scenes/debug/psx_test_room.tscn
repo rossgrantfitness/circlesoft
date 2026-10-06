@@ -1,4 +1,4 @@
-[gd_scene load_steps=52 format=3]
+[gd_scene load_steps=53 format=3]
 
 [ext_resource type="Script" path="res://scripts/core/psx_room_look.gd" id="1_look"]
 [ext_resource type="Shader" path="res://shaders/psx_lit.gdshader" id="2_lit"]
@@ -14,6 +14,7 @@
 [ext_resource type="PackedScene" path="res://scenes/actors/player.tscn" id="12_player"]
 [ext_resource type="PackedScene" path="res://scenes/actors/npc.tscn" id="13_npc"]
 [ext_resource type="Script" path="res://scripts/field/interactable.gd" id="14_interactable"]
+[ext_resource type="PackedScene" path="res://scenes/actors/field_enemy.tscn" id="15_enemy"]
 
 [sub_resource type="Environment" id="Environment_room"]
 background_mode = 1
@@ -441,3 +442,31 @@ after_flag = "prize_crate_taken"
 after_conversation = "examine_prize_crate_again"
 after_kind = "examine"
 reach = 1.3
+
+[node name="GruntEnemy" parent="." instance=ExtResource("15_enemy")]
+transform = Transform3D(0.1305, 0, -0.9915, 0, 1, 0, 0.9915, 0, 0.1305, 6.6, 0, -0.5)
+speaker_id = "enemy_grunt"
+fight_id = "grunt"
+model_path = "res://art/placeholder/enemies/signals_grunt/enm_signals_grunt.glb"
+reach = 1.8
+
+[node name="DroneEnemy" parent="." instance=ExtResource("15_enemy")]
+transform = Transform3D(0.3227, 0, -0.9465, 0, 1, 0, 0.9465, 0, 0.3227, 3.4, 0, -1.0)
+speaker_id = "enemy_drone"
+fight_id = "drone"
+model_path = "res://art/placeholder/enemies/signals_drone/enm_signals_drone.glb"
+reach = 1.8
+
+[node name="SquadEnemy" parent="." instance=ExtResource("15_enemy")]
+transform = Transform3D(-0.1264, 0, -0.9920, 0, 1, 0, 0.9920, 0, -0.1264, 9.2, 0, 1.8)
+speaker_id = "enemy_squad"
+fight_id = "squad"
+model_path = "res://art/placeholder/enemies/grunt_variant/enm_grunt_variant.glb"
+reach = 1.8
+
+[node name="ToughEnemy" parent="." instance=ExtResource("15_enemy")]
+transform = Transform3D(0.8321, 0, 0.5547, 0, 1, 0, -0.5547, 0, 0.8321, -2.6, 0, -1.9)
+speaker_id = "enemy_tough"
+fight_id = "tough"
+model_path = "res://art/placeholder/enemies/drone_variant/enm_drone_variant.glb"
+reach = 1.8

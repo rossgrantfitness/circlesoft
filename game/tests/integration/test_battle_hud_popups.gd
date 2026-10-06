@@ -326,3 +326,48 @@ func test_the_slam_has_no_speaker_label() -> void:
 	_stub.action_started.emit({"actor": "red", "kind": "skill", "name": "Porch Light", "targets": ["e1"], "presses": [], "show_name": true})
 	assert_eq(_hud.get_banner().get_current_text(), "", "Red never says it: no banner, no line of dialogue")
 	assert_false(_audio.voices.size() > 0)
+
+
+# ---- the slam gets out of the way before the first cue ----
+
+func _slam_for(presses: Array) -> BattlePopup:
+	_setup()
+	_stub.action_started.emit({"actor": "red", "kind": "skill", "name": "Porch Light", "targets": ["e1"], "presses": presses, "show_name": true})
+	return _popups_of(BattlePopup.Kind.SLAM)[0]
+
+
+func test_the_slam_is_gone_150_ms_before_the_first_cue() -> void:
+	var slam: BattlePopup = _slam_for([{"index": 0, "type": "tap", "side": "attack", "cue_ms": 900, "owner_id": "red"},
+			{"index": 1, "type": "tap", "side": "attack", "cue_ms": 1400, "owner_id": "red"}])
+	assert_le(slam.get_duration(), 0.75 + 0.001)
+	assert_gt(slam.get_duration(), 0.3, "it still gets its slam")
+	_hud.tick(0.76)
+	assert_eq(_popups_of(BattlePopup.Kind.SLAM).size(), 0, "clear before the cue at 900 ms")
+
+
+func test_a_scrambled_cue_uses_the_earlier_shown_time() -> void:
+	var slam: BattlePopup = _slam_for([{"index": 0, "type": "tap", "side": "attack", "cue_ms": 900, "shown_cue_ms": 700, "owner_id": "red"}])
+	assert_le(slam.get_duration(), 0.55 + 0.001)
+
+
+func test_a_late_cue_keeps_the_full_slam() -> void:
+	var slam: BattlePopup = _slam_for([{"index": 0, "type": "tap", "side": "attack", "cue_ms": 5000, "owner_id": "red"}])
+	assert_almost_eq(slam.get_duration(), BattlePopup.make_slam("x").get_duration(), 0.001)
+
+
+func test_a_slam_with_no_presses_keeps_the_full_slam() -> void:
+	var slam: BattlePopup = _slam_for([])
+	assert_gt(slam.get_duration(), 1.2)
+
+
+func test_an_early_cue_still_plays_the_slam_in_and_cuts_the_rest() -> void:
+	var slam: BattlePopup = _slam_for([{"index": 0, "type": "tap", "side": "attack", "cue_ms": 450, "owner_id": "red"}])
+	assert_le(slam.get_duration(), 0.34, "squeezed to the grow-in plus one fade step (the 300 ms before the clear-view point)")
+	assert_gt(slam.get_duration(), 0.2)
+	slam.set_age(0.01)
+	assert_gt(slam.get_pop_scale(), 1.5, "it still starts huge")
+
+
+func test_the_shrunk_slam_does_not_change_the_shared_data() -> void:
+	_slam_for([{"index": 0, "type": "tap", "side": "attack", "cue_ms": 450, "owner_id": "red"}])
+	assert_gt(BattlePopup.make_slam("Again").get_duration(), 1.2)

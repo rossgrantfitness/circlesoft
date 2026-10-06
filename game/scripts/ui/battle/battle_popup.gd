@@ -124,9 +124,25 @@ static func _colors_from(hexes: Array) -> Array[Color]:
 
 
 func _setup_timing(timing_key: String) -> void:
-	_timing = BattleUiData.ui("timing.popup.%s" % timing_key, {})
+	_timing = (BattleUiData.ui("timing.popup.%s" % timing_key, {}) as Dictionary).duplicate(true)
 	_step_s = BattleUiData.ui_float("timing.step_s", 0.0833)
 	_highlight_px = BattleUiData.ui_int("ratings.highlight_px", 2)
+
+
+## Squeezes the whole life of the pop-up (grow in, hold, fade) into `seconds` or less: the hold
+## shrinks first, then the fade loses steps. The grow-in always plays (it is the slam). Used so the
+## skill name is gone before the first Clutch cue.
+func fit_to(seconds: float) -> void:
+	var in_time: float = float(_in_scales().size()) * _step_s
+	var fades: Array = _fade_alphas().duplicate()
+	var fade_time: float = float(fades.size()) * _step_s
+	var room: float = seconds - in_time
+	if room >= fade_time:
+		_timing["hold_s"] = minf(float(_timing.get("hold_s", 0.5)), room - fade_time)
+	else:
+		var keep: int = clampi(int(floor(room / _step_s)), 1, fades.size())
+		_timing["fade_alphas"] = fades.slice(fades.size() - keep)
+		_timing["hold_s"] = 0.0
 
 
 func _ready() -> void:

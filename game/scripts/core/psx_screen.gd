@@ -71,6 +71,23 @@ func load_world(scene: PackedScene) -> Node:
 	return instance
 
 
+## Takes everything out of the world WITHOUT freeing it, so a room can wait in memory while a battle
+## uses the world (the technical plan's "detach and keep"). Hand the result to attach_world() later.
+func detach_world() -> Array[Node]:
+	var kept: Array[Node] = []
+	for child: Node in _world.get_children():
+		_world.remove_child(child)
+		kept.append(child)
+	return kept
+
+
+## Puts nodes from detach_world() back into the world, in their old order.
+func attach_world(nodes: Array[Node]) -> void:
+	for node: Node in nodes:
+		if is_instance_valid(node) and node.get_parent() == null:
+			_world.add_child(node)
+
+
 func clear_world() -> void:
 	for child: Node in _world.get_children():
 		_world.remove_child(child)

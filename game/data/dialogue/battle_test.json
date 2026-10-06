@@ -1,0 +1,45 @@
+{
+  "_about": "Challenge lines for the enemies standing in the test room (data/world/room_fights.json). Loud, goofy, short. Each ends in a Fight? choice; the yes conversation plays and then the fight starts.",
+  "conversations": {
+    "challenge_grunt": [
+      {"speaker": "enemy_grunt", "text": "HALT! Signals Patrol! Do you have a permit for standing there?"},
+      {"speaker": "enemy_grunt", "text": "...Neither do I! Fight me to settle it!", "choice": ["Thumbs-up: Fight!", "Head shake: Not now"], "next": ["challenge_grunt_yes", "challenge_grunt_no"]}
+    ],
+    "challenge_grunt_yes": [
+      {"speaker": "enemy_grunt", "text": "HUP HUP! Form up, Patrol!"}
+    ],
+    "challenge_grunt_no": [
+      {"speaker": "enemy_grunt", "text": "Fine! But I'm writing you a ticket for that!"}
+    ],
+    "challenge_drone": [
+      {"speaker": "enemy_drone", "text": "BZZZT! Intruder detected! Also a flock! We are a flock!"},
+      {"speaker": "enemy_drone", "text": "Surrender or be BUZZED!", "choice": ["Thumbs-up: Fight!", "Head shake: Back off"], "next": ["challenge_drone_yes", "challenge_drone_no"]}
+    ],
+    "challenge_drone_yes": [
+      {"speaker": "enemy_drone", "text": "FLOCK FORMATION! BZZZZT!"}
+    ],
+    "challenge_drone_no": [
+      {"speaker": "enemy_drone", "text": "Bzzt... scheduled for later, then!"}
+    ],
+    "challenge_squad": [
+      {"speaker": "enemy_squad", "text": "ATTENTION! This is a FULL Signals Squad! All four of us! Count us!"},
+      {"speaker": "enemy_squad", "text": "One, two, three... Fight us!", "choice": ["Thumbs-up: Fight!", "Head shake: Too many"], "next": ["challenge_squad_yes", "challenge_squad_no"]}
+    ],
+    "challenge_squad_yes": [
+      {"speaker": "enemy_squad", "text": "SQUAD! BY THE NUMBERS! ...Which numbers?!"}
+    ],
+    "challenge_squad_no": [
+      {"speaker": "enemy_squad", "text": "Smart. We were only three-and-a-half sure."}
+    ],
+    "challenge_tough": [
+      {"speaker": "enemy_tough", "text": "I am the QUOTA ENFORCER. Nobody leaves my quota!"},
+      {"speaker": "enemy_tough", "text": "No running! No refunds! FIGHT!", "choice": ["Thumbs-up: Fight!", "Head shake: Nope"], "next": ["challenge_tough_yes", "challenge_tough_no"]}
+    ],
+    "challenge_tough_yes": [
+      {"speaker": "enemy_tough", "text": "THE QUOTA DEMANDS IT!"}
+    ],
+    "challenge_tough_no": [
+      {"speaker": "enemy_tough", "text": "Hmph. The quota will wait. It's very patient."}
+    ]
+  }
+}

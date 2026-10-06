@@ -94,7 +94,7 @@
   },
   "numbers": {"size": 20, "ink": 2, "damage": "#FFFFFF", "heal": "#9BE35A", "stack_px": 8, "ink_color": "#14121F"},
   "cue": {"fill": "#FF5A36", "outline": "#FFFFFF", "ink": "#14121F", "w": 16, "h": 16, "big_w": 24, "big_h": 16, "shake_px": 1, "shake_s": 0.2},
-  "slam": {"y": 70, "band_h": 40, "band_color": "#14121F", "band_alpha": 0.85, "size": 26, "colors": ["#FFE08A"], "shake_px": 2, "shake_steps": 2, "stripe_color": "#FF5A36", "stripe_h": 3},
+  "slam": {"clear_before_cue_ms": 150, "y": 70, "band_h": 40, "band_color": "#14121F", "band_alpha": 0.85, "size": 26, "colors": ["#FFE08A"], "shake_px": 2, "shake_steps": 2, "stripe_color": "#FF5A36", "stripe_h": 3},
   "ko": {"size": 40, "colors": ["#FF5A36", "#FFD23F"], "cycle_steps": 3, "hold_s": 1.0, "freeze_s": 0.35, "to_end_s": 0.3, "flash_alpha": 0.7, "y": 96},
   "victory": {
     "dim_step": 4,

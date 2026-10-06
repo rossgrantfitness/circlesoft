@@ -22,6 +22,7 @@ var tuning: InteractionTuning = InteractionTuning.new()
 var read_engine_input: bool = true
 
 var _target: Interactable = null
+var _blocked_frames: int = 0
 var _active: Interactable = null
 
 
@@ -34,9 +35,18 @@ func _ready() -> void:
 
 func _physics_process(_delta: float) -> void:
 	refresh()
+	if _blocked_frames > 0:
+		_blocked_frames -= 1
+		return
 	if read_engine_input and player != null and player.read_engine_input \
 			and Input.is_action_just_pressed(ACTION_INTERACT):
 		try_interact()
+
+
+## Ignores the interact button for a few physics frames (coming back from a battle, where the same
+## button dismissed the victory screen).
+func block_for_frames(frames: int) -> void:
+	_blocked_frames = maxi(_blocked_frames, frames)
 
 
 func get_target() -> Interactable:

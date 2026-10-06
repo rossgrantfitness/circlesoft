@@ -14,6 +14,8 @@ extends Node3D
 @export var camera_rig_name: String = "CameraRig"
 @export var bounds_name: String = "CameraBounds"
 
+const RESUME_BLOCK_FRAMES: int = 6
+
 var player: PlayerController = null
 var camera_rig: DioramaCamera = null
 var prop_fader: PropFader = null
@@ -21,6 +23,12 @@ var runner: DialogueRunner = null
 var field_menu: FieldMenu = null
 var interactor: PlayerInteractor = null
 var prompt: InteractPrompt = null
+var fights: RoomFights = null
+
+## A fight was chosen (the enemy's Fight! answer finished). Main answers by starting the battle.
+signal battle_requested(encounter_id: String, fight_id: String)
+
+var _suspended: bool = false
 
 
 func _ready() -> void:
@@ -70,10 +78,62 @@ func _setup_talking() -> void:
 	interactor.prompt = prompt
 	add_child(interactor)
 
+	fights = RoomFights.new()
+	fights.name = "RoomFights"
+	add_child(fights)
+	fights.setup(self, runner, interactor)
+	fights.battle_requested.connect(battle_requested.emit)
+
+
+## True while a battle has the world and this room waits in memory.
+func is_suspended() -> bool:
+	return _suspended
+
+
+## The room is about to be detached while a battle uses the world: hide its on-screen bits and
+## switch the menu off. Everything else (Red, NPCs, the camera) simply waits in memory.
+func suspend() -> void:
+	_suspended = true
+	if prompt != null:
+		prompt.hide_icon()
+	if field_menu != null and is_instance_valid(field_menu):
+		field_menu.enabled = false
+
+
+## The room is back in the world after a battle: the camera and the room's look come back, and the
+## buttons that dismissed the victory screen are ignored for a moment so they cannot also jump or talk.
+func resume() -> void:
+	_suspended = false
+	camera_rig.get_camera().make_current()
+	var look: PsxRoomLook = get_node_or_null("RoomLook") as PsxRoomLook
+	if look != null:
+		look.apply()
+	if field_menu != null and is_instance_valid(field_menu):
+		field_menu.enabled = true
+	if player != null:
+		player.block_jump_for_frames(RESUME_BLOCK_FRAMES)
+	if interactor != null:
+		interactor.block_for_frames(RESUME_BLOCK_FRAMES)
+
+
+## Main tells the room how its battle ended. A win removes the enemy that was fought.
+func battle_finished(result: String, _report: Dictionary = {}) -> void:
+	if fights != null:
+		fights.battle_finished(result)
+
 
 func _exit_tree() -> void:
+	if not _suspended:
+		teardown()
+
+
+## Takes the room's UI off the shared stage and stops its talking. Runs when the room leaves the
+## world for good (not when it only waits in memory during a battle).
+func teardown() -> void:
 	# The UI lives on the shared stage, so it has to be taken down with the room: a bubble or the
 	# menu left behind would keep the "busy" lock on for good.
+	if fights != null and is_instance_valid(fights):
+		fights.shut_down()
 	if runner != null and is_instance_valid(runner):
 		runner.stop()
 	var tree: SceneTree = get_tree()
