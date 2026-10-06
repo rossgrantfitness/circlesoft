@@ -23,11 +23,9 @@ LIGHTS LEFT ON is a classic 90s JRPG hero's journey. Ten years ago Red's mom fle
 _Movement, camera, towns, dungeons, world map, interaction, encounters._
 
 ## Battle system
-> 🟡 DRAFT: awaiting Ross's approval
+> ✅ APPROVED by Ross, 2026-10-06 (names: Clutch, Juice)
 
-**Choices for Ross (small picks inside this draft):**
-- **Name for timed hits:** A **Flashpoint** (recommended) · B **Clutch** · C **Showtime**. Flashpoint says exactly what to watch for (the flash) and sounds rad; Clutch is plainer and sporty; Showtime is the goofiest. ("Flashpoint" is a common word also used by a few other titles; it's a plain English word, not borrowed from a game's battle system.)
-- **Name for the skill gauge:** A **Juice** (recommended) · B **Guts** · C **Gumption**. Juice works for a pup and a battleship alike ("Biscuit's out of Juice!"), so it carries through every scale.
+**Names (Ross, 2026-10-06):** timed hits are called **Clutch** (a "Clutch press"); the skill gauge is **Juice**.
 
 ### The basics
 - **Classic turn-based.** You pick a command, the fighter does it, the next one goes.
@@ -35,7 +33,7 @@ _Movement, camera, towns, dungeons, world map, interaction, encounters._
 - **Party:** 3 fighters on the field in the slice (Red, Otis, Mox). Up to 3 on the field in the full game too.
 - **Enemies:** come in groups of 1 to 4 in the slice (more in later fights).
 - **Commands:**
-  - **Attack:** a basic hit, with a Flashpoint press.
+  - **Attack:** a basic hit, with a Clutch press.
   - **Skills:** special moves that cost Juice.
   - **Items:** heal, cure, revive, throw.
   - **Defend:** take less damage until your next turn, get a little Juice back, and your block windows get easier.
@@ -44,7 +42,7 @@ _Movement, camera, towns, dungeons, world map, interaction, encounters._
 - **HP:** run out and you're Down for the Count (see Status effects). All 3 down = game over, back to the last save.
 - **Juice:** the skill gauge. Comes back with items, by resting, and a little every time you land a Rad or better.
 
-### Timed hits (the hook): Flashpoint
+### Timed hits (the hook): Clutch
 - **On attacks:** press the button at the right moment as your hit lands for a bonus. Depending on the move: extra damage, an extra hit, or an extra effect (like a stun).
 - **On defense:** press as the enemy's hit lands to block and take less damage. A perfect press blocks it all, and on close-up hits you swing back for free (**"Payback!"**).
 - **Missing never hurts you.** A missed press is just a normal hit or a normal hurt. Timing only ever adds.
@@ -58,7 +56,7 @@ _Movement, camera, towns, dungeons, world map, interaction, encounters._
 - **Accessibility:** an **Auto-Timing** option in settings lands every press as "Rad!" automatically. Also a **Wide Windows** option for players who want it easier but still want to press.
 
 ### Skills
-Each signature move uses Flashpoint in its own way.
+Each signature move uses Clutch in its own way.
 - **Red, Porch Light:** a **tap** when the lamp flares blinds the enemy, then a **hold and let go** at the top of her spin adds a second, bigger wallop. Red never shouts the name; it just slams onto the screen while she grins.
 - **Otis, Heave-Ho:** **hold** while he lifts the enemy and **let go** at the top to slam it onto a second enemy, hurting both. A perfect release stuns them.
 - **Mox, Patent Pending:** a slot-machine wheel of gadget results spins over his head; a **tap** stops it. Good timing lands the better results, and "TOTALLY RAD!" always lands the amazing one.
@@ -104,7 +102,7 @@ One system the whole game. Same commands, same three presses, same cues and rati
 **In the slice:**
 - Turn order by speed, with the portrait row on screen.
 - Attack, Skills, Items, Defend, Run.
-- HP, Juice, and Flashpoint on every attack and every block, with the flash, the "ding," the "!" and the ratings.
+- HP, Juice, and Clutch on every attack and every block, with the flash, the "ding," the "!" and the ratings.
 - All three press types (tap, hold and let go, string).
 - Auto-Timing and Wide Windows options.
 - Red, Otis and Mox, with their signature moves and a couple of basic skills each.

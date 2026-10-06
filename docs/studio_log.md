@@ -4,6 +4,7 @@
 
 ## 2026-10-06
 
+- **Battle system approved.** Timed hits are called **Clutch**; the skill gauge is **Juice**. Creative Director now drafting Exploration; Taste Keeper scoring R20.
 - **Battle system: Technical Director's review added** to the draft (feasibility Medium). Suggests a timing-offset setting and breaking Kasp's legs in four pairs; flags Tilly's net vs. "missing never hurts" for later. Draft still awaiting Ross's approval.
 - **Pitch and Pillars approved. Relay rejected:** the battle system becomes standard turn-based JRPG with timed hits (Mario RPG style). Pitch and Pillar 3 updated. Creative Director removing Relay from the story bible and drafting the Battle system section; Technical Director reviews next. Taste Keeper scoring R19.
 - **Design doc: Core pitch and Pillars drafted.** Pillars: Always Bigger · Loud Crew, Big Heart · Classic, Not Clever. Sent to Ross.

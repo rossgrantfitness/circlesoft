@@ -391,7 +391,7 @@ _The spelling authority for every name and term. The text checker compares all i
 | **Supper's On** | ship | "the *Supper's On*," italic, with the apostrophe. No HNS. | Red's mom's huge old deep-hauler. The party's giant spaceship from the end of Act 2. |
 | **Ten Out of Ten** | other (signature move) | Capital T, O, T. | Ruo's signature move: a flare-pistol volley that adds another shot with each good press, up to ten. |
 | **Tilly Ransome** | person | RAN-sum. | Coldrunner bounty hunter and recurring rival. Mouse. Joins the Act 3 team-up. |
-| **Timed hits** | other (battle mechanic) | Lowercase. Working name; branded name TBD. | The battle hook: press the button at the right moment when attacking to hit harder, or when being hit to block or reduce damage. |
+| **Timed hits** | other (battle mechanic) | Lowercase. Working name; called **Clutch** (Ross, 2026-10-06). | The battle hook: press the button at the right moment when attacking to hit harder, or when being hit to block or reduce damage. |
 | **Titan** | other | Lowercase in running text. | A giant robot, the scale above a walker. |
 | **Tuesday** | item | Capital T, like the day it was built. | Mox's small, wobbly homemade drone. |
 | **Vela Quist** | person | VEL-uh KWIST. | Signals Corps listening specialist who quits in triplicate. Bunny healer; joins at the end of Act 1. |
