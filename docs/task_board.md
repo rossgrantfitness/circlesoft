@@ -5,14 +5,15 @@
 ## To Do
 | Task | Assigned to | Depends on | Notes |
 |---|---|---|---|
-| Design doc, remaining sections one at a time | Creative Director drafts (Technical Director reviews battle & systems), Ross approves each | Core pitch + Pillars | Order after Exploration: Party & progression, Equipment & items, Economy, Menus, Save system, 10-hour structure, Vertical slice scope. |
+| Design doc, remaining sections one at a time | Creative Director drafts (Technical Director reviews battle & systems), Ross approves each | Core pitch + Pillars | Order after Party & progression: Equipment & items, Economy, Menus, Save system, 10-hour structure, Vertical slice scope. |
 | Name Ruo's brother | Creative Director proposes | | Small; whenever convenient. |
 | Steam/trademark check on the title "Lights Left On" | Producer | | Working title until checked. |
 
 ## In Progress
 | Task | Assigned to | Started | Notes |
 |---|---|---|---|
-| Design doc: Exploration | Creative Director drafts, Ross approves | 2026-10-06 | Battle system approved. |
+| Camera decision: rotatable follow vs fixed diorama vs prerendered backgrounds | Technical Director proposes, Ross decides | 2026-10-06 | Ross's Mario RPG diorama idea. |
+| Design doc: Party & progression | Creative Director drafts, Ross approves | 2026-10-06 | Exploration approved (camera pending). |
 | Set up the lights-left-on repository | Ross (GitHub clicks), then studio floor moves game files over | 2026-10-05 | Merge PR #1 → mark circlesoft as template → create lights-left-on from it. |
 
 ## Done
@@ -32,4 +33,6 @@
 
 ## Later
 _Ideas beyond the vertical slice. Not to be built until Ross approves the slice._
+- EarthBound-fast instant wins against much weaker grunts (approved 2026-10-06).
+- Swap/bench, Vela and Ruo's signature moves; Tangled, Butterfingers, Fired Up; robot/titan/ship/god-scale fights; other bosses' gimmicks (from the Battle system section).
 -

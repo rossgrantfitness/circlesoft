@@ -20,20 +20,11 @@ LIGHTS LEFT ON is a classic 90s JRPG hero's journey. Ten years ago Red's mom fle
    *This means we DON'T* add high-concept gimmicks, turn the themes into systems (no death or rebirth mechanics), or pick anything that's hard to build just because it's clever.
 
 ## Exploration
-> 🟡 DRAFT: awaiting Ross's approval
+> ✅ APPROVED by Ross, 2026-10-06, except the **camera**, which is being reconsidered (see the camera decision; Ross suggested fixed diorama angles like Mario RPG)
 
-### New ideas needing Ross's OK
-Everything else in this section is classic 90s JRPG basics. These two are studio ideas, so they're yours to call.
-
-**DECISION NEEDED: Can weak grunts give up on the map once the party is much stronger?**
-- **Option A: Yes.** Once the party clearly outclasses a group, Hegemony grunts on the map wave a white flag. Walk into them and you win on the spot (XP and credits, no fight). Pros: saves time when you walk back through an area; pays off the approved white-flag joke; cheap to build. Cons: one more rule to tune.
-- **Option B: No.** Every fight plays out. Dodging on the map and Run are enough. Pros: simplest, purely classic. Cons: easy fights late in an area can get tedious.
-- **Recommendation:** A, but put it on the Later list. In the slice the party never outclasses anything, and this turns the grunts' joke into a time-saver rather than a new system.
-
-**DECISION NEEDED: Does Red's lamp light up dark rooms?**
-- **Option A: Yes.** A few dungeon rooms are dark; Red's lamp lights a small circle around her and shows hidden chests. Pros: the lamp becomes her tool everywhere, and it's on-theme. Cons: new lighting work for every dark room, and a puzzle type we'd have to keep reusing.
-- **Option B: No.** The lamp is her weapon in battle and her rest/save animation, and dungeons are lit normally. Pros: classic, less to build. Cons: we miss a small on-theme touch.
-- **Recommendation:** B. Classic, Not Clever: the lamp already does plenty. It can go on the Later list if you like it.
+### Ross's calls on the new ideas (2026-10-06)
+- **Instant wins (Later list):** yes, and fast, the way EarthBound did it. Once the party clearly outclasses a group, Hegemony grunts on the map wave a white flag; walk into them and there's no battle screen at all: a quick jingle, a one-line "The grunts surrender!" pop-up with the XP and credits, and you keep walking. Never in the slice.
+- **Red's lamp lighting dark rooms:** no. The lamp stays her weapon and her rest/save animation; dungeons are lit normally.
 
 ### Movement & camera
 - **Moving:** Red runs with the stick or d-pad; tilt lightly to walk. Brisk speed, no stamina, no dash.
