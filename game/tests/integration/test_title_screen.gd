@@ -50,17 +50,23 @@ func _mouse_at_item(title: TitleScreen, index: int) -> Vector2:
 	return rect.position + stage_point * title.get_display_scale()
 
 
+## Test windows are tiny and stretched, so a point in the title's own coordinates must be turned
+## into a window pixel before it is pushed (the window turns it back, like it does for a real mouse).
+func _to_window(position: Vector2) -> Vector2:
+	return tree.root.get_final_transform() * position
+
+
 func _move_mouse(title: TitleScreen, position: Vector2) -> void:
 	var motion: InputEventMouseMotion = InputEventMouseMotion.new()
-	motion.position = position
-	motion.global_position = position
+	motion.position = _to_window(position)
+	motion.global_position = motion.position
 	tree.root.push_input(motion)
 
 
 func _click(position: Vector2, button: MouseButton = MOUSE_BUTTON_LEFT) -> void:
 	var event: InputEventMouseButton = InputEventMouseButton.new()
-	event.position = position
-	event.global_position = position
+	event.position = _to_window(position)
+	event.global_position = event.position
 	event.button_index = button
 	event.pressed = true
 	tree.root.push_input(event)
@@ -331,4 +337,4 @@ func test_integer_scaling_on_full_hd_and_fallback() -> void:
 	title.size = LATER_SIZE
 	assert_eq(title.get_display_scale(), 5.0, "5x on 1080p")
 	title.size = Vector2(1000, 600)
-	assert_eq(title.get_display_scale(), 2.0 if 2.0 * STAGE_SIZE.y / 600.0 >= 0.8 else 600.0 / STAGE_SIZE.y)
+	assert_almost_eq(title.get_display_scale(), 1000.0 / STAGE_SIZE.x, 0.001, "2x would fill under 80%, so it scales to fit")
