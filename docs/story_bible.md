@@ -333,6 +333,7 @@ _The spelling authority for every name and term. The text checker compares all i
 | **Bix Calloway** | person | KAL-uh-way. Title: Lieutenant (Lt. Calloway). | Second lieutenant of the Overture and chief engineer of the Scrapforge Division. Heron. Mid-Act 2 boss; joins the Act 3 team-up. |
 | **Call** | other | Always "the call," lowercase. | The nonstop distress signal from the Quiet, asking for help in plain words. Any cheap receiver can catch it. |
 | **Celestine Sorrell** | person | SEL-uh-steen SOR-ul. Title: Lieutenant (Lt. Sorrell). | Third lieutenant of the Overture and commander of the Rim Guard. Spotted hyena. Late-Act 2 boss; joins the Act 3 team-up. |
+| **Clutch** | other (battle mechanic) | Capital C. "a Clutch press". | The name for timed hits: press at the right moment to hit harder or block. Ratings: Nice! / Rad! / TOTALLY RAD! |
 | **Coldrunners** | faction | One word, capital C. Singular "Coldrunner." | Smugglers and lane-runners who fly cold past patrols. Symbol: a shuttered lantern. |
 | **Cycle** | other | "the cycle," lowercase. | (RESTRICTED) Twist term; see the twist section. |
 | **Dobb** | person | Rhymes with "job." Title: Ensign (Ensign Dobb). | Vane's nervous junior officer, whose whole job is billowing the Admiral's coat with a hand-crank bellows. |
@@ -354,6 +355,7 @@ _The spelling authority for every name and term. The text checker compares all i
 | **HNS Title Shot** | ship (walker) | "the *HNS Title Shot*," italic. | Brunt's heavy hauler walker rebuilt as a boxer, with padded fists and shoulder floodlights. Act 1 finale boss. |
 | **Hollis Brunt** | person | Title: Lieutenant (Lt. Brunt). | First lieutenant of the Overture and commander of the Hardfall Corps. Rhino. Act 1 finale boss; first foe to cross over in Act 3. |
 | **Hushmaster** | ship (walker rig) | "the Hushmaster," not italic, one word. Upgraded version: "Hushmaster Mk II." No HNS. | Kasp's spider-legged jammer rig, eight legs and a heated seat. The slice boss's rig. |
+| **Juice** | other (battle resource) | Capital J. | The skill gauge. Skills cost Juice; it comes back with items, rest, and good Clutch presses. |
 | **Jump lanes** | other | Lowercase; "lanes" for short. | Invisible highways that cross days of space in hours. Whoever holds the lanes holds the Marches. |
 | **Kasp** | person | Rhymes with "clasp." Title: Sergeant (Sgt. Kasp), dropping a rank each time he turns up. | Signals Corps sergeant and beaver who fits the jammer to Harrow's mast. The vertical slice boss. |
 | **Keeper** | other | "the Keeper," capital K. Not related to the studio's Taste Keeper job title. | (RESTRICTED) The real enemy; see the twist section. |
