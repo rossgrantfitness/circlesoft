@@ -579,7 +579,9 @@ Classic FF7–9 saving: you save at set spots, not anywhere.
 - **Later:** inns, the *Supper's On* bridge, and saving machine parts, Hull and Act 3 guest missions.
 
 ## The 10-hour structure (act by act)
-> 🟡 DRAFT: awaiting Ross's approval
+> ✅ APPROVED by Ross, 2026-10-06 (Act 2: two re-dressed moons, Option A; studio additions kept)
+
+> **Pacing rule (Ross): keep it tight.** No filler. Every area, side job and rematch earns its minutes; studio additions (the Tilly rematch, the Slipway Prime hub, the two titan stages, the scouting run) stay short and punchy. When something runs long, cut it before padding anything. The ~10-hour target is a ceiling, not a quota.
 
 **What this is:** a gameplay map of the approved Act 1/2/3 outlines: where you go, what you do there, how big you are, who you fight and roughly how long it takes. No new story and no new mechanics. Times are rough first-playthrough minutes, cutscenes included.
 
