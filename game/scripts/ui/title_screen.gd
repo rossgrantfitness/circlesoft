@@ -1,7 +1,9 @@
 class_name TitleScreen
 extends Control
 ## The demo start screen: night view of Harrow with a lamp in a window, the LIGHTS LEFT ON logo,
-## a blinking PRESS START, then a small menu (Start Demo / Quit).
+## a blinking PRESS START, then a small menu (Start Demo / Battle Test / Quit). Battle Test opens an
+## encounter picker window (BattleTestPicker); picking one fades out and emits
+## `battle_test_requested(encounter_id)`.
 ##
 ## Self-contained: it draws into its own 384x216 SubViewport and shows that scaled up by whole
 ## numbers with nearest-neighbor filtering (the same rule as psx_screen), so it works standalone
@@ -16,14 +18,17 @@ extends Control
 ## scenes right away on a black screen.
 
 signal start_demo_requested
+## An encounter was picked in the Battle Test window. Fires after the fade to black, like start_demo_requested.
+signal battle_test_requested(encounter_id: String)
 signal menu_opened
 signal menu_closed
 
-enum State { PRESS_START, MENU, LEAVING }
+enum State { PRESS_START, MENU, PICKER, LEAVING }
 
 const TEXT_ID: String = "text/title"
 const THEME_ID: String = "ui/ui_theme"
 const ITEM_START_DEMO: String = "start_demo"
+const ITEM_BATTLE_TEST: String = "battle_test"
 const ITEM_QUIT: String = "quit"
 const STICK_AXIS_VERTICAL: int = JOY_AXIS_LEFT_Y
 const STICK_PRESS: float = 0.6
@@ -58,6 +63,9 @@ var _stage_size: Vector2 = Vector2(384, 216)
 var _min_fill: float = 0.8
 var _leave_emitted: bool = false
 var _glow_level: int = -1
+var _pending_battle: String = ""
+var _picker: BattleTestPicker = null
+var _picker_input: MenuInput = MenuInput.new()
 
 @onready var _viewport: SubViewport = $PixelViewport
 @onready var _display: TextureRect = $Display
@@ -79,6 +87,7 @@ func _ready() -> void:
 	_load_data()
 	_apply_fonts_and_text()
 	_build_menu()
+	_build_picker()
 	_fade.step_count = int(_timing["fade_steps"])
 	_fade.step = _fade.step_count
 	_fade_target = 0
@@ -113,6 +122,11 @@ func is_menu_visible() -> bool:
 ## True once the window has finished growing open (the item names are showing).
 func is_menu_ready() -> bool:
 	return _state == State.MENU and _window.open_amount >= 1.0
+
+
+## The Battle Test encounter picker (hidden until Battle Test is chosen).
+func get_picker() -> BattleTestPicker:
+	return _picker
 
 
 func get_cursor_index() -> int:
@@ -280,6 +294,15 @@ func _build_menu() -> void:
 	_update_item_colors()
 
 
+func _build_picker() -> void:
+	_picker = BattleTestPicker.new()
+	_picker.name = "BattlePicker"
+	_picker.picked.connect(_on_battle_picked)
+	_picker.cancelled.connect(_close_picker)
+	_stage.add_child(_picker)
+	_stage.move_child(_picker, _fade.get_index())
+
+
 func _item_y(index: int) -> float:
 	return float(_layout["menu_item_first_y"]) + float(index) * float(_layout["menu_item_step"])
 
@@ -329,7 +352,10 @@ func _advance_step() -> void:
 		_fade.step -= 1
 	if _state == State.LEAVING and _fade.step >= _fade.step_count and not _leave_emitted:
 		_leave_emitted = true
-		start_demo_requested.emit()
+		if _pending_battle.is_empty():
+			start_demo_requested.emit()
+		else:
+			battle_test_requested.emit(_pending_battle)
 	if _window.open_amount < _window_target:
 		_window.open_amount = minf(_window_target, _window.open_amount + _window_step)
 	elif _window.open_amount > _window_target:
@@ -346,6 +372,9 @@ func _advance_step() -> void:
 
 func _input(event: InputEvent) -> void:
 	if _state == State.LEAVING:
+		return
+	if _state == State.PICKER:
+		_input_picker(event)
 		return
 	if event is InputEventMouseMotion:
 		_on_mouse_motion(event as InputEventMouseMotion)
@@ -370,6 +399,19 @@ func _input(event: InputEvent) -> void:
 		elif _is_pressed(event, &"cancel"):
 			_consume()
 			close_menu()
+
+
+func _input_picker(event: InputEvent) -> void:
+	if event is InputEventMouse:
+		var copy: InputEvent = event.duplicate() as InputEvent
+		(copy as InputEventMouse).position = _stage_position((event as InputEventMouse).position)
+		if _picker.handle_mouse(copy):
+			_consume()
+		return
+	var command: MenuInput.Cmd = _picker_input.classify(event)
+	if command != MenuInput.Cmd.NONE:
+		_consume()
+		_picker.handle_command(command)
 
 
 func _is_pressed(event: InputEvent, action: StringName, allow_echo: bool = false) -> bool:
@@ -495,11 +537,41 @@ func choose(index: int) -> void:
 	if id == ITEM_START_DEMO:
 		_state = State.LEAVING
 		_fade_target = _fade.step_count
+	elif id == ITEM_BATTLE_TEST:
+		_open_picker()
 	elif id == ITEM_QUIT:
 		if quit_handler.is_valid():
 			quit_handler.call()
 		else:
 			get_tree().quit()
+
+
+func _open_picker() -> void:
+	_state = State.PICKER
+	_window_target = 0.0
+	for label: Label in _item_labels:
+		label.visible = false
+	_cursor.visible = false
+	_picker.open()
+
+
+func _close_picker() -> void:
+	if _state != State.PICKER:
+		return
+	_picker.close()
+	_state = State.MENU
+	_window.visible = true
+	_window_target = 1.0
+	_cursor.restart()
+	_play_sfx("back")
+
+
+func _on_battle_picked(encounter_id: String) -> void:
+	if _state != State.PICKER:
+		return
+	_pending_battle = encounter_id
+	_state = State.LEAVING
+	_fade_target = _fade.step_count
 
 
 ## Menu tick hook. AudioManager is still a stub, so this only calls it when it can answer.

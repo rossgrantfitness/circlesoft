@@ -159,3 +159,10 @@ Timing rule: the model judges presses only from `press_down`/`press_up` timestam
 
 ### Shared files touched
 - `GameState` (shared, additive): `get_credits()`, `add_credits(n)`, `update_member(id, fields)`; `to_dict()` also writes `credits` and `member_state` (older saves without them still load).
+
+### 2026-10-06, Technical Artist (M2-8): the stage's extras (logged by the integrator)
+- Signals on `BattleScene`: `cue_fired(owner_id, press_index, stage_pos)`, `ko_beat_started(target_id, stage_pos)`, `intro_finished`, `shook(strength)`.
+- `screen_pos_of(id, anchor = "head" | "center" | "feet")` returns 384x216 stage pixels (Vector2.ZERO if unknown or behind the camera).
+- `set_target_highlight(ids)`, `cue_marker_enabled` (stage draws the 3D "!" while true; the HUD draws the 2D one only when false), `controller_factory`, `attach_controller()`, `start_fight()`, `shake(profile)`, `hit_stop(ms)`, `transition_ms(covering)`.
+- `finished(result, report)`: `report["choice"]` carries the HUD's end-screen pick ("continue", "retry", "title" or "").
+- Enemy models resolve by enemy kind through `data/battle_stage/stage.json` model rules; `enemies.json` model paths now also point at the real blockouts (checked by tests/unit/test_battle_enemy_models.gd).

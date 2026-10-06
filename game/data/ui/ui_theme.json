@@ -79,7 +79,7 @@
     "press_start_y": 150,
     "credit_y": 197,
     "margin": 8,
-    "menu_window": {"x": 120, "y": 124, "w": 144, "h": 52},
+    "menu_window": {"x": 120, "y": 124, "w": 144, "h": 68},
     "menu_item_first_y": 14,
     "menu_item_step": 16,
     "menu_item_x": 36,

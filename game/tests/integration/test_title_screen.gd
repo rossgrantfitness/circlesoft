@@ -305,6 +305,7 @@ func test_quit_item_calls_the_quit_handler() -> void:
 	title.quit_handler = func() -> void: quits.append(true)
 	await _open_menu(title)
 	_press(&"move_down")
+	_press(&"move_down")  # Start Demo, Battle Test, then Quit
 	_press(&"confirm")
 	assert_eq(quits.size(), 1, "Quit runs the handler (get_tree().quit() by default)")
 	assert_eq(title.get_state(), TitleScreen.State.MENU, "quit does not start the demo")

@@ -4,9 +4,28 @@
   "demo_tag": "DEMO",
   "press_start": "Press Start",
   "credit": "a Circlesoft game",
-  "version": "v0.1.0",
+  "version": "v0.2.0",
   "menu": [
-    {"id": "start_demo", "label": "Start Demo"},
-    {"id": "quit", "label": "Quit"}
-  ]
+    {
+      "id": "start_demo",
+      "label": "Start Demo"
+    },
+    {
+      "id": "battle_test",
+      "label": "Battle Test"
+    },
+    {
+      "id": "quit",
+      "label": "Quit"
+    }
+  ],
+  "battle_test": {
+    "title": "Battle Test",
+    "hint": "Pick a fight",
+    "tiers": {
+      "tutorial": "Tutorial",
+      "regular": "Regular",
+      "tough": "Tough"
+    }
+  }
 }

@@ -13,7 +13,7 @@
         {"skill": "grunt_write_ticket", "weight": 1, "if": {"target_lacks_status": "noise_ticket"}}
       ],
       "field": {"walk_speed": 2.0, "chase_speed": 3.2, "sight_m": 6.0, "give_up_s": 4.0},
-      "model": "res://art/placeholder/enemies/signals_grunt.glb"
+      "model": "res://art/placeholder/enemies/signals_grunt/enm_signals_grunt.glb"
     },
     {
       "id": "signals_drone", "name": "Signals Drone", "level": 2,
@@ -27,7 +27,7 @@
         {"skill": "drone_dive", "weight": 1, "if": {"self_hp_below_pct": 60}}
       ],
       "field": {"walk_speed": 1.6, "chase_speed": 3.8, "sight_m": 8.0, "give_up_s": 5.0},
-      "model": "res://art/placeholder/enemies/signals_drone.glb"
+      "model": "res://art/placeholder/enemies/signals_drone/enm_signals_drone.glb"
     },
     {
       "id": "whistle_blower", "name": "Whistle Blower", "level": 3,
@@ -41,7 +41,7 @@
         {"skill": "whistle_blast", "weight": 2, "if": {"target_lacks_status": "wobbly"}}
       ],
       "field": {"walk_speed": 2.2, "chase_speed": 3.4, "sight_m": 7.0, "give_up_s": 4.0},
-      "model": "res://art/placeholder/enemies/whistle_blower.glb"
+      "model": "res://art/placeholder/enemies/grunt_variant/enm_grunt_variant.glb"
     },
     {
       "id": "buzzkill_drone", "name": "Buzzkill", "level": 3,
@@ -54,7 +54,7 @@
         {"skill": "buzz_pile_on", "weight": 2}
       ],
       "field": {"walk_speed": 1.8, "chase_speed": 4.2, "sight_m": 8.0, "give_up_s": 5.0},
-      "model": "res://art/placeholder/enemies/buzzkill_drone.glb"
+      "model": "res://art/placeholder/enemies/drone_variant/enm_drone_variant.glb"
     }
   ]
 }

@@ -34,6 +34,7 @@
     "message": {"y": 34, "h": 22, "pad_x": 14},
     "target_tag": {"y": 34, "h": 22, "pad_x": 14},
     "victory": {"x": 24, "y": 14, "w": 336, "h": 188, "left_w": 118, "icon_x": 12, "icon_y": 12, "icon_scale": 2, "title_x": 12, "title_y": 78, "row_y": 100, "row_step": 16, "cards_x": 130, "cards_y": 10, "card_w": 196, "card_gap": 4, "gain_line_h": 11, "gains_per_line": 4, "prompt_y": 182},
+    "encounter_picker": {"x": 8, "y": 40, "w": 368, "h": 152, "row_h": 24, "first_y": 22, "text_x": 20, "cursor_x": 6, "rows": 5},
     "game_over": {"title_y": 70, "sub_y": 100, "list": {"x": 132, "y": 128, "w": 120, "h": 56}}
   },
   "anchors": {
@@ -67,6 +68,7 @@
     "stunned": {"letter": "S", "color": "#FFD23F"},
     "default": {"letter": "?", "color": "#8D97A5"}
   },
+  "tiers": {"_note": "Battle Test picker tier tags (placeholder colors; no teal, that is the call).", "tutorial": "#9BE35A", "regular": "#FFB347", "tough": "#FF7A59"},
   "bars": {"hp": "#FF7A59", "juice": "#9BE35A", "empty": "#3A3566", "low_hp_pct": 25, "low_hp_text": "#FF7A59"},
   "ratings": {
     "_note": "sfx: the HUD plays the attack ratings' sounds; the stage already plays battle_block / battle_perfect_block / battle_payback from the hit signal, so those three stay empty here to avoid doubling. Placeholder lettering drawn from the UI font. 'colors' are the style guide's rating colors; more than one color cycles every cycle_steps steps. ink/white are the outline radii in pixels (2px Ink + 1px white inner = 3 / 1).",
