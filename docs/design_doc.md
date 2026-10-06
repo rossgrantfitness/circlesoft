@@ -224,7 +224,93 @@ One system the whole game. Same commands, same three presses, same cues and rati
 - **Simplify:** Kasp's eight legs break in four pairs (all eight still on screen). Later, not slice: Tilly's net costs a turn on a miss, which breaks "missing never hurts."
 
 ## Party & progression
-_Party size and swapping, levels, XP, stats, skill learning, character growth._
+> 🟡 DRAFT: awaiting Ross's approval
+
+### New ideas needing Ross's OK
+Everything else in this section is a classic JRPG staple (levels, a small stat set, skills learned by level, a bench that keeps up, story guests) or follows from the approved Battle system. One rule for machine fights is new and not yet approved:
+
+DECISION NEEDED: Inside a robot or ship, does the crew share one health bar?
+Option A: **One shared Hull bar.** The machine has its own HP (its "Hull"); hits land on the machine, not on a crew member; Hull at 0 = fight lost. Crew members can't be knocked out inside it, but status effects still hit their station. Pros: reads like one big robot, simple screen, easy to tune. Cons: a little different from on-foot fights (no reviving a downed friend).
+Option B: **Each station has its own HP.** Hits land on a station; a knocked-out station loses that crew member's turns until revived. Pros: plays exactly like on-foot fights. Cons: three bars on a giant robot looks odd, more to track and balance.
+Recommendation: A. It makes the machine feel like one big fighter (Pillar 1) and keeps the screen readable.
+
+### The party over the game
+- **Act 1 (slice):** Red, Otis, Mox. Exactly 3, so no bench yet.
+- **End of Act 1:** Vela joins (her resignation fight). 4 in the crew.
+- **Act 2:** Ruo joins at Wobble Station. 5 in the crew: the full playable roster.
+- **Act 3: former foes are guests, not full party members.** Brunt, Calloway, Sorrell, Tilly, Kasp and Vane each step in for their own story mission (Brunt on a boarding action, Tilly with Ruo on a scouting run, and so on), taking one of the 3 field spots for that stretch.
+  - You control them in battle, with a fixed handful of their boss-fight moves (Brunt calls her punches, Sorrell duels).
+  - They join at the party's level, don't take gear and leave when the mission ends.
+  - Everyone still flashes in on the god fight's big finisher (already approved).
+  - *Why:* six more full characters means six more skill lists, growth tables, gear and full portrait sets for Ross. Guests get their moment without that. Playable roster stays at 5.
+  - *Also considered:* one or two foes fully playable (say Brunt and Tilly): a bigger fan payoff, but more to build and balance late in the game. Or foes only in cutscenes and fleet fights: cheapest, but you'd never get the team-up in your hands.
+- **3 on the field, always.** Red is always one of them (she's the hero). Pick the other two from the field menu any time outside battle.
+- **The bench:** sits out until Swap is built (approved, Later); then Swap uses a turn to bring someone in. All 3 on the field down = game over, bench or not.
+- Some story fights lock in who fights (Vela in her resignation fight, guests in their missions).
+
+### Levels & XP
+- **Classic levels.** Every win gives XP; level-ups show on the victory screen (approved).
+- **Level cap: 50.** Rough pace on a straight ~10-hour run:
+  - End of the slice (Kasp): about level 6
+  - End of Act 1: about 15
+  - End of Act 2: about 35
+  - Final battle: about 45, with room to 50 for players who do side jobs or like to grind
+- **No grinding needed** on the main path: tune so a player who fights most of the visible enemies hits those targets.
+- **Each level raises every stat a little,** in each character's own shape (Otis gains lots of HP, Ruo lots of Speed).
+- **The bench earns full XP.** Recommended, so nobody falls behind and picking your three is a free choice, not a chore. Fighters who are Down at the end of a fight get full XP too.
+- **Late joiners catch up:** Vela and Ruo join at the party's level, already knowing the skills they'd have learned by then.
+
+### Stats
+Seven stats, plain names, shown as numbers on the status screen.
+- **HP:** health. Hit 0 and you're Down for the Count.
+- **Juice:** pays for Skills.
+- **Attack:** how hard basic attacks and physical skills hit.
+- **Defense:** how much damage you shrug off.
+- **Heart:** how hard gadget and lamp skills land, and how much heals restore.
+- **Speed:** who goes first in the turn order.
+- **Luck:** item drops, Ruo's steals, and the odds of status effects landing (on enemies or on you).
+- *Alternates for "Heart":* Spirit, Knack.
+- **Stats never change Clutch timing.** Timing stays the player's skill: only status effects (Butterfingers, Fired Up) and the Wide Windows setting change the window, so Clutch feels the same at level 1 and level 50.
+
+### Learning skills
+- **Classic: by level.** Reach the level, learn the skill; it pops up on the victory screen. No skill trees, no points to spend.
+- **Signature moves** are known from the moment each character joins, and get stronger with level.
+- **Every new skill uses one of the three approved press types** (tap, hold and let go, string). No new kinds of press.
+- **Who learns what:**
+  - **Red (quick front-line hitter):** lamp swings and flares. Big single hits, fast double swings, blinding enemies, firing herself up.
+  - **Otis (tank):** guarding allies, drawing hits onto himself, shield bashes, stunning throws, toughening up the party.
+  - **Mox (gadget wildcard):** traps, gadget buffs, quick patch-ups (small heals), weakening enemies and the odd small explosion, each with a timing gamble.
+  - **Vela (healer and support):** heals, revives, cures, shields, and writing enemies a Noise Ticket (no Skills for a few turns).
+  - **Ruo (fast attacker and thief):** steals, quick multi-shots, speed tricks and showy finishers he scores out loud.
+- **How many:**
+  - Full game: about 8 per character, signature included (about 40 total).
+  - Slice: 3 each for Red, Otis and Mox (signature plus 2 basic). Each starts with 2 and learns the third around level 4, so players see "learned a skill!" at least once.
+
+### Growth across scales
+**One system: the crew's levels and stats drive every machine.** Nothing levels up separately.
+- **The crew are the machine.** In Biscuit, the *Second Helping* and the *Supper's On*, the 3 on the field each take a station, take their own turn and use their own stats and Juice (approved: Red swings the arms, Otis raises the shield, Mox keeps it running).
+- **Same skills, bigger outfit.** Each character's learned skills carry over as a machine version: Red's Porch Light becomes Biscuit's floodlight swing; Vela's stamps become hull patches. Learn it on foot and it's there in the robot.
+- **The machine's own numbers:** a Hull bar (see the decision at the top) and a size boost that turns the crew's numbers into robot, titan or ship numbers (thousands and up, as approved).
+- **Machine upgrades:** a short list of parts per machine (armor plating, bigger fists, better engines), found in crates or bought, fitted by Mox in the hold. They raise the Hull and the size boost. Details go in Equipment & items.
+- **The bench** rides along off screen and keeps earning XP.
+- **The god fight:** same stations and stats; its special staging lives in the story bible.
+- *Why:* one set of levels to tune and one set of skill data, and the climb feels like *your crew* getting bigger, not a new game each act (Pillar 1).
+- *Also considered:* machines that level up on their own. More to balance, and it splits attention away from the crew.
+
+### Vertical slice needs vs Later
+**In the slice:**
+- Red, Otis and Mox, 3 on the field, Red always in.
+- Levels 1 to about 6, XP on the victory screen, level-ups raising stats.
+- All seven stats, with each character's growth table in game/data/.
+- Skills learned by level: 3 each, one learned mid-slice.
+- A status screen with level, XP to next level, stats and skills (layout goes in Menus).
+- Headless tests in game/tests/: XP curve, level-up gains, skills learned at the right level, and the bench-XP and catch-up rules (built now so they switch on later with no new code).
+
+**Later (task board "Later" list):**
+- Vela and Ruo, picking your three, the bench and Swap.
+- Levels past 6 and the rest of each skill list.
+- Act 3 guest missions.
+- Machine stations, Hull, size boost, machine versions of skills, and upgrades.
 
 ## Equipment & items
 _Equipment slots, item categories, key items, crafting (if any)._

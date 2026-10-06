@@ -4,6 +4,7 @@
 
 ## 2026-10-06
 
+- **Camera options sent to Ross** (docs/camera_decision.md; Technical Director recommends the fixed diorama camera, B). **Party & progression drafted:** level cap 50, 7 stats incl. new "Heart", ~8 skills each, Act 3 former foes as guests, one flagged choice (shared Hull bar in machines). Sent to Ross.
 - **Exploration approved** except the camera. Instant wins: yes, EarthBound-fast (Later list). Lamp lighting rooms: no. Ross floated a fixed Mario RPG-style diorama camera (maybe prerendered backgrounds): Technical Director laying out options. Creative Director starting Party & progression. Taste Keeper scoring R21.
 - **Design doc: Exploration drafted.** Follow camera from a high 3/4 angle with 90° turns; visible enemies, no random battles; lane-chart travel in space; the *Supper's On* as walkable home base. Two new ideas flagged as separate choices for Ross (white-flag instant wins; lamp lights dark rooms). Sent to Ross.
 - **Battle system approved.** Timed hits are called **Clutch**; the skill gauge is **Juice**. Creative Director now drafting Exploration; Taste Keeper scoring R20.
