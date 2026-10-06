@@ -491,7 +491,7 @@ No crafting and no slots. Each part is a one-time find, and Mox fits it in the h
 - Rough full-game counts: about 35 weapons (7 per character), about 15 armor, about 17 charms, about 35 items, about 16 machine parts.
 
 ## Economy
-> 🟡 DRAFT: awaiting Ross's approval
+> ✅ APPROVED by Ross, 2026-10-06
 
 **No new mechanics.** This is the classic FF7–9 money loop with nothing added.
 

@@ -5,14 +5,15 @@
 ## To Do
 | Task | Assigned to | Depends on | Notes |
 |---|---|---|---|
-| Design doc, remaining sections one at a time | Creative Director drafts (Technical Director reviews battle & systems), Ross approves each | Core pitch + Pillars | Order after Economy: Menus, Save system, 10-hour structure, Vertical slice scope. |
 | Name Ruo's brother | Creative Director proposes | | Small; whenever convenient. |
 | Steam/trademark check on the title "Lights Left On" | Producer | | Working title until checked. |
 
 ## In Progress
 | Task | Assigned to | Started | Notes |
 |---|---|---|---|
-| Design doc: Economy | Creative Director drafts, Ross approves | 2026-10-06 | Equipment & items finalized (Level 2). |
+| Design doc: Menus + Save system (Level 2: studio finalizes, shows Ross after) | Creative Director, UI Programmer input | 2026-10-06 | |
+| Design doc: The 10-hour structure (Ross approves) | Creative Director drafts, Producer checks scope | 2026-10-06 | |
+| Design doc: Vertical slice scope (Ross approves) | Producer + Creative Director draft, Technical Director checks | | After the 10-hour structure. |
 | Art requests: weapon models for Red (sword), Otis (hammer), Mox (wrench-mace), Vela (stamp-staff), Ruo (twin knives) | Producer / Technical Artist write specs | | Add to docs/art_requests.md when the slice art list is drawn up. |
 | Set up the lights-left-on repository | Ross (GitHub clicks), then studio floor moves game files over | 2026-10-05 | Merge PR #1 → mark circlesoft as template → create lights-left-on from it. |
 
@@ -31,6 +32,7 @@
 | Design doc: Core pitch, Pillars, Battle system (Clutch + Juice); Relay removed everywhere | Creative Director, Technical Director | 2026-10-06 | Approved. |
 | Design doc: Exploration (fixed diorama camera), Party & progression | Creative Director, Technical Director | 2026-10-06 | Approved. |
 | Design doc: Equipment & items | Creative Director | 2026-10-06 | Finalized by studio under Level 2; shown to Ross. |
+| Design doc: Economy | Creative Director | 2026-10-06 | Approved. |
 | Decide how to keep games separate | Technical Director, Ross | 2026-10-05 | Separate repository per game. |
 
 ## Later
