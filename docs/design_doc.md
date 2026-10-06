@@ -522,10 +522,61 @@ All prices, drops, crate contents and side-job pay go in game/data/. The battle 
 **Later:** inns, dock shops and machine parts, higher tiers, the Tip Jar charm.
 
 ## Menus
-_Main menu, field menu, battle menu, shops, inventory, status screens._
+> ✅ Finalized by the studio, 2026-10-06 (Level 2: Ross reviews after)
+
+Classic FF7–9 menus with our own names. **Controller-first;** keyboard (arrows or WASD, Enter, Esc) and mouse (hover moves the cursor, click picks, right-click backs out) work everywhere. The cursor snaps with a crisp tick and remembers where it was. *The window look gets decided later in docs/style_guide.md.*
+
+**Title screen:** New Game, Continue, Config. Continue opens the save list with the newest save already picked, so one press loads it (grayed out if there are no saves). New Game asks for the hero's name (default "Red").
+
+**Field menu** (outside battle): Items, Skills, Equip, Status, Party, Config, Save (only at a save spot), and Lane Chart once you have it. A side panel shows the 3 fighters' portraits, HP and Juice, plus credits, play time and where you are.
+- **Party:** pick the two who join Red, and set the order.
+- **Status:** portrait, level, XP to next level, the seven stats, gear, skills and status effects.
+
+**Battle menu:**
+- A command list next to whoever's up: Attack, Skills, Items, Defend, Run (Swap later).
+- **Targeting:** a pointer hops between enemies; flip sides to pick a friend; all-target moves light up the whole group.
+- The **turn-order portrait row** along the top; HP and Juice along the bottom.
+- When a move plays, the menu slides away so nothing covers the Clutch cue (flash, "ding", "!") or the ratings, which pop up big over the fighter.
+
+**Shops:** Buy, Sell, Leave. Pick how many, see how many you own, and gear shows an up or down arrow by each fighter.
+
+**Dialogue box:** 2D anime portraits for named characters; plain boxes for crowd NPCs. Red never gets a text box: her face or a gesture pops up over her head. Yes/no is a thumbs-up or a head shake.
+
+**Config:** Auto-Timing, Wide Windows, timing offset (with a tap-along test), text speed, auto-advance, cutscene skip on/off, music and sound volume, controls (remap buttons), vibration.
+
+### Vertical slice needs vs Later
+- **Slice:** everything above except Lane Chart and Swap. All menu text in game/data/; headless tests in game/tests/ for cursor movement, equip, buy and sell, and Config saving.
+- **Later:** Lane Chart, Swap and the bench in Party, a window color option (if the style guide allows it).
 
 ## Save system
-_When and where the player can save, number of slots, what is saved._
+> ✅ Finalized by the studio, 2026-10-06 (Level 2: Ross reviews after)
+
+Classic FF7–9 saving: you save at set spots, not anywhere.
+
+**Where you can save:**
+- **Save lamps** in dungeons: save only (a Camp Stove rests the party there).
+- **Red's home:** free rest and save.
+- **Inns:** rest for a small fee, and save.
+- **The *Supper's On* bridge lamp:** rest and save, once the ship is home base.
+
+**The lamp check:** at every save spot Red lights the lamp, taps the glass twice and gives the sky a thumbs-up, then the save screen opens. Full length the first time each session, a short version after; one press skips it.
+
+**Slots:** 3 manual slots plus 1 auto-save.
+- The auto-save writes when you enter a new area (a town, a road, a dungeon), never mid-room or mid-battle. You can't save over it by hand.
+- Each slot shows the party's portraits, Red's level, the place name, play time and credits.
+- Saving over a slot asks first (thumbs-up or head shake).
+
+**What's saved:** story progress, where you are, the hero's name, the party (who's in, order, levels, XP, HP, Juice, stats including boosters, skills, gear), the bag and key items, credits, opened crates and picked-up items, beaten bosses, side jobs and play time. Config is saved once for the whole game, not per slot.
+
+**Continue** loads the newest save, manual or auto.
+
+**Game over** (all 3 down, or Hull at 0): a short fade, then a choice:
+- **Retry battle** *(the studio's call; not an FF7–9 feature, Ross can strike it):* restart that fight from the top, exactly as you were when it began. Cheap to build, and it saves a long walk back after a tough boss.
+- **Title screen,** where Continue loads the last save.
+
+### Vertical slice needs vs Later
+- **Slice:** Red's home and the tower's two save lamps, the lamp check (full and short), 3 slots plus the auto-save, Continue, game over with Retry battle. Saves as versioned JSON files; headless tests in game/tests/: save then load gives the same game, the auto-save fires on area entry, Retry restores the fight's start, older saves still load.
+- **Later:** inns, the *Supper's On* bridge, and saving machine parts, Hull and Act 3 guest missions.
 
 ## The 10-hour structure (act by act)
 ### Act 1
