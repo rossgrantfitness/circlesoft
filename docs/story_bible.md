@@ -318,7 +318,7 @@ _(RESTRICTED: Creative Director and Writer only)_
 ---
 
 ## Glossary of names and terms
-> 🟡 DRAFT: awaiting Ross's approval
+> ✅ APPROVED by Ross, 2026-10-06
 
 _The spelling authority for every name and term. The text checker compares all in-game text against this list._
 

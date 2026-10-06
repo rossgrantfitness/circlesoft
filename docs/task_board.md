@@ -5,14 +5,14 @@
 ## To Do
 | Task | Assigned to | Depends on | Notes |
 |---|---|---|---|
-| Story bible for the vertical slice, remaining sections one at a time | Creative Director drafts, Ross approves each | Pitch chosen ✅ | Next after the twist: Glossary. Then the design doc. |
-| Design doc for the vertical slice, one section at a time | Creative Director drafts, Ross approves each | Story bible underway | |
+| Design doc, remaining sections one at a time | Creative Director drafts (Technical Director reviews battle & systems), Ross approves each | Core pitch + Pillars | Order: Exploration, Battle system, Party & progression, Equipment & items, Economy, Menus, Save system, 10-hour structure, Vertical slice scope. |
+| Name Ruo's brother | Creative Director proposes | | Small; whenever convenient. |
 | Steam/trademark check on the title "Lights Left On" | Producer | | Working title until checked. |
 
 ## In Progress
 | Task | Assigned to | Started | Notes |
 |---|---|---|---|
-| Apply approved names + draft Glossary (last story bible section) | Creative Director drafts, Ross approves | 2026-10-06 | Naming pass approved. |
+| Design doc: Core pitch + Pillars | Creative Director drafts, Ross approves | 2026-10-06 | Story bible complete. |
 | Set up the lights-left-on repository | Ross (GitHub clicks), then studio floor moves game files over | 2026-10-05 | Merge PR #1 → mark circlesoft as template → create lights-left-on from it. |
 
 ## Done
@@ -26,6 +26,7 @@
 | Taste Keeper hired, Ross's Playbook adopted | Studio floor | 2026-10-05 | All areas at autonomy Level 0. |
 | Story bible: Act 1 / 2 / 3 outlines | Creative Director | 2026-10-05 | Approved as drafted. |
 | Story bible: THE TWIST + clues | Creative Director | 2026-10-05 | Approved as revised: the Keeper, beatdown finale, mom = Eurydice "Dee" Kincaid. |
+| Naming pass + Glossary: **story bible complete** | Creative Director | 2026-10-06 | Approved. |
 | Decide how to keep games separate | Technical Director, Ross | 2026-10-05 | Separate repository per game. |
 
 ## Later
