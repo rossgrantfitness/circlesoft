@@ -1,6 +1,6 @@
 # Camera and Room Style: Decision
 
-> Status: **WAITING ON ROSS** · Proposed by the Technical Director, 2026-10-06, after Ross suggested fixed diorama angles like Mario RPG.
+> Status: **DECIDED 2026-10-06: Option B, fixed diorama camera with real-time 3D rooms.** Proposed by the Technical Director after Ross suggested fixed diorama angles like Mario RPG.
 
 **DECISION NEEDED: Which camera and room style do we build?**
 

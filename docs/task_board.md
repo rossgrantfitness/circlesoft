@@ -5,15 +5,14 @@
 ## To Do
 | Task | Assigned to | Depends on | Notes |
 |---|---|---|---|
-| Design doc, remaining sections one at a time | Creative Director drafts (Technical Director reviews battle & systems), Ross approves each | Core pitch + Pillars | Order after Party & progression: Equipment & items, Economy, Menus, Save system, 10-hour structure, Vertical slice scope. |
+| Design doc, remaining sections one at a time | Creative Director drafts (Technical Director reviews battle & systems), Ross approves each | Core pitch + Pillars | Order after Equipment & items: Economy, Menus, Save system, 10-hour structure, Vertical slice scope. |
 | Name Ruo's brother | Creative Director proposes | | Small; whenever convenient. |
 | Steam/trademark check on the title "Lights Left On" | Producer | | Working title until checked. |
 
 ## In Progress
 | Task | Assigned to | Started | Notes |
 |---|---|---|---|
-| Camera decision: rotatable follow vs fixed diorama vs prerendered backgrounds | Technical Director proposes, Ross decides | 2026-10-06 | Ross's Mario RPG diorama idea. |
-| Design doc: Party & progression | Creative Director drafts, Ross approves | 2026-10-06 | Exploration approved (camera pending). |
+| Design doc: Equipment & items | Creative Director drafts, Ross approves | 2026-10-06 | Party & progression approved. |
 | Set up the lights-left-on repository | Ross (GitHub clicks), then studio floor moves game files over | 2026-10-05 | Merge PR #1 → mark circlesoft as template → create lights-left-on from it. |
 
 ## Done
@@ -29,6 +28,7 @@
 | Story bible: THE TWIST + clues | Creative Director | 2026-10-05 | Approved as revised: the Keeper, beatdown finale, mom = Eurydice "Dee" Kincaid. |
 | Naming pass + Glossary: **story bible complete** | Creative Director | 2026-10-06 | Approved. |
 | Design doc: Core pitch, Pillars, Battle system (Clutch + Juice); Relay removed everywhere | Creative Director, Technical Director | 2026-10-06 | Approved. |
+| Design doc: Exploration (fixed diorama camera), Party & progression | Creative Director, Technical Director | 2026-10-06 | Approved. |
 | Decide how to keep games separate | Technical Director, Ross | 2026-10-05 | Separate repository per game. |
 
 ## Later

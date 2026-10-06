@@ -20,7 +20,7 @@ LIGHTS LEFT ON is a classic 90s JRPG hero's journey. Ten years ago Red's mom fle
    *This means we DON'T* add high-concept gimmicks, turn the themes into systems (no death or rebirth mechanics), or pick anything that's hard to build just because it's clever.
 
 ## Exploration
-> ✅ APPROVED by Ross, 2026-10-06, except the **camera**, which is being reconsidered (see the camera decision; Ross suggested fixed diorama angles like Mario RPG)
+> ✅ APPROVED by Ross, 2026-10-06 (camera: fixed diorama, Option B)
 
 ### Ross's calls on the new ideas (2026-10-06)
 - **Instant wins (Later list):** yes, and fast, the way EarthBound did it. Once the party clearly outclasses a group, Hegemony grunts on the map wave a white flag; walk into them and there's no battle screen at all: a quick jingle, a one-line "The grunts surrender!" pop-up with the XP and credits, and you keep walking. Never in the slice.
@@ -32,10 +32,9 @@ LIGHTS LEFT ON is a classic 90s JRPG hero's journey. Ten years ago Red's mom fle
 - **No jump button.** Ladders, ledges and small gaps get climbed or hopped with that same button at marked spots, like the big 3D JRPGs of the era.
 - **The crew follows Red** in a short line in towns and dungeons, so they're always on screen (Pillar 2). They pass through each other and never block her.
 - **Rooms load** with a quick fade to black, PSX-style.
-- **Camera: a follow camera from a high three-quarter angle, which the player can turn in 90-degree steps with the shoulder buttons.** Some rooms lock it to one angle for a better shot.
-  - *Why it suits the look:* looking down on chibi critters shows off their big heads and faces, and low-poly rooms read cleanly from above, like a diorama. Fog hides the far distance, the way PSX games did.
-  - *Why it suits one artist:* each room only has to look good from four directions. Ross never has to build ceilings or far horizons.
-  - *Also considered:* a free-turning camera (most freedom, but every corner of every room gets seen, so more art and more camera bugs) and fixed movie-style angles in every room (very stylish, but every room needs hand-set shots and players get turned around). We use the movie-style framing in cutscenes instead.
+- **Camera: a fixed diorama camera (Ross, 2026-10-06).** One high angle per room that never rotates, showing the floor and the two back walls; the front walls are cut away, like looking into a toy box. Rooms are real low-poly 3D in Godot, so the full PSX look applies. The camera slides along with Red in bigger rooms so she never walks off-screen, and tall props in front of her fade out.
+  - *Why:* it's the Mario RPG-style diorama Ross asked for, with the least art per room (a floor, two walls and props), and it keeps moving cutscene cameras and robot-scale pull-backs working.
+  - *Also considered:* a rotatable follow camera (more art per room) and prerendered backgrounds (FF7-style; heavy art, clashes with the PSX effects). See docs/camera_decision.md.
 
 ### Towns
 **What you do:** talk to everyone (their lines change after every story beat), shop, rest, find hidden items and pick up small side jobs.
@@ -101,7 +100,7 @@ LIGHTS LEFT ON is a classic 90s JRPG hero's journey. Ten years ago Red's mom fle
 ### Vertical slice needs vs Later
 **In the slice:**
 - Run/walk, one-button interaction, climb and hop spots, the crew following Red.
-- The three-quarter follow camera with 90-degree turns and per-room locks.
+- The fixed diorama camera (floor and two back walls, slides with Red, tall props fade).
 - Harrow Landing: Red's home, courier office, docks and Otis's office, bar, general store, gear shop, checkpoint; NPC lines that change after each story beat; one or two side deliveries; hidden items.
 - The road to the tower (a short walk) and the Old Relay Tower (about 5 floors): switches, access cards, a crate push, the optional bell chest, two save lamps.
 - Visible enemies, the static transition, first-turn rules, Run, the blink after a fight, respawning.
@@ -224,15 +223,11 @@ One system the whole game. Same commands, same three presses, same cues and rati
 - **Simplify:** Kasp's eight legs break in four pairs (all eight still on screen). Later, not slice: Tilly's net costs a turn on a miss, which breaks "missing never hurts."
 
 ## Party & progression
-> 🟡 DRAFT: awaiting Ross's approval
+> ✅ APPROVED by Ross, 2026-10-06 (Hull bar A; foes as guests A)
 
-### New ideas needing Ross's OK
-Everything else in this section is a classic JRPG staple (levels, a small stat set, skills learned by level, a bench that keeps up, story guests) or follows from the approved Battle system. One rule for machine fights is new and not yet approved:
-
-DECISION NEEDED: Inside a robot or ship, does the crew share one health bar?
-Option A: **One shared Hull bar.** The machine has its own HP (its "Hull"); hits land on the machine, not on a crew member; Hull at 0 = fight lost. Crew members can't be knocked out inside it, but status effects still hit their station. Pros: reads like one big robot, simple screen, easy to tune. Cons: a little different from on-foot fights (no reviving a downed friend).
-Option B: **Each station has its own HP.** Hits land on a station; a knocked-out station loses that crew member's turns until revived. Pros: plays exactly like on-foot fights. Cons: three bars on a giant robot looks odd, more to track and balance.
-Recommendation: A. It makes the machine feel like one big fighter (Pillar 1) and keeps the screen readable.
+### Ross's calls (2026-10-06)
+- **Machine fights:** the crew shares **one Hull bar** (Option A). Hits land on the machine; Hull at 0 = fight lost; crew can't be knocked out inside, but status effects still hit their station.
+- **Act 3 former foes are guests** (Option A), as below.
 
 ### The party over the game
 - **Act 1 (slice):** Red, Otis, Mox. Exactly 3, so no bench yet.
