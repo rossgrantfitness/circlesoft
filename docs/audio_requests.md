@@ -3,9 +3,11 @@
 > Music and sound effects the game needs. Written by the Audio Designer.
 > Status: Requested / In progress / Delivered / Implemented
 
-**Vertical slice audio (approved 2026-10-06): 8 music tracks and jingles, ~40 SFX.** Until real audio arrives, the Audio Designer wires in **placeholder tones** for every row (task M6-5; the Clutch ding gets a placeholder in M2-3). The music direction goes to Ross for sign-off before real tracks are made (Audio direction is Level 0). Tone: loud, goofy, big-hearted, 90s JRPG energy; original music only, never copied. Files: .ogg for music (with loop points), .wav for SFX; destination game/audio/music/ and game/audio/sfx/ (folders confirmed by the tech plan).
+**Vertical slice audio (approved 2026-10-06): 8 music tracks and jingles, 40 SFX.** Until real audio arrives, the Audio Designer wires in **placeholder tones** for every row (task M6-5; the Clutch ding gets a placeholder in M2-3). The music direction goes to Ross for sign-off before real tracks are made (Audio direction is Level 0). Tone: loud, goofy, big-hearted, 90s JRPG energy; original music only, never copied. Files: .ogg for music (with loop points), .wav for SFX; destination game/audio/music/ and game/audio/sfx/ (folders confirmed by the tech plan).
 
 **Timing rule for battle audio:** the Clutch ding and the rating sounds fire from the same moment as the flash, so they must have a sharp, instant attack (no fade-in, no silence at the start of the file).
+
+**Keeping SFX to 40:** some sounds do double duty (noted per row), e.g. the cursor tick also ticks the credit count-up, and one bell tone is pitched per bell.
 
 **Priority follows the build order:** P1 = battle (M2) · P2 = Harrow Landing, menus, saves (M3) · P3 = road and tower (M4) · P4 = Kasp (M5) · P5 = story and title (M6).
 
@@ -21,21 +23,21 @@
 | 7 | Title theme | Music | Title screen | Hopeful, big-hearted, a hint of adventure ahead | Mid, ~90–100 BPM | ~1:00–1:30 | Yes | P5 | Requested |
 | 8 | The call | Music (signal theme) | Layer in the tower (louder each floor), the final beat at the window | A distant distress signal through radio static; mysterious, a little haunting, never grim. Creative Director gives story notes | Free / slow | ~30–60 s | Yes (also used as a layer) | P5 | Requested |
 
-### Sound effects (~40, grouped)
+### Sound effects (40, grouped)
 | # | Name | Type (music / SFX / jingle) | Where it plays | Mood | Tempo | Length | Loops? | Priority | Status |
 |---|---|---|---|---|---|---|---|---|---|
-| 9 | Clutch cue: ding (1) and boss "!!" warning (1) | SFX (2) | The moment to press; boss big-attack warning | Sharp, bright, unmistakable; the warning bigger and more alarming | — | Ding <0.3 s; warning ~1 s | No | P1 | Requested |
+| 9 | Clutch cue: ding; boss "!!" warning | SFX (2) | The moment to press; boss big-attack warning | Sharp, bright, unmistakable; the warning bigger and more alarming | — | Ding <0.3 s; warning ~1 s | No | P1 | Requested |
 | 10 | Ratings: Nice!, Rad!, TOTALLY RAD! | SFX (3) | Clutch attack ratings | Rising excitement; TOTALLY RAD is the loudest sound in a fight | — | ~0.5–1 s each | No | P1 | Requested |
-| 11 | Defense: Blocked!, Perfect Block!, Payback! | SFX (3) | Clutch block ratings and the counter | Solid clank, ringing perfect clank, cheeky counter whack | — | ~0.5–1 s each | No | P1 | Requested |
-| 12 | Hits: sword, hammer, wrench-mace, enemy attack | SFX (4) | Basic attacks | Chunky, punchy, cartoon-meaty | — | ~0.3–0.6 s each | No | P1 | Requested |
-| 13 | Hurt, Down for the Count, K.O.! slam | SFX (3) | Taking damage, a fighter knocked out, last hit freeze | Hurt short and light; Down a goofy thud; K.O. a huge freeze-frame slam | — | ~0.3–1.5 s each | No | P1 | Requested |
-| 14 | Signature skills: Porch Light flare + spin slash, Heave-Ho lift and slam, Patent Pending wheel spin and stop | SFX (4) | Signature moves | Big and showy; the slot wheel ticks fast then clunks to a stop | — | ~0.5–2 s each | Wheel spin loops until stopped | P1 | Requested |
-| 15 | Status and items: Burnt Toast, Noise Ticket, Wobbly, heal/item use | SFX (4) | Status effects landing, items used | Sizzle; officious stamp-and-buzz; woozy wobble; warm sparkle | — | ~0.5–1 s each | No | P1 | Requested |
-| 16 | Battle flow: radio-static transition, boss transition, run away, grunt white flag, level-up, skill learned, credits count-up tick | SFX (7) | Starting and ending fights, victory screen | Static hiss snapping into battle (boss version longer and louder); comic scramble; triumphant level-up | — | ~0.2–3 s each | Count-up tick repeats | P1 | Requested |
-| 17 | Menu: cursor tick, confirm, cancel, error, buy/sell | SFX (5) | Every menu, shops | Crisp and tactile; cash-register for buy/sell | — | <0.3 s each | No | P2 | Requested |
-| 18 | Text blips (per speaker: Otis, Mox, Kasp, 2 key NPCs, crowd) | SFX (6) | Dialogue boxes, one blip per few letters | Each fits the voice: Otis low and calm, Mox high and fast, Kasp nasal and officious | — | <0.1 s each | No | P2 | Requested |
-| 19 | Lamp check: lamp lights, two knuckle taps on glass, save confirm | SFX (3) | Rest and save at Red's window and save lamps | Warm, quiet, a little sincere | — | ~0.3–1.5 s each | No | P2 | Requested |
-| 20 | Field: footsteps, door, locked door, item get, crate open, interaction pop | SFX (6) | Exploring Harrow and the tower | Light and readable; item get a happy little sting | — | ~0.2–1.5 s each | No | P2 | Requested |
-| 21 | Tower puzzles: card reader beep, power switch, cage lift (running), crate push | SFX (4) | Tower puzzles | Clunky old machinery; card reader a fussy Signals beep | — | ~0.5–2 s; lift loops | Lift loops | P3 | Requested |
-| 22 | Watch Zero bells: bell tones for the tune puzzle, sleeve-bell protest jingle | SFX (2 sets) | Optional bell chest; Zero sit-in | Bright brass bells, one pitch per bell; the protest a joyful racket | — | ~1–2 s each | No | P3 | Requested |
-| 23 | Hushmaster: leg stomps and servos, Quiet Hours jam-pulse charge, leg-pair break, topple crash, Kasp's whistle | SFX (5) | Kasp boss fight and cutscenes | Big clanky machine with bureaucratic pomp; the jam pulse a rising electronic whine into a static burst | — | ~0.5–3 s each | Servo hum loops | P4 | Requested |
+| 11 | Blocks: Blocked!, Perfect Block! | SFX (2) | Clutch block ratings (Payback = Perfect Block + a hit) | Solid clank; ringing perfect clank | — | ~0.5–1 s each | No | P1 | Requested |
+| 12 | Hits: party weapon hit, enemy hit | SFX (2) | Basic attacks (pitch-varied per weapon) | Chunky, punchy, cartoon-meaty | — | ~0.3–0.6 s each | No | P1 | Requested |
+| 13 | Hurt, Down for the Count, K.O.! slam | SFX (3) | Taking damage, a fighter knocked out, last-hit freeze | Hurt short and light; Down a goofy thud; K.O. a huge freeze-frame slam | — | ~0.3–1.5 s each | No | P1 | Requested |
+| 14 | Signature moves: Porch Light flare, Heave-Ho slam, Patent Pending wheel | SFX (3) | Signature moves | Big and showy; the slot wheel ticks fast then clunks to a stop | — | ~0.5–2 s each | Wheel spin loops until stopped | P1 | Requested |
+| 15 | Status: Burnt Toast, Noise Ticket, Wobbly | SFX (3) | Status effects landing | Sizzle; officious stamp-and-buzz; woozy wobble | — | ~0.5–1 s each | No | P1 | Requested |
+| 16 | Battle flow: radio-static transition, run away, level-up | SFX (3) | Starting fights (boss uses a longer cut), Run and grunts' white-flag exit, level-up and skill learned | Static hiss snapping into battle; comic scramble; triumphant level-up | — | ~0.5–3 s each | No | P1 | Requested |
+| 17 | Menu: cursor tick, confirm, cancel/error | SFX (3) | Every menu; tick also counts up credits, confirm also buy/sell and save | Crisp and tactile | — | <0.3 s each | No | P2 | Requested |
+| 18 | Text blips: Otis, Mox, Kasp, generic | SFX (4) | Dialogue boxes; generic is pitched per key NPC and crowd | Otis low and calm, Mox high and fast, Kasp nasal and officious | — | <0.1 s each | No | P2 | Requested |
+| 19 | Lamp check: lamp lights, two knuckle taps on glass | SFX (2) | Rest and save at Red's window and save lamps | Warm, quiet, a little sincere | — | ~0.3–1.5 s each | No | P2 | Requested |
+| 20 | Field: footsteps, door, item get, crate open | SFX (4) | Exploring Harrow and the tower; item get also plays for heals | Light and readable; item get a happy little sting | — | ~0.2–1.5 s each | Footsteps repeat | P2 | Requested |
+| 21 | Tower puzzles: card reader beep, switch-and-lift | SFX (2) | Signals doors; power switch clunk into the running cage lift | Fussy Signals beep; clunky old machinery | — | Beep <0.5 s; lift ~2 s + loop | Lift loops | P3 | Requested |
+| 22 | Watch Zero bell | SFX (1) | One brass bell tone, pitched per bell for the tune puzzle and layered for the sit-in protest | Bright brass, a joyful racket when layered | — | ~1–2 s | No | P3 | Requested |
+| 23 | Hushmaster: leg stomp/servo, Quiet Hours jam pulse, crash | SFX (3) | Kasp fight and cutscenes; crash plays short for each leg pair and full for the topple | Big clanky machine with bureaucratic pomp; jam pulse a rising electronic whine into a static burst | — | ~0.5–3 s each | Servo hum loops | P4 | Requested |

@@ -4,6 +4,7 @@
 
 ## 2026-10-06
 
+- **Slice broken into 45 tasks** on the task board (M0 style guide → M7 polish/builds). Art requests filled (41 assets, 24 portraits); audio requests filled (8 tracks, 40 SFX). Waiting on Ross for the style guide; technical plan still drafting.
 - **Style guide drafted** (Milestone 0) by the Technical Artist: 5 visual pillars, palette, proportions and budgets, PSX rules, UI, fonts, portraits, file naming. Three choices for Ross (internal resolution, portrait style, one model per character). Portrait count fixed to 24. Sent to Ross.
 - **🎉 Planning complete.** Ross approved the vertical slice scope (design doc done), raised Game design & battle to Level 1 (first raise earned by predictions), and asked for builds on Windows and Mac. **Build phase starting:** Producer breaking the slice into tasks; Technical Director writing the technical plan; Technical Artist drafting the style guide for Ross; Taste Keeper scoring R26–R27.
 - **Vertical slice scope drafted** by the Producer (41-asset art list; build order starts with the style guide and a PSX/diorama test room). Technical Director: buildable, adds PSX shaders, battle simulator, debug room and a build for Ross's computer (OS needed). Taste Keeper proposes raising Game design & battle to Level 1 (8 of last 10 predictions). Sent to Ross.
