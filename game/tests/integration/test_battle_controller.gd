@@ -710,3 +710,39 @@ func test_setup_from_game_state_and_config() -> void:
 	var red: Dictionary = (snap["combatants"] as Array)[0]
 	assert_eq(int(red["hp"]), 42, "current HP comes from the state, not the max")
 	assert_eq(int(red["level"]), 3)
+
+
+func test_a_fight_with_nothing_to_fight_ends_at_once() -> void:
+	var data: BattleData = _data()
+	data.encounters["empty_test"] = {"id": "empty_test", "enemies": [], "can_run": true, "is_boss": false, "backdrop": "x", "tier": "tutorial"}
+	var setup: BattleSetup = BattleTestKit.setup_for(data, "empty_test", 3)
+	var controller: BattleController = await _fight(setup, [])
+	assert_eq(controller.result, "win")
+	assert_eq(int(controller.report["xp"]), 0)
+	assert_eq(controller.party_commands, 0)
+
+
+func test_the_bench_earns_xp_only_when_the_rule_is_switched_on() -> void:
+	for enabled: bool in [false, true]:
+		var data: BattleData = _data()
+		data.enemy("signals_grunt").erase("flee_at_hp_pct")
+		data.enemy("signals_grunt")["xp"] = 100
+		(data.enemy("signals_grunt")["stats"] as Dictionary)["hp"] = 20
+		(data.rules["bench_xp"] as Dictionary)["enabled"] = enabled
+		var progression: Progression = Progression.new(data)
+		var setup: BattleSetup = BattleTestKit.setup_for(data, "grunt_solo", 1)
+		setup.party = [progression.new_member("red", 1), progression.new_member("otis", 1)]
+		setup.bench = [progression.new_member("mox", 1)]
+		var controller: BattleController = await _fight(setup, [], BattleTestKit.FixedPressSource.new(0.0), ATTACK_RED)
+		assert_eq(controller.result, "win")
+		var bench: Dictionary = (controller.get_result()["bench"] as Array)[0]
+		if enabled:
+			assert_eq(int(bench["xp"]), 100, "the bench earns the full share")
+			assert_eq(int(bench["level"]), progression.level_for_xp(100))
+			var ids: Array = []
+			for record: Dictionary in controller.report["level_ups"]:
+				ids.append(record["id"])
+			assert_has(ids, "mox", "their level-up shows on the victory screen too")
+		else:
+			assert_eq(int(bench["xp"]), 0, "off: nobody on the bench moves")
+			assert_eq(int(bench["level"]), 1)

@@ -10,6 +10,9 @@ const WALL_W: int = 128
 const WALL_H: int = 64
 const DITHER_CHECKER: int = 2
 
+## Painted textures by what they were made from, so each new battle stage reuses them instead of repainting.
+static var _cache: Dictionary[String, ImageTexture] = {}
+
 
 ## Tiny deterministic hash in 0..1 for a pixel and a salt.
 static func noise(x: int, y: int, salt: int) -> float:
@@ -29,6 +32,13 @@ static func _texture(image: Image) -> ImageTexture:
 
 ## Packed dust: speckles of a second tone, a lighter seam on two edges so the 1x1 tiles read as a grid.
 static func floor_texture(look: Dictionary) -> ImageTexture:
+	var key: String = "floor:" + str(look["floor_a"]) + str(look["floor_b"]) + str(look["floor_trim"])
+	if not _cache.has(key):
+		_cache[key] = _paint_floor_texture(look)
+	return _cache[key]
+
+
+static func _paint_floor_texture(look: Dictionary) -> ImageTexture:
 	var base: Color = Color.html(str(look["floor_a"]))
 	var alt: Color = Color.html(str(look["floor_b"]))
 	var trim: Color = Color.html(str(look["floor_trim"]))
@@ -49,6 +59,13 @@ static func floor_texture(look: Dictionary) -> ImageTexture:
 
 ## Patched sheet-metal wall: corrugation stripes, rivets along the top and bottom, a rust streak, mismatched patches.
 static func wall_texture(look: Dictionary) -> ImageTexture:
+	var key: String = "wall:" + str(look["wall_a"]) + str(look["wall_b"]) + str(look["wall_rust"]) + str(look["wall_rivet"]) + str(look["patches"])
+	if not _cache.has(key):
+		_cache[key] = _paint_wall_texture(look)
+	return _cache[key]
+
+
+static func _paint_wall_texture(look: Dictionary) -> ImageTexture:
 	var a: Color = Color.html(str(look["wall_a"]))
 	var b: Color = Color.html(str(look["wall_b"]))
 	var rust: Color = Color.html(str(look["wall_rust"]))
@@ -90,6 +107,13 @@ static func wall_texture(look: Dictionary) -> ImageTexture:
 
 ## Painted wooden crate (planks, a cross brace, nails).
 static func crate_texture(look: Dictionary) -> ImageTexture:
+	var key: String = "crate:" + str(look["wall_rivet"])
+	if not _cache.has(key):
+		_cache[key] = _paint_crate_texture(look)
+	return _cache[key]
+
+
+static func _paint_crate_texture(look: Dictionary) -> ImageTexture:
 	var wood: Color = Color.html("#B8844C")
 	var dark: Color = Color.html("#8F5E34")
 	var nail: Color = Color.html(str(look["wall_rivet"]))

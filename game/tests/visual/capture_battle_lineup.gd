@@ -11,7 +11,7 @@ const OUT: String = "res://../docs/screenshots/m2_enemy_lineup.png"
 const ORDER: Array[String] = ["e1", "e3", "e2", "e4", "red", "otis", "mox"]
 const SPACING: float = 0.88
 const ROW_Z: float = 0.6
-const PUSH: float = 4.5
+const PUSH: float = 2.0
 
 
 func _initialize() -> void:

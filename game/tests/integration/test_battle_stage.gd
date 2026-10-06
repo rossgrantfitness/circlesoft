@@ -196,8 +196,8 @@ func test_backdrop_textures_are_in_the_allowed_sizes() -> void:
 		assert_le(texture.get_width(), 256)
 		assert_ge(texture.get_height(), 64)
 		assert_le(texture.get_height(), 256)
-	var again: Image = BattleTextures.floor_texture(look).get_image()
-	var first: Image = BattleTextures.floor_texture(look).get_image()
+	var again: Image = BattleTextures._paint_floor_texture(look).get_image()
+	var first: Image = BattleTextures._paint_floor_texture(look).get_image()
 	assert_eq(again.get_data(), first.get_data(), "painted the same every time")
 
 
@@ -390,6 +390,22 @@ func test_block_cue_goes_to_the_defender_and_string_presses_fire_one_by_one() ->
 	stub.set("virtual_usec", 6100000)
 	stage._fire_due_cues()
 	assert_eq(audio.sfx_ids.count("battle_ding") - dings_before, 3, "the other two")
+	assert_eq(stage.pending_cue_count(), 0)
+
+
+func test_a_scrambled_cue_flashes_at_the_shown_time_not_the_real_one() -> void:
+	var stage: BattleScene = _stage()
+	var stub: RefCounted = _stub()
+	stub.set("use_virtual_clock", true)
+	stub.set("virtual_usec", 2000000)
+	_booted(stage, stub)
+	var action: Dictionary = stub.call("make_action", "e1", "attack", ["red"], 800, "red", "block")
+	(action["presses"] as Array)[0]["scrambled"] = true
+	(action["presses"] as Array)[0]["shown_cue_ms"] = 500
+	stage._on_action_started(action)
+	stub.set("virtual_usec", 2500000)
+	stage._fire_due_cues()
+	assert_true(stage.get_view("red").is_flashing(), "the fake cue shows at the shown time")
 	assert_eq(stage.pending_cue_count(), 0)
 
 

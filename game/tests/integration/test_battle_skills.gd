@@ -263,12 +263,11 @@ func test_the_third_skills_need_level_four() -> void:
 		var controller: BattleController = BattleController.create(setup)
 		var log: BattleTestKit.Recorder = BattleTestKit.Recorder.new(controller)
 		controller.start()
-		var actor: String = str((log.of("command_needed")[0]["args"] as Array)[0])
 		controller.submit_command({"kind": "skill", "skill_id": case[1], "targets": case[2]})
-		assert_eq(log.count("action_started"), 0 if actor == case[0] else log.count("action_started"), "%s is not known at level 3" % case[1])
+		assert_eq(log.count("action_started"), 0, "%s is not known at level 3 (and it is Red's turn)" % case[1])
 		var options: Dictionary = (log.of("command_needed")[0]["args"] as Array)[1]
 		for entry: Dictionary in options["skills"]:
-			assert_ne(entry["id"], case[1])
+			assert_ne(entry["id"], case[1], "not in the menu either")
 		controller.abort()
 		var learned: Array[String] = Progression.new(data).skills_known(str(case[0]), 4)
 		assert_has(learned, case[1])

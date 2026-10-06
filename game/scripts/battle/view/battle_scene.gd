@@ -702,7 +702,9 @@ func _schedule_cues(action: Dictionary, t0: int) -> void:
 	var presses: Array = action.get("presses", [])
 	for entry: Variant in presses:
 		var press: Dictionary = entry
-		var due: int = start + int(float(press.get("cue_ms", 0.0)) * float(USEC_PER_MS))
+		# A scrambled cue (the boss's fake-out) flashes at shown_cue_ms; the judge still uses the real cue_ms.
+		var shown_ms: float = float(press.get("shown_cue_ms", press.get("cue_ms", 0.0)))
+		var due: int = start + int(shown_ms * float(USEC_PER_MS))
 		_cues.append({
 			"due": due,
 			"owner": str(press.get("owner_id", action.get("actor", ""))),

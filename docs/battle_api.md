@@ -112,3 +112,50 @@ Timing rule: the model judges presses only from `press_down`/`press_up` timestam
 **Config (new settings the model already reads).** `Config` now holds `auto_timing`, `wide_windows` and `timing_offset_ms` (clamped to the range in `battle_ui.json` "settings": -200..200 in steps of 10). `Config.get_battle_timing()` returns `{auto_timing, wide_windows, timing_offset_ms}` for a `BattleSetup`. The field menu's Config page has rows for all three. Old settings files without the new keys load fine.
 
 **Input.** While the command menu is open the HUD consumes `move_*`, `confirm` and `cancel` (and the mouse: hover moves, left click picks, right click backs out). While the victory screen is up, confirm, cancel, `clutch` or a left click skip the counting (first press) and then leave (second press); presses in the first 0.4 s are ignored so the Clutch press that landed the last hit cannot skip it. At any other time the HUD does not touch input, so Clutch always reaches the stage.
+
+## Changes
+> Added by the Battle Programmer (M2). Everything below only **adds** to the contract above; nothing was renamed or removed. Code: `game/scripts/battle/model/`, data: `game/data/battle/` and `game/data/party/`.
+
+### Using the model (for the stage, HUD and integrator)
+- Build a setup, create the controller, connect the signals, then call `start()`:
+  ```gdscript
+  var setup: BattleSetup = BattleSetup.from_game_state(GameState, "squad_four", Config, first_turn)  # first_turn: "normal" / "party" / "enemies"
+  var controller: BattleController = BattleController.create(setup)
+  # connect signals, then:
+  controller.start()   # a coroutine: it returns control to the engine while it waits on the real clock
+  ```
+- **Press timestamps use `Time.get_ticks_usec()`** (the same clock as `RealClock`). The view calls `controller.press_down(Time.get_ticks_usec())` in `_input` on the `clutch` action's press, and `press_up(...)` on its release. `t_usec` is the time the event happened, not when the signal is handled; the judge only reads these stamps.
+- The model emits `press_judged` as soon as the answer is known (at the press, or at the end of the window for a miss), so the pop-up lands with the press.
+- If `setup.game_state` is set, a win or an escape writes level, xp, hp, juice, bag items and credits into it before `battle_ended` fires. A loss writes nothing (Retry restores the snapshot taken before the fight).
+- `controller.get_result()` after the end returns `{result, report, party: [member states], bench, bag, items_used, rounds, party_commands, elapsed_usec}`.
+
+### Setup (`BattleSetup`)
+- Added fields: `bag: Dictionary` (item id -> count), `bench: Array[Dictionary]`, `first_turn: String` ("normal" / "party" / "enemies"; round 1 only), `game_state: Node` (optional write-back), `data: BattleData` (defaults to `BattleData.shared()`).
+- `BattleSetup.from_game_state(state, encounter_id, config = null, first_turn = "normal")` fills everything from the `GameState` autoload: real clock, human presses, a random seed (`rng_seed = BattleSetup.RANDOM_SEED = -1`). It reads `auto_timing`, `wide_windows` and `timing_offset_ms` from the `Config` object you pass (missing properties count as off / 0).
+- `command_source` is any object with `choose_command(controller, actor_id, options) -> Dictionary`.
+- Party member dictionaries: `{id, level, xp?, hp?, juice?, statuses?, bonus?}`. A missing hp or juice means full. The party's maximums come from `data/party/growth.csv` at that level, not from `party.json`.
+
+### Controller
+- `abort()`: stops the fight where it is (quit to title). No `battle_ended`, no rewards; `result` becomes `"aborted"`.
+- `get_result()` as above. Public read-only fields: `state` (`BattleState`), `result`, `report`, `round_number`, `is_over`, `party_commands`.
+- `skip_requested()` is implemented: end-of-action pauses shrink to zero (press windows never do).
+- `submit_command` with nothing pending is ignored. An invalid command gets a `message` ("Not enough Juice!", "Noise Ticket! No skills.", "Can't run from this one!", "Pick a target.", "None left.") and `command_needed` fires again for the same fighter.
+
+### Signals and payloads
+- **New signal `skill_result(info)`**: `{actor, skill_id, tier, result_id, name}` when Patent Pending's wheel lands (also announced with `message("<name>!")`).
+- **`press_judged`** also carries `owner_id` (who gets the pop-up and the "!": the attacker for attack presses, **the defender for block presses**) and `pressed: bool` (false = nothing was pressed in the window). `actor` is the fighter whose action it is, the same as in `action_started`. `delta_ms` is signed (negative = early) and 0.0 when nothing was pressed.
+- **`action_started`** extras: `tell` (text), `contact` ("melee"/"ranged"); `timeline_ms.impacts: [ms, ...]` (every effect moment; `impact` is the first); each press entry gets `window_ms: {nice, rad, totally_rad}` (half-widths after modifiers), `scrambled: bool` and, when scrambled, `shown_cue_ms` (the view flashes at `shown_cue_ms`; the judge always uses the real `cue_ms`).
+- **Press semantics.** `cue_ms` and `hold_by_ms` are milliseconds from `t0_usec`. `hold_by_ms` is the **latest moment the button may go down** for a hold-and-release; the hold window opens 400 ms before it and the release is judged against `cue_ms`. A press only counts inside its window (400 ms before the cue to the end of the Nice window); the first press in that window is the one judged. The view should show the "hold now" prompt a little before `hold_by_ms`. Taps in a `string` are separate presses with their own `index`. Disabled presses (a block press with no party member to press it, e.g. an enemy hitting an enemy) are left out of `presses`.
+- **`hit`**: damage over time from statuses sends `source: ""` and `status: "<status id>"`. A Payback is its own `hit` with `payback: true` (source = the defender, target = the attacker); the blocked hit before it has `blocked: "perfect"`. A heal is `kind: "heal"` (only the HP actually restored).
+- **`command_needed` options**: each `items` entry also has `usable: bool`; item `target` values are `one_ally`, `one_down_ally` (revives), `one_enemy`, `all_enemies`, `self`. Skill `target` values: `one_enemy`, `all_enemies`, `one_ally`, `all_allies`, `self`. The `skills` list holds every skill the fighter knows (usable or not).
+- **`snapshot()`** adds `music` and `round` at the top level, and `fled` and `defending` on each combatant. Enemy ids are `e1` to `e4` in encounter order; party ids are the character ids.
+- **`battle_ended` report**: `level_ups` covers every fighter who climbed; `final_ko_target` is `""` when the last enemy surrendered (white flag) or on a run. Enemies that wave a white flag leave with `combatant_fled(id)` after a `message("<name> waves a white flag and leaves!")`; they still give XP and credits.
+- Statuses end when the battle does; a Down fighter stands back up with 10% HP after a win (`formulas.json` `rewards.after_win_revive_pct`).
+
+### Data the stage and HUD can read
+- `data/battle/encounters.json` ids: `grunt_solo`, `grunt_pair`, `drone_flock`, `squad_four`, `ambush_no_exit` (can_run false). Backdrop ids in use: `harrow_docks`, `relay_tower_floor`. Music ids: `battle_regular`, `battle_tough` (placeholders).
+- Enemy model paths are `res://art/placeholder/enemies/<enemy id>.glb` (`signals_grunt`, `signals_drone`, `whistle_blower`, `buzzkill_drone`); party models are the existing placeholder `.glb` files.
+- Skill, item and status names and descriptions: `data/battle/skills.json`, `battle_items.json`, `statuses.json`.
+
+### Shared files touched
+- `GameState` (shared, additive): `get_credits()`, `add_credits(n)`, `update_member(id, fields)`; `to_dict()` also writes `credits` and `member_state` (older saves without them still load).

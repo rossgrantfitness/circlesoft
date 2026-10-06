@@ -99,6 +99,10 @@ func start() -> void:
 	start_usec = clock.now_usec()
 	battle_started.emit(snapshot())
 	while not is_over:
+		var already: String = _outcome()
+		if not already.is_empty():
+			await _finish(already)
+			break
 		round_number += 1
 		if round_number > MAX_ROUNDS:
 			await _finish(RESULT_LOSE)
@@ -199,6 +203,8 @@ func _build(p_setup: BattleSetup) -> void:
 		rng.seed = setup.rng_seed
 		press_rng.seed = setup.rng_seed + PRESS_SEED_OFFSET
 	_encounter = data.encounter(setup.encounter_id)
+	if _encounter.is_empty():
+		push_error("BattleController: unknown encounter '%s'" % setup.encounter_id)
 	_can_run = bool(_encounter.get("can_run", true)) and not bool(_encounter.get("is_boss", false))
 	for item_id: String in setup.bag:
 		_bag[item_id] = int(setup.bag[item_id])
