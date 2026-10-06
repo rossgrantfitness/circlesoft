@@ -29,3 +29,12 @@ The builds are too big to send in one piece (the limit is 30 MB), so each one co
 4. Open your Downloads folder, right-click **LightsLeftOn-Windows.zip** → **Extract All**, then double-click **LightsLeftOn.exe** inside. The first time, click **More info** → **Run anyway**.
 
 If anything goes wrong, tell the studio which step you got stuck on. For future builds we can set up a simpler one-click download.
+
+## The Godot project (optional, if you want to open it in Godot itself)
+
+`LightsLeftOn-GodotProject.zip` is the whole game as a Godot project, small enough to send in one piece.
+
+1. Install **Godot 4.5.1** (the standard version, not ".NET") from godotengine.org.
+2. Unzip `LightsLeftOn-GodotProject.zip`. You get a folder called `game`.
+3. Open Godot, click **Import**, pick the `project.godot` file inside that `game` folder, then **Import & Edit**.
+4. The first time, Godot spends a minute importing the art and sounds. Then press **F5** (or the ▶ Play button, top right) to run the game.
