@@ -25,6 +25,7 @@ const PROTOTYPE_NAMES: Dictionary[String, String] = {
 	"c": "Picture-Book",
 	"d": "Ink Line",
 	"e": "Rubber Bounce",
+	"f": "Shiba (E + C)",
 }
 
 ## Close views: how far the camera orbits (degrees) from straight in front of her.
@@ -45,7 +46,11 @@ const GAME_CAMERA_YAW_DEG: float = 35.0
 const INGAME_RED_YAW_DEG: float = 70.0
 ## The face sheet is 4 x 2 cells of 32 px: cell 0 neutral, cell 1 grin.
 const GRIN_UV_OFFSET: Vector2 = Vector2(0.25, 0.0)
-const FACE_MATERIAL_SUFFIX: String = "_face"
+## Prototypes E and F paint two 64 px expression cells (neutral left, grin right), so their grin
+## cell is half a sheet over. Everything else uses the 32 px cells above.
+const GRIN_UV_OFFSET_BY_LETTER: Dictionary[String, Vector2] = {"e": Vector2(0.5, 0.0), "f": Vector2(0.5, 0.0)}
+## Face materials end in "_face" (or "_face_unlit" for D's eye decals).
+const FACE_MATERIAL_MARK: String = "_face"
 const INK: Color = Color(0.0784, 0.0706, 0.1216)
 const SHADOW_TEXTURE_SIZE: int = 16
 const TURN_SPEED_DEG: float = 60.0
@@ -251,13 +256,13 @@ func set_expression(grin: bool) -> void:
 		var mesh_instance: MeshInstance3D = node as MeshInstance3D
 		for surface: int in mesh_instance.get_surface_override_material_count():
 			var source: Material = mesh_instance.mesh.surface_get_material(surface)
-			if source == null or not source.resource_name.ends_with(FACE_MATERIAL_SUFFIX):
+			if source == null or not source.resource_name.contains(FACE_MATERIAL_MARK):
 				continue
 			if not grin:
 				mesh_instance.set_surface_override_material(surface, null)
 				continue
 			var shifted: ShaderMaterial = (source as ShaderMaterial).duplicate() as ShaderMaterial
-			shifted.set_shader_parameter("uv_offset", GRIN_UV_OFFSET)
+			shifted.set_shader_parameter("uv_offset", GRIN_UV_OFFSET_BY_LETTER.get(current_letter, GRIN_UV_OFFSET))
 			mesh_instance.set_surface_override_material(surface, shifted)
 
 

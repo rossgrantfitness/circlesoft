@@ -1,5 +1,5 @@
 extends TestCase
-## Red style prototypes D (Ink Line) and E (Rubber Bounce): each imports through
+## Red style prototypes D (Ink Line), E (Rubber Bounce) and F (Shiba, Ross's pick): each imports through
 ## scripts/tools/psx_post_import.gd, stays under the 900 triangle cap (D counted WITH its outline
 ## hull), has the shared 17 bones, small nearest-filtered textures, and the right PSX shaders.
 ## Also covers the import script's `_cel` and `_outline` material name suffixes and the two new
@@ -70,14 +70,14 @@ func _surface_with_shader(mesh_instance: MeshInstance3D, shader_path: String) ->
 # ---- both prototypes ----
 
 func test_both_prototypes_import_with_a_body_and_a_sword() -> void:
-	for letter: String in ["d", "e"]:
+	for letter: String in ["d", "e", "f"]:
 		var model: Node3D = _model(letter)
 		assert_not_null(_mesh_named(model, "_body"), letter + " body")
 		assert_not_null(_mesh_named(model, "_sword"), letter + " sword")
 
 
 func test_both_prototypes_are_under_the_triangle_cap() -> void:
-	for letter: String in ["d", "e"]:
+	for letter: String in ["d", "e", "f"]:
 		var model: Node3D = _model(letter)
 		var body: int = _total_triangles(_mesh_named(model, "_body"))
 		var sword: int = _total_triangles(_mesh_named(model, "_sword"))
@@ -87,7 +87,7 @@ func test_both_prototypes_are_under_the_triangle_cap() -> void:
 
 
 func test_both_prototypes_are_one_unit_tall_without_the_ear() -> void:
-	for letter: String in ["d", "e"]:
+	for letter: String in ["d", "e", "f"]:
 		var box: AABB = _mesh_named(_model(letter), "_body").get_aabb()
 		assert_almost_eq(box.position.y, 0.0, HEIGHT_TOLERANCE, letter + " feet at the origin")
 		assert_gt(box.end.y, HEAD_TOP - HEIGHT_TOLERANCE, letter + " is at least head height")
@@ -95,7 +95,7 @@ func test_both_prototypes_are_one_unit_tall_without_the_ear() -> void:
 
 
 func test_both_prototypes_have_the_shared_17_bones() -> void:
-	for letter: String in ["d", "e"]:
+	for letter: String in ["d", "e", "f"]:
 		var skeletons: Array[Node] = _model(letter).find_children("*", "Skeleton3D", true, false)
 		assert_eq(skeletons.size(), 1, letter + " has one skeleton")
 		var skeleton: Skeleton3D = skeletons[0] as Skeleton3D
@@ -107,7 +107,8 @@ func test_both_prototypes_have_the_shared_17_bones() -> void:
 func test_textures_are_small_and_the_face_sheet_is_128_by_64() -> void:
 	var expected: Dictionary[String, Vector2] = {
 		"red_proto_d_swatch.png": Vector2(64, 64), "red_proto_d_face.png": Vector2(128, 64),
-		"red_proto_e_body.png": Vector2(128, 128), "red_proto_e_face.png": Vector2(128, 64)}
+		"red_proto_e_body.png": Vector2(128, 128), "red_proto_e_face.png": Vector2(128, 64),
+		"red_proto_f_body.png": Vector2(128, 128), "red_proto_f_face.png": Vector2(128, 64)}
 	for file_name: String in expected:
 		var texture: Texture2D = load(FOLDER + file_name) as Texture2D
 		assert_not_null(texture, file_name)
@@ -117,7 +118,7 @@ func test_textures_are_small_and_the_face_sheet_is_128_by_64() -> void:
 
 
 func test_prototypes_are_static_no_animation_clips() -> void:
-	for letter: String in ["d", "e"]:
+	for letter: String in ["d", "e", "f"]:
 		var players: Array[Node] = _model(letter).find_children("*", "AnimationPlayer", true, false)
 		for player: Node in players:
 			assert_eq((player as AnimationPlayer).get_animation_list().size(), 0, letter + " has no clips")
@@ -169,6 +170,33 @@ func test_e_uses_the_standard_lit_shader_with_a_body_sheet_and_a_face_sheet() ->
 			face_material = material
 	assert_not_null(face_material, "a face material exists")
 	assert_eq(face_material.get_shader_parameter("albedo_texture").get_size(), Vector2(128, 64))
+
+
+# ---- F: Shiba (E style + E head + C body, short pointy ears) ----
+
+func test_f_uses_the_standard_lit_shader_with_a_body_sheet_and_a_face_sheet() -> void:
+	var body: MeshInstance3D = _mesh_named(_model("f"), "_body")
+	assert_eq(body.mesh.get_surface_count(), 2, "body sheet + face sheet")
+	var face_material: ShaderMaterial = null
+	for surface: int in body.mesh.get_surface_count():
+		assert_eq(_shader_path(body, surface), LIT_SHADER, "F needs no new shader")
+		var material: ShaderMaterial = body.mesh.surface_get_material(surface) as ShaderMaterial
+		if String(material.resource_name).ends_with("_face"):
+			face_material = material
+	assert_not_null(face_material, "a face material exists (uv_offset.x = 0.5 swaps to the grin cell)")
+
+
+func test_f_ears_are_short_so_the_shiba_is_not_taller_than_the_bunny_eared_prototypes() -> void:
+	var f_height: float = _mesh_named(_model("f"), "_body").get_aabb().end.y
+	var e_height: float = _mesh_named(_model("e"), "_body").get_aabb().end.y
+	assert_lt(f_height, e_height - 0.05, "F's short pointy ears top out lower than E's tall ear")
+	assert_lt(f_height, 1.25, "head 1.0 plus a short ear")
+
+
+func test_f_total_with_sword_fits_the_party_cap() -> void:
+	var model: Node3D = _model("f")
+	var total: int = _total_triangles(_mesh_named(model, "_body")) + _total_triangles(_mesh_named(model, "_sword"))
+	assert_le(total, PARTY_TRIANGLE_HARD_CAP, "F body plus sword is %d triangles" % total)
 
 
 # ---- import script suffixes ----

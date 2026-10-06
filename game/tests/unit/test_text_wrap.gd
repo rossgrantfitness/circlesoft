@@ -3,12 +3,11 @@ extends TestCase
 
 
 func _font() -> Font:
-	var entry: Dictionary = DataDB.get_dict("ui/ui_theme")["fonts"]["dialogue"]
-	return load(str(entry["path"])) as Font
+	return UiFonts.get_font("dialogue")
 
 
 func _size() -> int:
-	return int(DataDB.get_dict("ui/ui_theme")["fonts"]["dialogue"]["size"])
+	return UiFonts.get_size("dialogue")
 
 
 func test_short_text_stays_on_one_line() -> void:

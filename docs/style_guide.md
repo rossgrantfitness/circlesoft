@@ -200,20 +200,22 @@ That is about 17 clips for Otis and Mox and 22 for Red. Wave 1 first; later wave
 - **Title screen:** the LIGHTS LEFT ON logo is chunky, beveled sign letters with a warm window-lamp glow, over the night view of Harrow. Ross designs it; spec goes to docs/art_requests.md.
 
 ## Fonts and text box limits
-- **Open licenses only.** Both candidates are on Google Fonts under the **SIL Open Font License 1.1**. The Technical Artist confirms the license text and tests pixel-exact rendering (antialiasing off) before Ross locks the pick; the license file ships in game/art/final/ui/fonts/.
-- **Dialogue font (candidate 1): Pixelify Sans** (SIL OFL 1.1). Has lowercase, friendly letterforms, and extra Latin characters.
-- **Menu font and numbers (candidate 2): Press Start 2P** (SIL OFL 1.1). A true 8×8 pixel grid, very sharp, all-caps friendly, great for numbers, battle command names and headers. If candidate 1 fails the pixel test, candidate 2 does both jobs.
-- **Sizes:** tested at line heights of 10 and 12 pixels; the numbers below assume **12-pixel line spacing**.
-- **Dialogue box:** 352×56 at the bottom of the screen, a name tag on its top-left edge, the portrait standing on the box's left (96×96, overlapping the box).
-  - **With a portrait: 36 characters per line, 3 lines per box.**
-  - **Plain box (crowd NPCs, no portrait): 52 characters per line, 3 lines per box.**
-  - A "more" arrow blinks at the bottom right when there is another box.
+> **Ross, 2026-10-06:** "move away from the early nes style font and begin to employ a font that more closely resembles the font shown in the screenshot [FF9]. I still want it to look a little pixelated and gamey, I like the drop shadow as well." This replaces the earlier pixel-font pair (Pixelify Sans and Press Start 2P). We use an open-license font only and never trace or copy any game's own font.
+
+- **One font for all UI text: Nunito** (SIL OFL 1.1, variable weight; `game/art/final/ui/fonts/Nunito-VariableFont_wght.ttf` with `Nunito-OFL.txt`). A bold, rounded, friendly sans in **mixed case**, which is the chunky console-menu feel Ross asked for. Picked from six candidates (Nunito, M PLUS Rounded 1c, Varela Round, Fredoka, Zen Maru Gothic, Baloo 2); the comparison sheets are `docs/screenshots/font_candidates.png` and `font_candidates_aa.png`. Runner-up: M PLUS Rounded 1c ExtraBold (a touch closer to the FF9 weight, but a 3.6 MB file).
+- **Rendering:** drawn at whole pixels into the 384×216 UI layer with **grayscale antialiasing on, no hinting, no subpixel positions**, then scaled up with nearest-neighbor. That gives soft, slightly pixelated edges like a low-resolution console menu. (Antialiasing off was tried and gave uneven letter spacing, so it is not used.)
+- **Drop shadow on every piece of text:** 1 pixel down and right, near-black Ink-dark `#0B0A14`. Dark text on the chalk speech bubble uses a soft tan shadow `#D3CDB7` instead. It is one reusable text style (`UiText` in `scripts/ui/ui_text.gd`); every value lives in `data/ui/ui_theme.json` (`fonts` and `text_shadow`).
+- **Sizes and weights** (in `ui_theme.json`): menus, descriptions and dialogue **12 px at weight 800**; speaker name tags **10 px at weight 900**; the title logo **32 px at weight 900** with the heavy outline and glow treatment. Line spacing: 14 px in bubbles and the text box, 16 px per menu row.
+- **Dialogue box and bubbles:**
+  - Speech bubble over a speaker: up to about **44 characters per line**, **3 lines** per page (wider lines wrap; longer text turns the page).
+  - Plain text box (narrator, signs; `352×58` at the bottom): **50 characters per line, 3 lines**.
+  - With a portrait (later): **36 characters per line, 3 lines**. A blinking "more" arrow shows at the bottom right when there is another page.
 - **Menus:**
-  - Item, weapon and skill names: **28 characters max** (the longest in the game today is "Bread Knife, Extremely Large"). Battle command names: 12 max.
-  - Descriptions: **2 lines of 44 characters**.
+  - Item, weapon and skill names: **28 characters max** (the longest in the game today is "Bread Knife, Extremely Large"). Battle command names: 12 max. Menu text is mixed case ("Items", "Start Demo"), not all caps.
+  - Descriptions: **2 lines of about 44 characters**.
   - Character names show up to 10 characters. The player's rename for Red: **8 letters max**.
   - Pop-up lines ("The grunts surrender!"): 1 line, 32 characters.
-- **Supported characters:** A–Z, a–z, 0–9, space and `. , ! ? : ; ' " - ( ) / & % + = # * @ ~`, plus the ellipsis, em dash, curly quotes, × and ♪, and Latin accents (é è ñ ü and so on) so names never break. English only for now. Button prompts are written as tokens like `{A}`, and the game swaps in the button icon.
+- **Supported characters:** A–Z, a–z, 0–9, space and `. , ! ? : ; ' " - ( ) / & % + = # * @ ~`, plus the ellipsis, em dash, curly quotes, × and ♪, and Latin accents (é è ñ ü and so on) so names never break. Nunito covers all of these. English only for now. Button prompts are written as tokens like `{A}`, and the game swaps in the button icon.
 
 ## Portraits
 *For dialogue and menus. Subject to Decision 2 (this section assumes Option A).*

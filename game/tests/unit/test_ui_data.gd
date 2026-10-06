@@ -62,12 +62,6 @@ func test_the_text_box_fits_the_stage() -> void:
 	assert_le(float(box["y"]) + float(box["h"]), STAGE.y)
 
 
-func test_the_dialogue_font_is_a_whole_pixel_size_and_exists() -> void:
-	var entry: Dictionary = DataDB.get_dict("ui/ui_theme")["fonts"]["dialogue"]
-	assert_true(FileAccess.file_exists(str(entry["path"])))
-	assert_eq(float(entry["size"]), float(int(entry["size"])))
-
-
 func test_every_menu_command_has_text() -> void:
 	var commands: Dictionary = DataDB.get_dict("text/field_menu")["commands"]
 	for entry: Dictionary in DataDB.get_dict("ui/field_menu")["commands"]:

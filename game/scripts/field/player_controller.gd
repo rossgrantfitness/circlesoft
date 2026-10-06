@@ -71,9 +71,8 @@ func _physics_process(delta: float) -> void:
 		stick = Input.get_vector(ACTION_LEFT, ACTION_RIGHT, ACTION_UP, ACTION_DOWN)
 		run_held = Input.is_action_pressed(ACTION_RUN)
 		jump_held = Input.is_action_pressed(ACTION_JUMP)
-		# No jumping while a bubble or the menu is up (or was a moment ago: the press that closed it).
-		if Input.is_action_just_pressed(ACTION_JUMP) and not UiStage.is_busy(get_tree()):
-			request_jump()
+		if Input.is_action_just_pressed(ACTION_JUMP):
+			press_jump()
 	step(delta)
 
 
@@ -117,6 +116,14 @@ func reset_ground_height() -> void:
 
 func get_current_animation() -> StringName:
 	return _current_animation
+
+
+## The jump button went down. Ignored while a bubble or the menu is up (or was a moment ago), so the
+## press that closed one never also makes Red jump. Cutscenes can call request_jump() directly.
+func press_jump() -> void:
+	if is_inside_tree() and UiStage.is_busy(get_tree()):
+		return
+	request_jump()
 
 
 ## Asks for a jump. If Red cannot jump yet (in the air past coyote time) the request is remembered

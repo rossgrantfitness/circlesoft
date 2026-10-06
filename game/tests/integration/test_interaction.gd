@@ -400,21 +400,36 @@ func test_cannot_interact_while_the_menu_is_open() -> void:
 
 func test_no_jump_on_the_frame_a_bubble_closes() -> void:
 	_load_room()
-	_room.player.read_engine_input = true
 	await _stand(OTIS_SPOT + Vector3(-1.0, 0.0, 0.0), OTIS_SPOT)
-	_room.player.read_engine_input = true
 	_room.interactor.try_interact()
+	_room.player.jump_held = true
 	# The press that closes the last bubble is also a jump press (A on a controller).
 	_finish_conversation()
-	Input.action_press(&"jump")
-	await _ticks(3)
-	assert_true(_room.player.is_on_floor(), "no jump while the bubble was closing")
+	assert_true(UiStage.is_busy(tree), "the bubble's lock holds for a moment after it closes")
+	_room.player.press_jump()
+	_room.player.step(TICK)
+	assert_true(_room.player.is_on_floor(), "no jump on the closing press")
 	assert_almost_eq(_room.player.global_position.y, 0.0, 0.05)
-	Input.action_release(&"jump")
-	await _ticks(10)
-	Input.action_press(&"jump")
-	await _ticks(4)
-	assert_gt(_room.player.global_position.y, 0.1, "she can jump again afterward")
+	# A moment later the lock is gone and a jump press works.
+	for i: int in 4:
+		_room.runner.tick(TICK)
+	assert_false(UiStage.is_busy(tree))
+	assert_false(_room.player.frozen)
+	_room.player.press_jump()
+	_room.player.step(TICK)
+	assert_gt(_room.player.velocity.y, 0.0, "she can jump again afterward")
+
+
+func test_jump_press_is_ignored_while_the_menu_is_open() -> void:
+	_load_room()
+	_room.field_menu.animations_enabled = false
+	_room.field_menu.manual_ticks = true
+	await _stand(Vector3(8.0, 0.0, 2.5), Vector3(9.0, 0.0, 2.5))
+	_room.field_menu.open()
+	_room.player.press_jump()
+	_room.player.frozen = false   # even if something unfroze her, the press is dropped
+	_room.player.step(TICK)
+	assert_true(_room.player.is_on_floor())
 
 
 func test_back_to_title_is_blocked_while_a_bubble_or_menu_is_up() -> void:

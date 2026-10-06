@@ -244,7 +244,7 @@ func test_save_page_is_a_stub_that_says_save_lamps_only() -> void:
 	_open_page(menu, 3)
 	assert_eq(menu.get_page(), "save")
 	var strings: Dictionary = DataDB.get_dict("text/field_menu")["save"]
-	assert_eq(strings["line1"], "SAVE LAMPS ONLY.")
+	assert_eq(strings["line1"], "Save lamps only.")
 	menu.handle_command(MenuInput.Cmd.CONFIRM)
 	assert_eq(menu.get_page(), "main", "OK goes back")
 
@@ -284,9 +284,9 @@ func test_config_rows_show_the_current_values() -> void:
 	_open_page(menu, 2)
 	var rows: Array[Dictionary] = menu.get_page_list().get_items()
 	assert_eq(rows.size(), 3)
-	assert_true(str(rows[0]["value"]).contains("SLOW"))
+	assert_true(str(rows[0]["value"]).contains("Slow"))
 	assert_true(str(rows[1]["value"]).contains("80"))
-	assert_true(str(rows[2]["value"]).contains("OFF"))
+	assert_true(str(rows[2]["value"]).contains("Off"))
 
 
 func test_leaving_the_config_page_saves_the_file() -> void:

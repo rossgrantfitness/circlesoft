@@ -9,14 +9,14 @@ extends SceneTree
 const SCREEN_SCENE: String = "res://scenes/core/psx_screen.tscn"
 const MODEL_PATH: String = "res://art/placeholder/characters/red_prototypes/red_proto_%s.glb"
 const OUTPUT_PATH: String = "res://../builds/screenshots/proto_check_%s%s.png"
-const LETTERS: PackedStringArray = ["d", "e"]
+const LETTERS: PackedStringArray = ["d", "e", "f"]
 ## View name, suffix, camera yaw around Red in degrees (0 = looking at her face), pitch down.
 const VIEWS: Array = [["34", "", 35.0], ["front", "_front", 0.0], ["side", "_side", 90.0], ["back", "_back", 180.0]]
 ## Close-up of the face, neutral then grin (the face material's uv_offset swaps the cell).
 const FACE_VIEWS: Array = [["face", "_face", 0.0], ["grin", "_grin", 0.0]]
 const FACE_LOOK_AT: Vector3 = Vector3(0.0, 0.78, 0.0)
 const FACE_DISTANCE: float = 1.1
-const GRIN_OFFSETS: Dictionary = {"d": Vector2(32.0 / 128.0, 0.0), "e": Vector2(0.5, 0.0)}
+const GRIN_OFFSETS: Dictionary = {"d": Vector2(32.0 / 128.0, 0.0), "e": Vector2(0.5, 0.0), "f": Vector2(0.5, 0.0)}
 const INGAME_FOV: float = 20.0
 const INGAME_DISTANCE: float = 16.1
 const INGAME_PITCH: float = 42.0
