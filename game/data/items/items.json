@@ -1,0 +1,11 @@
+{
+  "_about": "Placeholder item names and descriptions for the test field menu. The real item list (Equipment and items task) replaces this; the menu only reads id, name and desc.",
+  "items": [
+    {"id": "ration_bar", "name": "Ration Bar", "kind": "consumable", "desc": "Small heal. Tastes like the wrapper."},
+    {"id": "can_of_chili", "name": "Can of Chili", "kind": "consumable", "desc": "Medium heal. The label is mostly a promise."},
+    {"id": "canned_coffee", "name": "Canned Coffee", "kind": "consumable", "desc": "A little Juice. Drink before yelling."},
+    {"id": "juice_box", "name": "Juice Box", "kind": "consumable", "desc": "A fair bit of Juice. Yes, really."},
+    {"id": "smelling_salts", "name": "Smelling Salts", "kind": "consumable", "desc": "Gets a Downed friend back up with a little HP."},
+    {"id": "camp_stove", "name": "Camp Stove", "kind": "consumable", "desc": "Use at a save lamp: full HP and Juice for everyone."}
+  ]
+}

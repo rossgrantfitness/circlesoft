@@ -20,7 +20,8 @@
   "fonts": {
     "menu": {"path": "res://art/final/ui/fonts/PressStart2P-Regular.ttf", "size": 8},
     "title": {"path": "res://art/final/ui/fonts/PressStart2P-Regular.ttf", "size": 24},
-    "body": {"path": "res://art/final/ui/fonts/PixelifySans-VariableFont_wght.ttf", "size": 12}
+    "body": {"path": "res://art/final/ui/fonts/PixelifySans-VariableFont_wght.ttf", "size": 12},
+    "dialogue": {"path": "res://art/final/ui/fonts/PixelifySans-VariableFont_wght.ttf", "size": 13}
   },
   "screen": {
     "width": 384,

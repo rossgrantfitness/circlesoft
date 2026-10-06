@@ -1,0 +1,72 @@
+{
+  "_about": "Speech bubbles, the plain text box and the dialogue runner's tunables. Sizes are internal pixels (384x216). Colors are palette names from ui/ui_theme.json. Speaker ids match data/dialogue/*.json.",
+  "typing": {
+    "_note": "chars_per_second per Config text speed. Pauses are seconds added after a punctuation mark that ends a word.",
+    "speeds": {"slow": 18, "normal": 36, "fast": 80},
+    "default_speed": "normal",
+    "pauses": {",": 0.1, ";": 0.1, ":": 0.1, "-": 0.05, ".": 0.24, "!": 0.24, "?": 0.24, "…": 0.24}
+  },
+  "bubble": {
+    "font": "dialogue",
+    "line_height": 14,
+    "max_text_width": 296,
+    "max_lines": 3,
+    "min_text_width": 28,
+    "pad_x": 8,
+    "pad_top": 5,
+    "pad_bottom": 8,
+    "corner": 5,
+    "outline": 2,
+    "tail_height": 7,
+    "tail_half_width": 5,
+    "tail_inset": 12,
+    "tail_gap": 2,
+    "flip_gap": 10,
+    "screen_margin": 4,
+    "arrow_w": 7,
+    "arrow_h": 4,
+    "arrow_blink_s": 0.4,
+    "pop_scales": [0.5, 1.12, 1.0],
+    "close_scales": [0.6],
+    "show_name_tag": true,
+    "tag_height": 12,
+    "tag_pad_x": 4,
+    "tag_x": 8,
+    "tag_overhang": 6,
+    "choice_row_height": 16,
+    "choice_indent": 10,
+    "choice_gap": 3,
+    "colors": {"fill": "chalk", "outline": "ink", "text": "ink", "shadow": "dusk", "select_fill": "ink", "select_text": "lamp_amber", "arrow": "ink"}
+  },
+  "gesture": {
+    "bubble_w": 28,
+    "bubble_h": 26,
+    "corner": 5,
+    "hold_s": 1.2,
+    "frame_s": 0.25,
+    "choice_hold_s": 0.9
+  },
+  "box": {
+    "_note": "The plain text box for narrator and sign (examine text) and for speakers who are not in the room.",
+    "x": 16,
+    "y": 150,
+    "w": 352,
+    "h": 58,
+    "text_x": 12,
+    "text_y": 7,
+    "line_height": 14,
+    "max_lines": 3,
+    "tag_y": -6,
+    "choice_row_height": 14
+  },
+  "sfx": {"open": "bubble_open", "next": "bubble_next", "item": "item_get", "choice": "menu_tick", "pick": "menu_confirm"},
+  "default_speaker": {"name": "", "accent": "chalk", "head_height": 1.0, "style": "bubble", "voice": true},
+  "speakers": {
+    "red": {"name": "Red", "accent": "#C8322A", "head_height": 1.0, "style": "bubble", "voice": false},
+    "otis": {"name": "Otis", "accent": "#E0782B", "head_height": 1.25, "style": "bubble", "voice": true},
+    "mox": {"name": "Mox", "accent": "#C9A23A", "head_height": 1.15, "style": "bubble", "voice": true},
+    "zero_old": {"name": "Old Zero", "accent": "#CBA878", "head_height": 1.0, "style": "bubble", "voice": true},
+    "sign": {"name": "Sign", "accent": "#8D97A5", "head_height": 1.0, "style": "box", "voice": false},
+    "narrator": {"name": "", "accent": "chalk", "head_height": 1.0, "style": "box", "voice": false}
+  }
+}

@@ -1,8 +1,10 @@
 @tool
 extends EditorScenePostImport
 ## Scene import script for 3D models (.glb). Runs every time a model is (re)imported:
-##  - swaps each imported material for the PSX look: psx_lit, or psx_unlit when the material's
-##    name ends in "_unlit". The texture and base color carry over; filtering is nearest.
+##  - swaps each imported material for the PSX look: psx_lit by default; psx_unlit when the
+##    material's name ends in "_unlit"; psx_cel (two-band cel lighting) when it ends in "_cel";
+##    psx_outline (inverted-hull ink line) when it ends in "_outline". The texture and base color
+##    carry over; filtering is nearest. Materials without those suffixes are untouched in behavior.
 ##  - makes the locomotion clips (idle, walk, run, ...) loop.
 ##  - sets every animation track to snap between keys (no smoothing), the PSX stepped feel.
 ## Registered project-wide in project.godot ([importer_defaults] scene) and in the .import
@@ -11,7 +13,11 @@ extends EditorScenePostImport
 
 const LIT_SHADER: Shader = preload("res://shaders/psx_lit.gdshader")
 const UNLIT_SHADER: Shader = preload("res://shaders/psx_unlit.gdshader")
+const CEL_SHADER: Shader = preload("res://shaders/psx_cel.gdshader")
+const OUTLINE_SHADER: Shader = preload("res://shaders/psx_outline.gdshader")
 const UNLIT_SUFFIX: String = "_unlit"
+const CEL_SUFFIX: String = "_cel"
+const OUTLINE_SUFFIX: String = "_outline"
 const PARAM_TEXTURE: StringName = &"albedo_texture"
 const PARAM_TINT: StringName = &"albedo_tint"
 ## Clips that repeat. Everything else plays once and holds its last pose (jump holds the rising
@@ -43,13 +49,28 @@ func _convert_node(node: Node) -> void:
 func _convert_mesh(mesh: Mesh) -> void:
 	for surface: int in mesh.get_surface_count():
 		var source: Material = mesh.surface_get_material(surface)
+		if source is ShaderMaterial:
+			continue   # already converted (a material shared by two meshes is visited twice)
 		mesh.surface_set_material(surface, make_psx_material(source))
 
 
 func _convert_importer_mesh(mesh: ImporterMesh) -> void:
 	for surface: int in mesh.get_surface_count():
 		var source: Material = mesh.get_surface_material(surface)
+		if source is ShaderMaterial:
+			continue   # already converted (a material shared by two meshes is visited twice)
 		mesh.set_surface_material(surface, make_psx_material(source))
+
+
+## Which PSX shader a material gets, chosen by the end of its name. Public so tests can call it.
+static func shader_for_name(material_name: String) -> Shader:
+	if material_name.ends_with(OUTLINE_SUFFIX):
+		return OUTLINE_SHADER
+	if material_name.ends_with(CEL_SUFFIX):
+		return CEL_SHADER
+	if material_name.ends_with(UNLIT_SUFFIX):
+		return UNLIT_SHADER
+	return LIT_SHADER
 
 
 ## Builds the PSX material that replaces an imported one. Public so tests can call it.
@@ -59,7 +80,7 @@ static func make_psx_material(source: Material) -> ShaderMaterial:
 	if source != null:
 		source_name = source.resource_name
 	material.resource_name = source_name
-	material.shader = UNLIT_SHADER if source_name.ends_with(UNLIT_SUFFIX) else LIT_SHADER
+	material.shader = shader_for_name(source_name)
 	var standard: BaseMaterial3D = source as BaseMaterial3D
 	if standard != null:
 		if standard.albedo_texture != null:
