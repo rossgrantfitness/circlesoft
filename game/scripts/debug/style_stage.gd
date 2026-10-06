@@ -149,16 +149,22 @@ static func model_path(letter: String) -> String:
 
 ## Puts one prototype on the stage (replacing the last one). Returns false if it will not load.
 func load_prototype(letter: String) -> bool:
-	var scene: PackedScene = load(model_path(letter)) as PackedScene
+	return load_model_file(model_path(letter), letter)
+
+
+## Puts any model .glb on the stage (replacing the last one); `label` becomes current_letter. The
+## animated placeholder Red (art/placeholder/characters/red/red_shiba.glb) is shown this way.
+func load_model_file(path: String, label: String) -> bool:
+	var scene: PackedScene = load(path) as PackedScene
 	if scene == null:
-		push_error("StyleStage: cannot load " + model_path(letter))
+		push_error("StyleStage: cannot load " + path)
 		return false
 	if _model != null:
 		_pivot.remove_child(_model)
 		_model.queue_free()
 	_model = scene.instantiate() as Node3D
 	_pivot.add_child(_model)
-	current_letter = letter
+	current_letter = label
 	set_expression(_grin)
 	set_silhouette(_silhouette)
 	return true
@@ -245,6 +251,20 @@ func show_ingame() -> void:
 	_game_camera.set_target(_pivot)
 	_game_camera.snap_to_target()
 	_game_camera.get_camera().make_current()
+
+
+## Freezes the model on one frame of one of its clips (for pose strips). False if there is no such clip.
+func pose_clip(clip: String, seconds: float) -> bool:
+	if _model == null:
+		return false
+	var players: Array[Node] = _model.find_children("*", "AnimationPlayer", true, false)
+	if players.is_empty() or not (players[0] as AnimationPlayer).has_animation(clip):
+		return false
+	var player: AnimationPlayer = players[0] as AnimationPlayer
+	player.play(clip)
+	player.seek(seconds, true)
+	player.pause()
+	return true
 
 
 ## Neutral or grin cell of the face sheet (a UV shift on the face material).

@@ -4,6 +4,7 @@
 
 ## 2026-10-06
 
+- **Red is the shiba in the game, with the bare movement set** (Technical Artist; 433 tests pass): playable Red is now the locked prototype F (884 tris with sword, 17 bones) with six rough stepped clips (idle, walk, run, jump, fall, land) and a light rubber squash; gestures, ear emotes and tail wag skipped per Ross. Style guide character section rewritten to the locked look, plus a short "Model contract" for outside models. Screenshots: docs/screenshots/red_shiba_in_room.png, red_shiba_anim_sheet.png.
 - **Ross: don't over-invest in animation; character models may be outsourced.** Red's animation cut to a bare movement set (no gestures); NPCs get a simple idle. Technical Artists now focus on a clean model contract so outside models can drop straight in.
 - **Ross locked Red's look (A, as is).** Style guide character section being rewritten to it; Technical Artists starting Red's animations and the NPC blockouts (Otis, Mox, old Zero) in the same style. Taste Keeper scoring R33.
 - **🎮 New demo build sent to Ross** (Windows + Mac; 421 tests passed before export): run and jump, NPCs that talk in speech bubbles with gibberish voices, examinable objects, the field menu, the new font. Same download steps (Windows 2 parts, Mac 3 parts). How-to-play updated.

@@ -7,6 +7,10 @@ const ANIM_WALK: StringName = &"walk"
 const ANIM_RUN: StringName = &"run"
 const ANIM_JUMP: StringName = &"jump"
 const ANIM_FALL: StringName = &"fall"
+const ANIM_LAND: StringName = &"land"
+## The clip names every Red model must have (the model contract). The game looks clips up by these
+## names only; it never touches a specific bone.
+const CLIP_NAMES: Array[StringName] = [ANIM_IDLE, ANIM_WALK, ANIM_RUN, ANIM_JUMP, ANIM_FALL, ANIM_LAND]
 const MIN_FLAT_LENGTH: float = 0.001
 
 
@@ -77,3 +81,18 @@ static func animation_for(moving: bool, running: bool) -> StringName:
 ## back to the run (moving) or idle pose.
 static func air_animation_candidates(rising: bool, moving: bool) -> Array[StringName]:
 	return [ANIM_JUMP if rising else ANIM_FALL, ANIM_RUN if moving else ANIM_IDLE]
+
+
+## True while the land squash should play: she touched down a moment ago (time left on the clip),
+## is on the ground and is standing still. Moving on cuts it short so run and walk never stutter.
+static func is_landing(land_time_left: float, airborne: bool, moving: bool) -> bool:
+	return land_time_left > 0.0 and not airborne and not moving
+
+
+## Clip names in CLIP_NAMES that the AnimationPlayer does not have (empty = the model is complete).
+static func missing_clips(player: AnimationPlayer) -> Array[StringName]:
+	var missing: Array[StringName] = []
+	for clip: StringName in CLIP_NAMES:
+		if player == null or not player.has_animation(clip):
+			missing.append(clip)
+	return missing

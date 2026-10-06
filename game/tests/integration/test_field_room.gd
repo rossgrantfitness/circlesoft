@@ -3,7 +3,7 @@ extends TestCase
 ## the CameraBounds, the fader hides the pillar when it blocks her, and she can walk the whole room.
 
 const ROOM_PATH: String = "res://scenes/debug/psx_test_room.tscn"
-const RED_MODEL: String = "res://art/placeholder/characters/red/red_blockout.glb"
+const RED_MODEL: String = "res://art/placeholder/characters/red/red_shiba.glb"
 const ARRIVE_DISTANCE: float = 0.3
 const MAX_TICKS_PER_LEG: int = 600
 const SETTLE_TICKS: int = 45

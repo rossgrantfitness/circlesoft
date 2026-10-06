@@ -69,7 +69,7 @@ Paint in these colors. Names matter more than exact hex: if a tweak looks better
 **Characters (slice)**
 | Who | Fur / skin | Main clothes | Accent that makes them pop |
 |---|---|---|---|
-| Red (dog) | tawny #C98A45, cream #F4E4C1 | jacket red #C8322A | brass lamp and goggles #D9A441 |
+| Red (shiba inu) | tawny #D79448, warm cream #FBE9C0 | jacket red #C8322A | brass lamp and goggles #D9A441 |
 | Otis (bear) | brown #7A5233, gray muzzle #A39A90 | coveralls orange #E0782B | dirty-ivory hard hat #D8D2BC |
 | Mox (ferret) | tan #A67C52, dark mask #4A3426 | vest mustard #C9A23A | Tuesday the drone, teal #3FA7A0; welding mask silver #B9C2CC |
 | Kasp (beaver) | brown #7B4A2A | Signals blue #6F8BA8 | white sergeant stripe, Hushmaster in slate |
@@ -100,19 +100,24 @@ Each party member owns one accent hue (Red red, Otis orange, Mox teal and mustar
 | Ratings | Nice! cyan #7FE0FF · Rad! gold #FFD23F · TOTALLY RAD! cycles hot pink #FF3E9A / orange #FF9A2E / gold #FFD23F · Blocked! steel blue #8FB8FF · Perfect Block! white-gold #FFF2B0 · Payback! red-orange #FF5A36 |
 
 ## Character proportions
-**One body plan for all party members (chibi, not realistic):**
-- **Head-to-body:** about **2.5 heads tall** (head is about 40% of total height). Same for field, battle and cutscenes (one model, see Decisions). Mox is a little longer (about 3 heads), Otis and Vela rounder and shorter (about 2).
-- **Scale:** Red is the unit: **1.0 unit tall**. Otis 1.25, Mox 1.15, Kasp 1.1, Vela later 0.85, Ruo later 1.1.
-- **Species rules (party):** cute, furry, easy to build. No tusks, long necks, long legs, wings or beaks. Ears and tails are simple flat-ish shapes that each get one bone.
-- **Hands and feet:** mitten hands (no separate fingers) and round boots. Thumbs-up is a mitten with a thumb bump.
-- **Silhouette rules:** every character has one signature shape you can name in black (Red: one ear up, jacket, sword on shoulder; Otis: boulder with a door; Mox: mask, big wrench, drone; Kasp: box with paddle tail, riding eight legs). No two party members share the same height and width. No feature thinner than 0.1 unit (about 3 screen pixels).
-- **Faces:** painted on the texture, not modeled. Big eyes, tiny mouth, 2 or 3 shades only. Each character gets a **face sheet** (see below) so expressions swap without extra geometry.
-- **Armor never changes the model** (approved). Weapons are separate props held in the hand.
+**Red's look is locked.** Ross approved the polished prototype F "as is" on 2026-10-06. The model is `game/art/placeholder/characters/red_prototypes/red_proto_f.glb` (built by `game/scripts/tools/prototypes/red_proto_f.py`), and it is the reference every other character and every outside artist matches. Do not change her faint neutral mouth or her big tail: the studio offered those fixes and Ross declined them.
+
+**The style (all party members):** E's "Rubber Bounce" look, a bouncy mascot style, with a big head on a compact storybook body.
+- **Head:** big, E's head. For Red it is a **bean shape**: wider than tall (about 0.57 wide and 0.41 tall as built), fuller cheeks, a short muzzle with a flat front, and a soft dip between the ears. Never a plain ball.
+- **Body:** C's storybook body: a teardrop jacket with the hem swinging off one side, a rolled collar, **chunky short legs and big round glossy boots**, **mitten hands** (no fingers; a thumb bump for the thumbs-up) with a glossy highlight. Surfaces are E's: one painted 16x16 cell per part, one dithered shade step, a few Chalk gloss spots on boots, mitts and the lamp, no outline.
+- **Head-to-body:** measured on Red, the head is about **41% of her height to the top of the head, so about 2.4 heads tall** (it reads smaller by width, because the head is wide). The ears add about a tenth on top. Same for field, battle and cutscenes (one model, see Decisions). Mox is a little longer (about 3 heads), Otis and Vela rounder and shorter (about 2).
+- **Scale:** Red is the unit: **1.0 unit tall to the top of her head** (about 1.11 with the ears, about 1.18 to the tip of the sword; about 0.66 wide with mitts and lamp, about 0.7 front to back with the tail). Otis 1.25, Mox 1.15, Kasp 1.1, Vela later 0.85, Ruo later 1.1.
+- **Species rules (party):** cute, furry, easy to build. No tusks, long necks, long legs, wings or beaks. Ears and tails are simple shapes that each get one bone.
+- **Animal ears (Ross's rule):** to read as a dog, ears are **short, wide-set and pointy**, on a bean-shaped head. **Narrow ears read cat.** Check every animal's silhouette against this: ear width and spacing, head shape, muzzle.
+- **Color:** use **warm cream shades, never grey**, in the light and in the shade. Red's cream is #FBE9C0 lit and #EBC48E in shade; her tawny coat is #D79448 lit and #A9693A in shade.
+- **Silhouette rules:** every character has one signature shape you can name in black. **Red: a shiba inu, both ears upright, a jacket, the sword on her shoulder and a big curled fluffy tail.** Otis: boulder with a door; Mox: mask, big wrench, drone; Kasp: box with paddle tail, riding eight legs. No two party members share the same height and width. No feature thinner than 0.1 unit (about 3 screen pixels).
+- **Faces:** painted on the texture, not modeled. Big eyes, a tiny mouth, 2 or 3 shades only. Each character gets a **face sheet** (see below) so expressions swap without extra geometry. Red's placeholder sheet is 128x64 with two 64x64 expressions (neutral, grin); the faint neutral mouth is part of the lock.
+- **Armor never changes the model** (approved). Weapons are separate props held in the hand (Red's sword is its own mesh on the weapon socket).
 
 **Triangle budgets** *(starting)*
 | Thing | Target | Hard cap | Notes |
 |---|---|---|---|
-| Party member (Red, Otis, Mox) | **700** | **900** | one model for field, battle and cutscenes |
+| Party member (Red, Otis, Mox), body only | **850** | **900** | one model for field, battle and cutscenes. Red as built: **840** body + **44** sword = **884** tris, 17 bones |
 | Weapon or held prop (sword, hammer, wrench-mace, door shield) | 100 | 150 | Tuesday the drone: 150 |
 | Named NPC on foot (Kasp) | 600 | 800 | |
 | Crowd NPC (old Zero, dockhand, Marchfolk, shopkeeper) | 350 | 500 | one base body, recolored |
@@ -135,10 +140,30 @@ Each party member owns one accent hue (Red red, Otis orange, Mox teal and mustar
 **Animation list (slice, per party member)**
 - **Wave 1, to get playable:** idle (loop, about 1.5 s), walk (loop, 0.8 s), run (loop, 0.6 s), battle ready (loop), attack 1, hurt, KO (ends lying down), victory pose.
 - **Wave 2:** attack 2, defend (a held braced pose), block (short reaction when a Clutch block lands), skill (generic cast or use), item, climb (loop), hop (one-shot), and each character's **signature move** (Porch Light, Heave-Ho, Patent Pending).
-- **Wave 3, Red only (the gestures):** thumbs-up (also ends the lamp check), head shake, shrug, goggles down ("already running"), lamp check (light lamp, two taps, thumbs-up). Her ear perk is a short ear-bone twitch layered on idle.
+- **Wave 3, Red only (the gestures), ON HOLD:** Ross (2026-10-06): "dont do too much animation at this phase of development because we may ultimately outsource our character models." Until he says otherwise, Red has only the six movement clips below, and her gestures play as the pop-up icons over her head, not body animation. The list stays here for later: thumbs-up (also ends the lamp check), head shake, shrug, goggles down ("already running"), lamp check (light lamp, two taps, thumbs-up). Her ear perk is a short ear-bone twitch layered on idle.
 - **Enemies:** grunt: idle, walk, attack, hurt, KO, surrender (waves the white flag and leaves). Drone: hover idle, attack, hurt, KO. Hushmaster: idle, step, jam pulse wind-up, attack, leg breaks (4 pairs), topple.
 
 That is about 17 clips for Otis and Mox and 22 for Red. Wave 1 first; later waves can arrive while systems get built.
+
+**Model contract (what a character .glb must be so it drops into the game)**
+This is the seam for outside artists. The game finds a model's clips **by name** and never asks for a specific bone, so any model that follows this list can replace the placeholder with no code changes. The placeholder shiba Red, `game/art/placeholder/characters/red/red_shiba.glb`, is the working example (built by `game/scripts/tools/red_shiba.py`).
+- **Clips (exact names, lowercase):** `idle`, `walk`, `run`, `jump`, `fall`, `land`. The game picks them from what the character is doing: standing, walking, running (run button held), rising, falling, and touching down while standing still.
+
+  | Clip | Plays | About how long | What it is |
+  |---|---|---|---|
+  | `idle` | loops | 1.5 s | breathing, standing |
+  | `walk` | loops | 0.8 s | brisk walk |
+  | `run` | loops | 0.6 s | run |
+  | `jump` | once, holds its last pose | 0.4 s | crouch, launch, rising pose (the game switches to `fall` at the top) |
+  | `fall` | loops | 0.5 s | falling pose |
+  | `land` | once, ends on the standing pose | 0.3 s | squash on touchdown |
+
+  Loops are set automatically on import; the artist does not set loop flags. **15 frames per second, stepped.** A missing `jump` or `fall` falls back to `run` or `idle`, a missing `land` is skipped, but a final model should have all six. Red's placeholder frame counts: idle 22, walk 12, run 9, jump 6, fall 8, land 4.
+- **Facing:** the model faces **+Z in Godot** (that is **-Y in Blender** with the default glTF export, which also turns +Z up into +Y up).
+- **Scale and origin:** 1 unit = 1 meter. **Red is 1.0 unit tall to the top of her head**; other characters are scaled against her (table above). The origin sits **at the feet**, on the floor, at the center of the body. Apply scale and rotation in Blender before export so the model imports at 1.0.
+- **Budgets:** body at most **900 triangles** (target 850); a held weapon is its own mesh at most 150. One **128x128** body texture plus a **128x64** face sheet (up to 256x256 only if Ross approves it), 8-bit .png, base-color materials only, nearest filtering (the importer sets that). One skeleton and one AnimationPlayer in the .glb.
+- **Skeleton:** the game's movement code needs no bone names. We still ask for the shared 17 bones (names in "Skeleton and animation") so clips can be copied between characters, and the `weapon_socket` and `prop_socket` bones for attaching held items later.
+- **Dropping one in:** save the .glb (and its textures) beside it in `game/art/final/characters/<name>/`, then set `model_path` on the Player node in `game/scenes/actors/player.tscn`. The test `game/tests/integration/test_red_shiba.gd` checks every point in this list (clips, triangles, bones, scale, texture size); point it at the new file.
 
 ## Environment style
 - **Diorama rooms:** a floor, two back walls, props on top. The two front walls are not built at all. Camera: high angle (about 40 to 45 degrees down), narrow field of view so it reads like looking into a toy box, never rotates, slides in big rooms (design doc).
@@ -236,7 +261,7 @@ That is about 17 clips for Otis and Mox and 22 for Red. Wave 1 first; later wave
 ## File formats and naming
 - **3D models:** **.glb** (glTF 2.0) exported from Blender with default settings (+Y up, units in meters, model front facing -Y in Blender). Skeleton, skin weights and animation clips are all inside the .glb. Materials are base color only (no PBR), named `mat_<model>`.
 - **Textures, faces, portraits, UI:** **.png**, 8-bit, no color profile, no smoothing, 1-bit alpha. Textures sit **beside the .glb** with the same base name.
-- **Animation clips:** lowercase snake_case, the names used above: `idle`, `walk`, `run`, `battle_ready`, `attack_1`, `attack_2`, `defend`, `block`, `skill`, `item`, `signature`, `hurt`, `ko`, `victory`, `climb`, `hop`, and Red's `thumbs_up`, `head_shake`, `shrug`, `goggles_down`, `lamp_check`.
+- **Animation clips:** lowercase snake_case, the names used above: `idle`, `walk`, `run`, `jump`, `fall`, `land`, `battle_ready`, `attack_1`, `attack_2`, `defend`, `block`, `skill`, `item`, `signature`, `hurt`, `ko`, `victory`, `climb`, `hop`, and Red's `thumbs_up`, `head_shake`, `shrug`, `goggles_down`, `lamp_check`.
 - **Names: `prefix_name[_variant].ext`**, all lowercase, words joined with underscores, no spaces.
 
   | Prefix | Means | Example |

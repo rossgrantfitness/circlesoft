@@ -6,12 +6,17 @@ extends CharacterBody3D
 ##
 ## Speeds, the turn rate and every jump number come from data/world/field_tuning.json via DataDB.
 ## Facing: the model looks along local +Z (the art convention), so get_facing() is that axis.
-## The Visual node is a slot for the placeholder Red model; the capsule stand-in is removed
-## automatically when the .glb exists.
+## The Visual node is a slot for Red's model; the capsule stand-in is removed automatically when
+## the .glb exists. The model is picked by `model_path` (set in scenes/actors/player.tscn), and the
+## game only ever asks it for clips by NAME (PlayerMotion.CLIP_NAMES: idle, walk, run, jump, fall,
+## land), never for specific bones, so a different Red model drops in without code changes
+## (see "Model contract" in docs/style_guide.md).
 ##
 ## Collision: layer 1 is the world (walls, floor). Red sits on layer 2 and collides with layer 1.
 
-const MODEL_PATH: String = "res://art/placeholder/characters/red/red_blockout.glb"
+## The playable Red: the placeholder shiba (Ross's locked look). The first blockout stays as a fallback.
+const MODEL_PATH: String = "res://art/placeholder/characters/red/red_shiba.glb"
+const FALLBACK_MODEL_PATH: String = "res://art/placeholder/characters/red/red_blockout.glb"
 const ACTION_LEFT: StringName = &"move_left"
 const ACTION_RIGHT: StringName = &"move_right"
 const ACTION_UP: StringName = &"move_up"
@@ -29,6 +34,8 @@ signal landed
 @export var read_engine_input: bool = true
 ## Frozen (dialogue, cutscenes): no movement, idle pose.
 @export var frozen: bool = false
+## Which model .glb goes in the Visual slot. Swap Red's model by changing this one path.
+@export_file("*.glb") var model_path: String = MODEL_PATH
 
 ## Stick or d-pad direction: x right, y down (what Input.get_vector gives). Set it directly when
 ## read_engine_input is off.
@@ -54,15 +61,18 @@ var _animation_player: AnimationPlayer = null
 var _current_animation: StringName = &""
 var _moving: bool = false
 var _running: bool = false
+var _land_left: float = 0.0
 
 
 func _ready() -> void:
 	_tuning = FieldTuning.from_db(get_node_or_null("/root/DataDB"))
 	_visual = get_node_or_null(NODE_VISUAL) as Node3D
-	if ResourceLoader.exists(MODEL_PATH):
-		var model_scene: PackedScene = load(MODEL_PATH) as PackedScene
-		if model_scene != null:
-			attach_model(model_scene)
+	for path: String in [model_path, FALLBACK_MODEL_PATH]:
+		if ResourceLoader.exists(path):
+			var model_scene: PackedScene = load(path) as PackedScene
+			if model_scene != null:
+				attach_model(model_scene)
+				break
 	_play_animation(PlayerMotion.ANIM_IDLE)
 
 
@@ -202,13 +212,14 @@ func step(delta: float) -> void:
 		jumped.emit()
 	if _was_airborne and not airborne:
 		landed.emit()
+		_land_left = _land_clip_length()
 	_was_airborne = airborne
 
 	if now_moving != _moving or now_running != _running:
 		_moving = now_moving
 		_running = now_running
 		moved_state_changed.emit(_moving, _running)
-	_update_animation(airborne)
+	_update_animation(airborne, delta)
 
 
 ## Puts a model scene in the Visual slot and drops the capsule stand-in. Called automatically when
@@ -244,13 +255,26 @@ func _camera_basis() -> Basis:
 	return cam.global_basis
 
 
-func _update_animation(airborne: bool) -> void:
+func _update_animation(airborne: bool, delta: float) -> void:
+	_land_left = maxf(_land_left - delta, 0.0)
+	if airborne or _moving:
+		_land_left = 0.0                 # the squash only plays when she lands and stands still
+	if PlayerMotion.is_landing(_land_left, airborne, _moving):
+		_play_animation(PlayerMotion.ANIM_LAND)
+		return
 	if airborne and (_jumped_this_air or _air_time >= _tuning.jump_air_anim_delay_s):
 		for candidate: StringName in PlayerMotion.air_animation_candidates(_vy > 0.0, _moving):
 			if _animation_player == null or _animation_player.has_animation(candidate):
 				_play_animation(candidate)
 				return
 	_play_animation(PlayerMotion.animation_for(_moving, _running))
+
+
+## How long the model's land clip is (0 when it has none, so nothing waits on it).
+func _land_clip_length() -> float:
+	if _animation_player == null or not _animation_player.has_animation(PlayerMotion.ANIM_LAND):
+		return 0.0
+	return _animation_player.get_animation(PlayerMotion.ANIM_LAND).length
 
 
 func _play_animation(wanted: StringName) -> void:
