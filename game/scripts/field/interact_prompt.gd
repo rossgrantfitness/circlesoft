@@ -75,7 +75,7 @@ func tick(delta: float) -> void:
 
 
 ## Where the icon's bottom-center sits right now, in stage pixels.
-func get_anchor() -> Vector2:
+func get_anchor_point() -> Vector2:
 	return _anchor
 
 

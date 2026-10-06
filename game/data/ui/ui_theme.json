@@ -18,10 +18,19 @@
     "text_highlight": "#FFB347"
   },
   "fonts": {
-    "menu": {"path": "res://art/final/ui/fonts/PressStart2P-Regular.ttf", "size": 8},
-    "title": {"path": "res://art/final/ui/fonts/PressStart2P-Regular.ttf", "size": 24},
-    "body": {"path": "res://art/final/ui/fonts/PixelifySans-VariableFont_wght.ttf", "size": 12},
-    "dialogue": {"path": "res://art/final/ui/fonts/PixelifySans-VariableFont_wght.ttf", "size": 13}
+    "_note": "One face for everything (Nunito, variable weight, SIL OFL 1.1): grayscale-antialiased and drawn at whole pixels into the 384x216 stage, so it looks soft and pixelated like a low-res console menu. Every text gets the 1px drop shadow from text_shadow. weight is the font's wght axis.",
+    "menu": {"path": "res://art/final/ui/fonts/Nunito-VariableFont_wght.ttf", "size": 12, "weight": 800},
+    "body": {"path": "res://art/final/ui/fonts/Nunito-VariableFont_wght.ttf", "size": 12, "weight": 800},
+    "dialogue": {"path": "res://art/final/ui/fonts/Nunito-VariableFont_wght.ttf", "size": 12, "weight": 800},
+    "tag": {"path": "res://art/final/ui/fonts/Nunito-VariableFont_wght.ttf", "size": 10, "weight": 900},
+    "title": {"path": "res://art/final/ui/fonts/Nunito-VariableFont_wght.ttf", "size": 32, "weight": 900}
+  },
+  "text_shadow": {
+    "_note": "The reusable text style: every label and drawn string gets this drop shadow, down and right. on_light is used for dark text on the chalk speech bubble.",
+    "color": "#0B0A14",
+    "on_light": "#B9B39A",
+    "offset_x": 1,
+    "offset_y": 1
   },
   "screen": {
     "width": 384,
@@ -66,7 +75,7 @@
     "title_outline": 3,
     "demo_tag_gap": 6,
     "demo_tag_pad_x": 4,
-    "demo_tag_pad_y": 3,
+    "demo_tag_pad_y": 1,
     "press_start_y": 150,
     "credit_y": 197,
     "margin": 8,

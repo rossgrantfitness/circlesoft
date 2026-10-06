@@ -54,9 +54,7 @@ var _page: String = PAGE_MAIN
 var _layout: Dictionary = {}
 var _text: Dictionary = {}
 var _c: Dictionary[String, Color] = {}
-var _font_menu: Font = null
 var _font_menu_size: int = 8
-var _font_body: Font = null
 var _font_body_size: int = 12
 var _step_s: float = 0.0833
 var _step_clock: float = 0.0
@@ -93,11 +91,8 @@ func _ready() -> void:
 	for key: String in theme_data["palette"]:
 		_c[key] = Color.html(str(theme_data["palette"][key]))
 	_step_s = float(theme_data["timing"]["ui_step_s"])
-	var fonts: Dictionary = theme_data["fonts"]
-	_font_menu = load(str(fonts["menu"]["path"])) as Font
-	_font_menu_size = int(fonts["menu"]["size"])
-	_font_body = load(str(fonts["dialogue"]["path"])) as Font
-	_font_body_size = int(fonts["dialogue"]["size"])
+	_font_menu_size = UiFonts.get_size("menu")
+	_font_body_size = UiFonts.get_size("dialogue")
 	_layout = DataDB.get_dict(LAYOUT_ID)
 	_text = DataDB.get_dict(TEXT_ID)
 	for command: Dictionary in _layout["commands"]:
@@ -178,9 +173,7 @@ func _make_list(window: Control, rect: Dictionary) -> MenuList:
 func _make_label(parent: Control, font_key: String, color_key: String, at: Vector2) -> Label:
 	var label: Label = Label.new()
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	label.add_theme_font_override("font", _font_menu if font_key == "menu" else _font_body)
-	label.add_theme_font_size_override("font_size", _font_menu_size if font_key == "menu" else _font_body_size)
-	label.add_theme_color_override("font_color", _c[color_key])
+	UiText.style_label(label, "menu" if font_key == "menu" else "dialogue", _c[color_key])
 	label.position = at
 	parent.add_child(label)
 	return label
@@ -550,29 +543,28 @@ func _draw_party_panel(canvas: Control) -> void:
 func _draw_member_row(canvas: Control, member: Dictionary, top: int) -> void:
 	var inner_w: int = int(canvas.size.x)
 	_draw_portrait(canvas, member, Vector2i(10, top + 4))
-	var name_pos: Vector2 = Vector2(46, top + 12)
-	canvas.draw_string(_font_menu, name_pos, str(member["name"]).to_upper(), HORIZONTAL_ALIGNMENT_LEFT, -1, _font_menu_size, _c["text"])
+	UiText.draw(canvas, "menu", Vector2(46, top + 14), str(member["name"]), _c["text"])
 	var level: String = str(_text["status"]["level"]).replace("{level}", str(int(member["level"])))
-	canvas.draw_string(_font_menu, Vector2(0, top + 12), level, HORIZONTAL_ALIGNMENT_RIGHT, inner_w - 12, _font_menu_size, _c["text_dim"])
-	_draw_stat_bar(canvas, Vector2i(46, top + 17), str(_text["status"]["hp"]), int(member["hp"]), int(member["hp_max"]),
+	UiText.draw(canvas, "menu", Vector2(0, top + 14), level, _c["text_dim"], HORIZONTAL_ALIGNMENT_RIGHT, inner_w - 12)
+	_draw_stat_bar(canvas, Vector2i(46, top + 28), str(_text["status"]["hp"]), int(member["hp"]), int(member["hp_max"]),
 			Color.html("#FF7A59"), int(_layout["hp_bar_h"]), inner_w - 12)
-	_draw_stat_bar(canvas, Vector2i(46, top + 29), str(_text["status"]["juice"]), int(member["juice"]), int(member["juice_max"]),
+	_draw_stat_bar(canvas, Vector2i(46, top + 41), str(_text["status"]["juice"]), int(member["juice"]), int(member["juice_max"]),
 			Color.html("#9BE35A"), int(_layout["juice_bar_h"]), inner_w - 12)
 
 
-## A label, a bar and "now/max" with a number you can read without the color.
+## A label, a bar and "now/max" with a number you can read without the color. `at.y` is the baseline.
 func _draw_stat_bar(canvas: Control, at: Vector2i, label: String, value: int, maximum: int, color: Color, thickness: int, right_edge: int) -> void:
-	var bar_x: int = at.x + 20
+	var bar_x: int = at.x + int(_layout["bar_label_w"])
 	var bar_w: int = int(_layout["bar_w"])
-	var middle: int = at.y + 4
-	canvas.draw_string(_font_menu, Vector2(at.x, at.y + 7), label, HORIZONTAL_ALIGNMENT_LEFT, -1, _font_menu_size, _c["text_dim"])
+	var middle: int = at.y - 4
+	UiText.draw(canvas, "menu", Vector2(at.x, at.y), label, _c["text_dim"])
 	var y: int = middle - thickness / 2
 	canvas.draw_rect(Rect2(bar_x - 1, y - 1, bar_w + 2, thickness + 2), _c["ink"])
 	canvas.draw_rect(Rect2(bar_x, y, bar_w, thickness), _c["dusk"])
 	var fill: int = int(round(float(bar_w) * float(value) / float(maxi(1, maximum))))
 	canvas.draw_rect(Rect2(bar_x, y, fill, thickness), color)
 	var numbers: String = "%d/%d" % [value, maximum]
-	canvas.draw_string(_font_menu, Vector2(0, at.y + 7), numbers, HORIZONTAL_ALIGNMENT_RIGHT, right_edge, _font_menu_size, _c["text"])
+	UiText.draw(canvas, "menu", Vector2(0, at.y), numbers, _c["text"], HORIZONTAL_ALIGNMENT_RIGHT, right_edge)
 
 
 ## Placeholder portrait: a colored tile with the character's initial (the real 96x96 portraits
@@ -583,8 +575,9 @@ func _draw_portrait(canvas: Control, member: Dictionary, at: Vector2i) -> void:
 	canvas.draw_rect(Rect2(at.x - 1, at.y - 1, tile + 2, tile + 2), _c["chalk"])
 	canvas.draw_rect(Rect2(at.x, at.y, tile, tile), Color.html(str(member.get("accent", "#888888"))))
 	var initial: String = str(member.get("initial", "?"))
-	var big: int = 16
-	canvas.draw_string(_font_menu, Vector2(at.x, at.y + (tile + big) / 2 - 1), initial, HORIZONTAL_ALIGNMENT_CENTER, tile, big, _c["ink"])
+	var big_size: int = int(_layout["portrait_initial_size"])
+	var font: Font = UiFonts.get_font("title")
+	canvas.draw_string(font, Vector2(at.x, at.y + (tile + big_size) / 2 - 3), initial, HORIZONTAL_ALIGNMENT_CENTER, tile, big_size, _c["ink"])
 
 
 # -- items page --
@@ -637,17 +630,19 @@ func _draw_status_cards(canvas: Control) -> void:
 		var card: Rect2i = Rect2i(x, 10, card_w, int(canvas.size.y) - 20)
 		PixelShape.fill_outlined(canvas, card, 4, 1, _c["dusk"], _c["night"])
 		_draw_portrait(canvas, member, Vector2i(x + 8, 20))
-		canvas.draw_string(_font_menu, Vector2(x + 44, 33), str(member["name"]).to_upper(), HORIZONTAL_ALIGNMENT_LEFT, -1, _font_menu_size, _c["text"])
+		UiText.draw(canvas, "menu", Vector2(x + 42, 34), str(member["name"]), _c["text"])
 		var level: String = str(_text["status"]["level"]).replace("{level}", str(int(member["level"])))
-		canvas.draw_string(_font_menu, Vector2(x + 44, 45), level, HORIZONTAL_ALIGNMENT_LEFT, -1, _font_menu_size, _c["text_dim"])
-		_draw_card_bar(canvas, Vector2i(x + 8, 64), str(_text["status"]["hp"]), int(member["hp"]), int(member["hp_max"]), Color.html("#FF7A59"), int(_layout["hp_bar_h"]), card_w - 16)
-		_draw_card_bar(canvas, Vector2i(x + 8, 96), str(_text["status"]["juice"]), int(member["juice"]), int(member["juice_max"]), Color.html("#9BE35A"), int(_layout["juice_bar_h"]), card_w - 16)
+		UiText.draw(canvas, "menu", Vector2(x + 42, 48), level, _c["text_dim"])
+		_draw_card_bar(canvas, Vector2i(x + 8, 68), str(_text["status"]["hp"]), int(member["hp"]), int(member["hp_max"]), Color.html("#FF7A59"), int(_layout["hp_bar_h"]), card_w - 16)
+		_draw_card_bar(canvas, Vector2i(x + 8, 92), str(_text["status"]["juice"]), int(member["juice"]), int(member["juice_max"]), Color.html("#9BE35A"), int(_layout["juice_bar_h"]), card_w - 16)
+		UiText.draw(canvas, "menu", Vector2(x + 8, 114), str(_text["status"]["weapon"]), _c["text_dim"])
+		UiText.draw(canvas, "menu", Vector2(x + 8, 126), str(member.get("weapon", "")), _c["text"])
 
 
 func _draw_card_bar(canvas: Control, at: Vector2i, label: String, value: int, maximum: int, color: Color, thickness: int, width: int) -> void:
-	canvas.draw_string(_font_menu, Vector2(at.x, at.y + 7), label, HORIZONTAL_ALIGNMENT_LEFT, -1, _font_menu_size, _c["text_dim"])
-	canvas.draw_string(_font_menu, Vector2(at.x, at.y + 19), "%d/%d" % [value, maximum], HORIZONTAL_ALIGNMENT_RIGHT, width, _font_menu_size, _c["text"])
-	var y: int = at.y + 22
+	UiText.draw(canvas, "menu", Vector2(at.x, at.y), label, _c["text_dim"])
+	UiText.draw(canvas, "menu", Vector2(at.x, at.y), "%d/%d" % [value, maximum], _c["text"], HORIZONTAL_ALIGNMENT_RIGHT, width)
+	var y: int = at.y + 6
 	canvas.draw_rect(Rect2(at.x - 1, y - 1, width + 2, thickness + 2), _c["ink"])
 	canvas.draw_rect(Rect2(at.x, y, width, thickness), _c["dusk"])
 	canvas.draw_rect(Rect2(at.x, y, int(round(float(width) * float(value) / float(maxi(1, maximum)))), thickness), color)

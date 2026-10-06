@@ -74,15 +74,10 @@ func _input(event: InputEvent) -> void:
 
 
 func _add_hint(stage_root: Control) -> void:
-	var fonts: Dictionary = DataDB.get_value("ui/ui_theme", "fonts", {})
 	var label: Label = Label.new()
 	label.text = HINT_TEXT
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	label.add_theme_font_override("font", load(str(fonts["dialogue"]["path"])) as Font)
-	label.add_theme_font_size_override("font_size", int(fonts["dialogue"]["size"]))
-	label.add_theme_color_override("font_color", Color.html("#8D97A5"))
-	label.add_theme_color_override("font_outline_color", Color.html("#14121F"))
-	label.add_theme_constant_override("outline_size", 2)
+	UiText.style_label(label, "dialogue", Color.html("#8D97A5"))
 	label.position = Vector2(6, 198)
 	stage_root.add_child(label)
 	_hint = label

@@ -58,6 +58,7 @@ var _has_anchor_point: bool = false
 var _ui: Dictionary = {}
 var _cfg: Dictionary = {}
 var _palette: Dictionary[String, Color] = {}
+var _font_key: String = "dialogue"
 var _font_body: Font = null
 var _font_body_size: int = 12
 var _font_tag: Font = null
@@ -105,20 +106,17 @@ func _ready() -> void:
 	for key: String in palette:
 		_palette[key] = Color.html(str(palette[key]))
 	_step_s = float(theme_data["timing"]["ui_step_s"])
-	var fonts: Dictionary = theme_data["fonts"]
-	var body_key: String = str(_ui["bubble"]["font"])
-	_font_body = load(str(fonts[body_key]["path"])) as Font
-	_font_body_size = int(fonts[body_key]["size"])
-	_font_tag = load(str(fonts["menu"]["path"])) as Font
-	_font_tag_size = int(fonts["menu"]["size"])
+	_font_key = str(_ui["bubble"]["font"])
+	_font_body = UiFonts.get_font(_font_key)
+	_font_body_size = UiFonts.get_size(_font_key)
+	_font_tag = UiFonts.get_font("tag")
+	_font_tag_size = UiFonts.get_size("tag")
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_label = Label.new()
 	_label.name = "Text"
 	_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_label.add_theme_font_override("font", _font_body)
-	_label.add_theme_font_size_override("font_size", _font_body_size)
-	_label.add_theme_constant_override("line_spacing", 0)
+	UiText.style_label(_label, _font_key, _palette["ink"], true)
 	_label.visible = false
 	add_child(_label)
 	_overlay = Control.new()
@@ -236,6 +234,7 @@ func _layout_text(text: String) -> void:
 	_compute_body(false)
 	_label.text = ""
 	_label.add_theme_color_override("font_color", _color(str(_ui["bubble"]["colors"]["text"])) if not is_box else _palette["text"])
+	UiText.apply_shadow(_label, not is_box)
 	_label.add_theme_constant_override("line_spacing", int(_cfg["line_height"]) - int(_font_body.get_height(_font_body_size)))
 
 
@@ -718,7 +717,11 @@ func _draw_tag(origin: Vector2i) -> void:
 	var luminance: float = _accent.get_luminance()
 	var text_color: Color = ink if luminance > 0.33 else _palette["chalk"]
 	var baseline: float = float(rect.position.y + 1) + float((tag_h - 2 - _font_tag_size) / 2) + float(_font_tag_size)
-	_overlay.draw_string(_font_tag, Vector2(rect.position.x + int(bub["tag_pad_x"]), baseline), _name_text, HORIZONTAL_ALIGNMENT_LEFT, -1, _font_tag_size, text_color)
+	var tag_at: Vector2 = Vector2(rect.position.x + int(bub["tag_pad_x"]), baseline)
+	if luminance > 0.33:
+		_overlay.draw_string(_font_tag, tag_at, _name_text, HORIZONTAL_ALIGNMENT_LEFT, -1, _font_tag_size, text_color)
+	else:
+		UiText.draw(_overlay, "tag", tag_at, _name_text, text_color)
 
 
 func _draw_arrow(origin: Vector2i) -> void:
@@ -785,7 +788,8 @@ func _draw_choices(_top: int, _left: int, _width: int) -> void:
 				_overlay.draw_texture(frames[frame], Vector2(x - 2, row.position.y + (row.size.y - icon) / 2))
 			x += icon + 2
 		var baseline: float = float(row.position.y) + (row.size.y + _font_body_size) / 2.0 - 2.0
-		_overlay.draw_string(_font_body, Vector2(x, baseline), str(option["label"]), HORIZONTAL_ALIGNMENT_LEFT, -1, _font_body_size, select_text if selected else plain)
+		var on_light: bool = _style == STYLE_BUBBLE and not selected
+		UiText.draw(_overlay, _font_key, Vector2(x, baseline), str(option["label"]), select_text if selected else plain, HORIZONTAL_ALIGNMENT_LEFT, -1.0, on_light)
 		if selected:
 			_draw_choice_pointer(row)
 

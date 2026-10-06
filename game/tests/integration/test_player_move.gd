@@ -141,24 +141,35 @@ func test_run_needs_movement_and_speeds_are_brisk() -> void:
 	assert_gt(_tuning.run_speed, _tuning.walk_speed * 1.5, "run is clearly faster")
 
 
+## B1: these two tests used to count on real physics frames, so a busy machine made them flaky.
+## Red's own physics is switched off here and step() is called by hand: exactly N steps, always.
+func _make_manual_world(camera_yaw_deg: float = 0.0) -> void:
+	_make_world(camera_yaw_deg, false)
+	await _ticks(2)
+	_player.set_physics_process(false)
+	_player.position = Vector3(0.0, 0.0, 0.0)
+	_player.velocity = Vector3.ZERO
+	for i: int in 5:
+		_player.step(TICK)   # settle onto the floor with no input
+
+
 func test_distance_travelled_matches_speed() -> void:
-	_make_world(0.0, false)
+	await _make_manual_world(0.0)
 	_player.stick = Vector2(0.0, -0.5)
-	var ticks: int = 60
-	await _ticks(ticks)
+	var steps: int = 60
+	for i: int in steps:
+		_player.step(TICK)
 	var travelled: float = absf(_player.position.z)
-	var low: float = _tuning.walk_speed * float(ticks - 4) * TICK
-	var high: float = _tuning.walk_speed * float(ticks + 2) * TICK
-	assert_ge(travelled, low)
-	assert_le(travelled, high)
+	assert_almost_eq(travelled, _tuning.walk_speed * float(steps) * TICK, 0.01, "exactly speed x time")
 
 
 func test_movement_is_relative_to_the_camera() -> void:
 	# Camera turned 90 degrees: it looks toward -X, so "up" on the stick walks toward -X.
-	_make_world(90.0, false)
+	await _make_manual_world(90.0)
 	_player.stick = Vector2(0.0, -1.0)
-	await _ticks(40)
-	assert_lt(_player.position.x, -1.0)
+	for i: int in 30:
+		_player.step(TICK)
+	assert_almost_eq(_player.position.x, -_tuning.walk_speed * 30.0 * TICK, 0.01)
 	assert_almost_eq(_player.position.z, 0.0, 0.001)
 
 

@@ -191,18 +191,15 @@ func _load_data() -> void:
 	_min_fill = float(screen["integer_scaling_min_fill"])
 	var fonts: Dictionary = _theme_data["fonts"]
 	for key: String in fonts:
-		var entry: Dictionary = fonts[key]
-		_fonts[key] = load(str(entry["path"])) as Font
-		_font_sizes[key] = int(entry["size"])
+		if fonts[key] is Dictionary:
+			_fonts[key] = UiFonts.get_font(key)
+			_font_sizes[key] = UiFonts.get_size(key)
 	for entry: Dictionary in DataDB.get_dict(TEXT_ID)["menu"]:
 		_items.append(entry)
 
 
 func _style(label: Label, font_key: String, color_key: String) -> void:
-	label.add_theme_font_override("font", _fonts[font_key])
-	label.add_theme_font_size_override("font_size", _font_sizes[font_key])
-	label.add_theme_color_override("font_color", _c[color_key])
-	label.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	UiText.style_label(label, font_key, _c[color_key])
 
 
 func _outline(label: Label, outline_size: int, shadow_offset: int) -> void:
@@ -257,19 +254,13 @@ func _apply_fonts_and_text() -> void:
 	# Press start.
 	_press_start.text = str(text["press_start"])
 	_style(_press_start, "menu", "chalk")
-	_outline(_press_start, 2, 1)
-	_press_start.add_theme_color_override("font_shadow_color", _c["ink"])
 	_press_start.position = Vector2((stage_w - _text_width("menu", _press_start.text)) / 2, int(_layout["press_start_y"]))
 	# Studio credit (centered) and version (right), bottom of the screen.
 	_credit.text = str(text["credit"])
 	_style(_credit, "body", "slate_light")
-	_outline(_credit, 2, 1)
-	_credit.add_theme_color_override("font_shadow_color", _c["ink"])
 	_credit.position = Vector2((stage_w - _text_width("body", _credit.text)) / 2, int(_layout["credit_y"]))
 	_version.text = str(text["version"])
 	_style(_version, "body", "text_dim")
-	_outline(_version, 2, 1)
-	_version.add_theme_color_override("font_shadow_color", _c["ink"])
 	_version.position = Vector2(stage_w - margin - _text_width("body", _version.text), stage_h - margin - _font_sizes["body"])
 	_credit.position.y = _version.position.y
 
@@ -294,7 +285,7 @@ func _item_y(index: int) -> float:
 
 
 func _cursor_position(index: int) -> Vector2:
-	var label_mid: float = _item_y(index) + float(_font_sizes["menu"]) / 2.0
+	var label_mid: float = _item_y(index) + float(_font_sizes["menu"]) / 2.0 + 3.0
 	return Vector2(float(_layout["cursor_x"]), label_mid - _cursor.size.y / 2.0)
 
 

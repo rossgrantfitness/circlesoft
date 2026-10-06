@@ -45,9 +45,8 @@ func _ready() -> void:
 	var palette: Dictionary = theme_data["palette"]
 	for key: String in palette:
 		_c[key] = Color.html(str(palette[key]))
-	var menu_font: Dictionary = theme_data["fonts"]["menu"]
-	_font = load(str(menu_font["path"])) as Font
-	_font_size = int(menu_font["size"])
+	_font = UiFonts.get_font("menu")
+	_font_size = UiFonts.get_size("menu")
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_cursor = MenuCursor.new()
@@ -240,11 +239,11 @@ func _draw() -> void:
 		elif index == _index and active:
 			color = _c["text_highlight"]
 		var baseline: float = float(first_row_y + row * row_height + _font_size)
-		draw_string(_font, Vector2(text_x, baseline), str(item.get("label", "")), HORIZONTAL_ALIGNMENT_LEFT, -1, _font_size, color)
+		UiText.draw(self, "menu", Vector2(text_x, baseline), str(item.get("label", "")), color)
 		var value: String = str(item.get("value", ""))
 		if not value.is_empty():
 			var field_x: float = float(text_x)
-			draw_string(_font, Vector2(field_x, baseline), value, HORIZONTAL_ALIGNMENT_RIGHT, size.x - field_x - value_pad, _font_size, color)
+			UiText.draw(self, "menu", Vector2(field_x, baseline), value, color, HORIZONTAL_ALIGNMENT_RIGHT, size.x - field_x - value_pad)
 	_draw_scroll_arrows()
 
 

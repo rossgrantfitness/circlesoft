@@ -1,34 +1,57 @@
 {
   "_about": "Strings for the test field menu. {name} is replaced where shown.",
   "commands": {
-    "items": {"label": "ITEMS", "hint": "Look through your bag."},
-    "status": {"label": "STATUS", "hint": "Check how the crew is doing."},
-    "config": {"label": "CONFIG", "hint": "Text speed, voices and timing."},
-    "save": {"label": "SAVE", "hint": "Save lamps only."},
-    "close": {"label": "CLOSE", "hint": "Back to the room."}
+    "items": {
+      "label": "Items",
+      "hint": "Look through your bag."
+    },
+    "status": {
+      "label": "Status",
+      "hint": "Check how the crew is doing."
+    },
+    "config": {
+      "label": "Config",
+      "hint": "Text speed, voices and timing."
+    },
+    "save": {
+      "label": "Save",
+      "hint": "Save lamps only."
+    },
+    "close": {
+      "label": "Close",
+      "hint": "Back to the room."
+    }
   },
-  "place": {"title": "PLACE", "name": "TEST ROOM"},
+  "place": {
+    "title": "Place",
+    "name": "Test Room"
+  },
   "items": {
-    "title": "ITEMS",
+    "title": "Items",
     "empty": "Nothing in the bag yet.",
     "use_stub": "{name}: using items isn't hooked up yet.",
     "no_desc": ""
   },
   "status": {
-    "title": "STATUS",
-    "level": "LV {level}",
+    "title": "Status",
+    "level": "Lv {level}",
     "hp": "HP",
-    "juice": "JU",
-    "hint": "Everyone looks ready. Placeholder numbers."
+    "juice": "Juice",
+    "hint": "Everyone looks ready. Placeholder numbers.",
+    "weapon": "Weapon"
   },
   "config": {
-    "title": "CONFIG",
-    "text_speed": "TEXT SPEED",
-    "voice_volume": "VOICE VOLUME",
-    "auto_timing": "AUTO-TIMING",
-    "on": "ON",
-    "off": "OFF",
-    "speed_names": {"slow": "SLOW", "normal": "NORMAL", "fast": "FAST"},
+    "title": "Config",
+    "text_speed": "Text Speed",
+    "voice_volume": "Voice Volume",
+    "auto_timing": "Auto-Timing",
+    "on": "On",
+    "off": "Off",
+    "speed_names": {
+      "slow": "Slow",
+      "normal": "Normal",
+      "fast": "Fast"
+    },
     "hints": {
       "text_speed": "How fast the speech bubbles type out.",
       "voice_volume": "How loud the gibberish voices are.",
@@ -38,8 +61,8 @@
     "preview_speaker": "otis"
   },
   "save": {
-    "title": "SAVE",
-    "line1": "SAVE LAMPS ONLY.",
+    "title": "Save",
+    "line1": "Save lamps only.",
     "line2": "Find a lamp to save.",
     "ok": "OK"
   }

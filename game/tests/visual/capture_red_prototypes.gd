@@ -28,7 +28,7 @@ const GAP: int = 4
 const SHEET_BACKGROUND: Color = Color(0.0784, 0.0706, 0.1216)
 const SHEET_LINE: Color = Color(0.227, 0.208, 0.4)
 const LABEL_COLOR: Color = Color(0.93, 0.92, 0.85)
-const LABEL_FONT: String = "res://art/final/ui/fonts/PixelifySans-VariableFont_wght.ttf"
+const LABEL_FONT: String = "res://art/final/ui/fonts/Nunito-VariableFont_wght.ttf"
 const HEADER_FONT_SIZE: int = 34
 const ROW_FONT_SIZE: int = 22
 

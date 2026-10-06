@@ -1,10 +1,48 @@
 {
   "_about": "Placeholder party and starting bag for the test room. Real stats come from characters.json later (task M2).",
-  "default_party": ["red", "otis", "mox"],
+  "default_party": [
+    "red",
+    "otis",
+    "mox"
+  ],
   "members": {
-    "red":  {"name": "Red",  "level": 3, "hp": 42, "hp_max": 42, "juice": 8,  "juice_max": 12, "accent": "#C8322A", "initial": "R"},
-    "otis": {"name": "Otis", "level": 3, "hp": 61, "hp_max": 66, "juice": 5,  "juice_max": 10, "accent": "#E0782B", "initial": "O"},
-    "mox":  {"name": "Mox",  "level": 3, "hp": 30, "hp_max": 34, "juice": 14, "juice_max": 16, "accent": "#C9A23A", "initial": "M"}
+    "red": {
+      "name": "Red",
+      "level": 3,
+      "hp": 42,
+      "hp_max": 42,
+      "juice": 8,
+      "juice_max": 12,
+      "accent": "#C8322A",
+      "initial": "R",
+      "weapon": "Scrap Sword"
+    },
+    "otis": {
+      "name": "Otis",
+      "level": 3,
+      "hp": 61,
+      "hp_max": 66,
+      "juice": 5,
+      "juice_max": 10,
+      "accent": "#E0782B",
+      "initial": "O",
+      "weapon": "Dock Mallet"
+    },
+    "mox": {
+      "name": "Mox",
+      "level": 3,
+      "hp": 30,
+      "hp_max": 34,
+      "juice": 14,
+      "juice_max": 16,
+      "accent": "#C9A23A",
+      "initial": "M",
+      "weapon": "Big Wrench"
+    }
   },
-  "starting_items": {"ration_bar": 2, "smelling_salts": 1, "camp_stove": 1}
+  "starting_items": {
+    "ration_bar": 2,
+    "smelling_salts": 1,
+    "camp_stove": 1
+  }
 }

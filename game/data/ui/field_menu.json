@@ -4,16 +4,51 @@
   "page_slide_px": 8,
   "page_slide_steps": 3,
   "commands": [
-    {"id": "items", "page": "items"},
-    {"id": "status", "page": "status"},
-    {"id": "config", "page": "config"},
-    {"id": "save", "page": "save"},
-    {"id": "close", "page": ""}
+    {
+      "id": "items",
+      "page": "items"
+    },
+    {
+      "id": "status",
+      "page": "status"
+    },
+    {
+      "id": "config",
+      "page": "config"
+    },
+    {
+      "id": "save",
+      "page": "save"
+    },
+    {
+      "id": "close",
+      "page": ""
+    }
   ],
-  "main_window": {"x": 8, "y": 8, "w": 92, "h": 104},
-  "place_window": {"x": 8, "y": 120, "w": 92, "h": 32},
-  "side_window": {"x": 108, "y": 8, "w": 268, "h": 144},
-  "info_window": {"x": 8, "y": 160, "w": 368, "h": 48},
+  "main_window": {
+    "x": 8,
+    "y": 8,
+    "w": 92,
+    "h": 104
+  },
+  "place_window": {
+    "x": 8,
+    "y": 120,
+    "w": 92,
+    "h": 32
+  },
+  "side_window": {
+    "x": 108,
+    "y": 8,
+    "w": 268,
+    "h": 144
+  },
+  "info_window": {
+    "x": 8,
+    "y": 160,
+    "w": 368,
+    "h": 48
+  },
   "list_first_y": 14,
   "list_step": 16,
   "list_text_x": 20,
@@ -22,7 +57,7 @@
   "party_row_h": 44,
   "party_top": 8,
   "portrait_size": 28,
-  "bar_w": 96,
+  "bar_w": 92,
   "hp_bar_h": 6,
   "juice_bar_h": 3,
   "status_card_w": 82,
@@ -30,5 +65,12 @@
   "config_row_step": 24,
   "config_first_y": 18,
   "volume_steps": 10,
-  "save_window": {"x": 116, "y": 60, "w": 152, "h": 72}
+  "save_window": {
+    "x": 116,
+    "y": 60,
+    "w": 152,
+    "h": 72
+  },
+  "bar_label_w": 36,
+  "portrait_initial_size": 16
 }
