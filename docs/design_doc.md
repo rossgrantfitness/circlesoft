@@ -579,12 +579,187 @@ Classic FF7–9 saving: you save at set spots, not anywhere.
 - **Later:** inns, the *Supper's On* bridge, and saving machine parts, Hull and Act 3 guest missions.
 
 ## The 10-hour structure (act by act)
+> 🟡 DRAFT: awaiting Ross's approval
+
+**What this is:** a gameplay map of the approved Act 1/2/3 outlines: where you go, what you do there, how big you are, who you fight and roughly how long it takes. No new story and no new mechanics. Times are rough first-playthrough minutes, cutscenes included.
+
+**Key:**
+- **Town:** people, shops, rest, side jobs.
+- **Dungeon:** enemies, light puzzles, save lamps.
+- **Travel:** the lane chart (Act 2 on) or a short walk (Act 1).
+- **Set piece:** a story sequence, mostly cutscene, sometimes with scripted fights.
+- **Boss:** a story boss fight.
+- **Scale:** on foot → big robot → giant robot → giant spaceship → god.
+- **Party:** 3 on the field, Red always in. The rest ride along on the bench.
+
+### Decisions for Ross
+
+DECISION NEEDED: How many new moons does Act 2 visit? (the biggest swing in your art load)
+Option A: Two moons, built by re-dressing Harrow's pieces (new palette, signs and props) — pros: Act 2 still feels like a road trip and hits 4 hours; mostly reused parts / cons: the moons look related to Harrow (fair: they're all dust moons).
+Option B: Three or four moons, each with its own look — pros: more variety; the "moon by moon" rally feels bigger / cons: one or two more towns and dungeons from scratch, the biggest single addition to your art list.
+Option C: One moon plus Wobble Station — pros: least art / cons: "moon by moon" shrinks to cutscenes, and Act 2 comes in well under 4 hours.
+Recommendation: A. It keeps the approved road-trip feel and the 4-hour act, and the moons cost you a re-dress, not a new build.
+
+**Studio additions to check.** The outlines imply these but don't spell them out. Strike any you don't want:
+- A **Tilly rematch** at Wobble Station (her Act 1 fight again, harder; she smoke-bombs out again). Her approved bio says she isn't really beaten until Act 2.
+- A **small hub on Slipway Prime** (the gate and a dock shop) before the heist.
+- **Two titan stages** on the Act 2 moons you already visited (the approved "frees moon after moon").
+- The Act 3 **scouting run** (Tilly and Ruo) set in the wreck of the Rim blockade, reusing Act 2's ships.
+- **Where each Act 3 guest fights** (from the approved guest list).
+
 ### Act 1
-_Hours, locations, goals._
+**Harrow · about 3 hours · levels 1 → 15 · on foot, then big robot**
+
+1. **[SLICE] Harrow Landing, night**
+   Town · on foot · ~8 min
+   Party: Red; Otis joins in the dock fight.
+2. **[SLICE] The road to the tower**
+   Travel (a short walk) + Watch Zero's sit-in · on foot · ~4 min
+   Party: Red, Otis; Mox joins (out of the crate).
+3. **[SLICE] The Old Relay Tower** (about 5 floors)
+   Dungeon · on foot · ~12 min
+   Party: Red, Otis, Mox.
+4. **[SLICE] Top of the tower**
+   Boss · on foot · ~6 min
+   **Boss: Sgt. Kasp in the Hushmaster.** About level 6.
+   **The vertical slice ends here: about 30 min.**
+5. **The lockdown** (Harrow Landing)
+   Set piece · on foot · ~10 min
+   Party: Red, Otis, Mox.
+6. **Harrow under curfew** (the Landing re-dressed with checkpoints) + first trip into the **Signals compound**
+   Town + dungeon · on foot · ~40 min
+   Shops and side jobs; Hardfall patrols are visible enemies. Ends caught by Vela.
+7. **Tilly's way out** (the old ore tunnels to her hidden pad)
+   Dungeon + boss · on foot · ~38 min
+   **Boss: Tilly in the *Fine Print*.** About level 9.
+8. **Vela's resignation** (breaking out of the Signals compound: the cells and the back half)
+   Dungeon + boss · on foot · ~30 min
+   **Boss: Kasp in the Hushmaster Mk II.** Vela joins mid-fight. About level 12.
+9. **Borrowing Biscuit** (stomp through the Landing)
+   Set piece with fights · big robot · ~15 min
+   Party: Red, Otis, Mox, Vela (3 at Biscuit's stations).
+10. **The cargo yard** (the docks' floodlit back lot)
+    Boss · big robot · ~12 min
+    **Boss: Lt. Brunt in the *HNS Title Shot*.** About level 15.
+11. **Off Harrow** (the ore freighter's hold)
+    Set piece · big robot · ~5 min
+
+**Art load, Act 1:**
+- **New areas (6):** Harrow Landing (Red's home, courier office, docks and Otis's office, bar, two shops, checkpoint), the road, the Old Relay Tower, the ore tunnels and Tilly's pad, the Signals compound, the freighter hold. The first 3 are the slice.
+- **Re-dresses, not new:** the Landing under curfew (checkpoints, troopers, lit windows); the Landing for Biscuit's stomp.
+- **New big models (4):** the Hushmaster (Mk II is a variant), the *Fine Print*, Biscuit, the *HNS Title Shot*.
+- **Reuse tricks:**
+  - The **cargo yard is part of the docks**, so it isn't its own build.
+  - **Size Biscuit to fit the Landing's own streets.** The stomp is the same rooms with the camera pulled back and containers in the road.
+  - **The Signals compound is used twice:** break in (beat 6), break out (beat 8), through different halves.
+
 ### Act 2
-_Hours, locations, goals._
+**The Marches · about 4 hours · levels 15 → 35 · on foot and big robot, then giant robot, then giant spaceship**
+
+Party from beat 1: Red + any 2 of Otis, Mox, Vela, Ruo.
+
+1. **Wobble Station** + the dockside getaway
+   Town + short dungeon · on foot · ~30 min
+   **Boss: Tilly rematch in the *Fine Print*** (studio addition). Ruo joins.
+2. **Moon-hopping** (Moon 1 and Moon 2; names to come)
+   Travel (lane chart) + 2 small towns + 2 jammer-site dungeons · on foot and big robot (Biscuit at the jammer sites) · ~35 min
+3. **A rematch nobody scheduled** (Moon 2's outskirts)
+   Boss · big robot · ~12 min
+   **Boss: Lt. Brunt in the patched *HNS Title Shot*** (called off halfway). About level 21.
+4. **The plan** (aboard the *Low Profile*)
+   Set piece · on foot · ~5 min
+5. **Heist on Slipway Prime** (the gate hub, then the Scrapforge Division)
+   Small town + dungeon · on foot · ~35 min
+6. **Stealing the titan** (out through Slipway Prime's docks)
+   Set piece with fights · giant robot · ~10 min
+7. **The chase off Slipway Prime**
+   Boss · giant robot · ~15 min
+   **Boss: Lt. Calloway in the *Second Draft*.** About level 27.
+8. **Notes in the hatches** (back to Moon 1 and Moon 2)
+   Travel + 2 titan stages vs Hardfall garrisons · giant robot · ~25 min
+9. **The last lane**
+   Travel + set piece · giant robot · ~8 min
+10. **The Rim blockade**
+    Boss · giant robot · ~20 min
+    **Boss: Lt. Sorrell in the *HNS Riposte*** (Tilly works the edges). About level 32.
+11. **Into the Quiet: the *Supper's On*** (the dark ship)
+    Dungeon · on foot, ending at giant spaceship · ~20 min
+12. **Vane's last stand**, then the reveal (restricted)
+    Boss · giant spaceship · ~25 min
+    **Boss: Admiral Vane in the *HNS Magnificent*.** About level 35.
+
+**Art load, Act 2 (the heaviest act):**
+- **New areas (10, 4 of them mostly re-dressed):** Wobble Station, Moon 1, Moon 2, two jammer sites, the *Low Profile* cockpit (cutscenes only), Slipway Prime (gate and docks), the Scrapforge Division, the Rim blockade, the *Supper's On* (inside and out).
+- **New big models (7):** the *Low Profile*, the *Second Helping* (titan), the *Second Draft*, the *HNS Riposte* and its battleship, a gray Navy hull kit, the *Supper's On*, the *HNS Magnificent*.
+- **Reuse tricks, by flag:**
+  - **Moons:** Harrow's pieces with a new palette, signs and props. Low-res textures make palette swaps cheap.
+  - **Jammer sites:** the Old Relay Tower's mast pieces, re-dressed.
+  - **Titan stages:** big simple terrain, with the moon towns' own buildings shrunk down to toy size as props. No new buildings.
+  - **Slipway Prime (a whole shipyard world):** build one dock module (slipway, crane, half-built hull) and repeat it to the horizon. The heist is only three rooms (gate, dock walk, Scrapforge floor). The titan punch-out uses the same module from far back.
+  - **The Navy (blockade, *Magnificent*, Scrapforge hulls, Act 3 fleets):** the lore already says every Navy ship is mismatched hulls painted one gray. Build a kit of 6 to 8 hull chunks and kitbash every Navy ship from it, with one gray texture. The *Magnificent* is the biggest kitbash plus the greatcoat sail.
+  - **The Rim blockade:** only the lead battleship and the *Riposte* get detail. The "wall of gray hulls" behind them is the kitbash, mostly as silhouettes on a flat backdrop.
+  - **The *Supper's On*:** one build, two uses. Lights off, it's the beat 11 dungeon; lights on, it's the home base for the rest of the game.
+
 ### Act 3
-_Hours, locations, goals._
+**The team-up · about 3 hours · levels 35 → 45 · every scale, ending at god**
+
+Party: Red + any 2 of the five. Guests take a field spot for their own mission (approved).
+
+1. **The first to cross** (the *Supper's On*, at the Rim)
+   Home base + set piece · on foot · ~8 min
+   Brunt and Sorrell cross over.
+2. **The Admiral's encore** (the *Magnificent*'s wreck)
+   Set piece · giant spaceship · ~8 min
+   Vane crosses over.
+3. **Engineers and enlistments** (the *Supper's On*'s hold)
+   Home base: the refit · on foot · ~10 min
+   Calloway and Kasp cross over; machine upgrades fitted.
+4. **Tilly's price tag** (scouting run through the Rim blockade's wreck)
+   Dungeon · on foot · ~15 min
+   **Guest: Tilly**, with Ruo locked in.
+5. **Rallying the Marches** (Wobble Station, Moon 1, Moon 2, a pass over Harrow)
+   Travel + town revisits · on foot and giant spaceship · ~25 min
+   Last shops, side jobs, and the late side jobs for the ultimate weapons. About level 38.
+6. **Into the Quiet** (the fleet charge)
+   Set piece with fights · giant spaceship · ~15 min
+   **Guest: Vane.**
+7. **Every scale at once** (the Quiet)
+   Dungeon · on foot, big robot, giant robot, giant spaceship · ~35 min
+   **Guests: Brunt** (on foot, boarding), **Calloway** (Biscuit, in the holds), **Sorrell** (the titan, on the hulls). About level 42.
+8. **Otis gets loud**
+   Set piece · giant spaceship · ~5 min
+9. **Final battle, part 1**
+   Boss · giant spaceship · ~15 min
+   **Boss: the real enemy** (restricted). **Guest: Kasp.**
+10. **Red's choice and the finale**
+    Boss (continued) · every scale, ending at god · ~30 min
+    The whole team-up. About level 45. Staging is in the story bible's restricted section.
+11. **Coming home**
+    Set piece · giant spaceship · ~8 min
+12. **Lights out** (Harrow)
+    Set piece, ending · on foot · ~7 min
+
+**Art load, Act 3 (the lightest act to build):**
+- **New areas (2):** the Quiet (one multi-scale dungeon) and the finale arena.
+- **Revisits, re-dressed:** Harrow, Wobble Station, Moon 1, Moon 2 (lamps lit, fleet overhead); the blockade wreck (the Act 2 hull kit, broken up).
+- **New big models (1):** the real enemy. Variants only: the refit *Supper's On*, the rebuilt *Second Draft*, the Hushmaster bolted to the hull.
+- **Reuse tricks, by flag:**
+  - **The Quiet:** starless is the cheapest sky in the game: black, plus fog, radio hiss and lighting. Its rooms reuse the hull kit and the *Supper's On* pieces, re-lit.
+  - **Every scale at once and the finale:** every party machine and enemy model from Acts 1–2 comes back. The only new giant is the real enemy, and the Creative Director will cost it with Ross directly (it's twist material).
+  - **Guests:** only Brunt and Tilly fight on foot; the other four fight from machine stations. So only 2 former foes need on-foot battle animations.
+
+### Summary: hours and art load
+
+| Act | Hours | Levels | Towns | Dungeons | Bosses | New areas | New big models |
+|---|---|---|---|---|---|---|---|
+| 1 | ~3 | 1→15 | 1 | 3 | 4 | 6 (3 in slice) | 4 |
+| 2 | ~4 | 15→35 | 4 | 5 | 5 | 10 (4 re-dressed) | 7 |
+| 3 | ~3 | 35→45 | 0 new | 2 | 1 | 2 | 1 |
+| **Total** | **~10** | | **5** | **10** | **10** | **18** | **12** |
+
+- **Bosses by scale:** 4 on foot (Kasp, Tilly, Kasp Mk II, Tilly again), 2 big robot (Brunt twice), 2 giant robot (Calloway, Sorrell), 1 giant spaceship (Vane), 1 final that climbs every scale to god.
+- **3 of the 10 bosses are rematches** on a model you've already built. Unique boss rigs: 7.
+- **Where your art time goes:** Act 2 is about half of it (Slipway Prime, the Navy hull kit, the titan, the *Supper's On*). The hull kit pays for itself three times: Act 2's Navy, the blockade wreck, and the Quiet.
 
 ## Vertical slice scope
 _One town, one dungeon, one boss, three party members, the full battle system, about 30 minutes of story._
