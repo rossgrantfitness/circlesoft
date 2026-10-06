@@ -4,6 +4,7 @@
 
 ## 2026-10-06
 
+- **Pitch and Pillars approved. Relay rejected:** the battle system becomes standard turn-based JRPG with timed hits (Mario RPG style). Pitch and Pillar 3 updated. Creative Director removing Relay from the story bible and drafting the Battle system section; Technical Director reviews next. Taste Keeper scoring R19.
 - **Design doc: Core pitch and Pillars drafted.** Pillars: Always Bigger · Loud Crew, Big Heart · Classic, Not Clever. Sent to Ross.
 - **Story bible complete.** Ross approved the Glossary. Design doc started: Creative Director drafting Core pitch and Pillars. Taste Keeper scoring R18.
 - **New names applied** across the story bible. **Glossary drafted** (74 entries), the last story bible section. Sent to Ross.
