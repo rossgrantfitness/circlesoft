@@ -19,6 +19,7 @@
 |---|---|---|---|---|---|
 | M1-2 | PSX shader set: low internal resolution scaled up, nearest-neighbor filtering, vertex jitter/snapping, affine texture warping, dithering | Technical Artist | M1-1; style guide rendering rules | No | Shown to Ross in M1-5. |
 | M1-3 | Diorama camera test room: one placeholder room (floor + two back walls), fixed angle that slides with a placeholder Red, tall props fade, fade-to-black room change; plus a debug room with a cheat menu (jump to any room) | Gameplay Programmer | M1-1, M1-2 | No | Later tasks add their own cheats (start any fight, set level, give items, jump to floor). |
+| M1-3b | Demo start screen: title logo (placeholder), "Press Start", Start Demo / Quit, leads into the test room | UI Programmer | M1-1 | No (Ross: build it, show when playable) | |
 | M1-4 | Windows and Mac export of the test room, including the Mac signing step, so Ross can run it on his own computer | Gameplay Programmer | M1-3 | No | Technical Director reviews. If Mac signing needs Ross's account or a purchase, bring it to Ross as a decision. |
 | M1-5 | Pipeline test: one placeholder Red (low-poly blockout, rig, idle + run, PSX shader) all the way into the test room; write proposed locked poly and texture budgets and Ross's export checklist into the style guide | Technical Artist | M1-2, M1-3, M1-4 | **Yes** | Ross sees it in the M1-4 build. After approval the Producer updates the budgets in docs/art_requests.md. |
 
