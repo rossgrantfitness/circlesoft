@@ -44,6 +44,11 @@ enum Extra { NONE, WELDING_MASK, WRAP }
 @export_file("*.glb", "*.tscn") var model_path: String = ""
 ## Which clip of the model's AnimationPlayer loops while the NPC stands around.
 @export var idle_clip: StringName = &"idle"
+## Multiplies every material of the loaded model. The test room's dim blue ambient light would grey a
+## warm palette out (cream fur and ivory hats read lavender-gray), so the NPC materials are pushed warm
+## and a touch bright to land back on the painted colors. Fix it here, per model, not in the room's
+## lighting. White = off. An outsourced model that is already tuned for the room sets this to white.
+@export var light_compensation: Color = Color(1.28, 1.1, 0.86)
 ## How wide and tall the solid body is (a cylinder standing on the floor), so Red bumps into the
 ## character and not into thin air or a long way off.
 @export var collision_radius: float = 0.3
@@ -177,6 +182,7 @@ func _load_model(root: Node3D) -> bool:
 		return false
 	root.scale = Vector3.ONE * height_scale
 	root.add_child(_model)
+	_compensate_light(_model)
 	_model_head_top = _measure_head_top(root, _model)
 	for node: Node in _model.find_children("*", "AnimationPlayer", true, false):
 		_player = node as AnimationPlayer
@@ -188,6 +194,26 @@ func _load_model(root: Node3D) -> bool:
 	return true
 
 
+## Gives every mesh surface its own copy of the material with the tint multiplied by light_compensation.
+func _compensate_light(model: Node3D) -> void:
+	if light_compensation == Color.WHITE:
+		return
+	for node: Node in model.find_children("*", "MeshInstance3D", true, false):
+		var mesh_instance: MeshInstance3D = node as MeshInstance3D
+		if mesh_instance.mesh == null:
+			continue
+		for surface: int in mesh_instance.mesh.get_surface_count():
+			var source: ShaderMaterial = mesh_instance.mesh.surface_get_material(surface) as ShaderMaterial
+			if source == null:
+				continue
+			var copy: ShaderMaterial = source.duplicate() as ShaderMaterial
+			var tint: Variant = copy.get_shader_parameter("albedo_tint")
+			var base: Color = tint if tint is Color else Color.WHITE
+			copy.set_shader_parameter("albedo_tint", Color(base.r * light_compensation.r,
+					base.g * light_compensation.g, base.b * light_compensation.b, base.a))
+			mesh_instance.set_surface_override_material(surface, copy)
+
+
 ## Top of the model's body meshes (props excluded), in the Visual node's space at scale 1.
 func _measure_head_top(root: Node3D, model: Node3D) -> float:
 	var top: float = 0.0
@@ -197,7 +223,7 @@ func _measure_head_top(root: Node3D, model: Node3D) -> float:
 		if mesh_instance.mesh == null or String(mesh_instance.name).contains(PROP_MARK):
 			continue
 		var box: AABB = to_visual * mesh_instance.global_transform * mesh_instance.get_aabb()
-		top = maxf(top, box.end.y / maxf(height_scale, 0.0001))
+		top = maxf(top, box.end.y)
 	return top
 
 

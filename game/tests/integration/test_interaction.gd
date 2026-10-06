@@ -351,20 +351,26 @@ func test_npcs_are_solid_and_placed_clear_of_the_spawn_and_pillar() -> void:
 		assert_eq(body.collision_layer & 1, 1, path + " is solid to Red")
 
 
-func test_npc_placeholder_looks_differ_and_use_psx_materials() -> void:
+func test_npc_looks_differ_and_use_psx_materials() -> void:
 	_load_room()
-	var seen: Array[Color] = []
+	var seen: Array[String] = []
 	for path: String in ["Otis", "Mox", "OldZero"]:
 		var npc: Npc = _room.get_node(path) as Npc
-		var body: MeshInstance3D = npc.get_node("Visual/Body") as MeshInstance3D
-		var material: ShaderMaterial = body.material_override as ShaderMaterial
-		assert_not_null(material)
-		assert_true(material.shader.resource_path.begins_with("res://shaders/psx_"))
-		var tint: Color = material.get_shader_parameter("albedo_tint")
-		assert_does_not_have(seen, tint)
-		seen.append(tint)
-	assert_not_null(_room.get_node_or_null("Mox/Visual/WeldingMask"), "Mox has the welding mask block")
-	assert_not_null(_room.get_node_or_null("OldZero/Visual/Wrap"))
+		assert_not_null(npc.get_model(), path + " has a character model (placeholder blockout), not a capsule")
+		assert_does_not_have(seen, npc.model_path)
+		seen.append(npc.model_path)
+		var found: int = 0
+		for node: Node in npc.get_model().find_children("*", "MeshInstance3D", true, false):
+			var mesh_instance: MeshInstance3D = node as MeshInstance3D
+			for surface: int in mesh_instance.mesh.get_surface_count():
+				var material: ShaderMaterial = mesh_instance.get_active_material(surface) as ShaderMaterial
+				assert_not_null(material)
+				assert_true(material.shader.resource_path.begins_with("res://shaders/psx_"))
+				found += 1
+		assert_gt(found, 0, path + " has materials")
+	assert_not_null(_room.get_node_or_null("Mox/Visual").find_child("*_prop_wrench*", true, false), "Mox has his wrench")
+	assert_not_null(_room.get_node_or_null("Mox/Visual").find_child("*_prop_drone*", true, false), "and Tuesday")
+	assert_not_null(_room.get_node_or_null("Otis/Visual").find_child("*_prop_door*", true, false), "Otis has his door")
 
 
 # ---- menu and locks ----

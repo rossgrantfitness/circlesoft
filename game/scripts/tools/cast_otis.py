@@ -132,7 +132,7 @@ def build_body():
     pm.add("head", head_slot, "ell", center=tuple(HEAD_C), uv=head_uv_factory(SHEET, FACE, "fur", "gray"), seg=10, rings=6, radii=HEAD_R, deform=bean(HEAD_R))
     pm.tube("head", muzzle_slot, (0, MUZ_Y0, MUZ_Z), (0, MUZ_Y1, MUZ_Z), MUZ_RX, MUZ_RX * 0.9, seg=8, sxy=(1.0, MUZ_RZ / MUZ_RX),
             uv=muzzle_uv_factory(SHEET, FACE, "gray"), drop_caps=("start",), spin=22.5)
-    pm.add("head", SLOT_BODY, "ell", center=(0, 0.01, 1.14), uv=P("hat_gloss"), seg=10, rings=5, radii=(0.30, 0.27, 0.19))
+    pm.add("head", SLOT_BODY, "ell", center=(0, 0.01, 1.14), uv=P("hat_gloss"), seg=10, rings=5, radii=(0.30, 0.27, 0.23))
     pm.add("head", SLOT_BODY, "ell", center=(0, -0.02, 1.12), uv=P("hat"), seg=10, rings=3, radii=(0.37, 0.35, 0.035))
     pm.add("head", SLOT_BODY, "box", center=(0, -0.25, 1.24), uv=P("brass_gloss"), size=(0.13, 0.07, 0.08))
     pm.add("head", SLOT_BODY, "ell", center=(0, -0.29, 1.24), uv=SHEET.flat("glow"), seg=6, rings=3, radii=(0.04, 0.03, 0.04))

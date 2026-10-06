@@ -63,9 +63,9 @@
   "default_speaker": {"name": "", "accent": "chalk", "head_height": 1.0, "style": "bubble", "voice": true},
   "speakers": {
     "red": {"name": "Red", "accent": "#C8322A", "head_height": 1.0, "style": "bubble", "voice": false},
-    "otis": {"name": "Otis", "accent": "#E0782B", "head_height": 1.25, "style": "bubble", "voice": true},
-    "mox": {"name": "Mox", "accent": "#C9A23A", "head_height": 1.15, "style": "bubble", "voice": true},
-    "zero_old": {"name": "Old Zero", "accent": "#CBA878", "head_height": 1.0, "style": "bubble", "voice": true},
+    "otis": {"name": "Otis", "accent": "#E0782B", "head_height": 1.47, "style": "bubble", "voice": true},
+    "mox": {"name": "Mox", "accent": "#C9A23A", "head_height": 1.37, "style": "bubble", "voice": true},
+    "zero_old": {"name": "Old Zero", "accent": "#CBA878", "head_height": 1.16, "style": "bubble", "voice": true},
     "sign": {"name": "Sign", "accent": "#8D97A5", "head_height": 1.0, "style": "box", "voice": false},
     "narrator": {"name": "", "accent": "chalk", "head_height": 1.0, "style": "box", "voice": false}
   }
