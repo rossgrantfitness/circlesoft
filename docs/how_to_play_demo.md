@@ -24,7 +24,8 @@ This is a small test build. It has a title screen and one little test room where
 | Move Red | W A S D or the arrow keys | Left stick or d-pad |
 | Run | Hold **Shift** (let go to walk) | Hold **X** (the west button) |
 | Jump | **Space** | **A** |
-| Talk / interact in a room | E or Z | **B** |
+| Talk / examine / take (the icon over Red's head shows when you can) | E or Z | **B** |
+| Field menu (Items, Status, Config, Save, Close) | Tab or C | **Y** |
 | Confirm / pick a menu item | Enter, Z or E | A button |
 | Start / go back | Enter or Esc | Start button |
 | PSX options panel | **F1** | (keyboard only) |
