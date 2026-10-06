@@ -1,0 +1,78 @@
+{
+  "_about": "Sound effect ids. 'file' is what plays; swap in real audio by changing the path (keep loop false for one-shots). Everything here is a PLACEHOLDER tone built by scripts/tools/make_voice_syllables.py. See docs/audio_requests.md.",
+  "format_version": 1,
+  "sfx": {
+    "menu_tick": {
+      "file": "res://audio/sfx/placeholder/menu_tick.wav",
+      "bus": "SFX",
+      "volume_db": -8.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Cursor move. Crisp little click."
+    },
+    "menu_confirm": {
+      "file": "res://audio/sfx/placeholder/menu_confirm.wav",
+      "bus": "SFX",
+      "volume_db": -6.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Two quick rising notes."
+    },
+    "menu_back": {
+      "file": "res://audio/sfx/placeholder/menu_back.wav",
+      "bus": "SFX",
+      "volume_db": -6.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Two quick falling notes."
+    },
+    "bubble_open": {
+      "file": "res://audio/sfx/placeholder/bubble_open.wav",
+      "bus": "SFX",
+      "volume_db": -8.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Speech bubble pops open: soft rising bloop."
+    },
+    "bubble_next": {
+      "file": "res://audio/sfx/placeholder/bubble_next.wav",
+      "bus": "SFX",
+      "volume_db": -10.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Advance to the next bubble: tiny soft tick."
+    },
+    "item_get": {
+      "file": "res://audio/sfx/placeholder/item_get.wav",
+      "bus": "SFX",
+      "volume_db": -6.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Item picked up: four-note sparkle."
+    },
+    "red_thumbs_up": {
+      "file": "res://audio/sfx/placeholder/red_thumbs_up.wav",
+      "bus": "SFX",
+      "volume_db": -6.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Red's thumbs-up gesture: cloth swish into a happy boop."
+    },
+    "red_head_shake": {
+      "file": "res://audio/sfx/placeholder/red_head_shake.wav",
+      "bus": "SFX",
+      "volume_db": -6.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Red's head-shake gesture: two swishes with a low 'nuh-uh' boop."
+    }
+  }
+}

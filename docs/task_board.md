@@ -95,6 +95,7 @@
 ## In Progress
 | Task | Assigned to | Started | Notes |
 |---|---|---|---|
+| Red style prototypes A–E (static 3D, PSX turntables, in-game scale shots, contact sheet) per docs/red_style_prototypes.md | Technical Artist ×2 | 2026-10-06 | Ross's art-style gate; animation paused until he picks. |
 | Style guide (full draft): visual pillars, palette, proportions, PSX rendering rules, UI windows, fonts | Technical Artist (with Creative Director) | 2026-10-06 | References: Mega Man Legends, Tail Concerto, MGS1, FF7. Goes to Ross as M0-1. Must be approved before Ross's final art. |
 | Technical plan (docs/tech_plan.md) | Technical Director | 2026-10-06 | Feeds M1-1 (project skeleton) and all programming tasks. |
 | Set up the lights-left-on repository | Ross (GitHub clicks), then studio floor moves game files over | 2026-10-05 | Merge PR #1 → mark circlesoft as template → create lights-left-on from it. |

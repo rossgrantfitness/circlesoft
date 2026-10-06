@@ -242,7 +242,7 @@
       "rise_semitones": 6.0
     },
     "townsfolk": {
-      "note": "Generic villager: plain mid voice; pitch it up or down per NPC with the optional pitch_semitones.",
+      "note": "Generic villager: plain mid voice. Pitch it up or down per NPC with play_voice's optional third argument (semitones).",
       "timbre": "plain",
       "base_pitch_hz": 235.0,
       "pitch_range_semitones": 4.0,

@@ -15,6 +15,9 @@ const SPOT_START: Vector3 = Vector3(-1.0, 0.05, 0.5)
 const SPOT_WING: Vector3 = Vector3(10.5, 0.05, 0.5)
 const SPOT_PILLAR: Vector3 = Vector3(1.3, 0.05, -0.3)
 const SPOT_LAMP: Vector3 = Vector3(-3.0, 0.05, -2.0)
+const SPOT_CRATES: Vector3 = Vector3(0.9, 0.05, -1.0)
+const SPOT_LEDGE: Vector3 = Vector3(4.5, 0.05, -2.0)
+const SPOT_PLATFORM: Vector3 = Vector3(10.8, 0.05, 0.6)
 
 var _main: Node
 var _room: Node3D
@@ -38,6 +41,10 @@ func _initialize() -> void:
 
 	for effect: int in PsxLook.Effect.values():
 		PsxLook.set_effect(effect, false)
+	await _shot("08_jump_crates", SPOT_CRATES)
+	await _shot("09_jump_ledge", SPOT_LEDGE)
+	await _shot("10_jump_platform_and_prize", SPOT_PLATFORM)
+
 	await _shot("05_psx_effects_all_off", SPOT_START)
 	PsxLook.reset_effects()
 
