@@ -146,8 +146,8 @@ Recommendation: A. The PSX look is deliberately simple, and A means the game run
 - **Shops / inventory / equipment:** `Bag` (99 cap; key items kept separate and can't be sold or dropped), `Equipment` (owner lock; heavy armor for Otis only), `StatCalc` (base + growth + boosters + gear), `ShopLogic` (buy, sell at half price).
   - Reads: `items.json`, `equipment.json`, `shops.json`.
   - Tests: every item in the design doc's slice list, the Camp Stove working only at save lamps, charms blocking their status.
-- **Audio manager:** buses are Master, Music, SFX, UI and Blip. `play_music(id)` crossfades; `play_sfx(id)` uses a voice pool. A missing file plays silence and logs a warning, so missing audio never blocks the build.
-  - Reads: `audio_index.json`.
+- **Audio manager:** buses are Master, Music, SFX and Voice (as built). `play_sfx(id)` and `play_voice(speaker_id, char)` use small player pools; gibberish voices come from pitch-shifted syllable WAVs per timbre (scripts/audio/gibberish_voice.gd). `play_music(id)` with crossfade is still to come. A missing file plays silence and logs a warning, so missing audio never blocks the build.
+  - Reads: `data/audio/voices.json`, `data/audio/sfx.json` (music index to follow).
   - Tests: every sound id used in data exists in the index; volume settings map to the buses.
 - **Debug room** (debug builds only): warp to any room, start any encounter, set flags and level, give items.
 

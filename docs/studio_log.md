@@ -4,6 +4,7 @@
 
 ## 2026-10-06
 
+- **Gibberish voices built** (Audio Designer; 230 tests passing): 7 synthesized voices (Otis low hum, Mox high chirp, creaky old Zero, honking Kasp, prim bell-like Vela, smooth Ruo, plain townsfolk), deterministic letter-to-syllable "language", ? rises and ! punches, Red silent; placeholder UI and gesture SFX. Preview recordings for Ross being rendered.
 - **Jumpables in the test room** (Technical Artist): stackable crates, a ledge along the back wall, a raised wing platform with a gold prize crate; Red has jump/fall/land animations as a stand-in. Character animation now paused for Ross's style pick. Logged a minor timing-flaky movement test (B1).
 - **Run and jump built** (Gameplay Programmer; 192 tests passing): hold Shift/X to run, Space/A to jump, with coyote time, jump buffering and variable height; camera doesn't bob. **Test-room dialogue written** (Writer): 18 conversations for Otis, Mox, an old Zero, signs and examine texts.
 - **Art style gate (Ross):** 5 prototypes of Red, inspired by 1998–2002 games, stylized and timeless, before anyone animates. Animation paused; Creative Director defining the 5 directions, Technical Artist builds them as in-game 3D prototypes.
