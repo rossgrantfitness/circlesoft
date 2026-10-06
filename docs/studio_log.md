@@ -4,6 +4,7 @@
 
 ## 2026-10-06
 
+- **New names applied** across the story bible. **Glossary drafted** (74 entries), the last story bible section. Sent to Ross.
 - **Naming pass approved:** Relay Watch Zero, Hardfall Corps, Scrapforge Division, Slipway Prime, HNS ship prefix. Creative Director applying the names across the story bible and drafting the Glossary; Taste Keeper scoring R17.
 
 ## 2026-10-05
