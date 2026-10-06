@@ -785,7 +785,7 @@ Party: Red + any 2 of the five. Guests take a field spot for their own mission (
 **Ross's art list for the slice (41 assets).** The look: PSX style, Mega Man Legends, Tail Concerto, MGS1, FF7.
 1. Party models, rigged (3): Red, Otis (with door shield), Mox (with Tuesday).
 2. Weapon props (3): sword, hammer, wrench-mace; shop weapons are recolors.
-3. Portrait sets (6): Red, Otis, Mox ×5 expressions; Kasp + 2 key NPCs ×3 (21 images).
+3. Portrait sets (6): Red, Otis, Mox ×5 expressions; Kasp + 2 key NPCs ×3 (24 images).
 4. Enemy models (4): Signals grunt, Signals drone, 2 more (variants of those two save you work).
 5. Boss (2): Kasp; the Hushmaster rig (8 legs, dish, toppled state).
 6. Townsfolk models (4): old Zero, dockhand, Marchfolk, shopkeeper; recolored for crowds.
