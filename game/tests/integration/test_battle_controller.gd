@@ -680,3 +680,33 @@ func test_level_ups_land_in_the_report_and_game_state() -> void:
 	assert_has(red_record, "gains")
 	assert_has(red_record, "learned")
 	assert_eq(int(state.call("get_member", "red")["level"]), int(red_record["to"]))
+
+
+# ---- building a setup from the game's own state ----
+
+func test_setup_from_game_state_and_config() -> void:
+	var state: Node = own((load(GAME_STATE_SCRIPT) as GDScript).new() as Node) as Node
+	state.call("load_party", tree.root.get_node("DataDB").get_dict("party/party"))
+	state.call("reset")
+	var config: Node = own((load("res://scripts/core/config.gd") as GDScript).new() as Node) as Node
+	var setup: BattleSetup = BattleSetup.from_game_state(state, "grunt_pair", config, "party")
+	assert_eq(setup.encounter_id, "grunt_pair")
+	assert_eq(setup.first_turn, "party")
+	assert_eq(setup.party.size(), 3)
+	assert_eq(setup.party[0]["id"], "red")
+	assert_eq(setup.party[2]["id"], "mox")
+	assert_eq(int(setup.bag["ration_bar"]), int(state.call("item_count", "ration_bar")))
+	assert_true(setup.clock is RealClock, "the game plays on the real clock")
+	assert_true(setup.press_source is HumanPressSource)
+	assert_eq(setup.auto_timing, false)
+	assert_eq(setup.rng_seed, BattleSetup.RANDOM_SEED)
+	assert_true(setup.game_state == state)
+	config.set("auto_timing", true)
+	var auto_setup: BattleSetup = BattleSetup.from_game_state(state, "grunt_solo", config)
+	assert_true(auto_setup.auto_timing, "Config's Auto-Timing carries over")
+	var controller: BattleController = BattleController.create(setup)
+	var snap: Dictionary = controller.snapshot()
+	assert_eq((snap["combatants"] as Array).size(), 5)
+	var red: Dictionary = (snap["combatants"] as Array)[0]
+	assert_eq(int(red["hp"]), 42, "current HP comes from the state, not the max")
+	assert_eq(int(red["level"]), 3)
