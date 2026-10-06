@@ -50,5 +50,7 @@ Then wait. After Ross approves, the Producer logs it in docs/decisions.md with t
 - Current milestone: VERTICAL SLICE (one town, one dungeon, one boss, three party members, full battle system, ~30 min of story).
 - Anything beyond the slice goes in a "Later" list on the task board, not into the build.
 
-## Originality
-- Inspired by 90s JRPGs, never copying them. No names, characters, monsters, music, or story beats from existing games.
+## Borrow what works, transform it
+- Good artists copy, great artists steal. Take proven systems, mechanics, story shapes, character roles and the spirit of the games and shows we love, and curate them into a new combination. That combination, shaped by Ross's taste, is what makes the work original.
+- Always change the surface: no existing names, character or creature designs, logos, dialogue, music melodies, or ripped assets (art, sound, code). Same role and spirit; a new face, name and story.
+- Watch the stacking: one borrowed role or beat is fine; a character or scene that matches one specific original in role, look, catchphrase and exact plot moments all at once is a copy, not a transformation. Change the details until it's ours.
