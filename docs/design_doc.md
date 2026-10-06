@@ -87,7 +87,7 @@ LIGHTS LEFT ON is a classic 90s JRPG hero's journey. Ten years ago Red's mom fle
 - **Examine:** a line of text, and sometimes a crew member comments (Mox asks the questions, Otis answers them).
 - **Pick up:** items glint. A box says what you got.
 - **Doors:** walk into a door to go through. Locked doors tell you what they need ("Signals access only").
-- **The lamp check (rest and save):** at Red's home window and at inns (full heal + save), and at save lamps (save only; use a Camp Stove there to rest). She lights the brass lamp, taps the glass twice and gives the sky a thumbs-up, then the save screen opens. Full length the first time each session, a short version after that; one press skips it.
+- **The lamp check (rest and save):** at Red's home window (free full heal + save) and at inns (full heal + save, for a small fee), and at save lamps (save only; use a Camp Stove there to rest). She lights the brass lamp, taps the glass twice and gives the sky a thumbs-up, then the save screen opens. Full length the first time each session, a short version after that; one press skips it.
 
 ### Cutscenes
 - **Long, and plenty of them** (Ross's call), played **in-engine** with the same chibi models as the field. Camera moves, close-ups and wide shots are staged like a movie.
@@ -313,7 +313,7 @@ Seven stats, plain names, shown as numbers on the status screen.
 ### Notes
 - **No new mechanics.** Everything here is standard FF7–9-style gear and items with our own names. No gear ever changes Clutch timing (approved rule: timing stays the player's skill).
 - **Weapon types (studio's call under Ross's "appropriate fantasy weapons"):** Red a **sword** (Ross), Otis a **hammer** (door shield kept), Mox a **wrench-mace**, Vela a **staff with a rubber stamp for a head**, Ruo **twin knives** (flare pistols kept for Ten Out of Ten). Each keeps the item already in their approved look. *Alternative Ross can swap to any time:* axe / crossbow / plain healer's rod / pistol-sabre (more textbook fantasy).
-- **Save lamps save; they don't heal.** Resting means using a Camp Stove at a save lamp (the classic FF7–9 pattern). Red's home window and inns heal for free.
+- **Save lamps save; they don't heal.** Resting means using a Camp Stove at a save lamp (the classic FF7–9 pattern). Red's home window heals for free; inns heal for a small fee in credits (see Economy).
 
 ### The basics
 - **One shared bag.** Up to 99 of each item, no weight limits. Key items get their own tab and can't be sold or dropped.
@@ -491,7 +491,35 @@ No crafting and no slots. Each part is a one-time find, and Mox fits it in the h
 - Rough full-game counts: about 35 weapons (7 per character), about 15 armor, about 17 charms, about 35 items, about 16 machine parts.
 
 ## Economy
-_Gold sources and sinks, shop pricing, rewards curve._
+> 🟡 DRAFT: awaiting Ross's approval
+
+**No new mechanics.** This is the classic FF7–9 money loop with nothing added.
+
+### Money
+- **Credits** are the only currency.
+- **Where they come from:** battles, crates, courier side jobs, and selling.
+- **What they're for:** gear, items, machine upgrades (from Act 2 on) and inn stays (a small fee; Red's home stays free).
+
+### Shops
+- **General store:** heals, Juice, revives, cures, Camp Stoves, throwables.
+- **Gear shop:** weapons, armor, charms.
+- **Dock shop (Act 2 on):** machine parts, plus the basics.
+- Each new town's shops sell the next tier up, and prices rise with the tier.
+- **Sell anything except key items for half price.**
+
+### Pacing targets
+- You can afford the next weapon tier about once per town.
+- Never forced to grind: fighting most of the visible enemies (the same rule as XP) pays for the main path. Side jobs and selling pay for the extras.
+- Healing items always stay cheap. Nobody is ever too broke to heal.
+- The best gear comes from crates and side jobs, so exploring pays off.
+- **Slice target:** about 1,500 credits by the Kasp fight. That's enough for the three shop weapons plus a pocketful of Ration Bars, but not every vest as well, so the player makes one real choice.
+
+### Balance lives in data
+All prices, drops, crate contents and side-job pay go in game/data/. The battle simulator checks that the credits you earn keep up with the price curve.
+
+### Vertical slice needs vs Later
+**In the slice:** credits from battles, crates and one or two side jobs; the general store and gear shop; selling for half price.
+**Later:** inns, dock shops and machine parts, higher tiers, the Tip Jar charm.
 
 ## Menus
 _Main menu, field menu, battle menu, shops, inventory, status screens._
