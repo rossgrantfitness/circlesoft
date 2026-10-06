@@ -73,6 +73,168 @@
       "loop": false,
       "placeholder": true,
       "note": "Red's head-shake gesture: two swishes with a low 'nuh-uh' boop."
+    },
+    "battle_ding": {
+      "file": "res://audio/sfx/placeholder/battle_ding.wav",
+      "bus": "SFX",
+      "volume_db": -3.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "THE Clutch cue. Very short, sharp and bright; peak inside the first ~10 ms so the press never feels late."
+    },
+    "battle_hit": {
+      "file": "res://audio/sfx/placeholder/battle_hit.wav",
+      "bus": "SFX",
+      "volume_db": -6.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Basic hit: a chunky cartoon thump with a noisy crack."
+    },
+    "battle_hit_big": {
+      "file": "res://audio/sfx/placeholder/battle_hit_big.wav",
+      "bus": "SFX",
+      "volume_db": -4.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Big hit: heavier, longer thump and clank for boss and big-attack damage."
+    },
+    "battle_rating_nice": {
+      "file": "res://audio/sfx/placeholder/battle_rating_nice.wav",
+      "bus": "SFX",
+      "volume_db": -9.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Nice!: two small bright bell notes rising. Quietest of the three ratings."
+    },
+    "battle_rating_rad": {
+      "file": "res://audio/sfx/placeholder/battle_rating_rad.wav",
+      "bus": "SFX",
+      "volume_db": -6.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Rad!: a quick rising three-note arpeggio with sparkle. Louder and fuller than Nice."
+    },
+    "battle_rating_totally_rad": {
+      "file": "res://audio/sfx/placeholder/battle_rating_totally_rad.wav",
+      "bus": "SFX",
+      "volume_db": 0.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "TOTALLY RAD!: loudest sound in a fight. Big rising run, stacked chord, crash splash, zip and boom."
+    },
+    "battle_block": {
+      "file": "res://audio/sfx/placeholder/battle_block.wav",
+      "bus": "SFX",
+      "volume_db": -6.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Blocked!: a solid metal clank."
+    },
+    "battle_perfect_block": {
+      "file": "res://audio/sfx/placeholder/battle_perfect_block.wav",
+      "bus": "SFX",
+      "volume_db": -4.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Perfect Block!: a ringing clank that sustains with a bright ting."
+    },
+    "battle_payback": {
+      "file": "res://audio/sfx/placeholder/battle_payback.wav",
+      "bus": "SFX",
+      "volume_db": -3.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Payback!: perfect-block ring, a whoosh, then a punchy counter-hit."
+    },
+    "battle_ko": {
+      "file": "res://audio/sfx/placeholder/battle_ko.wav",
+      "bus": "SFX",
+      "volume_db": -2.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "K.O. freeze-frame slam: huge boom, crash and a rumbling tail (~1.5 s)."
+    },
+    "battle_down": {
+      "file": "res://audio/sfx/placeholder/battle_down.wav",
+      "bus": "SFX",
+      "volume_db": -5.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Down for the Count: a goofy descending bwomp, wobble and dull thud."
+    },
+    "battle_flee": {
+      "file": "res://audio/sfx/placeholder/battle_flee.wav",
+      "bus": "SFX",
+      "volume_db": -6.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Run away: comic scramble of quick footsteps speeding up, a zip and a puff."
+    },
+    "battle_heal": {
+      "file": "res://audio/sfx/placeholder/battle_heal.wav",
+      "bus": "SFX",
+      "volume_db": -7.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Heal: soft rising sparkles over a warm shimmer."
+    },
+    "battle_static_in": {
+      "file": "res://audio/sfx/placeholder/battle_static_in.wav",
+      "bus": "SFX",
+      "volume_db": -5.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Fight starts: radio static sweeping up into a sharp snap."
+    },
+    "battle_static_out": {
+      "file": "res://audio/sfx/placeholder/battle_static_out.wav",
+      "bus": "SFX",
+      "volume_db": -5.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Fight ends: a thump then radio static whooshing away."
+    },
+    "battle_victory": {
+      "file": "res://audio/sfx/placeholder/battle_victory.wav",
+      "bus": "SFX",
+      "volume_db": -4.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Victory jingle (~2 s): original rising arpeggio, little turn, big held C chord with a cymbal."
+    },
+    "battle_game_over": {
+      "file": "res://audio/sfx/placeholder/battle_game_over.wav",
+      "bus": "SFX",
+      "volume_db": -5.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Game over: four sagging 'wah' notes and a long comic droop. Deflated, not grim."
+    },
+    "battle_menu_open": {
+      "file": "res://audio/sfx/placeholder/battle_menu_open.wav",
+      "bus": "SFX",
+      "volume_db": -9.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Battle command menu opens: tiny bright rising chirp."
     }
   }
 }

@@ -355,7 +355,7 @@ def make_victory(rng):
     """~2 s original jingle in C major: a rising G arpeggio, a little turn, then a big held C chord.
     Pulse-wave lead, triangle-ish bass, snare-and-cymbal hits. Roughly 140 BPM."""
     beat = 60.0 / 140.0
-    n = n_of(2.3)
+    n = n_of(2.1)
     x = np.zeros(n)
 
     def lead(midi, start, beats, gain=1.0):
@@ -373,17 +373,17 @@ def make_victory(rng):
     for midi, b0, ln in melody:
         lead(midi, b0 * beat, ln)
     final_start = 3.0 * beat
-    final_n = n_of(1.3)
+    final_n = n_of(0.8)
     chord = np.zeros(final_n)
     for m in (72, 76, 79, 84):  # C5 E5 G5 C6
         chord += pulse(hz(m), final_n) * 0.5 + osc(hz(m), final_n, ((1, 1.0), (2, 0.3))) * 0.3
-    x = place(x, final_start, chord * env_adsr(final_n, 0.003, 0.5, 0.28), 0.9)
+    x = place(x, final_start, chord * env_adsr(final_n, 0.003, 0.3, 0.18), 0.9)
     for i, m in enumerate((48, 52, 55)):  # bass walk C3 E3 G3 into C2 landing
         bass_n = n_of(0.3)
         x = place(x, i * 2 * beat * 0.5 + 0.0, osc(hz(m - 12), bass_n, ((1, 1.0), (3, 0.1))) * env_exp(bass_n, 0.15, 0.002), 0.7)
-    land_n = n_of(1.2)
-    x = place(x, final_start, osc(hz(36), land_n, ((1, 1.0), (2, 0.2))) * env_adsr(land_n, 0.003, 0.4, 0.3), 0.9)
-    x = place(x, final_start, burst(rng, n_of(1.1), 5000, 17000, 0.4), 0.7)    # cymbal
+    land_n = n_of(0.8)
+    x = place(x, final_start, osc(hz(36), land_n, ((1, 1.0), (2, 0.2))) * env_adsr(land_n, 0.003, 0.3, 0.2), 0.9)
+    x = place(x, final_start, burst(rng, n_of(0.8), 5000, 17000, 0.25), 0.7)    # cymbal
     x = place(x, final_start, burst(rng, n_of(0.2), 300, 6000, 0.06), 0.9)      # snare crack
     for b in (0.0, 1.0, 2.0):
         x = place(x, b * beat, thump(n_of(0.15), 150, 60, 0.05), 0.7)             # kick
