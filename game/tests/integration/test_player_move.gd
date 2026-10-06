@@ -19,7 +19,7 @@ func before_each() -> void:
 
 
 func after_each() -> void:
-	for action: StringName in [&"move_left", &"move_right", &"move_up", &"move_down", &"run"]:
+	for action: StringName in [&"move_left", &"move_right", &"move_up", &"move_down", &"run", &"walk"]:
 		Input.action_release(action)
 
 
@@ -96,6 +96,41 @@ func test_walk_speed_on_a_light_tilt_and_run_button_overrides() -> void:
 	_player.run_held = true
 	await _ticks(3)
 	assert_almost_eq(_flat_speed(), _tuning.run_speed, SPEED_TOLERANCE, "run button runs even on a light tilt")
+
+
+func test_walk_action_exists_and_is_shift_on_keyboard() -> void:
+	assert_true(InputMap.has_action("walk"))
+	var has_shift: bool = false
+	for event: InputEvent in InputMap.action_get_events("walk"):
+		var key: InputEventKey = event as InputEventKey
+		if key != null and key.physical_keycode == KEY_SHIFT:
+			has_shift = true
+	assert_true(has_shift, "Shift walks on a keyboard")
+	for event: InputEvent in InputMap.action_get_events("run"):
+		var key: InputEventKey = event as InputEventKey
+		assert_true(key == null or key.physical_keycode != KEY_SHIFT, "Shift no longer runs")
+
+
+func test_keyboard_runs_by_default_and_walks_while_walk_is_held() -> void:
+	_make_world(0.0, false)
+	_player.read_engine_input = true
+	Input.action_press(&"move_up")
+	await _ticks(10)
+	assert_almost_eq(_flat_speed(), _tuning.run_speed, SPEED_TOLERANCE, "a keyboard (full tilt) runs")
+	Input.action_press(&"walk")
+	await _ticks(3)
+	assert_almost_eq(_flat_speed(), _tuning.walk_speed, SPEED_TOLERANCE, "holding walk walks")
+	assert_false(_player.is_running())
+	Input.action_release(&"walk")
+	await _ticks(3)
+	assert_almost_eq(_flat_speed(), _tuning.run_speed, SPEED_TOLERANCE, "letting go runs again")
+
+
+func test_walk_wins_over_run_and_full_tilt() -> void:
+	assert_false(PlayerMotion.is_running(Vector2(0, -1), true, 0.85, true))
+	assert_true(PlayerMotion.is_running(Vector2(0, -1), false, 0.85, false))
+	assert_almost_eq(PlayerMotion.target_speed(Vector2(0, -1), true, 2.4, 4.8, 0.85, true), 2.4, 0.0001)
+	assert_almost_eq(PlayerMotion.target_speed(Vector2(0, -1), false, 2.4, 4.8, 0.85), 4.8, 0.0001)
 
 
 func test_distance_travelled_matches_speed() -> void:

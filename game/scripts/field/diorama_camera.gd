@@ -13,6 +13,9 @@ extends Node3D
 
 enum ProjectionMode { PERSPECTIVE, ORTHOGRAPHIC }
 
+## Every rig joins this group so the debug overlay can find the active one.
+const GROUP_NAME: StringName = &"diorama_camera"
+
 @export_group("Room look")
 ## Degrees looking down (style guide: about 40 to 45).
 @export var pitch_deg: float = 42.0
@@ -44,6 +47,7 @@ var _bounds: AABB = AABB()
 
 
 func _ready() -> void:
+	add_to_group(GROUP_NAME)
 	top_level = true
 	_camera = get_node_or_null("Camera3D") as Camera3D
 	if _camera == null:

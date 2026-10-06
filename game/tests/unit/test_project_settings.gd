@@ -4,6 +4,10 @@ extends TestCase
 const REQUIRED_ACTIONS: Array[String] = [
 	"move_up", "move_down", "move_left", "move_right", "run", "confirm", "cancel", "menu", "start",
 ]
+## Keyboard players run by default and hold Shift (walk) to walk, so `run` is gamepad-only and
+## `walk` is keyboard-only (a gamepad walks with a light stick tilt).
+const GAMEPAD_ONLY_ACTIONS: Array[String] = ["run"]
+const KEYBOARD_ONLY_ACTIONS: Array[String] = ["walk"]
 const DEBUG_ACTIONS: Array[String] = [
 	"debug_overlay", "debug_jitter", "debug_warp", "debug_dither", "debug_color_depth", "debug_fog",
 	"debug_vertex_lighting", "debug_resolution", "debug_camera_mode", "debug_free_camera",
@@ -72,13 +76,15 @@ func test_importer_defaults_are_lossless_without_mipmaps() -> void:
 func test_input_actions_exist_with_keyboard_and_gamepad() -> void:
 	var all_actions: Array[String] = REQUIRED_ACTIONS.duplicate()
 	all_actions.append_array(DEBUG_ACTIONS)
+	all_actions.append_array(KEYBOARD_ONLY_ACTIONS)
 	for action: String in all_actions:
 		assert_true(InputMap.has_action(action), "missing action " + action)
 		var has_key: bool = false
 		for event: InputEvent in InputMap.action_get_events(action):
 			if event is InputEventKey:
 				has_key = true
-		assert_true(has_key, "no keyboard binding for " + action)
+		if not GAMEPAD_ONLY_ACTIONS.has(action):
+			assert_true(has_key, "no keyboard binding for " + action)
 	for action: String in REQUIRED_ACTIONS:
 		var has_pad: bool = false
 		for event: InputEvent in InputMap.action_get_events(action):

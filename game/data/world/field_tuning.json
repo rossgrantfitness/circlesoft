@@ -12,7 +12,11 @@
   "camera": {
     "smoothing": 6.0,
     "safe_frame_margin": 0.2,
-    "cutscene_blend_s": 0.6
+    "cutscene_blend_s": 0.6,
+    "debug_fov_options": [
+      30.0,
+      45.0
+    ]
   },
   "prop_fade": {
     "occluder_radius": 0.4,

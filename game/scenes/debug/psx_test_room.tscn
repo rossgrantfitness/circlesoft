@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3]
+[gd_scene load_steps=37 format=3]
 
 [ext_resource type="Script" path="res://scripts/core/psx_room_look.gd" id="1_look"]
 [ext_resource type="Shader" path="res://shaders/psx_lit.gdshader" id="2_lit"]
@@ -8,6 +8,10 @@
 [ext_resource type="Texture2D" path="res://art/placeholder/textures/checker_128.png" id="8_tex128"]
 [ext_resource type="Texture2D" path="res://art/placeholder/textures/checker_256.png" id="6_tex256"]
 [ext_resource type="Texture2D" path="res://art/placeholder/textures/wall_128.png" id="7_wall"]
+[ext_resource type="Script" path="res://scripts/field/diorama_camera.gd" id="9_camera"]
+[ext_resource type="Script" path="res://scripts/field/camera_bounds.gd" id="10_bounds"]
+[ext_resource type="Script" path="res://scripts/field/field_room.gd" id="11_room"]
+[ext_resource type="PackedScene" path="res://scenes/actors/player.tscn" id="12_player"]
 
 [sub_resource type="Environment" id="Environment_room"]
 background_mode = 1
@@ -110,10 +114,18 @@ size = Vector3(18, 3, 0.2)
 [sub_resource type="BoxShape3D" id="Box_wall_left"]
 size = Vector3(0.2, 3, 8)
 
+[sub_resource type="BoxShape3D" id="Box_wall_front"]
+size = Vector3(18, 3, 0.2)
+
+[sub_resource type="BoxShape3D" id="Box_wall_right"]
+size = Vector3(0.2, 3, 8)
+
 [sub_resource type="BoxShape3D" id="Box_pillar"]
 size = Vector3(0.8, 4, 0.8)
 
 [node name="PsxTestRoom" type="Node3D"]
+script = ExtResource("11_room")
+player_scene = ExtResource("12_player")
 
 [node name="RoomLook" type="Node" parent="."]
 script = ExtResource("1_look")
@@ -195,6 +207,14 @@ shape = SubResource("Box_wall_back")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1, 1.5, 0)
 shape = SubResource("Box_wall_left")
 
+[node name="FrontBarrierShape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1.5, 4.1)
+shape = SubResource("Box_wall_front")
+
+[node name="RightBarrierShape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.1, 1.5, 0)
+shape = SubResource("Box_wall_right")
+
 [node name="PillarShape" type="CollisionShape3D" parent="Collision"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, 2, 0.9)
 shape = SubResource("Box_pillar")
@@ -202,11 +222,14 @@ shape = SubResource("Box_pillar")
 [node name="PlayerSpawn" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 0.5)
 
-[node name="CameraRig" type="Node3D" parent="."]
+[node name="CameraBounds" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0)
+script = ExtResource("10_bounds")
+size = Vector3(13.8, 0, 5)
 
-[node name="Camera3D" type="Camera3D" parent="CameraRig"]
-transform = Transform3D(0.819152, -0.383798, 0.42625, 0, 0.743145, 0.669131, -0.573576, -0.54812, 0.608749, 3.97, 7.5, 5.9)
-fov = 30.0
-near = 0.5
-far = 60.0
-current = true
+[node name="CameraRig" type="Node3D" parent="."]
+script = ExtResource("9_camera")
+pitch_deg = 42.0
+yaw_deg = 35.0
+fov_deg = 30.0
+distance = 11.0

@@ -32,15 +32,19 @@ static func camera_relative_direction(stick: Vector2, cam_basis: Basis) -> Vecto
 
 
 ## Run when the run button is held or the stick is tilted all the way; otherwise walk.
-static func is_running(stick: Vector2, run_held: bool, run_threshold: float) -> bool:
+## Holding walk (Shift on a keyboard) always walks, so a keyboard, which only tilts all the way,
+## runs by default and walks while Shift is down.
+static func is_running(stick: Vector2, run_held: bool, run_threshold: float, walk_held: bool = false) -> bool:
+	if walk_held:
+		return false
 	return run_held or stick.length() >= run_threshold
 
 
 static func target_speed(stick: Vector2, run_held: bool, walk_speed: float, run_speed: float,
-		run_threshold: float) -> float:
+		run_threshold: float, walk_held: bool = false) -> float:
 	if stick.length() < MIN_FLAT_LENGTH:
 		return 0.0
-	return run_speed if is_running(stick, run_held, run_threshold) else walk_speed
+	return run_speed if is_running(stick, run_held, run_threshold, walk_held) else walk_speed
 
 
 ## Yaw (radians, around Y) that turns a model facing +Z toward `direction`.

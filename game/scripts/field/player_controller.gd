@@ -16,6 +16,7 @@ const ACTION_RIGHT: StringName = &"move_right"
 const ACTION_UP: StringName = &"move_up"
 const ACTION_DOWN: StringName = &"move_down"
 const ACTION_RUN: StringName = &"run"
+const ACTION_WALK: StringName = &"walk"
 const GRAVITY_SETTING: String = "physics/3d/default_gravity"
 const NODE_VISUAL: NodePath = ^"Visual"
 const NODE_PLACEHOLDER: NodePath = ^"Visual/PlaceholderCapsule"
@@ -31,6 +32,8 @@ signal moved_state_changed(moving: bool, running: bool)
 ## read_engine_input is off.
 var stick: Vector2 = Vector2.ZERO
 var run_held: bool = false
+## Walk button (Shift on a keyboard): walk even at full tilt. Wins over run.
+var walk_held: bool = false
 ## The room camera that movement is relative to. Falls back to the viewport's current camera.
 var camera: Camera3D = null
 
@@ -58,6 +61,7 @@ func _physics_process(delta: float) -> void:
 	if read_engine_input:
 		stick = Input.get_vector(ACTION_LEFT, ACTION_RIGHT, ACTION_UP, ACTION_DOWN)
 		run_held = Input.is_action_pressed(ACTION_RUN)
+		walk_held = Input.is_action_pressed(ACTION_WALK)
 	step(delta)
 
 
@@ -92,9 +96,9 @@ func step(delta: float) -> void:
 	var live_stick: Vector2 = Vector2.ZERO if frozen else stick
 	var direction: Vector3 = PlayerMotion.camera_relative_direction(live_stick, cam_basis)
 	var speed: float = PlayerMotion.target_speed(live_stick, run_held, _tuning.walk_speed, _tuning.run_speed,
-			_tuning.stick_run_threshold)
+			_tuning.stick_run_threshold, walk_held)
 	var now_moving: bool = speed > 0.0
-	var now_running: bool = now_moving and PlayerMotion.is_running(live_stick, run_held, _tuning.stick_run_threshold)
+	var now_running: bool = now_moving and PlayerMotion.is_running(live_stick, run_held, _tuning.stick_run_threshold, walk_held)
 
 	velocity.x = direction.x * speed
 	velocity.z = direction.z * speed

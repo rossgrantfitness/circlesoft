@@ -1,0 +1,12 @@
+{
+  "title": "LIGHTS LEFT ON",
+  "title_lit_word": "ON",
+  "demo_tag": "DEMO",
+  "press_start": "PRESS START",
+  "credit": "a Circlesoft game",
+  "version": "v0.1.0",
+  "menu": [
+    {"id": "start_demo", "label": "START DEMO"},
+    {"id": "quit", "label": "QUIT"}
+  ]
+}

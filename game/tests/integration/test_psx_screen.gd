@@ -120,6 +120,7 @@ func test_display_scale_matches_layout_in_the_scene() -> void:
 func test_main_scene_is_the_project_main_scene_and_loads_the_test_room() -> void:
 	assert_eq(ProjectSettings.get_setting("application/run/main_scene"), MAIN_SCENE)
 	var main: Node = (load(MAIN_SCENE) as PackedScene).instantiate()
+	main.set("show_title", false)  # the title-first flow is tested in test_main_flow.gd
 	add_to_root(main)
 	var screen: PsxScreen = main.get_node("PsxScreen") as PsxScreen
 	assert_not_null(screen)

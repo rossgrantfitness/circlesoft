@@ -59,7 +59,7 @@ func test_room_has_the_plug_in_points() -> void:
 	var room: Node3D = _room()
 	assert_true(room.get_node_or_null("PlayerSpawn") is Marker3D, "PlayerSpawn marker")
 	assert_true(room.get_node_or_null("CameraRig") is Node3D, "CameraRig node")
-	assert_true(room.get_node_or_null("CameraRig/Camera3D") is Camera3D, "placeholder camera")
+	assert_true(room.get_node_or_null("CameraRig") is DioramaCamera, "diorama camera rig (it makes its own Camera3D at runtime)")
 	assert_true(room.get_node_or_null("WorldEnvironment") is WorldEnvironment)
 	assert_true(room.get_node_or_null("RoomLook") is PsxRoomLook, "fog settings")
 

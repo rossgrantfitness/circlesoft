@@ -4,15 +4,16 @@ extends Node
 ##
 ## Props opt in by joining the group "fade_occluder". Each frame the fader checks the line from
 ## the target to the camera against every such prop's bounding box (grown by the occluder radius so
-## Red's width counts), then eases each prop's `fade_amount` shader parameter toward the faded or
+## Red's width counts), then eases each prop's `fade` shader instance parameter toward the faded or
 ## solid value. Works the same in perspective and orthographic.
 ##
-## Shader contract (the psx_fade shader): `uniform float fade_amount` where 0 = solid and
-## 1 = fully dithered away. This script only depends on that parameter name.
-## Materials are copied per prop the first time they fade, so shared materials are never touched.
+## Shader contract (the psx_fade shader): `instance uniform float fade`, where 1 = solid and
+## 0 = gone (dithered away). It is a per-instance parameter, so the fader sets it on each
+## MeshInstance3D with set_instance_shader_parameter() and never touches the (shared) materials.
+## Internally the fader thinks in "fade amount" (0 = solid .. 1 = gone) and writes fade = 1 - amount.
 
 const OCCLUDER_GROUP: StringName = &"fade_occluder"
-const FADE_PARAM: StringName = &"fade_amount"
+const FADE_PARAM: StringName = &"fade"
 const SOLID: float = 0.0
 
 @export var auto_update: bool = true
@@ -25,8 +26,8 @@ var target_anchor_height: float = 0.5
 var _tuning: FieldTuning = FieldTuning.new()
 ## prop instance id -> current fade amount
 var _fade: Dictionary[int, float] = {}
-## prop instance id -> Array of ShaderMaterial copies being driven
-var _materials: Dictionary[int, Array] = {}
+## prop instance id -> the MeshInstance3D nodes under it that get the instance parameter
+var _meshes: Dictionary[int, Array] = {}
 
 
 func _ready() -> void:
@@ -68,8 +69,8 @@ func update_fades(delta: float) -> void:
 		var blocked: bool = is_occluding(from, to, world_bounds(prop), _tuning.fade_occluder_radius)
 		var id: int = prop.get_instance_id()
 		var current: float = _fade.get(id, SOLID)
-		if blocked and not _materials.has(id):
-			_materials[id] = _prepare_materials(prop)
+		if not _meshes.has(id):
+			_meshes[id] = _find_meshes(prop)
 		var next: float = step_fade(current, blocked, delta, _tuning.fade_out_per_s, _tuning.fade_in_per_s,
 				_tuning.fade_max_amount)
 		if not is_equal_approx(next, current) or not _fade.has(id):
@@ -123,31 +124,27 @@ static func world_bounds(prop: Node3D) -> AABB:
 	return result
 
 
-# ---- materials ----
+# ---- applying ----
 
-func _prepare_materials(prop: Node3D) -> Array:
-	var copies: Array[ShaderMaterial] = []
+## The solid-is-1 value the shader wants for a fade amount.
+static func shader_value(amount: float) -> float:
+	return 1.0 - amount
+
+
+func _find_meshes(prop: Node3D) -> Array:
+	var found: Array[MeshInstance3D] = []
 	var stack: Array[Node] = [prop]
 	while not stack.is_empty():
 		var node: Node = stack.pop_back()
 		stack.append_array(node.get_children())
 		var mesh_instance: MeshInstance3D = node as MeshInstance3D
-		if mesh_instance == null or mesh_instance.mesh == null:
-			continue
-		for surface: int in mesh_instance.mesh.get_surface_count():
-			var source: Material = mesh_instance.get_active_material(surface)
-			var shader_material: ShaderMaterial = source as ShaderMaterial
-			if shader_material == null:
-				continue
-			var copy: ShaderMaterial = shader_material.duplicate() as ShaderMaterial
-			mesh_instance.set_surface_override_material(surface, copy)
-			copies.append(copy)
-	return copies
+		if mesh_instance != null:
+			found.append(mesh_instance)
+	return found
 
 
 func _apply(id: int, amount: float) -> void:
-	var copies: Array = _materials.get(id, [])
-	for entry: Variant in copies:
-		var shader_material: ShaderMaterial = entry as ShaderMaterial
-		if shader_material != null:
-			shader_material.set_shader_parameter(FADE_PARAM, amount)
+	for entry: Variant in _meshes.get(id, []):
+		var mesh_instance: MeshInstance3D = entry as MeshInstance3D
+		if is_instance_valid(mesh_instance):
+			mesh_instance.set_instance_shader_parameter(FADE_PARAM, shader_value(amount))
