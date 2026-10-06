@@ -21,6 +21,7 @@ Then wait. After Ross approves, the Producer logs it in docs/decisions.md with t
 - Short status reports: what got done, what's next, what's blocked, what needs his approval.
 - Never bury a decision inside a long report. Decisions go at the top.
 - Document work as it happens and show it to Ross while it's in progress: keep docs/studio_log.md current (newest at the top) and share work-in-progress files, not just finished results.
+- Once there's something on screen, share screenshots of visual progress now and then (only when there's something new or relevant to see), saved under docs/screenshots/.
 
 ## Ross's Playbook and autonomy
 - docs/ross_playbook.md records Ross's taste: his decisions, his feedback in his own words, and the principles distilled from them. Every agent reads its Principles before any creative or design work.

@@ -5,6 +5,7 @@
 
 | Date | Decision | Options considered | Why |
 |---|---|---|---|
+| 2026-10-06 | **Studio rule:** share screenshots of visual progress now and then, only when relevant (added to CLAUDE.md; saved under docs/screenshots/). | (Direct instruction from Ross) | "provide intermittent screenshots occasionally so I can see what you're doing - only if relevant" |
 | 2026-10-06 | **Level 1 small call (Game design & battle):** on keyboard, Red **runs by default; hold Shift to walk** (keyboard has no light tilt). Controllers: light tilt walks, full tilt or the run button runs. Ross can overturn. | Keyboard always runs / Shift-to-walk / Shift-to-run | Matches "runs by default, tilt lightly to walk" from Exploration; brisk default fits tight pacing. |
 | 2026-10-06 | **Style guide approved.** Internal resolution **384×216** widescreen; dialogue portraits **96×96 pixel-art anime, 32 colors max**; **one model per character** (~700 tris target, 900 cap, shared skeleton). Visual pillars: Toy-box diorama · Chunky and readable · Lamps in the dark · Patched, not polished · Loud pixels. Fonts (Pixelify Sans, Press Start 2P) pending a license and render check. | Resolution A/B · portraits A/B · models A/B | Ross: "A · A · A · Approve". |
 | 2026-10-06 | **Technical plan approved; renderer = Compatibility (OpenGL).** Milestone 1 can start. | A Compatibility / B Forward+ | Ross: "Compatibility". Runs on more players' computers; cloud screenshots work. |
