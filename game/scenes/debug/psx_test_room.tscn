@@ -1,4 +1,4 @@
-[gd_scene load_steps=46 format=3]
+[gd_scene load_steps=52 format=3]
 
 [ext_resource type="Script" path="res://scripts/core/psx_room_look.gd" id="1_look"]
 [ext_resource type="Shader" path="res://shaders/psx_lit.gdshader" id="2_lit"]
@@ -12,6 +12,8 @@
 [ext_resource type="Script" path="res://scripts/field/camera_bounds.gd" id="10_bounds"]
 [ext_resource type="Script" path="res://scripts/field/field_room.gd" id="11_room"]
 [ext_resource type="PackedScene" path="res://scenes/actors/player.tscn" id="12_player"]
+[ext_resource type="PackedScene" path="res://scenes/actors/npc.tscn" id="13_npc"]
+[ext_resource type="Script" path="res://scripts/field/interactable.gd" id="14_interactable"]
 
 [sub_resource type="Environment" id="Environment_room"]
 background_mode = 1
@@ -163,6 +165,25 @@ size = Vector3(2, 0.9, 1.6)
 
 [sub_resource type="BoxShape3D" id="Box_reward"]
 size = Vector3(0.4, 0.4, 0.4)
+
+[sub_resource type="ShaderMaterial" id="Mat_sign"]
+shader = ExtResource("2_lit")
+shader_parameter/albedo_texture = ExtResource("8_tex128")
+shader_parameter/albedo_tint = Color(0.55, 0.4, 0.25, 1)
+
+[sub_resource type="ShaderMaterial" id="Mat_window"]
+shader = ExtResource("3_unlit")
+shader_parameter/albedo_texture = ExtResource("5_tex64")
+shader_parameter/uv_scale = Vector2(0.07, 0.07)
+shader_parameter/uv_offset = Vector2(0.02, 0.02)
+shader_parameter/albedo_tint = Color(0.45, 0.6, 0.85, 1)
+shader_parameter/emission_energy = 1.0
+
+[sub_resource type="BoxMesh" id="Mesh_sign"]
+size = Vector3(0.9, 0.5, 0.08)
+
+[sub_resource type="BoxMesh" id="Mesh_window"]
+size = Vector3(1.2, 0.9, 0.06)
 
 [node name="PsxTestRoom" type="Node3D"]
 script = ExtResource("11_room")
@@ -328,3 +349,89 @@ pitch_deg = 42.0
 yaw_deg = 35.0
 fov_deg = 30.0
 distance = 11.0
+
+[node name="WallSign" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, -2.0, 1.4, -3.95)
+mesh = SubResource("Mesh_sign")
+surface_material_override/0 = SubResource("Mat_sign")
+
+[node name="WallWindow" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 8.5, 1.4, -3.95)
+mesh = SubResource("Mesh_window")
+surface_material_override/0 = SubResource("Mat_window")
+
+[node name="Otis" parent="." instance=ExtResource("13_npc")]
+transform = Transform3D(0.3907, 0, 0.9205, 0, 1, 0, -0.9205, 0, 0.3907, 4.4, 0, 0.8)
+speaker_id = "otis"
+body_color = Color(0.45, 0.28, 0.15, 1)
+head_color = Color(0.62, 0.42, 0.26, 1)
+height_scale = 1.15
+conversation = "otis_talk"
+after_flag = "otis_met"
+after_conversation = "otis_talk_again"
+set_flag_on_start = "otis_met"
+
+[node name="Mox" parent="." instance=ExtResource("13_npc")]
+transform = Transform3D(-0.3907, 0, -0.9205, 0, 1, 0, 0.9205, 0, -0.3907, 5.8, 0, 1.4)
+speaker_id = "mox"
+body_color = Color(0.8, 0.65, 0.3, 1)
+head_color = Color(0.9, 0.78, 0.5, 1)
+extra = 1
+extra_color = Color(0.3, 0.33, 0.38, 1)
+height_scale = 1.05
+conversation = "mox_talk"
+after_flag = "mox_met"
+after_conversation = "mox_talk_again"
+set_flag_on_start = "mox_met"
+
+[node name="OldZero" parent="." instance=ExtResource("13_npc")]
+transform = Transform3D(-0.7314, 0, 0.6820, 0, 1, 0, -0.6820, 0, -0.7314, -2.4, 0, 2.0)
+speaker_id = "zero_old"
+body_color = Color(0.72, 0.62, 0.45, 1)
+head_color = Color(0.8, 0.7, 0.55, 1)
+extra = 2
+extra_color = Color(0.78, 0.66, 0.46, 1)
+height_scale = 0.9
+conversation = "zero_talk"
+after_flag = "zero_gift"
+after_conversation = "zero_talk_again"
+
+[node name="PillarSpot" type="Node3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 2.2, 0, 0.9)
+script = ExtResource("14_interactable")
+kind = 1
+conversation = "examine_pillar"
+
+[node name="LampSpot" type="Node3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, -3.3, 0, -0.6)
+script = ExtResource("14_interactable")
+kind = 1
+conversation = "examine_lamp"
+
+[node name="CrateSpot" type="Node3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 1.1, 0, -2.7)
+script = ExtResource("14_interactable")
+kind = 1
+conversation = "examine_crate"
+
+[node name="SignSpot" type="Node3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, -2.0, 0, -3.5)
+script = ExtResource("14_interactable")
+kind = 1
+conversation = "examine_sign"
+
+[node name="WindowSpot" type="Node3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 8.5, 0, -3.4)
+script = ExtResource("14_interactable")
+kind = 1
+conversation = "examine_window"
+
+[node name="PrizeSpot" type="Node3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 10.8, 0.9, -1.0)
+script = ExtResource("14_interactable")
+kind = 2
+conversation = "examine_prize_crate"
+after_flag = "prize_crate_taken"
+after_conversation = "examine_prize_crate_again"
+after_kind = "examine"
+reach = 1.3

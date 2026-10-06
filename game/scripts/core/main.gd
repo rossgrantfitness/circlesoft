@@ -45,7 +45,7 @@ func _process(_delta: float) -> void:
 	# Ignore the frame a state began on, so the same Enter press that started the demo can't
 	# also send us back. (Nodes in the SubViewport get no input events, so poll here.)
 	if _state == State.ROOM and Engine.get_process_frames() > _state_frame \
-			and Input.is_action_just_pressed(BACK_ACTION):
+			and not UiStage.is_busy(get_tree()) and Input.is_action_just_pressed(BACK_ACTION):
 		go_to_title()
 
 

@@ -3,6 +3,9 @@ extends Node3D
 ## Put on a room's root to make it playable: spawns Red at the spawn marker, points the room's
 ## diorama camera at her, gives the camera its bounds, and starts the prop fader.
 ##
+## It also sets up the room's talking: one DialogueRunner (every NPC in group "npc" registers as a
+## speaker), the field menu (menu action) and Red's interactor with its prompt icon.
+##
 ## Expected children: a Marker3D named PlayerSpawn, a DioramaCamera named CameraRig and, optionally,
 ## a CameraBounds. Props that should fade when they block the view join the group "fade_occluder".
 
@@ -14,6 +17,10 @@ extends Node3D
 var player: PlayerController = null
 var camera_rig: DioramaCamera = null
 var prop_fader: PropFader = null
+var runner: DialogueRunner = null
+var field_menu: FieldMenu = null
+var interactor: PlayerInteractor = null
+var prompt: InteractPrompt = null
 
 
 func _ready() -> void:
@@ -40,3 +47,33 @@ func _ready() -> void:
 	prop_fader.set_target(player)
 	prop_fader.set_camera(camera_rig.get_camera())
 	prop_fader.target_anchor_height = camera_rig.target_anchor_height
+
+	_setup_talking()
+
+
+func _setup_talking() -> void:
+	runner = DialogueRunner.create(self, player, camera_rig.get_camera())
+	for node: Node in get_tree().get_nodes_in_group(Npc.GROUP):
+		if node is Npc and is_ancestor_of(node):
+			var npc: Npc = node as Npc
+			runner.register_speaker(npc.speaker_id, npc, npc.get_head_height())
+	field_menu = FieldMenu.install(get_tree(), player)
+
+	prompt = InteractPrompt.new()
+	prompt.follow = player
+	prompt.camera = camera_rig.get_camera()
+	UiStage.get_or_create(get_tree()).get_stage_root().add_child(prompt)
+	interactor = PlayerInteractor.new()
+	interactor.name = "PlayerInteractor"
+	interactor.player = player
+	interactor.runner = runner
+	interactor.prompt = prompt
+	add_child(interactor)
+
+
+func _exit_tree() -> void:
+	# The UI lives on the shared stage, so it has to be taken down with the room.
+	if field_menu != null and is_instance_valid(field_menu):
+		field_menu.queue_free()
+	if prompt != null and is_instance_valid(prompt):
+		prompt.queue_free()

@@ -71,7 +71,8 @@ func _physics_process(delta: float) -> void:
 		stick = Input.get_vector(ACTION_LEFT, ACTION_RIGHT, ACTION_UP, ACTION_DOWN)
 		run_held = Input.is_action_pressed(ACTION_RUN)
 		jump_held = Input.is_action_pressed(ACTION_JUMP)
-		if Input.is_action_just_pressed(ACTION_JUMP):
+		# No jumping while a bubble or the menu is up (or was a moment ago: the press that closed it).
+		if Input.is_action_just_pressed(ACTION_JUMP) and not UiStage.is_busy(get_tree()):
 			request_jump()
 	step(delta)
 
