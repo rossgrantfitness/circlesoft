@@ -4,6 +4,7 @@
 
 ## 2026-10-06
 
+- **Vertical slice scope drafted** by the Producer (41-asset art list; build order starts with the style guide and a PSX/diorama test room). Technical Director: buildable, adds PSX shaders, battle simulator, debug room and a build for Ross's computer (OS needed). Taste Keeper proposes raising Game design & battle to Level 1 (8 of last 10 predictions). Sent to Ross.
 - **Ross set the visual references:** PSX style inspired by Mega Man Legends, Tail Concerto, MGS1 and FF7. Recorded in the style guide, the pitch and decisions; the Producer folded it into the slice scope draft. Full style guide queued.
 - **10-hour structure approved** (two re-dressed moons; additions kept) with a new rule: **keep pacing tight**. Producer now drafting the Vertical slice scope; Technical Director checks it next. Taste Keeper scoring R25.
 - **10-hour structure drafted:** ~3 h / ~4 h / ~3 h; 5 towns, 10 dungeons, 10 bosses (3 rematches), ~18 new areas, 12 big models. One decision for Ross (how many Act 2 moons) plus studio additions to strike or keep. Sent to Ross with Menus/Save system as an FYI.

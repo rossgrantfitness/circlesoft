@@ -809,3 +809,9 @@ Party: Red + any 2 of the five. Guests take a field spot for their own mission (
 5. Kasp and the Hushmaster. *Art in: the boss.*
 6. Story, cutscenes, dialogue, audio.
 7. Polish and QA. *Art in: UI.*
+
+**Technical Director's check**
+- **Overall: Yes.** Every piece uses systems already planned and reviewed. Nothing needs new technology.
+- **Add to the build list:** (1) the PSX shader set (low-res render, vertex jitter, texture warping, dithering). It's in the build order but missing from the list. (2) The battle simulator, which "Done means" depends on. (3) A debug room with cheats (jump to any floor, start any fight) so testing stays fast. (4) A build for Ross's computer. Godot exports to Windows, Mac and Linux, so we need to know which one he uses (Mac adds a signing step). Button remapping is already covered in Config.
+- **Trim:** none.
+- **Biggest risk:** 41 art assets from one artist while the style guide is still blank. **Fix:** run one placeholder Red through the whole pipeline first (model, rig, shader, in game), then lock poly and texture budgets in the style guide.
