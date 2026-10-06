@@ -4,6 +4,7 @@
 
 ## 2026-10-06
 
+- **Style guide approved** (384×216; 96×96 pixel-art portraits; one model per character) and **technical plan approved** (Compatibility renderer). **Milestone 1 started:** Gameplay Programmer setting up the Godot project, the headless test runner and the data loader. Taste Keeper scoring R28–R29.
 - **Technical plan written** (docs/tech_plan.md): plain-language part for Ross, architecture, data formats, PSX shader approach, headless tests + battle simulator, Milestone 1 in 15 steps, Windows and Mac exports. One decision for Ross: the renderer (Compatibility recommended). Test room will switch between 384×216 and other resolutions so Ross can compare.
 - **Slice broken into 45 tasks** on the task board (M0 style guide → M7 polish/builds). Art requests filled (41 assets, 24 portraits); audio requests filled (8 tracks, 40 SFX). Waiting on Ross for the style guide; technical plan still drafting.
 - **Style guide drafted** (Milestone 0) by the Technical Artist: 5 visual pillars, palette, proportions and budgets, PSX rules, UI, fonts, portraits, file naming. Three choices for Ross (internal resolution, portrait style, one model per character). Portrait count fixed to 24. Sent to Ross.

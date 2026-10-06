@@ -1,6 +1,6 @@
 # Tech Plan: LIGHTS LEFT ON (vertical slice)
 
-> Owner: Technical Director (proposes) · Ross (approves). Draft, 2026-10-06. Nothing here is final until it appears in docs/decisions.md.
+> Owner: Technical Director (proposes) · Ross (approves). ✅ **APPROVED by Ross, 2026-10-06: renderer = Compatibility (OpenGL), Option A.** Internal resolution per the style guide: 384×216.
 
 DECISION NEEDED: Which Godot renderer do we build on?
 Option A: Compatibility (OpenGL): pros: runs on older and cheaper Macs and PCs, including laptops without a gaming graphics card. Starts fast and builds small. We've already confirmed it can take screenshots in our cloud setup, so you can see progress without a build. / cons: no modern high-end lighting (global illumination, volumetric fog), which the PSX look turns off anyway.

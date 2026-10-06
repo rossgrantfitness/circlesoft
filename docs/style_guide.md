@@ -1,6 +1,6 @@
 # Style Guide
 
-> 🟡 DRAFT: awaiting Ross's approval
+> ✅ APPROVED by Ross, 2026-10-06: internal resolution 384×216 (A); portraits 96×96 pixel-art, 32 colors (A); one model per character (A). Numbers marked *(starting)* are confirmed by the placeholder-Red pipeline test.
 
 > The authority on the look. Read before any visual work. Owner: Technical Artist with the Creative Director (proposes) · Ross (approves). Drafted 2026-10-06 (Milestone 0).
 
