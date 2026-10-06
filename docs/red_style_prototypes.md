@@ -1,5 +1,7 @@
 # Red Style Prototypes: Brief for the Technical Artist
 
+> **Superseded 2026-10-06:** Ross chose a mix: E's style, head and sword + C's body, with short pointy shiba ears; Red is now a shiba inu (see docs/decisions.md). Prototypes A–E below are kept as the record of what he saw; the combined model is red_proto_f.
+
 > **Status:** PROPOSED by the Creative Director, 2026-10-06. Nothing here is final until Ross picks.
 > **Who builds:** Technical Artist (5 static blockout prototypes, no animation). **Who decides:** Ross.
 > **Before building:** the Producer adds this job to docs/task_board.md (studio rule: if it isn't on the board, don't build it). Ross's request below is the reason for the task.

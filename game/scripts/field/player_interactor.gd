@@ -98,6 +98,8 @@ func _on_line_started(speaker_id: String, _text: String) -> void:
 
 
 func _on_finished(_conversation_id: String) -> void:
+	if not is_inside_tree():
+		return
 	for node: Node in get_tree().get_nodes_in_group(NPC_GROUP):
 		node.call("release_facing")
 	if _active != null and is_instance_valid(_active):

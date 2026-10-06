@@ -117,9 +117,9 @@ func test_in_the_room_red_picks_otis_when_facing_him() -> void:
 func test_between_otis_and_mox_red_picks_the_one_she_faces() -> void:
 	_load_room()
 	var between: Vector3 = (OTIS_SPOT + MOX_SPOT) * 0.5
-	await _stand(between + Vector3(0.0, 0.0, 0.3), OTIS_SPOT)
+	await _stand(between + Vector3(0.0, 0.0, 0.8), OTIS_SPOT)
 	assert_eq(_room.interactor.get_target(), _room.get_node("Otis/Interactable"))
-	await _stand(between + Vector3(0.0, 0.0, 0.3), MOX_SPOT)
+	await _stand(between + Vector3(0.0, 0.0, 0.8), MOX_SPOT)
 	assert_eq(_room.interactor.get_target(), _room.get_node("Mox/Interactable"))
 
 
