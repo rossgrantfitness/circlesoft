@@ -14,8 +14,9 @@ const UNLIT_SHADER: Shader = preload("res://shaders/psx_unlit.gdshader")
 const UNLIT_SUFFIX: String = "_unlit"
 const PARAM_TEXTURE: StringName = &"albedo_texture"
 const PARAM_TINT: StringName = &"albedo_tint"
-## Clips that repeat. Everything else plays once. (Names from the style guide's animation list.)
-const LOOPING_CLIPS: PackedStringArray = ["idle", "walk", "run", "battle_ready", "climb"]
+## Clips that repeat. Everything else plays once and holds its last pose (jump holds the rising
+## pose until the fall clip takes over; land plays once). Names from the style guide's list.
+const LOOPING_CLIPS: PackedStringArray = ["idle", "walk", "run", "fall", "battle_ready", "climb"]
 
 
 func _post_import(scene: Node) -> Object:

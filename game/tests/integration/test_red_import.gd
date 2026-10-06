@@ -20,7 +20,10 @@ const REQUIRED_BONES: Array[String] = ["root", "hips", "spine", "head", "ear_l",
 	"upper_arm_l", "upper_arm_r", "forearm_l", "forearm_r", "thigh_l", "thigh_r", "shin_l", "shin_r",
 	"weapon_socket", "prop_socket"]
 ## Style guide clip lengths in seconds: idle about 1.5, walk 0.8, run 0.6.
-const CLIPS: Dictionary[String, float] = {"idle": 1.5, "walk": 0.8, "run": 0.6}
+const CLIPS: Dictionary[String, float] = {"idle": 1.5, "walk": 0.8, "run": 0.6, "fall": 0.53}
+## One-shot clips: they play once and hold the last pose. jump 0.4 s (takeoff, holds rising),
+## land 0.27 s (squash and recover).
+const ONE_SHOT_CLIPS: Dictionary[String, float] = {"jump": 0.4, "land": 0.27}
 const CLIP_TOLERANCE: float = 0.1
 
 
@@ -74,6 +77,41 @@ func test_clips_exist_loop_and_step() -> void:
 		assert_almost_eq(animation.length, CLIPS[clip], CLIP_TOLERANCE, clip + " length")
 		for track: int in animation.get_track_count():
 			assert_eq(animation.track_get_interpolation_type(track), Animation.INTERPOLATION_NEAREST, "%s track %d is stepped" % [clip, track])
+
+
+func test_jump_fall_land_clips_exist_and_behave() -> void:
+	var players: Array[Node] = _red().find_children("*", "AnimationPlayer", true, false)
+	var player: AnimationPlayer = players[0] as AnimationPlayer
+	for clip: String in ONE_SHOT_CLIPS:
+		assert_true(player.has_animation(clip), "has " + clip)
+		var animation: Animation = player.get_animation(clip)
+		assert_eq(animation.loop_mode, Animation.LOOP_NONE, clip + " plays once")
+		assert_almost_eq(animation.length, ONE_SHOT_CLIPS[clip], CLIP_TOLERANCE, clip + " length")
+		for track: int in animation.get_track_count():
+			assert_eq(animation.track_get_interpolation_type(track), Animation.INTERPOLATION_NEAREST, "%s track %d is stepped" % [clip, track])
+
+
+func test_run_reads_as_a_run_not_a_walk() -> void:
+	# The run clip is shorter than the walk clip (a quicker cadence), and its legs swing wider.
+	var players: Array[Node] = _red().find_children("*", "AnimationPlayer", true, false)
+	var player: AnimationPlayer = players[0] as AnimationPlayer
+	assert_lt(player.get_animation("run").length, player.get_animation("walk").length, "run cadence is quicker")
+	assert_gt(_swing_degrees(player.get_animation("run"), "thigh_l"), _swing_degrees(player.get_animation("walk"), "thigh_l") * 1.5, "run stride is much bigger")
+
+
+## Widest angle, in degrees, a bone's rotation track reaches away from its first key.
+func _swing_degrees(animation: Animation, bone: String) -> float:
+	var widest: float = 0.0
+	for track: int in animation.get_track_count():
+		if animation.track_get_type(track) != Animation.TYPE_ROTATION_3D:
+			continue
+		if not String(animation.track_get_path(track)).ends_with(":" + bone):
+			continue
+		var first: Quaternion = animation.rotation_track_interpolate(track, 0.0)
+		for key: int in animation.track_get_key_count(track):
+			var q: Quaternion = animation.track_get_key_value(track, key) as Quaternion
+			widest = maxf(widest, rad_to_deg(first.angle_to(q)))
+	return widest
 
 
 func test_height_is_one_unit() -> void:

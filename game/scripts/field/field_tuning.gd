@@ -9,8 +9,22 @@ const PATH_SEPARATOR: String = "."
 
 var walk_speed: float = 0.0
 var run_speed: float = 0.0
-var stick_run_threshold: float = 0.0
 var turn_rate_deg_per_s: float = 0.0
+## Jump: peak height (units) and time to reach it (s) set the launch speed and rising gravity.
+var jump_height: float = 0.0
+var jump_rise_time_s: float = 0.0
+## Falling gravity is the rising gravity times this (a slightly faster fall feels snappier).
+var jump_fall_gravity_mult: float = 0.0
+var jump_max_fall_speed: float = 0.0
+## Grace after leaving a ledge in which a jump still works, and how long an early press is remembered.
+var jump_coyote_time_s: float = 0.0
+var jump_buffer_time_s: float = 0.0
+## Letting go of jump while rising caps the upward speed at launch speed times this.
+var jump_release_cut_mult: float = 0.0
+## How fast (units/s squared) Red's flat velocity changes toward the stick while in the air.
+var jump_air_accel: float = 0.0
+## Seconds off the ground before the fall pose shows (so small steps do not flicker it).
+var jump_air_anim_delay_s: float = 0.0
 var camera_smoothing: float = 0.0
 var camera_safe_frame_margin: float = 0.0
 var fade_occluder_radius: float = 0.0
@@ -32,8 +46,16 @@ static func from_dict(data: Dictionary) -> FieldTuning:
 	var t: FieldTuning = FieldTuning.new()
 	t.walk_speed = _number(data, "walk_speed")
 	t.run_speed = _number(data, "run_speed")
-	t.stick_run_threshold = _number(data, "stick_run_threshold")
 	t.turn_rate_deg_per_s = _number(data, "turn_rate_deg_per_s")
+	t.jump_height = _number(data, "jump.height")
+	t.jump_rise_time_s = _number(data, "jump.rise_time_s")
+	t.jump_fall_gravity_mult = _number(data, "jump.fall_gravity_mult")
+	t.jump_max_fall_speed = _number(data, "jump.max_fall_speed")
+	t.jump_coyote_time_s = _number(data, "jump.coyote_time_s")
+	t.jump_buffer_time_s = _number(data, "jump.buffer_time_s")
+	t.jump_release_cut_mult = _number(data, "jump.release_cut_mult")
+	t.jump_air_accel = _number(data, "jump.air_accel")
+	t.jump_air_anim_delay_s = _number(data, "jump.air_anim_delay_s")
 	t.camera_smoothing = _number(data, "camera.smoothing")
 	t.camera_safe_frame_margin = _number(data, "camera.safe_frame_margin")
 	t.fade_occluder_radius = _number(data, "prop_fade.occluder_radius")

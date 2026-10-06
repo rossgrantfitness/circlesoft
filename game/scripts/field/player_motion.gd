@@ -5,6 +5,8 @@ extends RefCounted
 const ANIM_IDLE: StringName = &"idle"
 const ANIM_WALK: StringName = &"walk"
 const ANIM_RUN: StringName = &"run"
+const ANIM_JUMP: StringName = &"jump"
+const ANIM_FALL: StringName = &"fall"
 const MIN_FLAT_LENGTH: float = 0.001
 
 
@@ -31,20 +33,26 @@ static func camera_relative_direction(stick: Vector2, cam_basis: Basis) -> Vecto
 	return world.normalized()
 
 
-## Run when the run button is held or the stick is tilted all the way; otherwise walk.
-## Holding walk (Shift on a keyboard) always walks, so a keyboard, which only tilts all the way,
-## runs by default and walks while Shift is down.
-static func is_running(stick: Vector2, run_held: bool, run_threshold: float, walk_held: bool = false) -> bool:
-	if walk_held:
-		return false
-	return run_held or stick.length() >= run_threshold
+## Red runs only while the run button is held and she is actually moving; otherwise she walks.
+static func is_running(stick: Vector2, run_held: bool) -> bool:
+	return run_held and stick.length() >= MIN_FLAT_LENGTH
 
 
-static func target_speed(stick: Vector2, run_held: bool, walk_speed: float, run_speed: float,
-		run_threshold: float, walk_held: bool = false) -> float:
+static func target_speed(stick: Vector2, run_held: bool, walk_speed: float, run_speed: float) -> float:
 	if stick.length() < MIN_FLAT_LENGTH:
 		return 0.0
-	return run_speed if is_running(stick, run_held, run_threshold, walk_held) else walk_speed
+	return run_speed if is_running(stick, run_held) else walk_speed
+
+
+## Launch speed that reaches `height` after `rise_time` seconds under constant gravity.
+static func jump_speed(height: float, rise_time: float) -> float:
+	return 2.0 * height / maxf(rise_time, MIN_FLAT_LENGTH)
+
+
+## The (rising) gravity that goes with jump_speed.
+static func jump_gravity(height: float, rise_time: float) -> float:
+	var t: float = maxf(rise_time, MIN_FLAT_LENGTH)
+	return 2.0 * height / (t * t)
 
 
 ## Yaw (radians, around Y) that turns a model facing +Z toward `direction`.
@@ -63,3 +71,9 @@ static func animation_for(moving: bool, running: bool) -> StringName:
 	if not moving:
 		return ANIM_IDLE
 	return ANIM_RUN if running else ANIM_WALK
+
+
+## Animation names to try, best first, while in the air. A model without jump/fall clips falls
+## back to the run (moving) or idle pose.
+static func air_animation_candidates(rising: bool, moving: bool) -> Array[StringName]:
+	return [ANIM_JUMP if rising else ANIM_FALL, ANIM_RUN if moving else ANIM_IDLE]

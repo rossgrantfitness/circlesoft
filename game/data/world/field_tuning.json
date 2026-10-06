@@ -1,8 +1,18 @@
 {
-  "walk_speed": 2.4,
-  "run_speed": 4.8,
-  "stick_run_threshold": 0.85,
+  "walk_speed": 3.0,
+  "run_speed": 5.2,
   "turn_rate_deg_per_s": 720.0,
+  "jump": {
+    "height": 1.2,
+    "rise_time_s": 0.36,
+    "fall_gravity_mult": 1.4,
+    "max_fall_speed": 20.0,
+    "coyote_time_s": 0.1,
+    "buffer_time_s": 0.1,
+    "release_cut_mult": 0.5,
+    "air_accel": 16.0,
+    "air_anim_delay_s": 0.06
+  },
   "blink_time_s": 2.0,
   "follow": {
     "spacing": 0.9,
