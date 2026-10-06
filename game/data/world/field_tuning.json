@@ -13,5 +13,11 @@
     "smoothing": 6.0,
     "safe_frame_margin": 0.2,
     "cutscene_blend_s": 0.6
+  },
+  "prop_fade": {
+    "occluder_radius": 0.4,
+    "fade_out_per_s": 8.0,
+    "fade_in_per_s": 4.0,
+    "max_fade": 0.85
   }
 }
