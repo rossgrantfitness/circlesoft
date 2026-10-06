@@ -4,6 +4,7 @@
 
 ## 2026-10-06
 
+- **Art pipeline options sent to Ross** (he asked about Higgsfield / fal.ai): A in-house, B hybrid AI via fal.ai with a ~$20 Otis pilot (recommended), C human outsourcing. Cost estimates: ~$50–200 for the slice, ~$500–2,000 full game. fal.ai and Higgsfield are currently blocked by this environment's network policy. Taste Keeper recorded prediction R34.
 - **Studio rule changed (Ross): "Borrow what works, transform it."** Copy proven systems, story shapes, character roles and spirit; always change names, designs, dialogue, music and assets. CLAUDE.md and the Creative Director / Audio Designer briefs updated.
 - **🎮 Demo build 3 sent to Ross** (448 tests passed before export): shiba Red playable with rough stand-in moves; Otis, Mox and old Zero as rough models in Red's style (idle only). Old Zero's species is still open (Ross's call; neutral stand-in for now).
 - **NPC blockouts in the game: Otis, Mox and the old Zero in Red's house style** (Technical Artist; placeholders, Ross makes the final art): Otis the boulder with a door (shield) and hammer, Mox with welding mask, big wrench and Tuesday the drone, the old Zero in dust wraps with sleeve bells, brass ear-cups and a thermos. Each has one gentle idle clip and no talk clip (Ross: keep animation minimal). Models load by path and clip name, so outsourced models can drop in. Zero's species is NOT decided (neutral critter, Ross's call). Screenshots: docs/screenshots/npc_blockouts_lineup.png, npcs_in_room_v2.png.
