@@ -39,12 +39,12 @@ func _initialize() -> void:
 	await _shot("03_camera_slides_into_wing", SPOT_WING)
 	await _shot("04_pillar_fades_behind", SPOT_PILLAR)
 
-	for effect: int in PsxLook.Effect.values():
-		PsxLook.set_effect(effect, false)
 	await _shot("08_jump_crates", SPOT_CRATES)
 	await _shot("09_jump_ledge", SPOT_LEDGE)
 	await _shot("10_jump_platform_and_prize", SPOT_PLATFORM)
 
+	for effect: int in PsxLook.Effect.values():
+		PsxLook.set_effect(effect, false)
 	await _shot("05_psx_effects_all_off", SPOT_START)
 	PsxLook.reset_effects()
 

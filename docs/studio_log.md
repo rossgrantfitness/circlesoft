@@ -4,6 +4,7 @@
 
 ## 2026-10-06
 
+- **Jumpables in the test room** (Technical Artist): stackable crates, a ledge along the back wall, a raised wing platform with a gold prize crate; Red has jump/fall/land animations as a stand-in. Character animation now paused for Ross's style pick. Logged a minor timing-flaky movement test (B1).
 - **Run and jump built** (Gameplay Programmer; 192 tests passing): hold Shift/X to run, Space/A to jump, with coyote time, jump buffering and variable height; camera doesn't bob. **Test-room dialogue written** (Writer): 18 conversations for Otis, Mox, an old Zero, signs and examine texts.
 - **Art style gate (Ross):** 5 prototypes of Red, inspired by 1998–2002 games, stylized and timeless, before anyone animates. Animation paused; Creative Director defining the 5 directions, Technical Artist builds them as in-game 3D prototypes.
 - **Ross's next asks:** NPCs + interactable objects in the room; test the field menu and text boxes; FF9-style speech bubbles over speakers' heads; a voiced gibberish system; Animal Crossing-like proportions (huge head, tiny body). All logged. Technical Artist re-proportioning Red mid-task; the rest starting now in parallel.
