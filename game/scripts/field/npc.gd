@@ -1,13 +1,21 @@
 class_name Npc
 extends Node3D
-## A character standing in a room. PLACEHOLDER LOOK ONLY (a big round head on a small capsule body
-## in the character's colors, little eyes so you can see which way they face); the real model
-## replaces the Visual node when the art style is chosen.
+## A character standing in a room.
 ##
-## Gently bobs while idle, turns to face Red when she talks to them (or when they speak) and turns
-## back afterwards, and offers a head point for speech bubbles. The speaker id matches the
-## dialogue data (otis, mox, zero_old). Its Interactable child gets the conversation settings from
-## the exports below, so a room only has to set them on the NPC.
+## The look is a model loaded BY PATH (model_path, a .glb or .tscn) under the Visual node. If a model
+## has an AnimationPlayer with a clip named by idle_clip ("idle"), it plays on a loop; no other clip
+## names are needed, and a model with no clips still works (it just stands and bobs). So an outsourced
+## model can drop in by changing model_path (and head_height in data/ui/dialogue_ui.json), with no code
+## changes. With no model_path (or one that fails to load) a placeholder stands in: a big round head on
+## a small capsule body in the character's colors, little eyes so you can see which way they face.
+##
+## Gently bobs while idle (a slow whole-body bob in code, on top of the model's own idle clip),
+## turns to face Red when she talks to them (or when they speak) and turns back afterwards, and offers
+## a head point for speech bubbles. The head point is measured from the model itself (the top of the
+## model's meshes, not counting held props and floating things whose mesh name contains "_prop_"), so
+## it follows whatever model is loaded. The speaker id matches the dialogue data (otis, mox,
+## zero_old). Its Interactable child gets the conversation settings from the exports below, so a room
+## only has to set them on the NPC.
 ##
 ## Facing: the model looks along local +Z, like Red.
 
@@ -16,6 +24,10 @@ const SHADER_PATH: String = "res://shaders/psx_lit.gdshader"
 const TEXTURE_PATH: String = "res://art/placeholder/textures/checker_128.png"
 const NODE_VISUAL: NodePath = ^"Visual"
 const NODE_INTERACTABLE: NodePath = ^"Interactable"
+const NODE_COLLISION: NodePath = ^"Body/CollisionShape3D"
+## Meshes whose name contains this are held or floating props (shield, wrench, drone): they do not count
+## toward the head height.
+const PROP_MARK: String = "_prop_"
 const BODY_RADIUS: float = 0.2
 const BODY_HEIGHT: float = 0.5
 const HEAD_RADIUS: float = 0.3
@@ -28,6 +40,14 @@ const MASK_COLOR: Color = Color(0.3, 0.33, 0.38)
 enum Extra { NONE, WELDING_MASK, WRAP }
 
 @export var speaker_id: String = ""
+## The character model (.glb or .tscn), loaded when the room starts. Empty = the capsule placeholder.
+@export_file("*.glb", "*.tscn") var model_path: String = ""
+## Which clip of the model's AnimationPlayer loops while the NPC stands around.
+@export var idle_clip: StringName = &"idle"
+## How wide and tall the solid body is (a cylinder standing on the floor), so Red bumps into the
+## character and not into thin air or a long way off.
+@export var collision_radius: float = 0.3
+@export var collision_height: float = 1.1
 @export var body_color: Color = Color(0.6, 0.5, 0.4)
 @export var head_color: Color = Color(0.85, 0.7, 0.55)
 @export var extra: Extra = Extra.NONE
@@ -45,6 +65,9 @@ enum Extra { NONE, WELDING_MASK, WRAP }
 var tuning: InteractionTuning = InteractionTuning.new()
 
 var _visual: Node3D = null
+var _model: Node3D = null
+var _player: AnimationPlayer = null
+var _model_head_top: float = 0.0
 var _rest_yaw: float = 0.0
 var _wanted_yaw: float = 0.0
 var _clock: float = 0.0
@@ -59,7 +82,9 @@ func _ready() -> void:
 	_clock = float(speaker_id.hash() % 1000) * 0.01
 	_visual = get_node_or_null(NODE_VISUAL) as Node3D
 	if _visual != null:
-		_build_look(_visual)
+		if not _load_model(_visual):
+			_build_look(_visual)
+	_fit_collision()
 	_interactable = get_node_or_null(NODE_INTERACTABLE) as Interactable
 	if _interactable != null:
 		_interactable.kind = kind
@@ -117,12 +142,76 @@ func get_interactable() -> Interactable:
 
 ## How far above the node's origin a speech bubble's tail should point.
 func get_head_height() -> float:
+	if _model_head_top > 0.0:
+		return _model_head_top * height_scale + BUBBLE_LIFT
 	return HEAD_TOP_Y * height_scale + BUBBLE_LIFT
 
 
 ## Where a bubble points (world space).
 func get_head_point() -> Vector3:
 	return global_position + Vector3.UP * get_head_height()
+
+
+## The loaded character model, or null when the capsule placeholder is standing in.
+func get_model() -> Node3D:
+	return _model
+
+
+## The model's AnimationPlayer (null if it has none or there is no model).
+func get_animation_player() -> AnimationPlayer:
+	return _player
+
+
+# ---- model ----
+
+## Loads model_path under `root`, starts the idle clip and measures the head top. False = no model.
+func _load_model(root: Node3D) -> bool:
+	if model_path == "":
+		return false
+	var packed: PackedScene = load(model_path) as PackedScene
+	if packed == null:
+		push_warning("Npc %s: cannot load model %s, using the placeholder" % [speaker_id, model_path])
+		return false
+	_model = packed.instantiate() as Node3D
+	if _model == null:
+		return false
+	root.scale = Vector3.ONE * height_scale
+	root.add_child(_model)
+	_model_head_top = _measure_head_top(root, _model)
+	for node: Node in _model.find_children("*", "AnimationPlayer", true, false):
+		_player = node as AnimationPlayer
+		break
+	if _player != null and _player.has_animation(idle_clip):
+		_player.play(idle_clip)
+		# Not everyone breathes in step.
+		_player.seek(fposmod(_clock, 1.0) * _player.get_animation(idle_clip).length, true)
+	return true
+
+
+## Top of the model's body meshes (props excluded), in the Visual node's space at scale 1.
+func _measure_head_top(root: Node3D, model: Node3D) -> float:
+	var top: float = 0.0
+	var to_visual: Transform3D = root.global_transform.affine_inverse()
+	for node: Node in model.find_children("*", "MeshInstance3D", true, false):
+		var mesh_instance: MeshInstance3D = node as MeshInstance3D
+		if mesh_instance.mesh == null or String(mesh_instance.name).contains(PROP_MARK):
+			continue
+		var box: AABB = to_visual * mesh_instance.global_transform * mesh_instance.get_aabb()
+		top = maxf(top, box.end.y / maxf(height_scale, 0.0001))
+	return top
+
+
+## Sizes the solid body from the exports. The scene's shape is shared by every instance, so each NPC
+## gets its own.
+func _fit_collision() -> void:
+	var shape_node: CollisionShape3D = get_node_or_null(NODE_COLLISION) as CollisionShape3D
+	if shape_node == null:
+		return
+	var cylinder: CylinderShape3D = CylinderShape3D.new()
+	cylinder.radius = collision_radius
+	cylinder.height = collision_height
+	shape_node.shape = cylinder
+	shape_node.position = Vector3(0.0, collision_height * 0.5, 0.0)
 
 
 # ---- placeholder look ----
