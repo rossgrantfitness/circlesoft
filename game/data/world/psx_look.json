@@ -1,0 +1,11 @@
+{
+  "resolutions": [
+    {"id": "384x216", "width": 384, "height": 216},
+    {"id": "320x240", "width": 320, "height": 240},
+    {"id": "426x240", "width": 426, "height": 240},
+    {"id": "480x270", "width": 480, "height": 270}
+  ],
+  "default_resolution": "384x216",
+  "integer_scaling": true,
+  "integer_scaling_min_fill": 0.8
+}

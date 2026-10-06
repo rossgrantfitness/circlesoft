@@ -1,0 +1,53 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/psx_screen.gd" id="1_script"]
+[ext_resource type="Shader" path="res://shaders/psx_post.gdshader" id="2_post"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_post"]
+shader = ExtResource("2_post")
+shader_parameter/color_levels = 32.0
+shader_parameter/dither_amount = 1.0
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_world"]
+viewport_path = NodePath("WorldViewport")
+
+[node name="PsxScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_script")
+
+[node name="Backdrop" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[node name="WorldViewport" type="SubViewport" parent="."]
+own_world_3d = true
+handle_input_locally = false
+size = Vector2i(384, 216)
+render_target_update_mode = 4
+
+[node name="World" type="Node3D" parent="WorldViewport"]
+
+[node name="Display" type="TextureRect" parent="."]
+material = SubResource("ShaderMaterial_post")
+texture_filter = 1
+layout_mode = 0
+offset_right = 384.0
+offset_bottom = 216.0
+mouse_filter = 2
+texture = SubResource("ViewportTexture_world")
+expand_mode = 1
+
+[node name="UILayer" type="CanvasLayer" parent="."]
+layer = 10

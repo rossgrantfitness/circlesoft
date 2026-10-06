@@ -11,6 +11,7 @@ config_version=5
 [application]
 
 config/name="Lights Left On"
+run/main_scene="res://scenes/core/main.tscn"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 config/use_custom_user_dir=true
 config/custom_user_dir_name="LightsLeftOn"
@@ -36,6 +37,9 @@ window/stretch/mode="canvas_items"
 
 [importer_defaults]
 
+scene={
+"import_script/path": "res://scripts/tools/psx_post_import.gd"
+}
 texture={
 "compress/mode": 0,
 "mipmaps/generate": false
@@ -175,4 +179,20 @@ psx_fog_near={
 psx_fog_far={
 "type": "float",
 "value": 24.0
+}
+psx_fog_enabled={
+"type": "float",
+"value": 1.0
+}
+psx_vertex_lighting={
+"type": "float",
+"value": 1.0
+}
+psx_dither_enabled={
+"type": "float",
+"value": 1.0
+}
+psx_color_depth_enabled={
+"type": "float",
+"value": 1.0
 }
