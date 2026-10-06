@@ -21,6 +21,7 @@ const INGAME_FOV: float = 20.0
 const INGAME_DISTANCE: float = 16.1
 const INGAME_PITCH: float = 42.0
 const CHALK: Color = Color(0.929, 0.918, 0.847)
+const SILHOUETTE_FLOOR: Color = Color(0.72, 0.70, 0.64)
 const INK: Color = Color(0.078, 0.071, 0.122)
 const CAMERA_DISTANCE: float = 3.1
 const CAMERA_FOV: float = 30.0
@@ -96,6 +97,8 @@ func _ingame_shots(screen: Node, camera: Camera3D, model: Node3D, letter: String
 func _silhouette(model: Node, on: bool) -> void:
 	var world_env: WorldEnvironment = root.find_children("*", "WorldEnvironment", true, false)[0] as WorldEnvironment
 	world_env.environment.background_color = CHALK if on else NIGHT
+	var floor_node: MeshInstance3D = root.find_children("Floor", "MeshInstance3D", true, false)[0] as MeshInstance3D
+	(floor_node.mesh.material as StandardMaterial3D).albedo_color = SILHOUETTE_FLOOR if on else DUSK
 	var ink_material: StandardMaterial3D = StandardMaterial3D.new()
 	ink_material.albedo_color = INK
 	ink_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
@@ -157,5 +160,6 @@ func _build_stage(world: Node3D) -> void:
 	floor_mesh.material = floor_material
 	var floor_node: MeshInstance3D = MeshInstance3D.new()
 	floor_node.mesh = floor_mesh
+	floor_node.name = "Floor"
 	floor_node.position = Vector3(0.0, -0.02, 0.0)
 	world.add_child(floor_node)
