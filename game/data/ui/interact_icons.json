@@ -1,0 +1,40 @@
+{
+  "_about": "The little icon that pops over Red's head when something nearby can be used: speech bubble = talk, ? = examine, hand = take. Never '!', which is the battle timing cue. Placeholder pixel art; the outline is added around any filled pixel. Letters are palette keys.",
+  "palette": {"o": "chalk", "a": "lamp_amber", "k": "ink"},
+  "outline": "ink",
+  "icons": {
+    "talk": [
+      "..ooooooooo..",
+      ".ooooooooooo.",
+      "ooooooooooooo",
+      "ooookooookooo",
+      "ooooooooooooo",
+      ".ooooooooooo.",
+      "...ooo.......",
+      "...oo........",
+      "...o........."
+    ],
+    "examine": [
+      ".aaaa.",
+      "aa..aa",
+      "....aa",
+      "...aa.",
+      "..aa..",
+      "..aa..",
+      "......",
+      "..aa..",
+      "..aa.."
+    ],
+    "take": [
+      "..o.o.o.o..",
+      "..o.o.o.o..",
+      "..o.o.o.o..",
+      ".ooooooooo.",
+      "ooooooooooo",
+      "oooooooooo.",
+      ".ooooooooo.",
+      "..ooooooo..",
+      "..ooooooo.."
+    ]
+  }
+}
