@@ -179,7 +179,7 @@ This is the seam for outside artists. The game finds a model's clips **by name**
   - Single prop: 30 to 150 triangles (large furniture up to 300).
   - Textures: up to 6 environment textures (64×64 to 256×128) plus the shared prop atlas.
   - Kit piece: 20 to 400 triangles.
-- **Battle backdrops** reuse the room sets (design doc) with the camera moved closer.
+- **Battle backdrops** reuse the room sets (design doc) with the camera moved closer. **The battle camera moves** (Ross, 2026-10-07, storyboard docs/storyboards/battle_camera_ross_2026-10-07.jpg): pans, cranes, tracks, rolls, Dutch tilts and FOV shifts, all as data in `game/data/battle_stage/camera_shots.json` written relative to the formation. The field diorama camera above is unchanged. Rule for any new battle shot: from 300 ms before a Clutch cue until 300 ms after it, the actor and the target stay inside the centre of the picture with no roll and no FOV change. Players can pick "Battle Camera: Calm" in Config for the old fixed framing.
 - **Sky:** a tiny dome with a 128×64 night-sky texture, a few dim stars. Nothing else behind the back walls.
 
 ## PSX rendering rules

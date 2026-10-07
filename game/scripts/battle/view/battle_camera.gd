@@ -65,6 +65,7 @@ func configure(tuning: BattleStageTuning) -> void:
 	_right = basis.x
 	_up = basis.y
 	_basis = basis
+	dynamic = false
 	current_pose = BattleCamPose.make(base_position, look_at_point, 0.0, camera.fov)
 	transform = Transform3D(basis, base_position)
 	camera.transform = Transform3D.IDENTITY
@@ -75,6 +76,7 @@ func configure(tuning: BattleStageTuning) -> void:
 ## The director's pose for this frame (position, target, roll, FOV). The push-in and shake still ride on top.
 func apply_pose(pose: BattleCamPose) -> void:
 	var camera: Camera3D = _ensure_camera()
+	dynamic = true
 	current_pose = pose
 	look_at_point = pose.look
 	base_position = pose.position

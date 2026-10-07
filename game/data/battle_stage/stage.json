@@ -54,7 +54,7 @@
     "default_enemy_model": "res://art/placeholder/enemies/signals_grunt/enm_signals_grunt.glb",
     "fallback_colors": {"party": "#C8322A", "enemy": "#6F8BA8"},
     "flyer_min_height": 0.25,
-    "boss_scale": 1.0
+    "boss_scale": 1.8
   },
   "motion": {
     "_note": "Every attack, hit and K.O. is a code tween on the model's idle clip: no authored clips.",
@@ -179,7 +179,7 @@
       "key_dir_deg": [-48.0, 28.0],
       "fog_near": 17.0,
       "fog_far": 30.0,
-      "size": {"floor": [16.0, 11.0], "back_wall_z": -4.4, "left_wall_x": -5.8, "wall_height": 3.6},
+      "size": {"floor": [16.0, 11.0], "back_wall_z": -4.4, "left_wall_x": -5.8, "wall_height": 6.5},
       "lamps": [
         {"pos": [-5.2, 0.0, -3.4], "height": 2.2, "color": "#FFB347", "energy": 6.0, "range": 8.0},
         {"pos": [4.9, 0.0, -3.6], "height": 2.2, "color": "#FFB347", "energy": 6.0, "range": 8.0},

@@ -25,7 +25,6 @@ enum Mode { IDLE, INTRO, ACTION }
 const PATH_DIRECTOR: String = "director."
 const PATH_SHOTS: String = "shots."
 const MS: float = 1000.0
-const HEAD_LIFT: float = 0.0
 
 ## One shot being played: keyframes eased over a duration (or held, with a drift).
 class Clip extends RefCounted:
@@ -261,7 +260,8 @@ func begin_action(info: Dictionary) -> Dictionary:
 	clip.drift = (along * drift_local.x + Vector3.UP * drift_local.y + BattleCamFrame.side_of(along) * drift_local.z) * float(ctx["pair_scale"])
 	var has_lock: bool = float(info.get("lock_start_s", -1.0)) >= 0.0 or float(info.get("lock_end_s", -1.0)) > 0.0
 	var start_s: float = maxf(float(info.get("lock_start_s", 0.0)), 0.0)
-	var ease_s: float = minf(float(shot.get("ease_ms", 300.0)) / MS, start_s if has_lock else 1.0)
+	var margin_s: float = tuning.number(PATH_DIRECTOR + "lock.arrive_margin_ms") / MS
+	var ease_s: float = minf(float(shot.get("ease_ms", 300.0)) / MS, maxf(start_s - margin_s, 0.0) if has_lock else 1.0)
 	var min_ease_s: float = tuning.number(PATH_DIRECTOR + "lock.min_ease_ms") / MS
 	var eased: bool = ease_s >= min_ease_s
 	_blend_from = _live.copy()
@@ -386,21 +386,30 @@ func _subject_points(actor: String, targets: Array, lunge: bool) -> Array[Vector
 	return points
 
 
-## Pulls the camera back (then widens the FOV a little) until every point is inside the safe frame.
+## Pulls the camera back (kept inside the set's bounds), then widens the FOV a little, until every point is inside
+## the safe frame.
 func _fit(pose_to_fit: BattleCamPose, points: Array[Vector3]) -> void:
 	var safe_x: Array = tuning.list(PATH_DIRECTOR + "safe.x")
 	var safe_y: Array = tuning.list(PATH_DIRECTOR + "safe.y")
 	var rect: Rect2 = Rect2(float(safe_x[0]), float(safe_y[0]), float(safe_x[1]) - float(safe_x[0]), float(safe_y[1]) - float(safe_y[0]))
 	var step: float = tuning.number(PATH_DIRECTOR + "fit.step")
 	var limit: int = tuning.integer(PATH_DIRECTOR + "fit.max_iterations")
+	pose_to_fit.position = clamp_to_bounds(pose_to_fit.position)
 	for i: int in limit:
 		if _all_inside(pose_to_fit, points, rect):
 			return
-		pose_to_fit.position = pose_to_fit.look + (pose_to_fit.position - pose_to_fit.look) * (1.0 + step)
-	for i: int in 8:
-		if _all_inside(pose_to_fit, points, rect):
-			return
+		pose_to_fit.position = clamp_to_bounds(pose_to_fit.look + (pose_to_fit.position - pose_to_fit.look) * (1.0 + step))
+	var widened: float = 0.0
+	while widened < tuning.number(PATH_DIRECTOR + "fit.max_fov_widen") and not _all_inside(pose_to_fit, points, rect):
 		pose_to_fit.fov += 2.0
+		widened += 2.0
+
+
+## Keeps a camera position inside the set (never behind a wall, never outside the walls' height).
+func clamp_to_bounds(point: Vector3) -> Vector3:
+	var low: Vector3 = tuning.vec3(PATH_DIRECTOR + "bounds.min")
+	var high: Vector3 = tuning.vec3(PATH_DIRECTOR + "bounds.max")
+	return Vector3(clampf(point.x, low.x, high.x), clampf(point.y, low.y, high.y), clampf(point.z, low.z, high.z))
 
 
 func _all_inside(pose_to_check: BattleCamPose, points: Array[Vector3], rect: Rect2) -> bool:

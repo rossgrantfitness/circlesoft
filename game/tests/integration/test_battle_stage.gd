@@ -26,6 +26,7 @@ func _stage() -> BattleScene:
 	stage.transitions_enabled = false
 	stage.audio = FakeAudio.new()
 	add_to_root(stage)
+	stage.set_dynamic_camera(false)        # these tests use the calm fixed framing; test_battle_stage_camera.gd covers Dynamic
 	return stage
 
 
@@ -168,7 +169,8 @@ func test_tuning_has_every_key_the_code_reads() -> void:
 			var key: String = found.get_string(1)
 			if key.contains("%"):
 				continue
-			assert_true(stage.tuning.has(key), "%s reads '%s' which is missing from stage.json" % [file_name, key])
+			var source_tuning: BattleStageTuning = stage.cam_tuning if key.begins_with("director.") else stage.tuning
+			assert_true(source_tuning.has(key), "%s reads '%s' which is missing from the stage data" % [file_name, key])
 			checked += 1
 	assert_gt(checked, 30, "the scan should have found the tuning reads")
 

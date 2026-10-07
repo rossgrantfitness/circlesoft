@@ -15,6 +15,7 @@ func _stage() -> BattleScene:
 	stage.transitions_enabled = false
 	stage.audio = FakeAudio.new()
 	add_to_root(stage)
+	stage.set_dynamic_camera(false)
 	var db: Node = tree.root.get_node("DataDB")
 	var data: Dictionary = (db.call("get_dict", TUNING_DATA_ID) as Dictionary).duplicate(true)
 	data["end"]["hold_s"] = 0.02
