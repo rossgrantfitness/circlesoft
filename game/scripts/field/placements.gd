@@ -10,7 +10,11 @@ const SECTION_PICKUPS: String = "pickups"
 const SECTION_CRATES: String = "crates"
 const SECTION_DOORS: String = "doors"
 const SECTION_ENEMIES: String = "enemies"
-const SECTIONS: Array[String] = [SECTION_PICKUPS, SECTION_CRATES, SECTION_DOORS, SECTION_ENEMIES]
+const SECTION_NPCS: String = "npcs"
+const SECTION_SPOTS: String = "spots"
+const SECTIONS: Array[String] = [SECTION_PICKUPS, SECTION_CRATES, SECTION_DOORS, SECTION_ENEMIES, SECTION_NPCS, SECTION_SPOTS]
+const SCENES_ID: String = "world/story_scenes"
+const JOBS_ID: String = "world/jobs"
 
 
 static func data() -> Dictionary:
@@ -39,6 +43,30 @@ static func door(placement_id: String) -> Dictionary:
 
 static func enemy(placement_id: String) -> Dictionary:
 	return entry(SECTION_ENEMIES, placement_id)
+
+
+static func npc(placement_id: String) -> Dictionary:
+	return entry(SECTION_NPCS, placement_id)
+
+
+static func spot(placement_id: String) -> Dictionary:
+	return entry(SECTION_SPOTS, placement_id)
+
+
+## A story scene from data/world/story_scenes.json.
+static func scene(scene_id: String) -> Dictionary:
+	return DataDB.get_dict(SCENES_ID).get("scenes", {}).get(scene_id, {})
+
+
+static func scene_ids() -> Array[String]:
+	var found: Array[String] = []
+	found.assign((DataDB.get_dict(SCENES_ID).get("scenes", {}) as Dictionary).keys())
+	return found
+
+
+## A job from data/world/jobs.json.
+static func job(job_id: String) -> Dictionary:
+	return DataDB.get_dict(JOBS_ID).get("jobs", {}).get(job_id, {})
 
 
 static func ids(section_name: String) -> Array[String]:

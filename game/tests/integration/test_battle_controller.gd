@@ -688,6 +688,7 @@ func test_setup_from_game_state_and_config() -> void:
 	var state: Node = own((load(GAME_STATE_SCRIPT) as GDScript).new() as Node) as Node
 	state.call("load_party", tree.root.get_node("DataDB").get_dict("party/party"))
 	state.call("reset")
+	state.call("update_member", "red", {"hp": 42})  # hurt, so "current HP comes from the state" means something
 	var config: Node = own((load("res://scripts/core/config.gd") as GDScript).new() as Node) as Node
 	var setup: BattleSetup = BattleSetup.from_game_state(state, "grunt_pair", config, "party")
 	assert_eq(setup.encounter_id, "grunt_pair")

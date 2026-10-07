@@ -12,6 +12,8 @@ extends Node
 ## Followers are PartyFollower nodes (collision layer 4, mask none) added to the room.
 
 signal teleport_detected
+## A follower joined the line (at setup or later).
+signal member_added(follower: PartyFollower)
 
 const HERO_ID: String = "red"
 const CHARACTERS_ID: String = "party/characters"
@@ -30,6 +32,7 @@ var spacing: float = 0.0
 var breadcrumb_step: float = 0.0
 var catch_up_speed: float = 0.0
 
+var _parent: Node3D = null
 var _tuning: ExplorationTuning = null
 var _last_leader: Vector3 = Vector3.ZERO
 
@@ -42,17 +45,43 @@ func setup(p_leader: Node3D, member_ids: Array[String], parent: Node3D, field_tu
 	spacing = field.follow_spacing
 	breadcrumb_step = maxf(field.follow_breadcrumb_step, 0.01)
 	catch_up_speed = field.run_speed * field.follow_catch_up_speed_mult
+	_parent = parent
 	for id: String in member_ids:
 		if id == HERO_ID:
 			continue
-		var follower: PartyFollower = PartyFollower.new()
-		parent.add_child(follower)
-		follower.setup(id, model_path_for(id), _tuning)
-		followers.append(follower)
+		_make_follower(id)
 	seed_trail()
 	for i: int in followers.size():
 		followers[i].global_position = point_behind(leader.global_position, spacing * float(i + 1))
 		followers[i].face_direction(leader_facing())
+
+
+## Adds one more member to the end of the line, standing at `at` (a member who just joined: Otis after the
+## dock fight). Returns the follower, or the existing one if they were already in the line.
+func add_member(member_id: String, at: Vector3) -> PartyFollower:
+	var existing: PartyFollower = follower_for(member_id)
+	if existing != null:
+		return existing
+	var follower: PartyFollower = _make_follower(member_id)
+	follower.global_position = at
+	follower.face_direction(leader_facing())
+	return follower
+
+
+func follower_for(member_id: String) -> PartyFollower:
+	for follower: PartyFollower in followers:
+		if follower.member_id == member_id:
+			return follower
+	return null
+
+
+func _make_follower(member_id: String) -> PartyFollower:
+	var follower: PartyFollower = PartyFollower.new()
+	_parent.add_child(follower)
+	follower.setup(member_id, model_path_for(member_id), _tuning)
+	followers.append(follower)
+	member_added.emit(follower)
+	return follower
 
 
 static func model_path_for(member_id: String) -> String:

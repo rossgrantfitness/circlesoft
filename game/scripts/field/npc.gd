@@ -128,6 +128,11 @@ func release_facing() -> void:
 	_wanted_yaw = _rest_yaw
 
 
+## Makes the way they face now the way they go back to after a conversation (after being walked somewhere).
+func settle_facing() -> void:
+	_rest_yaw = _wanted_yaw
+
+
 func get_rest_yaw() -> float:
 	return _rest_yaw
 

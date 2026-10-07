@@ -214,7 +214,11 @@ func test_party_cancel_in_the_swap_goes_back_without_changes() -> void:
 func test_party_order_is_locked_when_game_state_cannot_reorder() -> void:
 	var menu: FieldMenu = _make(true)
 	if _state.has_method("set_party_order"):
-		return  # the real GameState can reorder now; the locked case no longer exists
+		# The real GameState can reorder now: only the leader is locked, the Party page is live.
+		MenuKit.open_page(menu, 4)
+		var live: PageParty = menu.get_page_object() as PageParty
+		assert_eq(live.get_column().dimmed.size(), 1, "only Red is locked")
+		return
 	MenuKit.open_page(menu, 4)
 	var page: PageParty = menu.get_page_object() as PageParty
 	assert_eq(page.get_column().dimmed.size(), 3, "everyone is locked")

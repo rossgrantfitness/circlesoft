@@ -73,6 +73,7 @@ func test_a_weapon_makes_the_hero_hit_harder() -> void:
 
 func test_setup_from_game_state_reads_gear_through_stat_calc() -> void:
 	var state: Node = _state()
+	state.call("update_member", "red", {"hp": 42})  # hurt, so the saved HP is what the fight starts with
 	Bag.add("rebar_blade", 1, state)
 	Equipment.equip("red", "weapon", "rebar_blade", state)
 	var setup: BattleSetup = BattleSetup.from_game_state(state, "grunt_solo")

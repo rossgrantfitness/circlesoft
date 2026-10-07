@@ -7,6 +7,11 @@ const STATE_SCRIPT: String = "res://tests/fixtures/ui/state_with_order.gd"
 const PLAIN_STATE_SCRIPT: String = "res://scripts/core/game_state.gd"
 const MENU_SCENE: String = "res://scenes/ui/field_menu.tscn"
 const CONFIG_SCRIPT: String = "res://scripts/core/config.gd"
+const TEST_CREW: Dictionary = {
+	"red": {"hp": 42, "hp_max": 42, "juice": 8, "juice_max": 12},
+	"otis": {"hp": 61, "hp_max": 66, "juice": 5, "juice_max": 10},
+	"mox": {"hp": 30, "hp_max": 34, "juice": 14, "juice_max": 16},
+}
 
 
 ## A GameState copy (with set_party_order) holding the real party and starting bag. Freed by the test.
@@ -14,6 +19,10 @@ static func make_state(test: TestCase, plain: bool = false) -> Node:
 	var state: Node = test.own((load(PLAIN_STATE_SCRIPT if plain else STATE_SCRIPT) as GDScript).new() as Node) as Node
 	state.call("load_party", DataDB.get_dict("party/party"))
 	state.call("reset")
+	# The menu tests were written against a hurt crew with these numbers (they used to be the starting
+	# numbers in party.json); the real start is now full HP from StatCalc, so set them here.
+	for id: String in TEST_CREW:
+		state.call("update_member", id, TEST_CREW[id])
 	return state
 
 

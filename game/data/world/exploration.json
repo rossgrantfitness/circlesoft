@@ -4,5 +4,5 @@
   "pickup": {"reach": 1.2, "size": 0.26, "lift": 0.5, "bob_height": 0.08, "bob_period_s": 1.4, "spin_deg_per_s": 110.0, "sparkle_period_s": 1.2},
   "crate": {"reach": 1.4, "size": [0.8, 0.8, 0.8], "lid_open_deg": 70.0},
   "traversal": {"reach": 1.0, "climb_s": 0.95, "hop_s": 0.6, "hop_height": 1.3, "forward_hold": 0.7, "pad": [0.9, 0.5]},
-  "follow": {"teleport_distance": 4.0, "arrive_distance": 0.03, "bob_height": 0.05, "bob_hz": 2.4, "turn_rate_deg_per_s": 540.0, "moving_speed": 0.4}
+  "follow": {"teleport_distance": 4.0, "arrive_distance": 0.03, "bob_height": 0.05, "bob_hz": 2.4, "turn_rate_deg_per_s": 540.0, "moving_speed": 0.4, "join_flags": {"otis": "otis_joined", "mox": "mox_joined"}}
 }

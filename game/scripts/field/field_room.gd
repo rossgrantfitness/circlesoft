@@ -26,6 +26,9 @@ extends Node3D
 @export var spawns_name: String = "Spawns"
 ## The crew (the party minus Red) walks behind her. Off in the old test room, which has Otis and Mox standing in it.
 @export var party_follows: bool = true
+## Members only walk behind her once their join flag is set (data/world/exploration.json "follow.join_flags":
+## Otis after the dock fight, Mox later). Off in the graybox test rooms, which show the whole party.
+@export var crew_by_flags: bool = false
 
 const RESUME_BLOCK_FRAMES: int = 6
 
@@ -39,6 +42,7 @@ var prompt: InteractPrompt = null
 var fights: RoomFights = null
 var party: PartyFollow = null
 var encounters: FieldEncounters = null
+var story: StoryDirector = null
 
 ## A fight was chosen (the enemy's Fight! answer finished). Main answers by starting the battle.
 signal battle_requested(encounter_id: String, fight_id: String)
@@ -77,6 +81,7 @@ func _ready() -> void:
 		_setup_party()
 	_setup_talking()
 	_setup_encounters()
+	_setup_story()
 
 
 ## The marker named `wanted` under the Spawns node (or directly under the room); with no name, or no
@@ -118,10 +123,30 @@ func _setup_party() -> void:
 	var state: Node = get_node_or_null("/root/GameState")
 	if state != null:
 		ids.assign(state.call("get_party_ids"))
+	if crew_by_flags:
+		var join_flags: Dictionary = DataDB.get_dict(ExplorationTuning.TUNING_ID).get("follow", {}).get("join_flags", {})
+		var joined: Array[String] = []
+		for id: String in ids:
+			if not join_flags.has(id) or WorldProgress.has_flag(str(join_flags[id])):
+				joined.append(id)
+		ids = joined
 	party = PartyFollow.new()
 	party.name = "PartyFollow"
 	add_child(party)
 	party.setup(player, ids, self)
+	party.member_added.connect(_on_member_added)
+
+
+func _setup_story() -> void:
+	story = StoryDirector.new()
+	story.name = "StoryDirector"
+	add_child(story)
+	story.setup(self)
+
+
+func _on_member_added(follower: PartyFollower) -> void:
+	if runner != null:
+		runner.register_speaker(follower.member_id, follower, follower.get_head_height())
 
 
 func _setup_encounters() -> void:
@@ -196,6 +221,8 @@ func resume() -> void:
 func battle_finished(result: String, _report: Dictionary = {}) -> void:
 	if fights != null:
 		fights.battle_finished(result)
+	if story != null:
+		story.battle_finished(result)
 	if encounters != null:
 		encounters.battle_finished(result)
 	elif player != null:

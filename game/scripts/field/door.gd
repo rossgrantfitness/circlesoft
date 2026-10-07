@@ -7,6 +7,10 @@ extends RoomProp
 ##   requires {item, consume, flag}   a key item and/or a story flag; consume takes the item once
 ##   locked_message         what Red reads when it will not open (so a locked door says what it wants)
 ##   unlocked_message       shown the first time the key works
+##   width                  a wider doorway than the default (stairs, arches)
+##   style                  "panel" (a slab in a wall, the default), "mat" (a lit doormat on an open
+##                          front edge, no slab) or "arch" (nothing drawn: a gate whose look the room scene supplies)
+##   label                  a small sign over it
 ## Once a locked door has been opened it stays open (remembered through GameState).
 ##
 ## Orientation: the door's local +Z side is the room side, the side Red stands on. Placeholder look: a
@@ -139,12 +143,17 @@ func _requirements_met(needs: Dictionary) -> bool:
 
 ## Walking into the door counts as using it, but only after Red has been out of its zone since the
 ## room loaded or since the last bump (so arriving in front of a door never sends her back).
+func half_width() -> float:
+	var wide: float = float(door_data().get("width", 0.0))
+	return wide * 0.5 if wide > 0.0 else tuning.door_trigger_half_width
+
+
 func _check_walk_in() -> void:
 	var player: PlayerController = get_player()
 	if player == null:
 		return
 	var local: Vector3 = to_local(player.global_position)
-	var inside: bool = absf(local.x) <= tuning.door_trigger_half_width and local.z > -0.4 \
+	var inside: bool = absf(local.x) <= half_width() and local.z > -0.4 \
 			and local.z <= tuning.door_trigger_depth and absf(local.y) < FLOOR_BAND
 	if not inside:
 		_armed = true
@@ -174,10 +183,34 @@ func _refresh_look() -> void:
 
 func _build() -> void:
 	var size: Vector3 = tuning.door_panel
-	var panel: MeshInstance3D = PropLook.box(size, PropLook.lit(PANEL_TINT), "Panel")
-	panel.position.y = size.y * 0.5
-	add_child(panel)
-	_reader = PropLook.box(Vector3(0.12, 0.12, 0.06), PropLook.glow(READER_LOCKED, 1.6), "Reader")
-	_reader.position = Vector3(size.x * 0.5 + 0.14, 1.1, size.z * 0.5)
-	add_child(_reader)
-	add_child(PropLook.solid_box(size, Vector3(0.0, size.y * 0.5, 0.0), "Solid"))
+	var wide: float = float(door_data().get("width", 0.0))
+	if wide > 0.0:
+		size.x = wide
+	var door_style: String = str(door_data().get("style", "panel"))
+	if door_style == "mat":
+		var mat: MeshInstance3D = PropLook.box(Vector3(size.x, 0.03, 0.8), PropLook.glow(Color(1.0, 0.8, 0.35), 0.9), "Mat")
+		mat.position = Vector3(0.0, 0.02, 0.35)
+		add_child(mat)
+	elif door_style == "panel":
+		var panel: MeshInstance3D = PropLook.box(size, PropLook.lit(PANEL_TINT), "Panel")
+		panel.position.y = size.y * 0.5
+		add_child(panel)
+		_reader = PropLook.box(Vector3(0.12, 0.12, 0.06), PropLook.glow(READER_LOCKED, 1.6), "Reader")
+		_reader.position = Vector3(size.x * 0.5 + 0.14, 1.1, size.z * 0.5)
+		add_child(_reader)
+		add_child(PropLook.solid_box(size, Vector3(0.0, size.y * 0.5, 0.0), "Solid"))
+	var text: String = str(door_data().get("label", ""))
+	if not text.is_empty():
+		var label: Label3D = Label3D.new()
+		label.name = "Label"
+		label.text = text
+		label.pixel_size = 0.012
+		label.font_size = 28
+		label.outline_size = 10
+		label.modulate = Color(1.0, 0.95, 0.8)
+		label.outline_modulate = Color(0.05, 0.05, 0.1)
+		label.no_depth_test = false
+		label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+		label.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+		label.position = Vector3(0.0, size.y + 0.45 if door_style == "panel" else 1.0, 0.1)
+		add_child(label)

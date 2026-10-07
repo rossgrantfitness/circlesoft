@@ -25,6 +25,24 @@ func _ready() -> void:
 	if not has_custom_model():
 		_build_glint()
 	_clock = float(placement_id.hash() % 1000) * 0.01
+	# A pickup with "show_if" appears when its condition comes true (the dark window's reward).
+	if pickup_data().has("show_if"):
+		var gs: Node = state()
+		if gs != null and gs.has_signal("flag_changed") and not gs.is_connected("flag_changed", _on_flag_changed):
+			gs.connect("flag_changed", _on_flag_changed)
+		_apply_show_if()
+
+
+func _on_flag_changed(_flag_id: String, _value: bool) -> void:
+	_apply_show_if()
+
+
+func _apply_show_if() -> void:
+	if _gone:
+		return
+	var on: bool = Conditions.met(pickup_data().get("show_if", {}), game_state)
+	visible = on
+	set_usable(on)
 
 
 func _process(delta: float) -> void:
@@ -58,6 +76,8 @@ func use(_player: PlayerController, interactor: PlayerInteractor) -> bool:
 	var result: Dictionary = WorldProgress.grant(pickup_data(), game_state)
 	var lines: Array[String] = []
 	lines.assign(result["lines"])
+	if bool(result["ok"]) and pickup_data().has("message_extra"):
+		lines.append(str(pickup_data()["message_extra"]))
 	say(lines, interactor)
 	if not bool(result["ok"]):
 		return true

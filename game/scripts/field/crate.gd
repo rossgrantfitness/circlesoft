@@ -23,6 +23,9 @@ func _ready() -> void:
 	if data.is_empty():
 		push_error("Crate %s: no crate '%s' in data/world/placements.json" % [name, placement_id])
 	make_interactable(Interactable.Kind.OPEN, tuning.crate_reach, use)
+	if not Conditions.met(data.get("show_if", {}), game_state):
+		visible = false
+		set_usable(false)
 	if not has_custom_model():
 		_build(str(data.get("style", "wood")))
 	if WorldProgress.is_opened(placement_id, game_state):
