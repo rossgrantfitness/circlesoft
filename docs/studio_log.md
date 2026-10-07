@@ -4,6 +4,7 @@
 
 ## 2026-10-07
 
+- **Dynamic battle camera built from Ross's storyboard (1449 tests; playthrough 28/28)** and sent to Ross as a new build. The grimdark tone decision is still open with Ross.
 - **Ross: the game looks too kiddy; wants grimdark, greasy, gritty sci-fi oppression and hopelessness.** This reverses the approved tone ("never grimdark", 2026-10-05), so it went to Ross as a decision before anything changes. Taste Keeper logged it and recorded prediction R36.
 - **Ross: the battle camera is boring; he drew a 12-panel storyboard** (saved at docs/storyboards/battle_camera_ross_2026-10-07.jpg). Technical Artist building a moving battle camera from it: a battle-start camera sequence, a boss low-angle intro, a drifting camera while you pick commands, and action shots during attacks, all keeping the Clutch moment readable.
 - **🎮 v0.3.0 delivered to Ross** (Windows + Mac + Godot project; 1421 tests passed before export): Harrow Landing graybox, saving and Continue, full field menu, shops, gear, roaming enemies, new title and Config.

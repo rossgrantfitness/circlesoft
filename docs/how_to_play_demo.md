@@ -71,6 +71,7 @@ F1 shows or hides a list of the graphics effects. Press the key to flip each one
 - **Talking.** Walk up to Otis, Mox or the old Zero (rough stand-in models in Red's style) and press E. They turn to face Red and talk in comic speech bubbles with gibberish voices. Mox asks you a yes/no question.
 - **Examining.** Try the pillar, the lamp, the crates, the sign and the window. The gold prize crate on the raised platform needs a jump to reach.
 - **The field menu.** Press Tab (or Y): Items, Skills, Equip (green/red arrows compare gear), Status, Party (reorder the crew; Red stays in front), Config (all settings, including a tap-along test that tunes Clutch timing to your screen) and Save (only at a save lamp).
+- **The battle camera** now moves, from your storyboard: a short camera sequence at the start of each fight (any button skips), a drifting camera while you pick commands, and action shots when someone attacks. It holds steady whenever a timing press is coming. Config → Battle Camera switches between Dynamic and Calm (the old fixed view).
 - **Shops.** Walk up to a counter and press E. Buy, sell at half price, pick how many; the gear shop shows who each item would make stronger.
 - **Roaming enemies** (in the test yards behind the test room's west door): they patrol and chase you. Sneak up from behind for a first strike; get caught from behind and they strike first.
 - **Red.** This is the shiba Red you approved, with rough stand-in animations only (stand, walk, run, jump, fall, land). Does her size on screen feel right?
