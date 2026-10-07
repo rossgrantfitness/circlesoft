@@ -67,6 +67,16 @@ var transitions_enabled: bool = true
 var cue_marker_enabled: bool = true
 ## Set to build the controller some other way (tests, the simulator): func(setup) -> controller.
 var controller_factory: Callable = Callable()
+## "Battle camera: Dynamic / Calm" (Config.dynamic_battle_camera). Dynamic = the camera director pans, cranes and
+## cuts (Ross's storyboard); Calm = the old fixed framing with no intro.
+var dynamic_camera: bool = true
+## Seed for the director's seeded picks (intro shots, idle variant). -1 = from the setup's rng_seed, or random.
+var camera_seed: int = -1
+## Set false to skip the camera intro (tests that do not care about it).
+var camera_intro_enabled: bool = true
+var camera_director: BattleCamDirector = null
+var cam_tuning: BattleStageTuning = null
+var camera_frame: BattleCamFrame = null
 ## Where sound effects go (anything with play_sfx(id)). Null = the AudioManager autoload; tests pass a fake.
 var audio: Object = null
 var tuning: BattleStageTuning = null
@@ -114,11 +124,14 @@ var _last_marker_signature: int = 0
 
 func _ready() -> void:
 	add_to_group(GROUP_STAGE)
+	process_priority = -10          # the camera moves before the HUD asks where fighters are
 	tuning = BattleStageTuning.from_db(get_node_or_null("/root/DataDB"))
+	dynamic_camera = _config_dynamic_camera()
 	_prepare_stage()
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
+	_update_camera(delta)
 	_fire_due_cues()
 	var signature: int = _marker_signature()
 	if signature != _last_marker_signature:
@@ -209,7 +222,12 @@ func set_target_highlight(ids: PackedStringArray) -> void:
 ## Forwards a Clutch press or release to the controller with a timestamp from the cue clock. Called by _input and
 ## by the input relay (the world viewport gets no input events of its own, see _ensure_input_relay).
 func handle_input_event(event: InputEvent) -> void:
-	if controller == null or event.is_echo():
+	if event.is_echo():
+		return
+	if camera_director != null and camera_director.is_intro_playing() and _is_press(event):
+		camera_director.skip_intro()      # any press skips the intro straight to the settle shot
+		return
+	if controller == null:
 		return
 	if event.is_action_pressed(CLUTCH_ACTION):
 		controller.call("press_down", _now_usec())
@@ -256,6 +274,8 @@ func _prepare_stage() -> void:
 	static_layer.set_progress(0.0)
 	screen_flash.visible = false
 	_build_markers()
+	cam_tuning = BattleStageTuning.from_db_id(get_node_or_null("/root/DataDB"), BattleStageTuning.CAMERA_ID)
+	camera_director = BattleCamDirector.new()
 	_cue_texture = BattleTextures.cue_texture(tuning.integer("cue.marker_px"), tuning.color("cue.marker_color"), tuning.color("cue.marker_outline"), Color.html("#14121F"))
 	_build_backdrop("default")
 
@@ -451,15 +471,25 @@ func _run_intro() -> void:
 		snap = controller.call("snapshot") as Dictionary
 	if not snap.is_empty() and snap.has("combatants"):
 		_on_battle_started(snap)
+	var play_camera: bool = dynamic_camera and camera_intro_enabled and camera_director != null and not views.is_empty()
 	if transitions_enabled:
 		static_layer.set_boss(is_boss)
 		static_layer.set_progress(1.0)
 		_play_sfx(&"battle_static_in")
+		if play_camera:
+			_start_camera_intro()
 		await get_tree().create_timer(static_layer.hold_ms() / 1000.0).timeout
-		_set_hud_visible(true)
-		await static_layer.reveal()
-	else:
-		_set_hud_visible(true)
+		if play_camera:
+			static_layer.reveal()
+			await camera_director.intro_finished
+		else:
+			_set_hud_visible(true)
+			await static_layer.reveal()
+	elif play_camera:
+		_start_camera_intro()
+		await camera_director.intro_finished
+	_set_hud_visible(true)
+	_clear_silhouette()
 	intro_finished.emit()
 	start_fight()
 
@@ -512,6 +542,7 @@ func _on_battle_started(snap: Dictionary) -> void:
 	_spawned_ids = ids
 	for entry: Variant in combatants:
 		_spawn_view(entry as Dictionary)
+	_rebuild_camera_frame()
 	_refresh_markers()
 
 
@@ -554,8 +585,10 @@ func _on_action_started(action: Dictionary) -> void:
 			_defending[actor_id] = true
 		elif style == "item":
 			view.item_pose()
-		if view.is_boss and view.side == SIDE_ENEMY and windup_s * 1000.0 >= tuning.number("camera.push_in.boss_tell_min_windup_ms"):
+		if not dynamic_camera and view.is_boss and view.side == SIDE_ENEMY and windup_s * 1000.0 >= tuning.number("camera.push_in.boss_tell_min_windup_ms"):
 			camera_rig.push_in("boss_tell")
+		if dynamic_camera and (str(action.get("kind", "")) == "attack" or str(action.get("kind", "")) == "skill"):
+			_camera_for_action(action, view, style == "lunge" and targets.size() == 1)
 	_schedule_cues(action, t0)
 
 
@@ -596,7 +629,8 @@ func _on_hit(info: Dictionary) -> void:
 		_play_sfx(&"battle_hit_big" if big else &"battle_hit")
 		if rating == RATING_TOTALLY_RAD:
 			shake("totally_rad")
-			camera_rig.push_in("big_hit")
+			if not dynamic_camera or not camera_director.lock_near(tuning.number("shake.push_quiet_s")):
+				camera_rig.push_in("big_hit")
 		elif big and target.side == SIDE_PARTY:
 			shake("big_damage")
 
@@ -693,6 +727,111 @@ func _celebrate(last_id: String) -> void:
 			view.victory_hop(delay + 0.25)
 			delay += tuning.number("motion.victory_hop.stagger_ms") / 1000.0
 	camera_rig.push_in("victory")
+
+
+# ---- the camera director ----
+
+func _config_dynamic_camera() -> bool:
+	var config: Node = get_node_or_null("/root/Config")
+	if config != null and ("dynamic_battle_camera" in config):
+		return bool(config.get("dynamic_battle_camera"))
+	return true
+
+
+## Switches between the Dynamic director and the Calm fixed framing (Config toggle, or a test).
+func set_dynamic_camera(enabled: bool) -> void:
+	dynamic_camera = enabled
+	if not enabled:
+		camera_rig.configure(tuning)
+	elif camera_director != null and camera_frame != null:
+		camera_director.start_idle()
+
+
+func _is_press(event: InputEvent) -> bool:
+	if not event.is_pressed():
+		return false
+	return event is InputEventKey or event is InputEventJoypadButton or event is InputEventMouseButton or event is InputEventAction
+
+
+## Describes the formation to the director (from where the fighters stand) and starts it.
+func _rebuild_camera_frame() -> void:
+	var list: Array = []
+	for id: String in views:
+		var view: CombatantView = views[id]
+		list.append({"id": id, "side": view.side, "slot": view.slot, "pos": view.home_position, "height": view.body_top, "is_boss": view.is_boss})
+	camera_frame = BattleCamFrame.new()
+	var dir_tuning: BattleStageTuning = cam_tuning
+	camera_frame.build(list, dir_tuning.number("director.ref_half_span"), dir_tuning.number("director.scale_min"), dir_tuning.number("director.scale_max"))
+	var seed_value: int = camera_seed
+	if seed_value < 0:
+		var from_setup: int = int(_setup.get("rng_seed")) if _setup != null and _setup.get("rng_seed") != null else -1
+		seed_value = from_setup if from_setup >= 0 else int(Time.get_ticks_usec() % 1000000)
+	if camera_director.tuning == null:
+		camera_director.setup(cam_tuning, camera_frame, seed_value, _aspect())
+		camera_director.pick_idle_variant()
+	else:
+		camera_director.aspect = _aspect()
+		camera_director.set_frame(camera_frame)
+	if dynamic_camera:
+		camera_rig.apply_pose(camera_director.pose())
+
+
+func _aspect() -> float:
+	var size: Vector2 = get_viewport().get_visible_rect().size if is_inside_tree() else STAGE_SIZE
+	return size.x / maxf(size.y, 1.0)
+
+
+func _update_camera(delta: float) -> void:
+	if not dynamic_camera or camera_director == null or camera_frame == null:
+		return
+	camera_director.advance(delta)
+	camera_rig.apply_pose(camera_director.pose())
+
+
+func _start_camera_intro() -> void:
+	camera_director.settle_started.connect(_on_settle_started, CONNECT_ONE_SHOT)
+	camera_director.start_intro(is_boss)
+	camera_rig.apply_pose(camera_director.pose())
+	if is_boss:
+		var silhouette: Dictionary = cam_tuning.dict("director.silhouette")
+		var tint: Color = BattleStageTuning.color_of(silhouette.get("tint", [0.1, 0.1, 0.15]))
+		for id: String in views:
+			if views[id].side == SIDE_PARTY:
+				views[id].set_dim(tint)
+
+
+func _on_settle_started() -> void:
+	_set_hud_visible(true)
+	_clear_silhouette()
+
+
+func _clear_silhouette() -> void:
+	for id: String in views:
+		views[id].set_dim(Color.WHITE)
+
+
+## An attacker-side angle for an action, locked down around its Clutch cues (see BattleCamDirector).
+func _camera_for_action(action: Dictionary, actor_view: CombatantView, lunge: bool) -> void:
+	var t0: int = int(action.get("t0_usec", 0))
+	var start_off: float = float(t0 - _now_usec()) / USEC_PER_S if t0 > 0 else 0.0
+	var first: float = INF
+	var last: float = -INF
+	for entry: Variant in action.get("presses", []):
+		var press: Dictionary = entry
+		var cues: Array[float] = [float(press.get("cue_ms", 0.0)), float(press.get("shown_cue_ms", press.get("cue_ms", 0.0)))]
+		if press.has("hold_by_ms") and press.get("hold_by_ms") != null and float(press.get("hold_by_ms")) > 0.0:
+			cues.append(float(press["hold_by_ms"]))
+		for cue: float in cues:
+			first = minf(first, cue)
+			last = maxf(last, cue)
+	var info: Dictionary = {"actor": actor_view.combatant_id, "targets": action.get("targets", []), "side": actor_view.side, "lunge": lunge}
+	if first < INF:
+		info["lock_start_s"] = start_off + first / 1000.0 - cam_tuning.number("director.lock.lead_ms") / 1000.0
+		info["lock_end_s"] = start_off + last / 1000.0 + cam_tuning.number("director.lock.tail_ms") / 1000.0
+		info["lock_start_s"] = maxf(float(info["lock_start_s"]), 0.0)
+	else:
+		info["hold_s"] = float(action.get("timeline_ms", {}).get("end", 900.0)) / 1000.0
+	camera_director.begin_action(info)
 
 
 # ---- cues: one moment drives the flash, the ding and the "!" ----

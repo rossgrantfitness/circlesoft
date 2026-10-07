@@ -314,7 +314,8 @@ func _row_value(row: Dictionary) -> String:
 		return ""
 	match str(row["type"]):
 		"toggle":
-			return str(_text["on"] if _get_bool(id) else _text["off"])
+			var words: Dictionary = _text["rows"].get(id, {})
+			return str(words.get("value_on", _text["on"]) if _get_bool(id) else words.get("value_off", _text["off"]))
 		"offset":
 			return _signed_ms(int(cfg.get("timing_offset_ms")))
 		"choice":
@@ -344,6 +345,8 @@ func _get_bool(id: String) -> bool:
 			return bool(cfg.get("skip_seen_cutscenes"))
 		"vibration":
 			return bool(cfg.get("vibration"))
+		"battle_camera":
+			return bool(cfg.get("dynamic_battle_camera"))
 	return false
 
 
@@ -365,6 +368,9 @@ func _set_bool(id: String, value: bool) -> String:
 		"vibration":
 			cfg.call("set_vibration", value)
 			return "vibration"
+		"battle_camera":
+			cfg.call("set_dynamic_battle_camera", value)
+			return "dynamic_battle_camera"
 	return ""
 
 

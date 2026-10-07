@@ -61,6 +61,7 @@ var _pose_tween: Tween = null
 var _flash_tween: Tween = null
 var _face_tween: Tween = null
 var _fx_tween: Tween = null
+var _dim: Color = Color.WHITE
 var _frozen: bool = false
 var _saved_speed: float = 1.0
 var _arm_raise: float = 0.0
@@ -481,7 +482,18 @@ func _set_tint_flash(color: Color) -> void:
 
 func _clear_flash() -> void:
 	for i: int in _materials.size():
-		_materials[i].set_shader_parameter(PARAM_TINT, _base_tints[i])
+		_materials[i].set_shader_parameter(PARAM_TINT, _dimmed(_base_tints[i]))
+
+
+## Multiplies every color (the boss intro shows the party as dark silhouettes). Color.WHITE puts it back.
+func set_dim(color: Color) -> void:
+	_dim = color
+	if not is_flashing():
+		_clear_flash()
+
+
+func _dimmed(base: Color) -> Color:
+	return Color(base.r * _dim.r, base.g * _dim.g, base.b * _dim.b, base.a)
 
 
 func _set_face_offset(offset: Vector2) -> void:

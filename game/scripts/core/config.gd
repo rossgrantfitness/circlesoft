@@ -28,6 +28,7 @@ const KEY_SFX_VOLUME: String = "sfx_volume"
 const KEY_AUTO_ADVANCE: String = "auto_advance"
 const KEY_SKIP_SEEN: String = "skip_seen_cutscenes"
 const KEY_VIBRATION: String = "vibration"
+const KEY_DYNAMIC_CAMERA: String = "dynamic_battle_camera"
 const KEY_BINDINGS: String = "bindings"
 ## Volume names in screen order, and the AudioManager bus each one drives.
 const VOLUME_BUSES: Dictionary = {"master": &"Master", "music": &"Music", "sfx": &"SFX", "voice": &"Voice"}
@@ -60,6 +61,9 @@ var auto_advance: bool = false
 var skip_seen_cutscenes: bool = false
 ## Controller rumble. Stored now; the first game system to rumble reads it.
 var vibration: bool = true
+## "Battle camera: Dynamic / Calm". Dynamic (true, the default) pans around during battle; Calm uses the old fixed
+## framing for players who want a steadier picture. The battle stage reads it when a fight starts.
+var dynamic_battle_camera: bool = true
 ## Button remaps that differ from the project defaults: {group: {"key": code, "pad": code}}.
 var bindings: Dictionary = {}
 ## On: set_binding / clear_bindings write straight into the InputMap. Tests turn it off.
@@ -250,6 +254,13 @@ func set_skip_seen_cutscenes(enabled: bool) -> void:
 	setting_changed.emit(KEY_SKIP_SEEN)
 
 
+func set_dynamic_battle_camera(enabled: bool) -> void:
+	if enabled == dynamic_battle_camera:
+		return
+	dynamic_battle_camera = enabled
+	setting_changed.emit(KEY_DYNAMIC_CAMERA)
+
+
 func set_vibration(enabled: bool) -> void:
 	if enabled == vibration:
 		return
@@ -308,6 +319,7 @@ func to_dict() -> Dictionary:
 		KEY_AUTO_ADVANCE: auto_advance,
 		KEY_SKIP_SEEN: skip_seen_cutscenes,
 		KEY_VIBRATION: vibration,
+		KEY_DYNAMIC_CAMERA: dynamic_battle_camera,
 		KEY_BINDINGS: bindings.duplicate(true),
 	}
 
@@ -335,6 +347,8 @@ func from_dict(data: Dictionary) -> void:
 		set_skip_seen_cutscenes(bool(data[KEY_SKIP_SEEN]))
 	if data.has(KEY_VIBRATION):
 		set_vibration(bool(data[KEY_VIBRATION]))
+	if data.has(KEY_DYNAMIC_CAMERA):
+		set_dynamic_battle_camera(bool(data[KEY_DYNAMIC_CAMERA]))
 	if data.get(KEY_BINDINGS) is Dictionary:
 		bindings = _clean_bindings(data[KEY_BINDINGS])
 

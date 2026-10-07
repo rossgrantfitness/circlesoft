@@ -88,11 +88,11 @@ func _pad(button: JoyButton) -> InputEventJoypadButton:
 func test_the_rows_are_the_ones_the_design_lists_in_order() -> void:
 	var screen: ConfigScreen = _make()
 	assert_eq(screen.get_row_ids(), [
-		"auto_timing", "wide_windows", "timing_offset", "tap_along",
+		"auto_timing", "wide_windows", "timing_offset", "tap_along", "battle_camera",
 		"text_speed", "auto_advance", "skip_seen",
 		"master_volume", "music_volume", "sfx_volume", "voice_volume",
 		"controls", "vibration"] as Array[String])
-	assert_eq(screen.get_list().get_count(), 13)
+	assert_eq(screen.get_list().get_count(), 14)
 
 
 func test_every_row_has_a_label_and_a_hint_in_data() -> void:
@@ -107,6 +107,7 @@ func test_every_row_has_a_label_and_a_hint_in_data() -> void:
 		labels.append(str(item["label"]))
 	assert_eq(labels[0], "Auto-Timing")
 	assert_eq(labels[3], "Tap-Along Test")
+	assert_eq(labels[4], "Battle Camera")
 
 
 func test_values_show_the_current_settings() -> void:

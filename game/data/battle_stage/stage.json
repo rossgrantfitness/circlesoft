@@ -1,7 +1,7 @@
 {
   "_about": "Battle stage tunables (Technical Artist). Distances are world units (Red is 1.0 tall, about 40 screen pixels at 384x216). Times are milliseconds. Positions are [x, y, z]: +x is screen right, +z is toward the camera. Colors are hex. Read by scripts/battle/view/battle_stage_tuning.gd; every value here has a test.",
   "camera": {
-    "_note": "Fixed diorama camera: it never rotates. Push-ins slide it toward look_at; shake only moves it sideways and up/down.",
+    "_note": "The CALM framing (Config: Battle camera = Calm) and the stage default: one fixed pitch and yaw, no rotation. Push-ins slide it toward look_at; shake only moves it sideways and up/down. The Dynamic camera is driven by camera_shots.json; this block still sets its FOV/near/far defaults and the calm look.",
     "fov_deg": 30.0,
     "pitch_deg": 26.0,
     "yaw_deg": 0.0,
@@ -128,6 +128,7 @@
   },
   "shake": {
     "_note": "amplitude is world units (about 40 px per unit); step_hz is how often the offset jumps (stepped, PSX style).",
+    "push_quiet_s": 0.6,
     "totally_rad": {"amplitude": 0.11, "duration_ms": 260, "step_hz": 30.0, "hit_stop_ms": 70},
     "block_perfect": {"amplitude": 0.05, "duration_ms": 140, "step_hz": 30.0, "hit_stop_ms": 0},
     "big_damage": {"amplitude": 0.06, "duration_ms": 180, "step_hz": 30.0, "hit_stop_ms": 0, "min_damage_fraction": 0.3}

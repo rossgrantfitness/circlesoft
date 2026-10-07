@@ -15,6 +15,7 @@
     {"id": "wide_windows", "type": "toggle"},
     {"id": "timing_offset", "type": "offset"},
     {"id": "tap_along", "type": "action"},
+    {"id": "battle_camera", "type": "toggle"},
     {"id": "text_speed", "type": "choice"},
     {"id": "auto_advance", "type": "toggle"},
     {"id": "skip_seen", "type": "toggle"},

@@ -18,6 +18,11 @@ var base_position: Vector3 = Vector3.ZERO
 var push_amount: float = 0.0
 var shake_offset: Vector2 = Vector2.ZERO
 
+## True when a director drives the pose (the "Dynamic" battle camera). False = the fixed calm framing.
+var dynamic: bool = false
+var current_pose: BattleCamPose = BattleCamPose.new()
+
+var _basis: Basis = Basis.IDENTITY
 var _camera: Camera3D = null
 var _tuning: BattleStageTuning = null
 var _toward: Vector3 = Vector3.FORWARD
@@ -59,9 +64,26 @@ func configure(tuning: BattleStageTuning) -> void:
 	var basis: Basis = Basis.looking_at(_toward, Vector3.UP)
 	_right = basis.x
 	_up = basis.y
+	_basis = basis
+	current_pose = BattleCamPose.make(base_position, look_at_point, 0.0, camera.fov)
 	transform = Transform3D(basis, base_position)
 	camera.transform = Transform3D.IDENTITY
 	camera.current = true
+	_apply()
+
+
+## The director's pose for this frame (position, target, roll, FOV). The push-in and shake still ride on top.
+func apply_pose(pose: BattleCamPose) -> void:
+	var camera: Camera3D = _ensure_camera()
+	current_pose = pose
+	look_at_point = pose.look
+	base_position = pose.position
+	_basis = pose.basis()
+	_toward = -_basis.z
+	_right = _basis.x
+	_up = _basis.y
+	camera.fov = pose.fov
+	top_level = true
 	_apply()
 
 
@@ -71,7 +93,7 @@ func get_camera() -> Camera3D:
 
 ## The one rotation the camera ever has (tests check it does not change).
 func fixed_basis() -> Basis:
-	return transform.basis
+	return _basis
 
 
 ## Slide toward the look-at point and back. `preset` is a key under camera.push_in (big_hit, boss_tell, ko, victory).
@@ -168,4 +190,4 @@ func _apply() -> void:
 	if _camera == null:
 		return
 	var position_now: Vector3 = base_position + _toward * push_amount + _right * shake_offset.x + _up * shake_offset.y
-	position = position_now
+	transform = Transform3D(_basis, position_now)

@@ -6,6 +6,7 @@ extends RefCounted
 ## A missing key logs an error and reads as 0 / empty, so a data typo is loud instead of silently wrong.
 
 const TUNING_ID: String = "battle_stage/stage"
+const CAMERA_ID: String = "battle_stage/camera_shots"
 const PATH_SEPARATOR: String = "."
 const DEFAULT_BACKDROP: String = "default"
 
@@ -17,6 +18,13 @@ static func from_db(db: Node) -> BattleStageTuning:
 		push_error("BattleStageTuning: no DataDB available")
 		return BattleStageTuning.new()
 	return from_dict(db.call("get_dict", TUNING_ID))
+
+
+static func from_db_id(db: Node, id: String) -> BattleStageTuning:
+	if db == null:
+		push_error("BattleStageTuning: no DataDB available")
+		return BattleStageTuning.new()
+	return from_dict(db.call("get_dict", id))
 
 
 static func from_dict(source: Dictionary) -> BattleStageTuning:

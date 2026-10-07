@@ -4,6 +4,7 @@
 
 ## 2026-10-07
 
+- **Ross: the game looks too kiddy; wants grimdark, greasy, gritty sci-fi oppression and hopelessness.** This reverses the approved tone ("never grimdark", 2026-10-05), so it went to Ross as a decision before anything changes. Taste Keeper logged it and recorded prediction R36.
 - **Ross: the battle camera is boring; he drew a 12-panel storyboard** (saved at docs/storyboards/battle_camera_ross_2026-10-07.jpg). Technical Artist building a moving battle camera from it: a battle-start camera sequence, a boss low-angle intro, a drifting camera while you pick commands, and action shots during attacks, all keeping the Clutch moment readable.
 - **🎮 v0.3.0 delivered to Ross** (Windows + Mac + Godot project; 1421 tests passed before export): Harrow Landing graybox, saving and Continue, full field menu, shops, gear, roaming enemies, new title and Config.
 - **Harrow Landing graybox built (1421 tests):** 9 rooms, ~25 townsfolk with lines by story beat, both shops, job board + 2 side deliveries, 5 hidden items, the dock fight, story scenes; New Game starts in Red's home. My real-renderer playthrough (Battle Test, New Game, save at the lamp, square, store purchase, field menu, Continue) passes 28/28. Building v0.3.0 for Ross.

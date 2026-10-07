@@ -10,6 +10,7 @@
   "rows": {
     "auto_timing": {"label": "Auto-Timing", "hint": "Battle timing presses themselves. Off by default."},
     "wide_windows": {"label": "Wide Windows", "hint": "Bigger timing windows. You still press."},
+    "battle_camera": {"label": "Battle Camera", "hint": "Dynamic pans and cranes around the fight. Calm keeps one steady view.", "value_on": "Dynamic", "value_off": "Calm"},
     "timing_offset": {"label": "Timing Offset", "hint": "Nudge the timing for laggy TVs and headphones."},
     "tap_along": {"label": "Tap-Along Test", "hint": "Tap along to a beat and find your best offset.", "value": "Start"},
     "text_speed": {"label": "Text Speed", "hint": "How fast the speech bubbles type out."},
