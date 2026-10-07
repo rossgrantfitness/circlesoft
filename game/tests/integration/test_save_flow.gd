@@ -9,6 +9,7 @@ const LAMP_NODE: String = "SaveLamp"
 const LAMP_SPAWN: String = "LampSpawn"
 
 var _manager: Node = null
+var _busy_before: Array[Node] = []
 var _state: Node = null
 var _old_dir: String = ""
 var _old_auto: bool = false
@@ -16,6 +17,7 @@ var _dir: String = ""
 
 
 func before_each() -> void:
+	_busy_before = SaveTestKit.busy_now(tree)
 	_manager = tree.root.get_node("SaveManager")
 	_state = tree.root.get_node("GameState")
 	_old_dir = str(_manager.get("save_dir"))
@@ -27,6 +29,7 @@ func before_each() -> void:
 
 
 func after_each() -> void:
+	SaveTestKit.tear_down(self, _busy_before)
 	_manager.set("save_dir", _old_dir)
 	_manager.set("auto_save_enabled", _old_auto)
 	_manager.set("battle_active", false)

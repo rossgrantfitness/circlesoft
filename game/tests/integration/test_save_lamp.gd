@@ -11,9 +11,11 @@ var _dir: String = ""
 var _now: float = 1000.0
 var _state: Node = null
 var _manager: Node = null
+var _busy_before: Array[Node] = []
 
 
 func before_each() -> void:
+	_busy_before = SaveTestKit.busy_now(tree)
 	_dir = "user://test_lamp_saves_%d" % Time.get_ticks_usec()
 	_now = 1000.0
 	_state = own((load(STATE_PATH) as GDScript).new() as Node) as Node
@@ -29,12 +31,8 @@ func before_each() -> void:
 
 func after_each() -> void:
 	# SavePrompt.open() builds on the first UiStage in the tree, which may be an older one that outlives
-	# this test: take our screens down ourselves so none is left holding the "busy" lock.
-	for node: Node in tree.get_nodes_in_group(UiStage.MODAL_GROUP):
-		if node is SavePrompt:
-			node.remove_from_group(UiStage.MODAL_GROUP)
-			node.get_parent().remove_child(node)
-			node.free()
+	# this test, so the kit takes our screens down and checks the busy group is back to how it was.
+	SaveTestKit.tear_down(self, _busy_before)
 	_remove_dir(_dir)
 
 

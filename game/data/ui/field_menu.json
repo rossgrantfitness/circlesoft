@@ -203,11 +203,5 @@
     "label_x": 140,
     "label_dy": 22
   },
-  "config_page": {
-    "row_step": 24,
-    "first_y": 14,
-    "preview_y": 132
-  },
-  "volume_steps": 10,
   "page_inset": 4
 }

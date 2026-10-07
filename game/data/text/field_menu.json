@@ -140,31 +140,6 @@
       "come later."
     ]
   },
-  "config": {
-    "title": "Config",
-    "text_speed": "Text Speed",
-    "voice_volume": "Voice Volume",
-    "auto_timing": "Auto-Timing",
-    "wide_windows": "Wide Windows",
-    "timing_offset": "Timing Offset",
-    "ms_format": "{ms} ms",
-    "on": "On",
-    "off": "Off",
-    "speed_names": {
-      "slow": "Slow",
-      "normal": "Normal",
-      "fast": "Fast"
-    },
-    "hints": {
-      "text_speed": "How fast the speech bubbles type out.",
-      "voice_volume": "How loud the gibberish voices are.",
-      "auto_timing": "Battle timing presses themselves. Off by default.",
-      "wide_windows": "Bigger timing windows. You still press.",
-      "timing_offset": "Nudge the timing for laggy TVs and headphones."
-    },
-    "preview": "The quick brown pup jumps over the lazy lamp.",
-    "preview_speaker": "otis"
-  },
   "reasons": {
     "battle_only": "Battle only.",
     "lamp_only": "Use it at a save lamp.",
