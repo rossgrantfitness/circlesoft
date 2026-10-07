@@ -3,7 +3,7 @@
   "enemies": [
     {
       "id": "signals_grunt", "name": "Signals Grunt", "level": 2,
-      "stats": {"hp": 112, "juice": 0, "attack": 13, "defense": 4, "heart": 3, "speed": 5, "luck": 3},
+      "stats": {"hp": 146, "juice": 0, "attack": 13, "defense": 4, "heart": 3, "speed": 5, "luck": 3},
       "xp": 14, "credits": 21,
       "drops": [{"item": "ration_bar", "chance": 0.2}],
       "status_resist": {},
@@ -17,7 +17,7 @@
     },
     {
       "id": "signals_drone", "name": "Signals Drone", "level": 2,
-      "stats": {"hp": 83, "juice": 0, "attack": 12, "defense": 3, "heart": 8, "speed": 8, "luck": 3},
+      "stats": {"hp": 108, "juice": 0, "attack": 12, "defense": 3, "heart": 8, "speed": 8, "luck": 3},
       "xp": 14, "credits": 22,
       "drops": [{"item": "canned_coffee", "chance": 0.2}],
       "status_resist": {"burnt_toast": 0.5},
@@ -31,7 +31,7 @@
     },
     {
       "id": "whistle_blower", "name": "Whistle Blower", "level": 3,
-      "stats": {"hp": 160, "juice": 0, "attack": 18, "defense": 5, "heart": 4, "speed": 6, "luck": 4},
+      "stats": {"hp": 208, "juice": 0, "attack": 18, "defense": 5, "heart": 4, "speed": 6, "luck": 4},
       "xp": 22, "credits": 32,
       "drops": [{"item": "ration_bar", "chance": 0.25}, {"item": "can_of_chili", "chance": 0.08}],
       "status_resist": {"wobbly": 0.5},
@@ -45,7 +45,7 @@
     },
     {
       "id": "buzzkill_drone", "name": "Buzzkill", "level": 3,
-      "stats": {"hp": 105, "juice": 0, "attack": 17, "defense": 3, "heart": 9, "speed": 11, "luck": 5},
+      "stats": {"hp": 136, "juice": 0, "attack": 17, "defense": 3, "heart": 9, "speed": 11, "luck": 5},
       "xp": 24, "credits": 34,
       "drops": [{"item": "juice_box", "chance": 0.15}, {"item": "canned_coffee", "chance": 0.15}],
       "status_resist": {"burnt_toast": 0.5},

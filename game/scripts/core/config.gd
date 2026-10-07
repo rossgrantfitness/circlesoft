@@ -1,13 +1,15 @@
 extends Node
-## Player settings (user://config.json): text speed, voice volume, and the three battle timing
-## options (Auto-Timing, Wide Windows, timing offset in ms). The rest of the Config screen (volumes,
-## remap, ...) arrives with task M3-10; this holds what the field menu, the speech bubbles and the
-## battle need now. Older settings files without the newer keys still load (missing keys keep their
-## defaults). Autoload, no class_name.
+## Player settings (user://config.json), everything the Config screen (scripts/ui/config_screen.gd)
+## shows: text speed, auto-advance, skip seen cutscenes, the four volumes (Master / Music / SFX /
+## Voice), the three battle timing options (Auto-Timing, Wide Windows, timing offset in ms),
+## vibration, and the button remap. Older settings files without the newer keys still load
+## (missing keys keep their defaults). Autoload, no class_name.
 ##
-## Voice volume is a 0..1 number; changing it also tells AudioManager.set_voice_volume() when that
-## exists. Tests build their own copy with `load("res://scripts/core/config.gd").new()` and point
-## `save_path` at a scratch file.
+## Volumes are 0..1 numbers; changing one also tells AudioManager.set_bus_volume() when that exists.
+## Button remaps are stored as overrides (see InputRemap) and written into the InputMap when the
+## game starts and whenever one changes (`apply_bindings_live`). Tests build their own copy with
+## `load("res://scripts/core/config.gd").new()`, point `save_path` at a scratch file and turn
+## `apply_bindings_live` off.
 
 signal setting_changed(key: String)
 
@@ -20,8 +22,21 @@ const KEY_VOICE_VOLUME: String = "voice_volume"
 const KEY_AUTO_TIMING: String = "auto_timing"
 const KEY_WIDE_WINDOWS: String = "wide_windows"
 const KEY_TIMING_OFFSET: String = "timing_offset_ms"
+const KEY_MASTER_VOLUME: String = "master_volume"
+const KEY_MUSIC_VOLUME: String = "music_volume"
+const KEY_SFX_VOLUME: String = "sfx_volume"
+const KEY_AUTO_ADVANCE: String = "auto_advance"
+const KEY_SKIP_SEEN: String = "skip_seen_cutscenes"
+const KEY_VIBRATION: String = "vibration"
+const KEY_BINDINGS: String = "bindings"
+## Volume names in screen order, and the AudioManager bus each one drives.
+const VOLUME_BUSES: Dictionary = {"master": &"Master", "music": &"Music", "sfx": &"SFX", "voice": &"Voice"}
+const AUDIO_SET_BUS: StringName = &"set_bus_volume"
 const BATTLE_UI_DATA_ID: String = "ui/battle_ui"
 const DEFAULT_VOICE_VOLUME: float = 0.8
+const DEFAULT_MASTER_VOLUME: float = 1.0
+const DEFAULT_MUSIC_VOLUME: float = 0.8
+const DEFAULT_SFX_VOLUME: float = 1.0
 ## Fallbacks for the timing offset range; the real numbers are in data/ui/battle_ui.json ("settings").
 const DEFAULT_OFFSET_MIN_MS: int = -200
 const DEFAULT_OFFSET_MAX_MS: int = 200
@@ -36,12 +51,28 @@ var auto_timing: bool = false
 var wide_windows: bool = false
 ## Milliseconds added to when presses count (for laggy TVs and headphones). Positive = later.
 var timing_offset_ms: int = 0
+var master_volume: float = DEFAULT_MASTER_VOLUME
+var music_volume: float = DEFAULT_MUSIC_VOLUME
+var sfx_volume: float = DEFAULT_SFX_VOLUME
+## Finished text pages turn by themselves after a short read time.
+var auto_advance: bool = false
+## Cutscenes the player has already seen can be skipped (the cutscene system reads this).
+var skip_seen_cutscenes: bool = false
+## Controller rumble. Stored now; the first game system to rumble reads it.
+var vibration: bool = true
+## Button remaps that differ from the project defaults: {group: {"key": code, "pad": code}}.
+var bindings: Dictionary = {}
+## On: set_binding / clear_bindings write straight into the InputMap. Tests turn it off.
+var apply_bindings_live: bool = true
 
 
 func _ready() -> void:
 	text_speed = default_text_speed()
 	load_file()
-	_push_voice_volume()
+	# AudioManager is set up after this autoload, so tell it the volumes once everything is ready.
+	_push_volumes.call_deferred()
+	if not bindings.is_empty():
+		InputRemap.apply(bindings)
 
 
 # ---- text speed ----
@@ -150,6 +181,118 @@ func _push_voice_volume() -> void:
 		audio.call(AUDIO_VOICE_VOLUME, voice_volume)
 
 
+## Tells AudioManager every volume (the autoload only; copies made by tests have no AudioManager).
+func _push_volumes() -> void:
+	var tree: SceneTree = Engine.get_main_loop() as SceneTree
+	var audio: Node = tree.root.get_node_or_null(AUDIO_NAME) if tree != null else null
+	if audio == null or not audio.has_method(AUDIO_SET_BUS):
+		_push_voice_volume()
+		return
+	for volume_id: String in VOLUME_BUSES:
+		audio.call(AUDIO_SET_BUS, VOLUME_BUSES[volume_id], get_volume(volume_id))
+
+
+# ---- volumes, auto-advance, skip, vibration ----
+
+## A volume by name: "master", "music", "sfx" or "voice".
+func get_volume(volume_id: String) -> float:
+	match volume_id:
+		"master":
+			return master_volume
+		"music":
+			return music_volume
+		"sfx":
+			return sfx_volume
+		"voice":
+			return voice_volume
+	return 1.0
+
+
+## Sets a volume by name (0..1, snapped to 0.01) and tells AudioManager.
+func set_volume(volume_id: String, value: float) -> void:
+	if volume_id == "voice":
+		set_voice_volume(value)
+		return
+	if not VOLUME_BUSES.has(volume_id):
+		return
+	var clamped: float = clampf(snappedf(value, 0.01), 0.0, 1.0)
+	if is_equal_approx(clamped, get_volume(volume_id)):
+		return
+	match volume_id:
+		"master":
+			master_volume = clamped
+		"music":
+			music_volume = clamped
+		"sfx":
+			sfx_volume = clamped
+	_push_volume(volume_id)
+	setting_changed.emit("%s_volume" % volume_id)
+
+
+func _push_volume(volume_id: String) -> void:
+	var tree: SceneTree = Engine.get_main_loop() as SceneTree
+	var audio: Node = tree.root.get_node_or_null(AUDIO_NAME) if tree != null else null
+	if audio != null and audio.has_method(AUDIO_SET_BUS):
+		audio.call(AUDIO_SET_BUS, VOLUME_BUSES[volume_id], get_volume(volume_id))
+
+
+func set_auto_advance(enabled: bool) -> void:
+	if enabled == auto_advance:
+		return
+	auto_advance = enabled
+	setting_changed.emit(KEY_AUTO_ADVANCE)
+
+
+func set_skip_seen_cutscenes(enabled: bool) -> void:
+	if enabled == skip_seen_cutscenes:
+		return
+	skip_seen_cutscenes = enabled
+	setting_changed.emit(KEY_SKIP_SEEN)
+
+
+func set_vibration(enabled: bool) -> void:
+	if enabled == vibration:
+		return
+	vibration = enabled
+	setting_changed.emit(KEY_VIBRATION)
+
+
+# ---- button remap ----
+
+## Every remappable button's current binding: {group: {"key": code, "pad": code}}.
+func get_effective_bindings() -> Dictionary:
+	return InputRemap.effective(bindings)
+
+
+## Binds `group`'s keyboard key (kind "key") or controller button (kind "pad") to `code`. A group
+## that must differ from it and already holds the code takes the old one (a swap). Returns the
+## group it swapped with, or "" for none.
+func set_binding(group: String, kind: String, code: int) -> String:
+	var current: Dictionary = InputRemap.effective(bindings)
+	if not current.has(group) or InputRemap.is_reserved(kind, code):
+		return ""
+	var swapped_with: String = InputRemap.holder_of(current, kind, code, group)
+	var updated: Dictionary = InputRemap.rebind(current, group, kind, code)
+	var overrides: Dictionary = InputRemap.overrides_from(updated)
+	if overrides == bindings:
+		return ""
+	bindings = overrides
+	if apply_bindings_live:
+		InputRemap.apply(bindings)
+	setting_changed.emit(KEY_BINDINGS)
+	return swapped_with
+
+
+## Back to the project's default buttons.
+func clear_bindings() -> void:
+	if bindings.is_empty():
+		return
+	bindings = {}
+	if apply_bindings_live:
+		InputRemap.apply(bindings)
+	setting_changed.emit(KEY_BINDINGS)
+
+
 # ---- saving ----
 
 func to_dict() -> Dictionary:
@@ -159,6 +302,13 @@ func to_dict() -> Dictionary:
 		KEY_AUTO_TIMING: auto_timing,
 		KEY_WIDE_WINDOWS: wide_windows,
 		KEY_TIMING_OFFSET: timing_offset_ms,
+		KEY_MASTER_VOLUME: master_volume,
+		KEY_MUSIC_VOLUME: music_volume,
+		KEY_SFX_VOLUME: sfx_volume,
+		KEY_AUTO_ADVANCE: auto_advance,
+		KEY_SKIP_SEEN: skip_seen_cutscenes,
+		KEY_VIBRATION: vibration,
+		KEY_BINDINGS: bindings.duplicate(true),
 	}
 
 
@@ -173,6 +323,34 @@ func from_dict(data: Dictionary) -> void:
 		set_wide_windows(bool(data[KEY_WIDE_WINDOWS]))
 	if data.has(KEY_TIMING_OFFSET):
 		set_timing_offset_ms(int(data[KEY_TIMING_OFFSET]))
+	if data.has(KEY_MASTER_VOLUME):
+		set_volume("master", float(data[KEY_MASTER_VOLUME]))
+	if data.has(KEY_MUSIC_VOLUME):
+		set_volume("music", float(data[KEY_MUSIC_VOLUME]))
+	if data.has(KEY_SFX_VOLUME):
+		set_volume("sfx", float(data[KEY_SFX_VOLUME]))
+	if data.has(KEY_AUTO_ADVANCE):
+		set_auto_advance(bool(data[KEY_AUTO_ADVANCE]))
+	if data.has(KEY_SKIP_SEEN):
+		set_skip_seen_cutscenes(bool(data[KEY_SKIP_SEEN]))
+	if data.has(KEY_VIBRATION):
+		set_vibration(bool(data[KEY_VIBRATION]))
+	if data.get(KEY_BINDINGS) is Dictionary:
+		bindings = _clean_bindings(data[KEY_BINDINGS])
+
+
+## Keeps only well-formed {group: {"key": int, "pad": int}} entries from a loaded file.
+func _clean_bindings(raw: Dictionary) -> Dictionary:
+	var clean: Dictionary = {}
+	for group: Variant in raw:
+		if not raw[group] is Dictionary:
+			continue
+		for kind: String in [InputRemap.KIND_KEY, InputRemap.KIND_PAD]:
+			if (raw[group] as Dictionary).has(kind):
+				if not clean.has(str(group)):
+					clean[str(group)] = {}
+				clean[str(group)][kind] = int((raw[group] as Dictionary)[kind])
+	return clean
 
 
 ## Writes the settings file. Returns true on success.
