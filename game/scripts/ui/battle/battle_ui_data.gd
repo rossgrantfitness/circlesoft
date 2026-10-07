@@ -72,7 +72,7 @@ static func name_of(id: String) -> String:
 	if _name_cache.has(id):
 		return _name_cache[id]
 	var found: String = ""
-	for table_id: String in ["battle/skills:skills", "battle/battle_items:items"]:
+	for table_id: String in ["battle/skills:skills", "items/items:items", "battle/battle_items:items"]:
 		var parts: PackedStringArray = table_id.split(":")
 		var list: Variant = DataDB.get_value(parts[0], parts[1], [])
 		if list is Array:

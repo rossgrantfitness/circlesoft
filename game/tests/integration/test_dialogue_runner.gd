@@ -323,7 +323,8 @@ func test_real_dialogue_data_has_no_orphan_next_ids_or_unknown_speakers() -> voi
 	var speakers: Dictionary = DataDB.get_value("ui/dialogue_ui", "speakers", {})
 	for conv: String in conversations:
 		for line: Dictionary in conversations[conv]:
-			assert_has(speakers, str(line["speaker"]), "%s: speaker is in data/ui/dialogue_ui.json" % conv)
+			var known: bool = speakers.has(str(line["speaker"])) or DialogueSpeakers.is_crowd(DataDB.get_dict("ui/dialogue_ui"), str(line["speaker"]))
+			assert_true(known, "%s: speaker %s is in data/ui/dialogue_ui.json (or a crowd id)" % [conv, str(line["speaker"])])
 			if line.has("gesture"):
 				assert_eq(str(line["speaker"]), "red", "%s: only Red gestures" % conv)
 

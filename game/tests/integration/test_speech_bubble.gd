@@ -121,10 +121,10 @@ func test_long_text_is_split_into_pages_of_three_lines() -> void:
 
 
 func test_bubble_size_fits_the_text_and_is_capped_in_width() -> void:
-	var small: SpeechBubble = _make()
-	small.setup_text("otis", "Hi")
-	var big: SpeechBubble = _make()
-	big.setup_text("otis", "A fairly long sentence that needs a good amount of room to be said in one go, really.")
+	var small: SpeechBubble = _make("enemy_grunt")
+	small.setup_text("enemy_grunt", "Hi")
+	var big: SpeechBubble = _make("enemy_grunt")
+	big.setup_text("enemy_grunt", "A fairly long sentence that needs a good amount of room to be said in one go, really.")
 	assert_lt(small.get_body_size().x, big.get_body_size().x)
 	var max_text: int = int(DataDB.get_value("ui/dialogue_ui", "bubble.max_text_width", 0))
 	assert_le(big.get_body_size().x, max_text + 2 * int(DataDB.get_value("ui/dialogue_ui", "bubble.pad_x", 0)) + 1)

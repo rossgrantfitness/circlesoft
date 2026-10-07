@@ -182,8 +182,8 @@ func _load_model(root: Node3D) -> bool:
 		return false
 	root.scale = Vector3.ONE * height_scale
 	root.add_child(_model)
-	_compensate_light(_model)
-	_model_head_top = _measure_head_top(root, _model)
+	apply_light_compensation(_model, light_compensation)
+	_model_head_top = measure_head_top(root, _model)
 	for node: Node in _model.find_children("*", "AnimationPlayer", true, false):
 		_player = node as AnimationPlayer
 		break
@@ -194,9 +194,10 @@ func _load_model(root: Node3D) -> bool:
 	return true
 
 
-## Gives every mesh surface its own copy of the material with the tint multiplied by light_compensation.
-func _compensate_light(model: Node3D) -> void:
-	if light_compensation == Color.WHITE:
+## Gives every mesh surface its own copy of the material with the tint multiplied by `tint_factor`
+## (see light_compensation). Static so the crew and the map enemies share it.
+static func apply_light_compensation(model: Node3D, tint_factor: Color) -> void:
+	if tint_factor == Color.WHITE:
 		return
 	for node: Node in model.find_children("*", "MeshInstance3D", true, false):
 		var mesh_instance: MeshInstance3D = node as MeshInstance3D
@@ -209,13 +210,13 @@ func _compensate_light(model: Node3D) -> void:
 			var copy: ShaderMaterial = source.duplicate() as ShaderMaterial
 			var tint: Variant = copy.get_shader_parameter("albedo_tint")
 			var base: Color = tint if tint is Color else Color.WHITE
-			copy.set_shader_parameter("albedo_tint", Color(base.r * light_compensation.r,
-					base.g * light_compensation.g, base.b * light_compensation.b, base.a))
+			copy.set_shader_parameter("albedo_tint", Color(base.r * tint_factor.r,
+					base.g * tint_factor.g, base.b * tint_factor.b, base.a))
 			mesh_instance.set_surface_override_material(surface, copy)
 
 
 ## Top of the model's body meshes (props excluded), in the Visual node's space at scale 1.
-func _measure_head_top(root: Node3D, model: Node3D) -> float:
+static func measure_head_top(root: Node3D, model: Node3D) -> float:
 	var top: float = 0.0
 	var to_visual: Transform3D = root.global_transform.affine_inverse()
 	for node: Node in model.find_children("*", "MeshInstance3D", true, false):

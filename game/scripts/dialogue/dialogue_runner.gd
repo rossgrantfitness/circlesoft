@@ -9,12 +9,15 @@ extends Node
 ##   {"speaker": "mox", "text": "...", "choice": ["Yes!", "No way"], "next": ["conv_a", "conv_b"]}
 ##   plus optional "set_flag": "x" and "give_item": "ration_bar" (applied when the line starts),
 ##   and a plain "next": "conv_id" on a non-choice line to jump to another conversation after it.
+## Text lines may also carry "face" (the starting expression of the speaker's portrait), "name"
+## (the name tag, handy for crowd NPCs), "style" ("box" or "bubble") and "portrait" ("none" to
+## hide it). Inside the text, {face:grin} changes the expression from that point on.
 ## A choice label such as "Thumbs-up: Grand tour" shows Red's thumbs-up icon in front of the label,
 ## and Red answers with that gesture after the pick. A missing or empty "next" entry ends the talk.
 ##
 ## The room fills the speaker registry (register_speaker) with the 3D node for each speaker id.
-## A speaker with no node in the room (or a "box" style speaker such as the narrator or a sign)
-## is shown in a plain text box at the bottom of the screen.
+## A speaker with no node in the room, a "box" style speaker (narrator, sign) and any crowd NPC
+## (see DialogueSpeakers) is shown in a plain text box at the bottom of the screen.
 ##
 ## While a conversation runs the player is frozen (set `player`; Red is registered as "red"
 ## automatically). The freeze and the "ui_modal" group are released two frames after the last
@@ -26,6 +29,8 @@ extends Node
 signal conversation_started(conversation_id: String)
 signal line_started(speaker_id: String, text: String)
 signal char_typed(speaker_id: String, character: String)
+## A speaker's portrait expression changed mid-line (a {face:...} tag).
+signal face_changed(speaker_id: String, face: String)
 signal line_finished(speaker_id: String)
 signal choice_made(index: int, next_conversation: String)
 signal conversation_finished(conversation_id: String)
@@ -53,6 +58,9 @@ var audio: UiAudio = UiAudio.new()
 var parent_override: Control = null
 ## Overrides the typing speed of every bubble (characters per second; 0 = use Config).
 var chars_per_second_override: float = 0.0
+## Forwarded to every bubble: fast-forward (-1 buttons, 0 off, 1 on) and auto-advance (-1 Config).
+var fast_forward_override: int = -1
+var auto_advance_override: int = -1
 ## GameState to call for set_flag / give_item. Null means the autoload.
 var game_state: Node = null
 
@@ -151,6 +159,8 @@ static func validate(conversations: Dictionary) -> Array[String]:
 				problems.append("%s: no speaker" % where)
 			if not dict.has("text") and not dict.has("gesture"):
 				problems.append("%s: needs text or gesture" % where)
+			for problem: String in _markup_problems(dict):
+				problems.append("%s: %s" % [where, problem])
 			if dict.has("choice"):
 				var next: Variant = dict.get("next", [])
 				if next is Array and (next as Array).size() != (dict["choice"] as Array).size():
@@ -162,6 +172,24 @@ static func validate(conversations: Dictionary) -> Array[String]:
 				if not str(target).is_empty() and not conversations.has(str(target)):
 					problems.append("%s: next '%s' is not a conversation" % [where, str(target)])
 	return problems
+
+
+## Bad inline tags, faces the speaker's portrait does not have, and unknown styles in one line.
+static func _markup_problems(line: Dictionary) -> Array[String]:
+	var list: Array[String] = []
+	var style: String = str(line.get("style", ""))
+	if not style.is_empty() and style != DialogueSpeakers.STYLE_BOX and style != DialogueSpeakers.STYLE_BUBBLE:
+		list.append("style '%s' is not box or bubble" % style)
+	var ui: Dictionary = DataDB.get_dict(UI_ID)
+	var key: String = DialogueSpeakers.portrait_key(ui, str(line.get("speaker", "")))
+	if str(line.get("portrait", "")) == "none":
+		key = ""
+	var faces: Array[String] = PortraitLibrary.faces_of(key) if not key.is_empty() else ([] as Array[String])
+	var names: Array = DataDB.get_value(UI_ID, "markup.tags", ["face"])
+	list.append_array(DialogueMarkup.problems(str(line.get("text", "")), names, faces))
+	if line.has("face") and not faces.is_empty() and not faces.has(str(line["face"])):
+		list.append("unknown face '%s'" % str(line["face"]))
+	return list
 
 
 # ---- speakers ----
@@ -269,7 +297,7 @@ func _play_line() -> void:
 		return
 	var text: String = str(line.get("text", ""))
 	var choices: Array = line.get("choice", [])
-	bubble.setup_text(speaker, text, choices, _style_for(speaker))
+	bubble.setup_text(speaker, text, choices, style_for(speaker, line), _extras_for(line))
 	if choices.is_empty():
 		bubble.advanced.connect(_on_line_advanced.bind(speaker))
 	else:
@@ -282,10 +310,14 @@ func _make_bubble(speaker: String, _line: Dictionary) -> SpeechBubble:
 	var bubble: SpeechBubble = scene.instantiate() as SpeechBubble
 	bubble.manual_ticks = manual_ticks
 	bubble.chars_per_second_override = chars_per_second_override
+	bubble.fast_forward_override = fast_forward_override
+	bubble.auto_advance_override = auto_advance_override
 	bubble.audio = audio
 	bubble.camera = camera
 	bubble.char_typed.connect(_on_char_typed)
+	bubble.face_changed.connect(_on_face_changed)
 	_stage_parent().add_child(bubble)
+	bubble.inherit_fast_forward(_bubble)
 	if has_speaker(speaker):
 		var entry: Dictionary = _speakers[speaker]
 		bubble.set_target(entry["node"] as Node3D, float(entry["head_height"]))
@@ -298,20 +330,23 @@ func _stage_parent() -> Control:
 	return UiStage.get_or_create(get_tree()).get_stage_root()
 
 
-## Narrator, signs and anyone without a body in the room get the plain box.
-func _style_for(speaker: String) -> String:
-	var data: Dictionary = (_ui.get("speakers", {}) as Dictionary).get(speaker, {})
-	if str(data.get("style", "")) == STYLE_BOX:
-		return STYLE_BOX
-	if not has_speaker(speaker):
-		return STYLE_BOX
-	return ""
+## "box" for the narrator, signs, crowd NPCs (by data) and anyone without a body in the room; "bubble"
+## for everyone else. A line's own "style" overrides both. See DialogueSpeakers.
+func style_for(speaker: String, line: Dictionary = {}) -> String:
+	return DialogueSpeakers.style_for(_ui, speaker, has_speaker(speaker), str(line.get("style", "")))
+
+
+## The per-line extras a bubble understands (name tag, starting face, portrait choice).
+func _extras_for(line: Dictionary) -> Dictionary:
+	var extras: Dictionary = {}
+	for key: String in ["name", "face", "portrait"]:
+		if line.has(key):
+			extras[key] = str(line[key])
+	return extras
 
 
 func _voice_enabled(speaker: String) -> bool:
-	var speakers: Dictionary = _ui.get("speakers", {})
-	var data: Dictionary = speakers.get(speaker, _ui.get("default_speaker", {}))
-	return bool(data.get("voice", true))
+	return bool(DialogueSpeakers.entry(_ui, speaker).get("voice", true))
 
 
 func _retire(old: SpeechBubble) -> void:
@@ -323,6 +358,10 @@ func _retire(old: SpeechBubble) -> void:
 
 func _on_old_closed(old: SpeechBubble) -> void:
 	_closing.erase(old)
+
+
+func _on_face_changed(speaker: String, face: String) -> void:
+	face_changed.emit(speaker, face)
 
 
 func _on_char_typed(speaker: String, character: String) -> void:

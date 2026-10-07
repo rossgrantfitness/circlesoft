@@ -11,6 +11,7 @@ extends SceneTree
 ##   --walkthrough        also fight the slice walkthrough in order with level-ups and loot
 ##   --check              compare against data/battle/feel_targets.json; exit code 1 on any miss
 ##   --markdown           print the tables as Markdown (for docs/battle_sim_report.md)
+##   --no-gear            simulate the party without any weapons, armor or charms (the pre-M3 numbers)
 
 const ARG_ENCOUNTER: String = "--encounter="
 const ARG_PLAYER: String = "--player="
@@ -20,6 +21,7 @@ const ARG_LEVEL: String = "--level="
 const FLAG_WALK: String = "--walkthrough"
 const FLAG_CHECK: String = "--check"
 const FLAG_MARKDOWN: String = "--markdown"
+const FLAG_NO_GEAR: String = "--no-gear"
 const WALK_REPEATS: int = 100
 
 
@@ -33,6 +35,7 @@ func _initialize() -> void:
 	var walk: bool = false
 	var check: bool = false
 	var markdown: bool = false
+	var gear: bool = true
 	for arg: String in OS.get_cmdline_user_args():
 		if arg.begins_with(ARG_ENCOUNTER):
 			encounter_arg = arg.trim_prefix(ARG_ENCOUNTER)
@@ -50,7 +53,10 @@ func _initialize() -> void:
 			check = true
 		elif arg == FLAG_MARKDOWN:
 			markdown = true
+		elif arg == FLAG_NO_GEAR:
+			gear = false
 	var sim: BattleSim = BattleSim.new()
+	sim.use_gear = gear
 	var encounters: Array[String] = sim.data.encounter_order if encounter_arg == "all" else [encounter_arg] as Array[String]
 	var players: Array[String] = BattleSim.PLAYERS if player_arg == "all" else [player_arg] as Array[String]
 	var problems: Array[String] = []

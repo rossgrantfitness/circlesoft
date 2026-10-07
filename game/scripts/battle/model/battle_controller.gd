@@ -229,7 +229,13 @@ func _make_party_member(member: Dictionary, slot: int) -> BattleCombatant:
 	c.model = str(def.get("model", ""))
 	c.level = clampi(int(member.get("level", 1)), 1, data.max_level)
 	c.bonus = member.get("bonus", {})
-	c.stats = progression.stats_at(char_id, c.level, c.bonus)
+	var equipment: Dictionary = member.get("equipment", {})
+	c.equipment = equipment
+	c.stats = progression.stats_at(char_id, c.level, StatCalc.total_bonus(member, data.item_data))
+	# Gear: charms (and any piece) that block a status make the wearer immune; perks ride along.
+	for blocked_id: String in Equipment.loadout_blocks(equipment, data.item_data):
+		c.status_resist[blocked_id] = 1.0
+	c.perks = Equipment.loadout_perks(equipment, data.item_data)
 	c.hp_max = int(c.stats["hp"])
 	c.hp = clampi(int(member.get("hp", c.hp_max)), 0, c.hp_max)
 	c.juice_max = int(c.stats["juice"])
@@ -852,7 +858,8 @@ func _payback(defender: BattleCombatant, attacker: BattleCombatant) -> void:
 	if not defender.is_party() or not defender.is_active() or not attacker.is_active():
 		return
 	var amount: int = BattleDamage.hit_damage(data, defender.stat("attack"),
-		float(data.windows_doc.get("payback_power", 0.0)), attacker.stat("defense"), 1.0, 1.0, 0.0, rng)
+		float(data.windows_doc.get("payback_power", 0.0)) * float(defender.perks.get("payback_mult", 1.0)),
+		attacker.stat("defense"), 1.0, 1.0, 0.0, rng)
 	attacker.hp = maxi(attacker.hp - amount, 0)
 	hit.emit({"source": defender.id, "target": attacker.id, "amount": amount, "kind": "damage",
 		"blocked": ClutchJudge.BLOCK_NONE, "payback": true})
@@ -1110,6 +1117,8 @@ func _member_from(c: BattleCombatant) -> Dictionary:
 		"juice": c.juice, "juice_max": c.juice_max}
 	if not c.bonus.is_empty():
 		member["bonus"] = c.bonus
+	if not c.equipment.is_empty():
+		member["equipment"] = c.equipment
 	return member
 
 

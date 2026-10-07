@@ -3,7 +3,8 @@ extends RefCounted
 ## XP curve, level-ups, skills learned by level, and the bench-XP and late-joiner catch-up rules
 ## (built and tested now, switched off in characters.json until Vela and Ruo exist).
 ##
-## A "member" is a Dictionary: {id, level, xp, hp, hp_max, juice, juice_max, bonus (optional)}.
+## A "member" is a Dictionary: {id, level, xp, hp, hp_max, juice, juice_max, bonus (optional),
+## equipment (optional, {weapon, armor, charm}: its stat bonuses count like boosters)}.
 
 var data: BattleData
 
@@ -63,11 +64,18 @@ func skills_learned_between(char_id: String, from_level: int, to_level: int) -> 
 
 
 ## A fresh member at a level with full HP and Juice.
-func new_member(char_id: String, level: int) -> Dictionary:
+## `equipment` ({weapon, armor, charm}) is optional; with it the member wears that gear.
+func new_member(char_id: String, level: int, equipment: Dictionary = {}) -> Dictionary:
 	var lv: int = clampi(level, 1, data.max_level)
-	var stats: Dictionary = stats_at(char_id, lv)
-	return {"id": char_id, "level": lv, "xp": xp_for_level(lv), "hp": stats["hp"], "hp_max": stats["hp"],
-		"juice": stats["juice"], "juice_max": stats["juice"]}
+	var member: Dictionary = {"id": char_id, "level": lv, "xp": xp_for_level(lv)}
+	if not equipment.is_empty():
+		member["equipment"] = equipment.duplicate()
+	var stats: Dictionary = StatCalc.stats_for_member(data, member)
+	member["hp"] = stats["hp"]
+	member["hp_max"] = stats["hp"]
+	member["juice"] = stats["juice"]
+	member["juice_max"] = stats["juice"]
+	return member
 
 
 ## Adds XP to a member (changes the Dictionary in place). Returns the level-up record
@@ -81,7 +89,7 @@ func apply_xp(member: Dictionary, xp: int) -> Dictionary:
 	var to_level: int = maxi(from_level, level_for_xp(total))
 	if to_level == from_level:
 		return {}
-	var bonus: Dictionary = member.get("bonus", {})
+	var bonus: Dictionary = StatCalc.total_bonus(member, data.item_data)
 	var before: Dictionary = stats_at(char_id, from_level, bonus)
 	var after: Dictionary = stats_at(char_id, to_level, bonus)
 	var gains: Dictionary = {}

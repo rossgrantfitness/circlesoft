@@ -14,6 +14,14 @@ extends Control
 ## pixels (BubblePlacement), the bubble is put above it, clamped to the screen, and flipped below
 ## with the tail pointing up when there is no room above.
 ##
+## Named cast get a small portrait slot (data/ui/portraits.json) that follows {face:grin} tags in
+## the text: the tag is stripped, and when the typing reaches it the expression changes. Crowd NPCs
+## and signs use the plain box with no portrait (DialogueSpeakers decides).
+##
+## Speed controls: hold cancel (or confirm for a moment) to fast-forward: every page shows at once
+## and turns by itself, but choices always wait. The Config option Auto-advance turns finished
+## pages by itself after a short read time. Both are tuned in data/ui/dialogue_ui.json.
+##
 ## Driving it: call setup_text() / setup_gesture() once, after adding it to the stage. It runs
 ## itself in _process and reads input when `active`; tests set `manual_ticks` and call tick().
 
@@ -22,6 +30,8 @@ signal char_typed(speaker_id: String, character: String)
 signal page_typed
 signal advanced
 signal choice_made(index: int)
+## The speaker's expression changed (a {face:...} tag, or set_face()).
+signal face_changed(speaker_id: String, face: String)
 signal closed
 
 enum Kind { TEXT, GESTURE }
@@ -45,6 +55,10 @@ var chars_per_second_override: float = 0.0
 var audio: UiAudio = UiAudio.new()
 ## The world camera used to project the speaker's head. Falls back to the target's current camera.
 var camera: Camera3D = null
+## Fast-forward: -1 reads the buttons, 0 forces it off, 1 forces it on (tests, cutscenes).
+var fast_forward_override: int = -1
+## Auto-advance: -1 follows Config, 0 forces it off, 1 forces it on (tests).
+var auto_advance_override: int = -1
 
 var speaker_id: String = ""
 var _kind: Kind = Kind.TEXT
@@ -68,9 +82,21 @@ var _speaker: Dictionary = {}
 var _accent: Color = Color.WHITE
 var _name_text: String = ""
 var _show_tag: bool = false
+var _portrait_key: String = ""
+var _portrait_kind: String = ""
+var _portrait_size: int = 0
+var _face: String = ""
+var _face_flash_left: float = 0.0
+var _content_h: int = 0
 
 var _pages: PackedStringArray = PackedStringArray()
 var _page_index: int = 0
+var _page_tags: Array[Array] = []
+var _tags_fired: int = 0
+var _wait_clock: float = 0.0
+var _ff_hold: Dictionary[String, float] = {}
+var _ff_blocked: Dictionary[String, bool] = {}
+var _ff_on: bool = false
 var _typer: TypeWriter = TypeWriter.new()
 var _text_size: Vector2i = Vector2i.ZERO
 var _rows: int = 1
@@ -125,6 +151,9 @@ func _ready() -> void:
 	_overlay.draw.connect(_draw_overlay)
 	add_child(_overlay)
 	set_process(not manual_ticks)
+	for action: String in _ui["fast_forward"]["actions"]:
+		if InputMap.has_action(action) and Input.is_action_pressed(action):
+			_ff_blocked[action] = true
 
 
 # ---- setup ----
@@ -149,8 +178,10 @@ func set_anchor_point(point: Vector2) -> void:
 
 ## A text bubble. `choices` are option labels; a label like "Thumbs-up: Grand tour" shows Red's
 ## gesture icon in front of "Grand tour".
-func setup_text(speaker: String, text: String, choices: Array = [], style: String = "") -> void:
-	_begin(speaker, Kind.TEXT, style)
+## `extras` may carry "name" (the tag text), "face" (the starting expression) and "portrait"
+## (a portraits.json key, or "none" for no portrait).
+func setup_text(speaker: String, text: String, choices: Array = [], style: String = "", extras: Dictionary = {}) -> void:
+	_begin(speaker, Kind.TEXT, style, extras)
 	_choices.clear()
 	for entry: Variant in choices:
 		var parts: Dictionary = GestureIcons.split_choice(str(entry))
@@ -162,7 +193,7 @@ func setup_text(speaker: String, text: String, choices: Array = [], style: Strin
 
 ## Red's gesture pop-up (or any speaker's). Holds for gesture.hold_s, then reports `advanced`.
 func setup_gesture(speaker: String, gesture: String) -> void:
-	_begin(speaker, Kind.GESTURE, STYLE_BUBBLE)
+	_begin(speaker, Kind.GESTURE, STYLE_BUBBLE, {})
 	_gesture_id = GestureIcons.resolve_or_fallback(gesture)
 	_gesture_frames = GestureIcons.get_frames(_gesture_id)
 	_cfg = _ui["gesture"]
@@ -172,14 +203,15 @@ func setup_gesture(speaker: String, gesture: String) -> void:
 	_start_open()
 
 
-func _begin(speaker: String, kind: Kind, style: String) -> void:
+func _begin(speaker: String, kind: Kind, style: String, extras: Dictionary) -> void:
 	speaker_id = speaker
 	_kind = kind
 	_speaker = _speaker_data(speaker)
 	_style = style if not style.is_empty() else str(_speaker.get("style", STYLE_BUBBLE))
 	_cfg = _ui["bubble"] if _style == STYLE_BUBBLE else _ui["box"]
 	_accent = _color(str(_speaker.get("accent", "chalk")))
-	_name_text = str(_speaker.get("name", speaker.capitalize()))
+	_name_text = str(extras.get("name", _speaker.get("name", speaker.capitalize())))
+	_setup_portrait(speaker, extras)
 	_show_tag = not _name_text.is_empty() and (bool(_ui["bubble"]["show_name_tag"]) or _style == STYLE_BOX)
 	if _head_height == 1.0 or _head_height < 0.0:
 		_head_height = float(_speaker.get("head_height", 1.0))
@@ -197,13 +229,30 @@ func _begin(speaker: String, kind: Kind, style: String) -> void:
 
 
 func _speaker_data(id: String) -> Dictionary:
-	var merged: Dictionary = (_ui["default_speaker"] as Dictionary).duplicate()
-	var known: Dictionary = _ui["speakers"]
-	if known.has(id):
-		merged.merge(known[id], true)
-	elif not id.is_empty():
-		merged["name"] = id.capitalize()
-	return merged
+	return DialogueSpeakers.entry(_ui, id)
+
+
+## Decides whether this line has a portrait slot, and which expression it starts with.
+func _setup_portrait(speaker: String, extras: Dictionary) -> void:
+	_portrait_key = ""
+	_portrait_kind = ""
+	_portrait_size = 0
+	_face = ""
+	_face_flash_left = 0.0
+	if _kind != Kind.TEXT:
+		return
+	var key: String = str(extras["portrait"]) if extras.has("portrait") else DialogueSpeakers.portrait_key(_ui, speaker)
+	if key == "none" or key.is_empty() or not PortraitLibrary.has_character(key):
+		return
+	var kind: String = "bubble" if _style == STYLE_BUBBLE else "box"
+	if not bool(_ui["portrait"]["in_%s" % kind]):
+		return
+	_portrait_key = key
+	_portrait_kind = kind
+	_portrait_size = PortraitLibrary.slot_size(kind)
+	_face = str(extras.get("face", ""))
+	if _face.is_empty():
+		_face = PortraitLibrary.default_face(key)
 
 
 func _color(value: String) -> Color:
@@ -214,14 +263,17 @@ func _color(value: String) -> Color:
 
 # ---- layout ----
 
-func _layout_text(text: String) -> void:
+func _layout_text(raw_text: String) -> void:
 	var is_box: bool = _style == STYLE_BOX
-	var max_width: int = int(_ui["bubble"]["max_text_width"])
+	var parsed: Dictionary = DialogueMarkup.parse(raw_text)
+	var text: String = str(parsed["text"])
+	var max_width: int = int(_ui["bubble"]["max_text_width"]) - _portrait_extra_w()
 	var max_lines: int = int(_cfg["max_lines"])
 	if is_box:
-		max_width = int(_cfg["w"]) - int(_cfg["text_x"]) * 2
+		max_width = int(_cfg["w"]) - int(_cfg["text_x"]) * 2 - _portrait_extra_w()
 	var lines: PackedStringArray = TextWrap.wrap(_font_body, _font_body_size, text, max_width)
 	_pages = TextWrap.paginate(lines, max_lines)
+	_page_tags = DialogueMarkup.split_by_pages(_pages, parsed["tags"])
 	_page_index = 0
 	var widest: int = 0
 	_rows = 1
@@ -231,6 +283,9 @@ func _layout_text(text: String) -> void:
 		for line: String in page_lines:
 			widest = maxi(widest, TextWrap.text_width(_font_body, _font_body_size, line))
 	_text_size = Vector2i(maxi(widest, int(_ui["bubble"]["min_text_width"])), _rows * int(_cfg["line_height"]))
+	_content_h = _text_size.y
+	if has_portrait() and not is_box:
+		_content_h = maxi(_text_size.y, _portrait_size)
 	_compute_body(false)
 	_label.text = ""
 	_label.add_theme_color_override("font_color", _color(str(_ui["bubble"]["colors"]["text"])) if not is_box else _palette["text"])
@@ -248,16 +303,16 @@ func _compute_body(with_choices: bool) -> void:
 		_body_size = Vector2i(int(_cfg["w"]), height)
 		return
 	var pad_x: int = int(bub["pad_x"])
-	var width: int = _text_size.x
-	var height: int = int(bub["pad_top"]) + _text_size.y + int(bub["pad_bottom"])
+	var width: int = _text_size.x + _portrait_extra_w()
+	var height: int = int(bub["pad_top"]) + _content_h + int(bub["pad_bottom"])
 	if with_choices and not _choices.is_empty():
 		for option: Dictionary in _choices:
 			width = maxi(width, _choice_width(option))
 		height += int(bub["choice_gap"]) + _choices.size() * int(bub["choice_row_height"]) - int(bub["pad_bottom"]) + 4
-	var min_width: int = _text_size.x + pad_x * 2
+	var min_width: int = _text_size.x + _portrait_extra_w() + pad_x * 2
 	if _show_tag:
 		var tag_width: int = _tag_width()
-		min_width = maxi(min_width, int(bub["tag_x"]) + tag_width + int(bub["tag_x"]))
+		min_width = maxi(min_width, int(bub["tag_x"]) + _portrait_extra_w() + tag_width + int(bub["tag_x"]))
 	_body_size = Vector2i(maxi(width + pad_x * 2, min_width), height)
 
 
@@ -318,7 +373,10 @@ func _start_page() -> void:
 	_state = State.TYPING
 	_label.visible = true
 	_label.text = ""
+	_tags_fired = 0
+	_wait_clock = 0.0
 	_typer.start(_pages[_page_index], _typing_speed(), _ui["typing"]["pauses"])
+	_fire_tags(0)
 	_position_text()
 
 
@@ -384,6 +442,11 @@ func tick(delta: float) -> void:
 	if _state == State.IDLE or _state == State.CLOSED:
 		return
 	_anim_clock += delta
+	_update_fast_forward(delta)
+	if _face_flash_left > 0.0:
+		_face_flash_left = maxf(0.0, _face_flash_left - delta)
+		if _overlay != null:
+			_overlay.queue_redraw()
 	match _state:
 		State.OPENING:
 			_step_clock += delta
@@ -395,16 +458,26 @@ func tick(delta: float) -> void:
 				else:
 					_apply_pop()
 		State.TYPING:
-			var revealed: String = _typer.advance(delta)
-			if not revealed.is_empty():
-				_label.text = _typer.get_visible_text()
-				for character: String in revealed:
-					if character != "\n":
-						char_typed.emit(speaker_id, character)
-			if _typer.is_done():
-				_on_page_typed()
+			if is_fast_forwarding():
+				skip_typing()
+			else:
+				var revealed: String = _typer.advance(delta)
+				if not revealed.is_empty():
+					_label.text = _typer.get_visible_text()
+					for character: String in revealed:
+						if character != "\n":
+							char_typed.emit(speaker_id, character)
+					_fire_tags(DialogueMarkup.visible_count(_typer.get_visible_text()))
+				if _typer.is_done():
+					_on_page_typed()
+		State.WAITING:
+			_wait_clock += delta
+			if _wait_clock >= get_auto_wait_s():
+				confirm()
 		State.HOLDING:
 			_gesture_hold_left -= delta
+			if is_fast_forwarding():
+				_gesture_hold_left = minf(_gesture_hold_left, float(_ui["fast_forward"]["gesture_hold_s"]))
 			if _gesture_hold_left <= 0.0:
 				_gesture_hold_left = INF
 				advanced.emit()
@@ -477,6 +550,7 @@ func confirm() -> void:
 				_start_page()
 			else:
 				audio.sfx_id(str(_ui["sfx"]["next"]))
+				_wait_clock = -INF
 				advanced.emit()
 		State.CHOOSING:
 			choose(_choice_index)
@@ -491,6 +565,7 @@ func skip_typing() -> void:
 		return
 	_typer.finish()
 	_label.text = _typer.get_visible_text()
+	_fire_tags(1 << 30)
 	_on_page_typed()
 
 
@@ -598,9 +673,10 @@ func _position_text() -> void:
 	if _label == null:
 		return
 	if _style == STYLE_BOX:
-		_label.position = Vector2(int(_cfg["text_x"]), int(_cfg["text_y"]))
+		_label.position = Vector2(int(_cfg["text_x"]) + _portrait_extra_w(), int(_cfg["text_y"]))
 	else:
-		_label.position = Vector2(int(_ui["bubble"]["pad_x"]), _body_local.position.y + int(_ui["bubble"]["pad_top"]))
+		var centered: int = (_content_h - _text_size.y) / 2
+		_label.position = Vector2(int(_ui["bubble"]["pad_x"]) + _portrait_extra_w(), _body_local.position.y + int(_ui["bubble"]["pad_top"]) + centered)
 	_label.size = Vector2(_text_size.x + 4, _text_size.y)
 
 
@@ -681,7 +757,8 @@ func _draw_overlay() -> void:
 	if _state == State.IDLE or _state == State.OPENING or _state == State.CLOSING or _state == State.CLOSED:
 		return
 	if _style == STYLE_BOX and _kind == Kind.TEXT:
-		_draw_tag(Vector2i(int(_cfg["text_x"]) - 2, int(_cfg["tag_y"])))
+		_draw_tag(Vector2i(int(_cfg["text_x"]) - 2 + _portrait_extra_w(), int(_cfg["tag_y"])))
+		_draw_portrait()
 		_draw_arrow(Vector2i(_body_local.end.x - 20, _body_local.end.y - 14 - _choices_height_box()))
 		_draw_choices(_box_choice_top(), _body_local.position.x + 8, _body_local.size.x - 16)
 		return
@@ -689,18 +766,19 @@ func _draw_overlay() -> void:
 		return
 	if _show_tag:
 		var bub: Dictionary = _ui["bubble"]
-		var tag_x: int = int(bub["tag_x"])
+		var tag_x: int = int(bub["tag_x"]) + _portrait_extra_w()
 		var tag_w: int = _tag_width()
 		if _flipped and _tail_local_x - int(bub["tail_half_width"]) < tag_x + tag_w:
 			tag_x = _body_local.size.x - int(bub["tag_x"]) - tag_w
 		_draw_tag(Vector2i(tag_x, _body_local.position.y - int(bub["tag_overhang"])))
+	_draw_portrait()
 	if _state == State.WAITING:
 		var bub: Dictionary = _ui["bubble"]
 		var arrow_w: int = int(bub["arrow_w"])
 		_draw_arrow(Vector2i(_body_local.end.x - int(bub["pad_x"]) - arrow_w, _body_local.end.y - int(bub["pad_bottom"]) - 1))
 	if _state == State.CHOOSING:
 		var bub: Dictionary = _ui["bubble"]
-		var top: int = _body_local.position.y + int(bub["pad_top"]) + _text_size.y + int(bub["choice_gap"])
+		var top: int = _body_local.position.y + int(bub["pad_top"]) + _content_h + int(bub["choice_gap"])
 		_draw_choices(top, _body_local.position.x + int(bub["pad_x"]) - 3, _body_local.size.x - (int(bub["pad_x"]) - 3) * 2)
 
 
@@ -745,7 +823,10 @@ func _choice_row_height() -> int:
 
 
 func _box_choice_top() -> int:
-	return int(_cfg["text_y"]) + _text_size.y + 2
+	var bottom: int = int(_cfg["text_y"]) + _text_size.y
+	if has_portrait():
+		bottom = maxi(bottom, _portrait_rect_local().end.y)
+	return bottom + 2
 
 
 func _choices_height_box() -> int:
@@ -758,7 +839,7 @@ func _choice_row(index: int) -> Rect2i:
 	if _style == STYLE_BOX:
 		return Rect2i(8, _box_choice_top() + index * row_h, _body_local.size.x - 16, row_h)
 	var bub: Dictionary = _ui["bubble"]
-	var top: int = _body_local.position.y + int(bub["pad_top"]) + _text_size.y + int(bub["choice_gap"]) + index * row_h
+	var top: int = _body_local.position.y + int(bub["pad_top"]) + _content_h + int(bub["choice_gap"]) + index * row_h
 	var left: int = int(bub["pad_x"]) - 3
 	return Rect2i(left, top, _body_local.size.x - left * 2, row_h)
 
@@ -800,6 +881,127 @@ func _draw_choice_pointer(row: Rect2i) -> void:
 	var y: int = row.position.y + row.size.y / 2 - 3 + (int(_anim_clock / 0.4) % 2)
 	for i: int in 4:
 		_overlay.draw_rect(Rect2(row.position.x + 2 + i, y + i, 1, 7 - i * 2), color)
+
+
+# ---- portrait and expression ----
+
+func has_portrait() -> bool:
+	return not _portrait_key.is_empty()
+
+
+## Width the portrait slot takes from the text row (its size plus the gap, less the overhang).
+func _portrait_extra_w() -> int:
+	if not has_portrait():
+		return 0
+	return _portrait_size + int(DataDB.get_value(PortraitLibrary.DATA_ID, "slot.gap", 5)) - 2
+
+
+## The portrait square in this node's local coordinates.
+func _portrait_rect_local() -> Rect2i:
+	if _style == STYLE_BOX:
+		return Rect2i(int(_cfg["text_x"]) - 2, (int(_cfg["h"]) - _portrait_size) / 2, _portrait_size, _portrait_size)
+	var bub: Dictionary = _ui["bubble"]
+	return Rect2i(int(bub["pad_x"]) - 2, _body_local.position.y + int(bub["pad_top"]) - 1, _portrait_size, _portrait_size)
+
+
+func _draw_portrait() -> void:
+	if not has_portrait() or _kind != Kind.TEXT:
+		return
+	var rect: Rect2i = _portrait_rect_local()
+	var slot: Dictionary = DataDB.get_value(PortraitLibrary.DATA_ID, "slot", {})
+	var frame_color: Color = _color(str(slot.get("frame_color", "ink")))
+	if _face_flash_left > 0.0:
+		frame_color = _color(str(slot.get("flash_color", "lamp_amber")))
+	_overlay.draw_rect(Rect2(rect.grow(1)), frame_color)
+	PortraitLibrary.draw(_overlay, _portrait_key, _face, rect, _portrait_kind, _color(str(slot.get("back_color", "dusk"))))
+
+
+## Changes the speaker's expression now (what a {face:...} tag does). Emits face_changed.
+func set_face(face: String) -> void:
+	if face.is_empty() or face == _face:
+		return
+	_face = face
+	_face_flash_left = float(DataDB.get_value(PortraitLibrary.DATA_ID, "slot.flash_s", 0.18))
+	if has_portrait() and not PortraitLibrary.is_known_face(_portrait_key, face):
+		push_warning("SpeechBubble: '%s' has no face '%s'" % [_portrait_key, face])
+	face_changed.emit(speaker_id, face)
+	if _overlay != null:
+		_overlay.queue_redraw()
+
+
+## Runs the tags of the current page that sit at or before `seen` revealed characters.
+func _fire_tags(seen: int) -> void:
+	if _page_index >= _page_tags.size():
+		return
+	var tags: Array = _page_tags[_page_index]
+	while _tags_fired < tags.size() and int((tags[_tags_fired] as Dictionary)["at"]) <= seen:
+		var tag: Dictionary = tags[_tags_fired]
+		_tags_fired += 1
+		if str(tag["name"]) == "face":
+			set_face(str(tag["value"]))
+
+
+# ---- fast-forward and auto-advance ----
+
+## True while the player is fast-forwarding (a held button, or forced by fast_forward_override).
+func is_fast_forwarding() -> bool:
+	if fast_forward_override >= 0:
+		return fast_forward_override == 1
+	return _ff_on
+
+
+## Carries a fast-forward over from the bubble before this one, so holding the button through a
+## whole conversation keeps going instead of restarting its hold timer on every line.
+func inherit_fast_forward(previous: SpeechBubble) -> void:
+	if previous == null or not is_instance_valid(previous) or not previous.is_fast_forwarding():
+		return
+	for action: String in previous._ff_hold:
+		_ff_hold[action] = previous._ff_hold[action]
+		_ff_blocked.erase(action)
+	_ff_on = true
+
+
+func _update_fast_forward(delta: float) -> void:
+	if fast_forward_override >= 0 or not (listen_input and active):
+		_ff_on = false
+		return
+	var actions: Dictionary = _ui["fast_forward"]["actions"]
+	var on: bool = false
+	for action: String in actions:
+		if not InputMap.has_action(action):
+			continue
+		if Input.is_action_pressed(action):
+			if _ff_blocked.has(action):
+				continue
+			_ff_hold[action] = _ff_hold.get(action, 0.0) + delta
+			if _ff_hold[action] >= float(actions[action]):
+				on = true
+		else:
+			_ff_hold.erase(action)
+			_ff_blocked.erase(action)
+	_ff_on = on
+
+
+func _auto_advance_enabled() -> bool:
+	if auto_advance_override >= 0:
+		return auto_advance_override == 1
+	var config: Node = get_node_or_null(CONFIG_PATH)
+	return config != null and bool(config.get("auto_advance"))
+
+
+## Seconds a finished page waits before it turns by itself (INF = it waits for the player).
+func get_auto_wait_s() -> float:
+	if _state != State.WAITING:
+		return INF
+	var fast: Dictionary = _ui["fast_forward"]
+	var is_last: bool = _page_index + 1 >= _pages.size()
+	if is_fast_forwarding() and (not is_last or bool(fast["advance_lines"])):
+		return float(fast["line_delay_s"]) if is_last else float(fast["page_delay_s"])
+	if _auto_advance_enabled():
+		var auto: Dictionary = _ui["auto_advance"]
+		var read: float = float(auto["base_s"]) + float(auto["per_char_s"]) * float(DialogueMarkup.visible_count(_pages[_page_index]))
+		return clampf(read, float(auto["min_s"]), float(auto["max_s"]))
+	return INF
 
 
 # ---- queries (tests and the runner) ----
@@ -855,6 +1057,21 @@ func get_body_size() -> Vector2i:
 ## The body rectangle (without the tail) in stage pixels.
 func get_body_rect() -> Rect2:
 	return Rect2(position + Vector2(_body_local.position), Vector2(_body_local.size))
+
+
+func get_face() -> String:
+	return _face
+
+
+func get_portrait_key() -> String:
+	return _portrait_key
+
+
+## The portrait square in stage pixels (Rect2() when there is no portrait).
+func get_portrait_rect() -> Rect2:
+	if not has_portrait():
+		return Rect2()
+	return Rect2(position + Vector2(_portrait_rect_local().position), Vector2(_portrait_rect_local().size))
 
 
 func get_name_text() -> String:

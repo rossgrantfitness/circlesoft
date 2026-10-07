@@ -1,5 +1,5 @@
 {
-  "_about": "Placeholder party and starting bag for the test room. Real stats come from characters.json later (task M2).",
+  "_about": "Placeholder party and starting bag for the test room. Real stats come from characters.json later (task M2). Each member's equipment is what they wear on a new game (copied from items/equipment.json starting_gear; Equipment falls back to that file when a member has none).",
   "default_party": [
     "red",
     "otis",
@@ -15,7 +15,12 @@
       "juice_max": 12,
       "accent": "#C8322A",
       "initial": "R",
-      "weapon": "Scrap Sword"
+      "weapon": "Scrap Sword",
+      "equipment": {
+        "weapon": "scrap_sword",
+        "armor": "quilted_lining",
+        "charm": ""
+      }
     },
     "otis": {
       "name": "Otis",
@@ -26,7 +31,12 @@
       "juice_max": 10,
       "accent": "#E0782B",
       "initial": "O",
-      "weapon": "Dock Mallet"
+      "weapon": "Dock Mallet",
+      "equipment": {
+        "weapon": "dock_mallet",
+        "armor": "lucky_coveralls",
+        "charm": ""
+      }
     },
     "mox": {
       "name": "Mox",
@@ -37,7 +47,12 @@
       "juice_max": 16,
       "accent": "#C9A23A",
       "initial": "M",
-      "weapon": "Big Wrench"
+      "weapon": "Big Wrench",
+      "equipment": {
+        "weapon": "big_wrench",
+        "armor": "too_many_pockets_vest",
+        "charm": ""
+      }
     }
   },
   "starting_items": {

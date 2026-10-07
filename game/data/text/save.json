@@ -1,0 +1,24 @@
+{
+  "_about": "Strings for the save lamp prompt and slot summaries. {n} is a slot number, {place} a place name.",
+  "title": "Save",
+  "slot": "Slot {n}",
+  "auto": "Auto",
+  "empty": "- empty -",
+  "corrupt": "Can't read this one",
+  "level": "Lv {level}",
+  "credits": "{credits}c",
+  "play_time": "{h}:{m}:{s}",
+  "hint_pick": "Which slot? The auto-save is the game's own.",
+  "hint_rested": "The crew is rested up. Which slot?",
+  "hint_overwrite": "Save over this one?",
+  "hint_saved": "Saved. Lamp stays on.",
+  "hint_failed": "Couldn't write the save. Try another slot.",
+  "overwrite_yes": "Save over it",
+  "overwrite_no": "Keep it",
+  "unknown_place": "Somewhere",
+  "places": {
+    "test_room": "Test Room",
+    "harrow_red_home": "Red's Home",
+    "harrow_landing": "Harrow Landing"
+  }
+}

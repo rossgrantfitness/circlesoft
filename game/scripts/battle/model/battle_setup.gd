@@ -6,7 +6,7 @@ const FIRST_TURN_NORMAL: String = "normal"
 const RANDOM_SEED: int = -1
 
 var encounter_id: String = ""
-## Field party, in slot order. Each: {id, level, xp?, hp?, juice?, statuses?, bonus?}. Missing hp/juice = full.
+## Field party, in slot order. Each: {id, level, xp?, hp?, juice?, statuses?, bonus?, equipment?}. Missing hp/juice = full.
 var party: Array[Dictionary] = []
 ## Benched members (only earn XP when the bench-XP rule is on). Same shape as party.
 var bench: Array[Dictionary] = []
@@ -36,7 +36,11 @@ static func from_game_state(state: Node, p_encounter_id: String, config: Node = 
 	setup.encounter_id = p_encounter_id
 	setup.first_turn = p_first_turn
 	for member: Dictionary in state.call("get_party"):
-		setup.party.append(member.duplicate(true))
+		var fighter: Dictionary = member.duplicate(true)
+		# Gear: the battle reads stats through StatCalc and charms through their status blocks
+		# (see BattleController._make_party_member), so hand it what each fighter wears.
+		fighter["equipment"] = Equipment.get_equipped(str(fighter.get("id", "")), state)
+		setup.party.append(fighter)
 	var bag: Dictionary = {}
 	for item_id: String in state.call("get_item_ids"):
 		bag[item_id] = int(state.call("item_count", item_id))

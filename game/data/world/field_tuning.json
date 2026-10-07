@@ -14,6 +14,7 @@
     "air_anim_delay_s": 0.06
   },
   "blink_time_s": 2.0,
+  "blink_flash_s": 0.08,
   "follow": {
     "spacing": 0.9,
     "breadcrumb_step": 0.15,

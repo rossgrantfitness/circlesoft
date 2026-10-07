@@ -118,8 +118,8 @@ func test_battle_items_cover_heal_revive_and_juice() -> void:
 	assert_true((data.battle_item("smelling_salts")["effect"] as Dictionary).has("revive_hp_pct"))
 	var existing: Array = tree.root.get_node("DataDB").get_dict("items/items")["items"]
 	for entry: Dictionary in existing:
-		if str(entry["kind"]) == "consumable" and str(entry["id"]) != "camp_stove":
-			assert_true(data.battle_items.has(str(entry["id"])), "%s works in battle" % entry["id"])
+		var in_battle: bool = (entry.get("use_in", []) as Array).has("battle")
+		assert_eq(data.battle_items.has(str(entry["id"])), in_battle, "%s: battle menu follows use_in" % entry["id"])
 
 
 func test_every_encounter_tier_has_feel_targets() -> void:

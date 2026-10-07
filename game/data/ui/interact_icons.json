@@ -3,6 +3,38 @@
   "palette": {"o": "chalk", "a": "lamp_amber", "k": "ink"},
   "outline": "ink",
   "icons": {
+    "open": [
+      ".ooooooo.",
+      ".o.....o.",
+      ".o.....o.",
+      ".o....ao.",
+      ".o.....o.",
+      ".o.....o.",
+      ".o.....o.",
+      ".o.....o.",
+      "ooooooooo"
+    ],
+    "climb": [
+      "...a...",
+      "..aaa..",
+      ".aaaaa.",
+      "aaaaaaa",
+      "..aaa..",
+      "..aaa..",
+      "..aaa..",
+      "..aaa..",
+      "..aaa.."
+    ],
+    "hop": [
+      "..aaaa....",
+      ".aa..aa...",
+      "aa....aa..",
+      "a......aa.",
+      "........aa",
+      ".....aaaaa",
+      "......aaa.",
+      ".......a.."
+    ],
     "talk": [
       "..ooooooooo..",
       ".ooooooooooo.",

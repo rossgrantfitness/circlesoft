@@ -28,6 +28,31 @@
     "hold_lead_ms": 450,
     "start_bag": {"ration_bar": 4, "can_of_chili": 1, "canned_coffee": 2, "smelling_salts": 1, "burn_gel": 1},
     "heal_below_pct": 40,
+    "gear": {
+      "_about": "What the simulated party wears, by party level (the highest by_level row at or below the level wins): the starting gear; then the three shop weapons bought in town (about 1,100 credits); then Mox in the Padded Work Vest too. Loadouts are item ids from items/equipment.json. Remove this block to simulate a party in no gear at all.",
+      "loadouts": {
+        "starting": {
+          "red": {"weapon": "scrap_sword", "armor": "quilted_lining", "charm": ""},
+          "otis": {"weapon": "dock_mallet", "armor": "lucky_coveralls", "charm": ""},
+          "mox": {"weapon": "big_wrench", "armor": "too_many_pockets_vest", "charm": ""}
+        },
+        "shop_weapons": {
+          "red": {"weapon": "rebar_blade", "armor": "quilted_lining", "charm": ""},
+          "otis": {"weapon": "rivet_hammer", "armor": "lucky_coveralls", "charm": ""},
+          "mox": {"weapon": "pipe_wrench", "armor": "too_many_pockets_vest", "charm": ""}
+        },
+        "shop_full": {
+          "red": {"weapon": "rebar_blade", "armor": "quilted_lining", "charm": ""},
+          "otis": {"weapon": "rivet_hammer", "armor": "lucky_coveralls", "charm": ""},
+          "mox": {"weapon": "pipe_wrench", "armor": "padded_work_vest", "charm": ""}
+        }
+      },
+      "by_level": [
+        {"level": 1, "loadout": "starting"},
+        {"level": 3, "loadout": "shop_weapons"},
+        {"level": 5, "loadout": "shop_full"}
+      ]
+    },
     "checks_runs": 200,
     "full_runs": 5000
   }

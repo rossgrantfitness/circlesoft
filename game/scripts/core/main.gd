@@ -16,7 +16,13 @@ const START_SIGNAL: StringName = &"start_demo_requested"
 const BACK_ACTION: StringName = &"start"
 const BATTLE_SCENE_PATH: String = "res://scenes/battle/battle_scene.tscn"
 const BATTLE_TEST_SIGNAL: StringName = &"battle_test_requested"
+## The title's Continue row emits this (UI-B adds it); Main loads the newest save.
+const CONTINUE_SIGNAL: StringName = &"continue_requested"
+const PATH_SAVE_MANAGER: NodePath = ^"/root/SaveManager"
+const DEFAULT_SPAWN: String = "PlayerSpawn"
 const ROOM_BATTLE_SIGNAL: StringName = &"battle_requested"
+const FIELD_BATTLE_SIGNAL: StringName = &"field_battle_requested"
+const ENTRY_SPAWN_PROPERTY: StringName = &"entry_spawn"
 const RETURN_TO_ROOM: StringName = &"room"
 const RETURN_TO_TITLE: StringName = &"title"
 const FIRST_TURN_NORMAL: String = "normal"
@@ -102,6 +108,7 @@ func get_battle() -> Node:
 
 ## Shows the title screen (or, with no title scene, reloads the room).
 func go_to_title() -> void:
+	_set_playing(false)
 	_free_battle()
 	_free_kept_room()
 	screen.clear_world()
@@ -114,25 +121,99 @@ func go_to_title() -> void:
 	_title = scene.instantiate()
 	screen.get_ui_layer().add_child(_title)
 	if _title.has_signal(START_SIGNAL):
-		_title.connect(START_SIGNAL, start_demo)
+		_title.connect(START_SIGNAL, start_new_game)
 	else:
 		push_error("Main: the title screen has no %s signal" % START_SIGNAL)
 	if _title.has_signal(BATTLE_TEST_SIGNAL):
 		_title.connect(BATTLE_TEST_SIGNAL, _on_battle_test_requested)
+	if _title.has_signal(CONTINUE_SIGNAL):
+		_title.connect(CONTINUE_SIGNAL, continue_game)
 	_set_state(State.TITLE)
+
+
+## New Game from the title: a fresh GameState, then the room.
+func start_new_game() -> void:
+	var state: Node = _game_state()
+	if state != null:
+		state.call("reset")
+	start_demo()
+
+
+## Continue from the title: loads the newest save (manual or auto) into GameState, starts the room
+## and puts Red on the spawn marker the save names. False (and nothing changes) when there is no save.
+func continue_game() -> bool:
+	var manager: Node = _save_manager()
+	if manager == null or not bool(manager.call("continue_game")):
+		return false
+	start_demo()
+	_place_player_at_saved_spawn()
+	return true
+
+
+## True when the title may offer Continue.
+func can_continue() -> bool:
+	var manager: Node = _save_manager()
+	return manager != null and bool(manager.call("has_any_save"))
+
+
+func _place_player_at_saved_spawn() -> void:
+	var state: Node = _game_state()
+	if state == null or _room == null or not is_instance_valid(_room):
+		return
+	var spawn_name: String = str((state.call("get_location") as Dictionary).get("spawn", ""))
+	if spawn_name.is_empty() or spawn_name == DEFAULT_SPAWN:
+		return
+	var spawn: Node3D = _room.get_node_or_null(spawn_name) as Node3D
+	var red: Node3D = _room.get("player") as Node3D
+	if spawn == null or red == null:
+		return
+	red.global_transform = Transform3D(red.global_transform.basis, spawn.global_position)
+	if red.has_method("reset_ground_height"):
+		red.call("reset_ground_height")
+	var rig: Node = _room.get("camera_rig") as Node
+	if rig != null and rig.has_method("snap_to_target"):
+		rig.call("snap_to_target")
 
 
 ## Loads the room into the PSX world and removes the title.
 func start_demo() -> void:
+	_set_playing(true)
 	_free_title()
 	_free_battle()
 	_free_kept_room()
 	_room = null
 	if start_scene != null:
 		_room = screen.load_world(start_scene)
-		if _room != null and _room.has_signal(ROOM_BATTLE_SIGNAL):
-			_room.connect(ROOM_BATTLE_SIGNAL, _on_room_battle_requested)
+		_connect_room(_room)
 	_set_state(State.ROOM)
+
+
+## Swaps the room for another scene while the game is in the field (the SceneRouter calls this
+## after its fade to black). `spawn_id` names the spawn marker Red starts on. The old room is freed;
+## returns the new one. Does nothing during a battle.
+func enter_room(scene: PackedScene, spawn_id: String = "") -> Node:
+	if scene == null or _state == State.BATTLE:
+		return null
+	_free_title()
+	_free_kept_room()
+	var room: Node = scene.instantiate()
+	if not spawn_id.is_empty() and ENTRY_SPAWN_PROPERTY in room:
+		room.set(ENTRY_SPAWN_PROPERTY, spawn_id)
+	screen.clear_world()
+	screen.get_world_root().add_child(room)
+	_room = room
+	_connect_room(room)
+	_set_state(State.ROOM)
+	return room
+
+
+func _connect_room(room: Node) -> void:
+	if room == null:
+		return
+	if room.has_signal(ROOM_BATTLE_SIGNAL):
+		room.connect(ROOM_BATTLE_SIGNAL, _on_room_battle_requested)
+	if room.has_signal(FIELD_BATTLE_SIGNAL):
+		room.connect(FIELD_BATTLE_SIGNAL, _on_field_battle_requested)
 
 
 func _free_title() -> void:
@@ -145,6 +226,16 @@ func _free_title() -> void:
 func _set_state(new_state: State) -> void:
 	_state = new_state
 	_state_frame = Engine.get_process_frames()
+	var manager: Node = _save_manager()
+	if manager != null:
+		manager.set("battle_active", new_state == State.BATTLE)
+
+
+## Play time ticks only while a run is on (not on the title).
+func _set_playing(on: bool) -> void:
+	var state: Node = _game_state()
+	if state != null:
+		state.set("playing", on)
 
 
 # ---- battles ----
@@ -157,7 +248,7 @@ func start_battle(encounter_id: String, return_to: StringName = RETURN_TO_ROOM, 
 	if _state == State.BATTLE:
 		return
 	var state: Node = _game_state()
-	_battle_snapshot = state.call("to_dict") as Dictionary if state != null else {}
+	_battle_snapshot = state.call("snapshot") as Dictionary if state != null else {}
 	_battle_encounter = encounter_id
 	_battle_first_turn = first_turn
 	_battle_return = return_to
@@ -203,11 +294,12 @@ func _on_battle_scene_finished(result: String, report: Dictionary) -> void:
 	_end_battle.call_deferred(result, report, _battle_return)
 
 
-## Retry: the GameState goes back to the snapshot taken before the fight and the same encounter starts again.
+## Retry: the GameState goes back to the snapshot taken before the fight (play time keeps running
+## forward) and the same encounter starts again. Nothing is written to a save slot.
 func _retry_battle() -> void:
 	var state: Node = _game_state()
 	if state != null:
-		state.call("from_dict", _battle_snapshot)
+		state.call("restore_snapshot", _battle_snapshot)
 	_launch_battle()
 
 
@@ -238,6 +330,11 @@ func _on_room_battle_requested(encounter_id: String, _fight_id: String) -> void:
 	start_battle.call_deferred(encounter_id, RETURN_TO_ROOM, FIRST_TURN_NORMAL)
 
 
+## A map enemy caught Red: the fight starts with the first-turn rule worked out from who faced whom.
+func _on_field_battle_requested(encounter_id: String, _enemy_id: String, first_turn: String) -> void:
+	start_battle.call_deferred(encounter_id, RETURN_TO_ROOM, first_turn)
+
+
 func _on_battle_test_requested(encounter_id: String) -> void:
 	start_battle.call_deferred(encounter_id, RETURN_TO_TITLE, FIRST_TURN_NORMAL)
 
@@ -260,6 +357,10 @@ func _free_kept_room() -> void:
 
 func _game_state() -> Node:
 	return game_state if game_state != null else get_node_or_null("/root/GameState")
+
+
+func _save_manager() -> Node:
+	return get_node_or_null(PATH_SAVE_MANAGER)
 
 
 func _config() -> Node:

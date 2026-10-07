@@ -1,0 +1,18 @@
+{
+  "_about": "How enemies behave on the map. Each enemy's own speeds are in battle/enemies.json under 'field' (walk_speed, chase_speed, sight_m, give_up_s); 'default_field' is used when an enemy has none. sight_cone_deg is how wide an enemy sees in front of itself, close_notice_m is how near Red can be before it notices her from any side, lose_sight_mult is how much farther than sight_m Red must get to count as 'out of sight', give_up_s (per enemy) is how long it chases without sight before it gives up, rest_s is how long it stands out of breath after giving up, reaggro_cooldown_s is how long it ignores Red after that, linger_s is the pause at each patrol point, touch_radius/touch_height decide when it catches Red. first_turn: a hit counts as 'from behind' when the angle between a facing and the line to the other one is past back_dot (cosine); facing_dot is how much Red must face the enemy to ambush it. Everything is in world units and seconds.",
+  "default_field": {"walk_speed": 2.0, "chase_speed": 3.2, "sight_m": 6.0, "give_up_s": 4.0},
+  "sight_cone_deg": 130.0,
+  "close_notice_m": 1.6,
+  "lose_sight_mult": 1.4,
+  "rest_s": 1.4,
+  "reaggro_cooldown_s": 2.5,
+  "linger_s": 1.0,
+  "waypoint_reach": 0.25,
+  "touch_radius": 0.75,
+  "touch_height": 1.2,
+  "turn_rate_deg_per_s": 400.0,
+  "gravity": 24.0,
+  "stuck_s": 1.2,
+  "first_turn": {"back_dot": -0.5, "facing_dot": 0.0},
+  "los_height": 0.5
+}

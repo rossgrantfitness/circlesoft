@@ -1,0 +1,25 @@
+{
+  "_about": "Every room the SceneRouter can load. 'scene' is the room scene, 'spawns' lists the named spawn markers inside it (a Marker3D under the room's Spawns node, or a child of the room root), 'default_spawn' is where go_to(room) with no spawn puts Red. 'fade' is the dithered fade to black and back when rooms change (seconds for each half, and how many dither steps). Doors, save locations and the new-game start refer to these ids. Add Harrow Landing's rooms here as they are built.",
+  "fade": {"out_s": 0.24, "in_s": 0.24, "steps": 8},
+  "start_room": "test_room",
+  "rooms": {
+    "test_room": {
+      "name": "Test Room",
+      "scene": "res://scenes/debug/psx_test_room.tscn",
+      "spawns": ["PlayerSpawn"],
+      "default_spawn": "PlayerSpawn"
+    },
+    "test_a": {
+      "name": "Test Yard A",
+      "scene": "res://scenes/rooms/test_a.tscn",
+      "spawns": ["start", "from_b", "from_vault"],
+      "default_spawn": "start"
+    },
+    "test_b": {
+      "name": "Test Yard B",
+      "scene": "res://scenes/rooms/test_b.tscn",
+      "spawns": ["from_a", "vault"],
+      "default_spawn": "from_a"
+    }
+  }
+}

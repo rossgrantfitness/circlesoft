@@ -13,11 +13,42 @@ const PLAYER_AUTO: String = "auto"
 
 var data: BattleData
 var progression: Progression
+## Dress the simulated party in the gear from feel_targets.sim.gear (false = no gear at all).
+var use_gear: bool = true
 
 
 func _init(p_data: BattleData = null) -> void:
 	data = p_data if p_data != null else BattleData.shared()
 	progression = Progression.new(data)
+
+
+# ---- gear ----
+
+## {character: {weapon, armor, charm}} the simulated party wears at a party level, from
+## feel_targets.sim.gear (the highest by_level row at or below the level). {} = no gear.
+func gear_for_level(level: int) -> Dictionary:
+	var gear: Dictionary = (data.feel.get("sim", {}) as Dictionary).get("gear", {})
+	if not use_gear or gear.is_empty():
+		return {}
+	var picked: String = ""
+	for row: Dictionary in gear.get("by_level", []):
+		if int(row["level"]) <= level:
+			picked = str(row["loadout"])
+	return (gear.get("loadouts", {}) as Dictionary).get(picked, {})
+
+
+## Changes a carried-over member into the gear that fits its level (new maximums; HP and Juice only clamped).
+func refit(member: Dictionary) -> void:
+	var loadouts: Dictionary = gear_for_level(int(member["level"]))
+	var equipment: Dictionary = loadouts.get(str(member["id"]), {})
+	if equipment.is_empty() or equipment == member.get("equipment", {}):
+		return
+	member["equipment"] = equipment.duplicate()
+	var stats: Dictionary = StatCalc.stats_for_member(data, member)
+	member["hp_max"] = stats["hp"]
+	member["juice_max"] = stats["juice"]
+	member["hp"] = mini(int(member["hp"]), int(stats["hp"]))
+	member["juice"] = mini(int(member["juice"]), int(stats["juice"]))
 
 
 # ---- one fight ----
@@ -37,8 +68,9 @@ func make_setup(encounter_id: String, player: String, seed: int, level: int, mem
 		setup.press_source = SimPressSource.make(player, float(sim.get("good_sigma_ms", 40.0)), float(sim.get("hold_lead_ms", 450.0)), float(sim.get("good_lapse_chance", 0.0)))
 	setup.command_source = BattleSimPolicy.new(sim)
 	if members.is_empty():
+		var loadouts: Dictionary = gear_for_level(level)
 		for char_id: String in data.character_order:
-			setup.party.append(progression.new_member(char_id, level))
+			setup.party.append(progression.new_member(char_id, level, loadouts.get(char_id, {})))
 	else:
 		setup.party = members
 	if bag.is_empty():
@@ -174,8 +206,9 @@ static func check_clutch_matters(data: BattleData, all_stats: Array[Dictionary])
 func walkthrough(player: String, seed: int, rest_between: bool = true, restock_between: bool = true) -> Dictionary:
 	var order: Array = (data.feel.get("walkthrough", {}) as Dictionary).get("order", data.encounter_order)
 	var members: Array[Dictionary] = []
+	var start_gear: Dictionary = gear_for_level(1)
 	for char_id: String in data.character_order:
-		members.append(progression.new_member(char_id, 1))
+		members.append(progression.new_member(char_id, 1, start_gear.get(char_id, {})))
 	var bag: Dictionary = ((data.feel.get("sim", {}) as Dictionary).get("start_bag", {}) as Dictionary).duplicate()
 	var credits: int = 0
 	var wins: int = 0
@@ -193,6 +226,7 @@ func walkthrough(player: String, seed: int, rest_between: bool = true, restock_b
 		members = []
 		for member: Dictionary in fight["party"]:
 			var kept: Dictionary = member.duplicate()
+			refit(kept)
 			if rest_between:
 				kept["hp"] = kept["hp_max"]
 				kept["juice"] = kept["juice_max"]

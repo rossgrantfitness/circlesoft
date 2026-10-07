@@ -1,0 +1,34 @@
+{
+  "_about": "What stands in each room besides the scenery: pickups, crates, doors and map enemies. The room scene holds the position and the node (its 'placement_id' is the key here); this file holds the contents and the rules, so loot, locks and patrols can change without touching a scene. 'room' is the room id from rooms.json (a test checks the scene really has the node). Opened crates and taken pickups are remembered by id through GameState (mark_opened / is_opened), so they stay taken after a save and load. pickups: item + count and/or credits. crates: items [{item, count}] and/or credits, 'style' is supply (gray Hegemony), chalk (a Coldrunner stash) or wood. doors: to_room + to_spawn; 'requires' is {item, consume, flag}: an item and/or a flag that must be held, 'consume' takes the item the first time; 'locked_message' is what Red reads when it is locked, 'unlocked_message' plays the first time the key works. enemies: enemy is an id in battle/enemies.json (its model and its 'field' speeds), encounter is an id in battle/encounters.json, kind is regular (comes back when you re-enter the room), story or boss (stay beaten: 'defeat_flag' is set on a win), patrol is a list of [x, y, z] offsets from where the enemy stands in the scene.",
+  "pickups": {
+    "test_a_ration": {"room": "test_a", "item": "ration_bar", "count": 1},
+    "test_a_ledge_credits": {"room": "test_a", "credits": 25},
+    "test_b_coffee": {"room": "test_b", "item": "canned_coffee", "count": 2}
+  },
+  "crates": {
+    "test_a_key_crate": {"room": "test_a", "style": "supply", "items": [{"item": "kasp_access_card", "count": 1}]},
+    "test_b_fence_crate": {"room": "test_b", "style": "chalk", "items": [{"item": "juice_box", "count": 1}], "credits": 15},
+    "test_b_empty_crate": {"room": "test_b", "style": "wood"}
+  },
+  "doors": {
+    "test_a_to_b": {"room": "test_a", "to_room": "test_b", "to_spawn": "from_a"},
+    "test_a_vault": {
+      "room": "test_a", "to_room": "test_b", "to_spawn": "vault",
+      "requires": {"item": "kasp_access_card", "consume": false},
+      "locked_message": "Signals access only.\nThe reader wants a card.",
+      "unlocked_message": "The reader blinks green. Kasp's face on\nthe card looks smug about it."
+    },
+    "test_b_to_a": {"room": "test_b", "to_room": "test_a", "to_spawn": "from_b"},
+    "test_b_vault_exit": {"room": "test_b", "to_room": "test_a", "to_spawn": "from_vault"}
+  },
+  "enemies": {
+    "test_a_grunt": {
+      "room": "test_a", "enemy": "signals_grunt", "encounter": "grunt_pair", "kind": "regular",
+      "patrol": [[0, 0, 0], [4.5, 0, 0], [4.5, 0, 2.5], [0, 0, 2.5]]
+    },
+    "test_b_guard": {
+      "room": "test_b", "enemy": "whistle_blower", "encounter": "grunt_solo", "kind": "story",
+      "defeat_flag": "defeated_test_b_guard", "patrol": []
+    }
+  }
+}

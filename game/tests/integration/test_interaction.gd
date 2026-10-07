@@ -155,7 +155,9 @@ func test_icons_exist_and_are_never_an_exclamation_mark() -> void:
 	assert_has(icons["icons"], "talk")
 	assert_has(icons["icons"], "examine")
 	assert_has(icons["icons"], "take")
-	assert_eq((icons["icons"] as Dictionary).size(), 3, "no '!': that is the battle cue")
+	assert_eq((icons["icons"] as Dictionary).size(), Interactable.KIND_NAMES.size(), "one icon per kind, and no '!' (the battle cue)")
+	assert_does_not_have(icons["icons"], "exclaim")
+	assert_does_not_have(icons["icons"], "alert")
 	for kind: String in Interactable.KIND_NAMES.values():
 		assert_has(icons["icons"], kind)
 

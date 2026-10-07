@@ -1,7 +1,11 @@
 extends Node
-## Run state, kept small for the dialogue and menu tests: the bag (item id -> count), story flags,
-## and the party list. The save-system task (M3-9) grows this; to_dict / from_dict are here so a
-## save round trip already works for what exists.
+## Run state: the bag (item id -> count), story flags, the party and each member's state (level,
+## xp, hp, juice, skills, boosters, gear), credits, play time, where the party is (room + spawn),
+## the story beat, opened crates and picked-up items, and the hero's name.
+##
+## to_dict() / from_dict() are the save format ("save_version" inside). Old dictionaries load
+## through a migration chain (see MIGRATIONS); the unversioned format from before the save system
+## is version 1 and is kept as a test fixture (tests/fixtures/saves/).
 ##
 ## Autoload (no class_name, so it does not hide the singleton). Tests make their own copy with
 ## `load("res://scripts/core/game_state.gd").new()` and call load_party()/reset().
@@ -16,14 +20,35 @@ const KEY_DEFAULT_PARTY: String = "default_party"
 const KEY_MEMBERS: String = "members"
 const KEY_STARTING_ITEMS: String = "starting_items"
 const KEY_ITEMS: String = "items"
-const MEMBER_SAVE_KEYS: Array[String] = ["level", "xp", "hp", "hp_max", "juice", "juice_max"]
+## Bump when the saved shape changes and add a step to MIGRATIONS (key = the version it upgrades FROM).
+const SAVE_VERSION: int = 2
+const MIGRATIONS: Dictionary[int, StringName] = {1: &"_migrate_1_to_2"}
+const MEMBER_SAVE_KEYS: Array[String] = ["level", "xp", "hp", "hp_max", "juice", "juice_max", "skills", "bonus", "equipment"]
+const INT_MEMBER_KEYS: Array[String] = ["level", "xp", "hp", "hp_max", "juice", "juice_max"]
+const EQUIPMENT_SLOTS: Array[String] = ["weapon", "armor", "charm"]
+const SAVE_DATA_ID: String = "world/save"
+const KEY_NEW_GAME: String = "new_game"
+const DEFAULT_HERO_NAME: String = "Red"
+const HERO_ID: String = "red"
+const PLAY_TIME_STEP_S: float = 0.001
 
 var _bag: Dictionary[String, int] = {}
 var _flags: Dictionary[String, bool] = {}
 var _party_ids: Array[String] = []
+var _default_party_ids: Array[String] = []
 var _members: Dictionary[String, Dictionary] = {}
 var _starting_items: Dictionary[String, int] = {}
+var _base_members: Dictionary[String, Dictionary] = {}
 var _credits: int = 0
+var _play_time_s: float = 0.0
+var _location: Dictionary = {"room": "", "spawn": ""}
+var _story_beat: String = ""
+var _opened: Dictionary[String, bool] = {}
+var _hero_name: String = DEFAULT_HERO_NAME
+
+## While true, _process adds the frame time to the play time. Main turns it on in the field and
+## off on the title screen. Off by default so tests and menus never tick it.
+var playing: bool = false
 
 
 func _ready() -> void:
@@ -31,29 +56,56 @@ func _ready() -> void:
 	reset()
 
 
+func _process(delta: float) -> void:
+	if playing:
+		tick_play_time(delta)
+
+
 ## Reads a party document: {"default_party": [ids], "members": {id: {...}}, "starting_items": {id: n}}.
 func load_party(doc: Dictionary) -> void:
 	_party_ids.clear()
+	_default_party_ids.clear()
 	_members.clear()
+	_base_members.clear()
 	_starting_items.clear()
 	var members: Dictionary = doc.get(KEY_MEMBERS, {})
 	for id: String in members:
 		_members[id] = (members[id] as Dictionary).duplicate(true)
+		_base_members[id] = (members[id] as Dictionary).duplicate(true)
 	for id: Variant in doc.get(KEY_DEFAULT_PARTY, []):
 		if _members.has(str(id)):
 			_party_ids.append(str(id))
+			_default_party_ids.append(str(id))
 	var starting: Dictionary = doc.get(KEY_STARTING_ITEMS, {})
 	for id: String in starting:
 		_starting_items[id] = int(starting[id])
 
 
-## Back to a fresh run: starting bag, no flags, full party list.
+## Back to a fresh run: starting bag, no flags, starting member stats, the new-game place and beat.
 func reset() -> void:
 	_bag.clear()
 	_flags.clear()
+	_opened.clear()
 	_credits = 0
+	_play_time_s = 0.0
+	_hero_name = DEFAULT_HERO_NAME
+	for id: String in _base_members:
+		_members[id] = _base_members[id].duplicate(true)
 	for id: String in _starting_items:
 		_bag[id] = clampi(_starting_items[id], 0, MAX_STACK)
+	_party_ids = _default_party_ids.duplicate()
+	_apply_new_game_place()
+
+
+func _apply_new_game_place() -> void:
+	var start: Dictionary = _new_game_data()
+	_location = {"room": str(start.get("room", "")), "spawn": str(start.get("spawn", ""))}
+	_story_beat = str(start.get("story_beat", ""))
+
+
+func _new_game_data() -> Dictionary:
+	var doc: Dictionary = DataDB.get_dict(SAVE_DATA_ID)
+	return doc.get(KEY_NEW_GAME, {})
 
 
 # ---- bag ----
@@ -171,8 +223,104 @@ func add_credits(amount: int) -> void:
 	_credits = maxi(_credits + amount, 0)
 
 
+# ---- play time ----
+
+func get_play_time_s() -> float:
+	return _play_time_s
+
+
+## Adds seconds of play (the autoload does this itself while `playing`).
+func tick_play_time(delta: float) -> void:
+	if delta > 0.0:
+		_play_time_s += delta
+
+
+# ---- where we are, and the story ----
+
+## {room, spawn} as copies. Empty strings mean "the start of the game".
+func get_location() -> Dictionary:
+	return _location.duplicate()
+
+
+## Where the party is. Called by the scene router on every room change and by save lamps.
+func set_location(room_id: String, spawn_id: String = "") -> void:
+	_location = {"room": room_id, "spawn": spawn_id}
+
+
+func get_story_beat() -> String:
+	return _story_beat
+
+
+func set_story_beat(beat_id: String) -> void:
+	_story_beat = beat_id
+
+
+func get_hero_name() -> String:
+	return _hero_name
+
+
+func set_hero_name(hero_name: String) -> void:
+	var cleaned: String = hero_name.strip_edges()
+	_hero_name = cleaned if not cleaned.is_empty() else DEFAULT_HERO_NAME
+	if _members.has(HERO_ID):
+		_members[HERO_ID]["name"] = _hero_name
+
+
+# ---- opened crates and picked-up items ----
+
+## Remembers that a crate or pickup (by its id in placements.json) has been opened or taken.
+func mark_opened(opened_id: String) -> void:
+	if not opened_id.is_empty():
+		_opened[opened_id] = true
+
+
+func is_opened(opened_id: String) -> bool:
+	return _opened.has(opened_id)
+
+
+func get_opened_ids() -> Array[String]:
+	var ids: Array[String] = []
+	ids.assign(_opened.keys())
+	return ids
+
+
+# ---- gear ----
+
+## {weapon, armor, charm} item ids ("" = nothing). Always has all three keys.
+func get_equipment(member_id: String) -> Dictionary:
+	var result: Dictionary = {}
+	var stored: Dictionary = _members.get(member_id, {}).get("equipment", {})
+	for slot: String in EQUIPMENT_SLOTS:
+		result[slot] = str(stored.get(slot, ""))
+	return result
+
+
+## Stores an item id in a slot. This does not check owners or armor weight; Equipment.equip() does.
+## Returns false for an unknown member or slot.
+func set_equipment(member_id: String, slot: String, item_id: String) -> bool:
+	if not _members.has(member_id) or not EQUIPMENT_SLOTS.has(slot):
+		return false
+	var gear: Dictionary = get_equipment(member_id)
+	gear[slot] = item_id
+	_members[member_id]["equipment"] = gear
+	return true
+
+
+# ---- resting ----
+
+## Full HP and Juice for every member (Red's home, inns, the Camp Stove).
+func rest_party() -> void:
+	for id: String in _members:
+		var member: Dictionary = _members[id]
+		if member.has("hp_max"):
+			member["hp"] = member["hp_max"]
+		if member.has("juice_max"):
+			member["juice"] = member["juice_max"]
+
+
 # ---- save round trip ----
 
+## Everything a save needs, as plain JSON-safe data.
 func to_dict() -> Dictionary:
 	var member_state: Dictionary = {}
 	for id: String in _members:
@@ -180,28 +328,109 @@ func to_dict() -> Dictionary:
 		var kept: Dictionary = {}
 		for key: String in MEMBER_SAVE_KEYS:
 			if member.has(key):
-				kept[key] = member[key]
+				var value: Variant = member[key]
+				if INT_MEMBER_KEYS.has(key):
+					value = int(value)
+				elif value is Dictionary or value is Array:
+					value = value.duplicate(true)
+				kept[key] = value
 		member_state[id] = kept
-	return {"bag": _bag.duplicate(), "flags": _flags.duplicate(), "party": _party_ids.duplicate(),
-		"credits": _credits, "member_state": member_state}
+	var opened: Array = _opened.keys()
+	opened.sort()
+	return {"save_version": SAVE_VERSION, "bag": _bag.duplicate(), "flags": _flags.duplicate(),
+		"party": _party_ids.duplicate(), "credits": _credits, "member_state": member_state,
+		"play_time_s": snappedf(_play_time_s, PLAY_TIME_STEP_S), "location": _location.duplicate(),
+		"story_beat": _story_beat, "opened": opened, "hero_name": _hero_name}
 
 
+## Loads a dictionary from to_dict() of any version. Old versions are migrated first. Anything
+## the dictionary does not mention goes back to its starting value, so loading never mixes the
+## old run with the saved one.
 func from_dict(data: Dictionary) -> void:
+	var current: Dictionary = migrate(data)
+	reset()
 	_bag.clear()
-	_flags.clear()
-	var bag: Dictionary = data.get("bag", {})
+	var bag: Dictionary = current.get("bag", {})
 	for id: String in bag:
 		_bag[id] = int(bag[id])
-	var flags: Dictionary = data.get("flags", {})
+	var flags: Dictionary = current.get("flags", {})
 	for id: String in flags:
 		_flags[id] = bool(flags[id])
-	_credits = int(data.get("credits", 0))
-	var member_state: Dictionary = data.get("member_state", {})
+	_credits = int(current.get("credits", 0))
+	_play_time_s = maxf(0.0, float(current.get("play_time_s", 0.0)))
+	var place: Dictionary = current.get("location", {})
+	_location = {"room": str(place.get("room", "")), "spawn": str(place.get("spawn", ""))}
+	_story_beat = str(current.get("story_beat", ""))
+	for id: Variant in current.get("opened", []):
+		mark_opened(str(id))
+	var member_state: Dictionary = current.get("member_state", {})
 	for id: String in member_state:
-		update_member(id, member_state[id])
-	var party: Array = data.get("party", [])
+		update_member(id, _clean_member_fields(member_state[id]))
+	set_hero_name(str(current.get("hero_name", DEFAULT_HERO_NAME)))
+	var party: Array = current.get("party", [])
 	if not party.is_empty():
 		_party_ids.clear()
 		for id: Variant in party:
 			if _members.has(str(id)):
 				_party_ids.append(str(id))
+
+
+## JSON turns every number into a float; the stat fields go back to ints.
+func _clean_member_fields(fields: Dictionary) -> Dictionary:
+	var cleaned: Dictionary = fields.duplicate(true)
+	for key: String in INT_MEMBER_KEYS:
+		if cleaned.has(key):
+			cleaned[key] = int(cleaned[key])
+	return cleaned
+
+
+## What Main takes before a fight (and any "go back to this moment" feature).
+func snapshot() -> Dictionary:
+	return to_dict()
+
+
+## Goes back to a snapshot but keeps the clock running forward: Retry does not rewind play time.
+func restore_snapshot(data: Dictionary) -> void:
+	var kept_time: float = _play_time_s
+	from_dict(data)
+	_play_time_s = maxf(_play_time_s, kept_time)
+
+
+# ---- save versions ----
+
+## The version to_dict() writes. A save from a higher number came from a newer game.
+func save_version() -> int:
+	return SAVE_VERSION
+
+
+## The dictionary brought up to SAVE_VERSION (a copy; the argument is not changed). A dictionary
+## with no "save_version" is the version-1 format from before the save system.
+func migrate(data: Dictionary) -> Dictionary:
+	var current: Dictionary = data.duplicate(true)
+	var version: int = int(current.get("save_version", 1))
+	while version < SAVE_VERSION:
+		if not MIGRATIONS.has(version):
+			push_warning("GameState: no migration from save version %d" % version)
+			break
+		current = call(MIGRATIONS[version], current) as Dictionary
+		version += 1
+		current["save_version"] = version
+	return current
+
+
+## 1 -> 2: adds play time, location, story beat, opened ids, hero name and gear. A version-1 save
+## has none of them, so the new-game values stand in.
+func _migrate_1_to_2(old: Dictionary) -> Dictionary:
+	var start: Dictionary = _new_game_data()
+	var upgraded: Dictionary = old.duplicate(true)
+	if not upgraded.has("play_time_s"):
+		upgraded["play_time_s"] = 0.0
+	if not upgraded.has("location"):
+		upgraded["location"] = {"room": str(start.get("room", "")), "spawn": str(start.get("spawn", ""))}
+	if not upgraded.has("story_beat"):
+		upgraded["story_beat"] = str(start.get("story_beat", ""))
+	if not upgraded.has("opened"):
+		upgraded["opened"] = []
+	if not upgraded.has("hero_name"):
+		upgraded["hero_name"] = DEFAULT_HERO_NAME
+	return upgraded

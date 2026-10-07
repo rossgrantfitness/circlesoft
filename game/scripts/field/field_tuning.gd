@@ -25,6 +25,14 @@ var jump_release_cut_mult: float = 0.0
 var jump_air_accel: float = 0.0
 ## Seconds off the ground before the fall pose shows (so small steps do not flicker it).
 var jump_air_anim_delay_s: float = 0.0
+## After a fight Red blinks this long (s) and cannot be caught; the model flickers every blink_flash_s.
+var blink_time_s: float = 0.0
+var blink_flash_s: float = 0.08
+## The crew's trail: spacing between followers (units), distance between breadcrumbs, and how much
+## faster than running they move to catch up after a teleport.
+var follow_spacing: float = 0.0
+var follow_breadcrumb_step: float = 0.0
+var follow_catch_up_speed_mult: float = 0.0
 var camera_smoothing: float = 0.0
 var camera_safe_frame_margin: float = 0.0
 var fade_occluder_radius: float = 0.0
@@ -56,6 +64,11 @@ static func from_dict(data: Dictionary) -> FieldTuning:
 	t.jump_release_cut_mult = _number(data, "jump.release_cut_mult")
 	t.jump_air_accel = _number(data, "jump.air_accel")
 	t.jump_air_anim_delay_s = _number(data, "jump.air_anim_delay_s")
+	t.blink_time_s = _number(data, "blink_time_s")
+	t.blink_flash_s = float(data.get("blink_flash_s", t.blink_flash_s))
+	t.follow_spacing = _number(data, "follow.spacing")
+	t.follow_breadcrumb_step = _number(data, "follow.breadcrumb_step")
+	t.follow_catch_up_speed_mult = _number(data, "follow.catch_up_speed_mult")
 	t.camera_smoothing = _number(data, "camera.smoothing")
 	t.camera_safe_frame_margin = _number(data, "camera.safe_frame_margin")
 	t.fade_occluder_radius = _number(data, "prop_fade.occluder_radius")

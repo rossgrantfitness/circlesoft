@@ -1,0 +1,46 @@
+{
+  "_about": "Dialogue portraits. Each character below names where its 96x96 expression PNGs live ('path', with {face} replaced by the expression id). Until the art exists the speech bubble and text box draw a placeholder initials head from 'faces' (eyes / brows / mouth); the day a PNG appears at the path it is used instead, no code change. Expression ids are the Writer's: use them in {face:id} tags and in a line's 'face' field. Sizes are internal pixels (384x216). Files go in game/art/final/portraits/<character>/ (docs/art_requests.md rows 7 to 12).",
+  "slot": {
+    "_note": "bubble_size / box_size are the on-screen squares. crop is the part of a 96x96 portrait that is shown in the bubble (the 64x64 face area, drawn at exactly half size); the box shows the whole portrait at half size. If a portrait is a different size, the crop scales with it.",
+    "source_size": 96,
+    "bubble_size": 32,
+    "box_size": 48,
+    "bubble_crop": [16, 8, 64, 64],
+    "box_crop": [0, 0, 96, 96],
+    "gap": 5,
+    "pad": 4,
+    "frame_color": "ink",
+    "back_color": "dusk",
+    "flash_s": 0.18,
+    "flash_color": "lamp_amber"
+  },
+  "characters": {
+    "red": {"name": "Red", "initial": "R", "color": "#C8322A", "path": "res://art/final/portraits/red/ptr_red_{face}.png", "default_face": "grin", "faces": ["grin", "determined", "surprised", "worried", "smug"]},
+    "otis": {"name": "Otis", "initial": "O", "color": "#9A6A3E", "path": "res://art/final/portraits/otis/ptr_otis_{face}.png", "default_face": "calm", "faces": ["calm", "apologetic", "stern", "worried", "laughing"]},
+    "mox": {"name": "Mox", "initial": "M", "color": "#C9A23A", "path": "res://art/final/portraits/mox/ptr_mox_{face}.png", "default_face": "boasting", "faces": ["boasting", "panicking", "focused", "sheepish", "proud"]},
+    "kasp": {"name": "Kasp", "initial": "K", "color": "#7A5A3A", "path": "res://art/final/portraits/kasp/ptr_kasp_{face}.png", "default_face": "smug", "faces": ["smug", "shouting", "flustered"]},
+    "zero_old": {"name": "Old Zero", "initial": "Z", "color": "#CBA878", "path": "res://art/final/portraits/npc_a/ptr_npc_a_{face}.png", "default_face": "neutral", "faces": ["neutral", "happy", "upset"]}
+  },
+  "faces": {
+    "_note": "Placeholder drawing hints on a 16x16 grid. eyes: open, wide, half, happy. brows: none, angry, worried. mouth: smile, grin, flat, frown, smirk, o, big_o, wavy.",
+    "grin": {"eyes": "open", "brows": "none", "mouth": "grin"},
+    "determined": {"eyes": "open", "brows": "angry", "mouth": "flat"},
+    "surprised": {"eyes": "wide", "brows": "none", "mouth": "o"},
+    "worried": {"eyes": "open", "brows": "worried", "mouth": "frown"},
+    "smug": {"eyes": "half", "brows": "none", "mouth": "smirk"},
+    "calm": {"eyes": "open", "brows": "none", "mouth": "smile"},
+    "apologetic": {"eyes": "open", "brows": "worried", "mouth": "smile"},
+    "stern": {"eyes": "open", "brows": "angry", "mouth": "frown"},
+    "laughing": {"eyes": "happy", "brows": "none", "mouth": "big_o"},
+    "boasting": {"eyes": "open", "brows": "none", "mouth": "grin"},
+    "panicking": {"eyes": "wide", "brows": "worried", "mouth": "big_o"},
+    "focused": {"eyes": "half", "brows": "angry", "mouth": "flat"},
+    "sheepish": {"eyes": "half", "brows": "worried", "mouth": "wavy"},
+    "proud": {"eyes": "happy", "brows": "none", "mouth": "smile"},
+    "shouting": {"eyes": "open", "brows": "angry", "mouth": "big_o"},
+    "flustered": {"eyes": "wide", "brows": "worried", "mouth": "wavy"},
+    "neutral": {"eyes": "open", "brows": "none", "mouth": "flat"},
+    "happy": {"eyes": "happy", "brows": "none", "mouth": "smile"},
+    "upset": {"eyes": "open", "brows": "worried", "mouth": "frown"}
+  }
+}

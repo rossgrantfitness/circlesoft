@@ -30,6 +30,10 @@ var status_resist: Dictionary = {}
 var flee_at_hp_pct: float = 0.0
 var enemy_data: Dictionary = {}
 var bonus: Dictionary = {}
+## Gear perks, e.g. {payback_mult: 1.5}; gear that blocks statuses is folded into status_resist.
+var perks: Dictionary = {}
+## Worn gear {weapon, armor, charm} (party only); carried back out in the battle result.
+var equipment: Dictionary = {}
 
 
 func is_party() -> bool:

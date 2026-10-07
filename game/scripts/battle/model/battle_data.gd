@@ -42,6 +42,8 @@ var formulas: Dictionary = {}
 var feel: Dictionary = {}
 var battle_items: Dictionary = {}
 var field_item_ids: Array[String] = []
+## Consumables, boosters, key items and gear (items/items.json and items/equipment.json).
+var item_data: ItemData = null
 var characters: Dictionary = {}
 var character_order: Array[String] = []
 var rules: Dictionary = {}
@@ -105,13 +107,19 @@ func _read(provider: Object) -> void:
 	windows_doc = _copy(provider, ID_WINDOWS)
 	formulas = _copy(provider, ID_FORMULAS)
 	feel = _copy(provider, ID_FEEL)
+	# One source of truth: items/items.json. The old battle/battle_items.json is still read (it is
+	# empty now) so a test or mod can add a battle-only item there.
 	var item_doc: Dictionary = _copy(provider, ID_BATTLE_ITEMS)
 	for entry: Variant in item_doc.get("items", []):
 		var item: Dictionary = entry as Dictionary
 		battle_items[str(item["id"])] = item
-	var field_doc: Dictionary = _copy(provider, ID_FIELD_ITEMS)
-	for entry: Variant in field_doc.get("items", []):
-		field_item_ids.append(str((entry as Dictionary).get("id", "")))
+	item_data = ItemData.load_from(provider)
+	for item_id: String in item_data.item_order:
+		field_item_ids.append(item_id)
+	for item_id: String in item_data.battle_item_ids():
+		var entry: Dictionary = item_data.item(item_id)
+		battle_items[item_id] = {"id": item_id, "name": str(entry.get("name", item_id)),
+			"target": str(entry.get("target", "one_ally")), "effect": (entry.get("effect", {}) as Dictionary).duplicate(true)}
 	var char_doc: Dictionary = _copy(provider, ID_CHARACTERS)
 	rules = char_doc.get("rules", {})
 	for entry: Variant in char_doc.get("characters", []):
@@ -249,6 +257,7 @@ func validate() -> Array[String]:
 	_validate_encounters(errs)
 	_validate_party(errs)
 	_validate_items(errs)
+	_validate_gear(errs)
 	_validate_windows(errs)
 	return errs
 
@@ -436,6 +445,12 @@ func _validate_items(errs: Array[String]) -> void:
 			if not statuses.has(str(status_id)):
 				errs.append("item %s: cures unknown status" % item_id)
 		_validate_status_refs(errs, "item %s" % item_id, effect.get("statuses", []))
+
+
+func _validate_gear(errs: Array[String]) -> void:
+	var status_ids: Array[String] = []
+	status_ids.assign(statuses.keys())
+	errs.append_array(item_data.validate(status_ids, character_order))
 
 
 func _validate_windows(errs: Array[String]) -> void:

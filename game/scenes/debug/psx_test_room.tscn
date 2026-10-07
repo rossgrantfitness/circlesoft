@@ -1,4 +1,4 @@
-[gd_scene load_steps=53 format=3]
+[gd_scene load_steps=54 format=3]
 
 [ext_resource type="Script" path="res://scripts/core/psx_room_look.gd" id="1_look"]
 [ext_resource type="Shader" path="res://shaders/psx_lit.gdshader" id="2_lit"]
@@ -15,6 +15,7 @@
 [ext_resource type="PackedScene" path="res://scenes/actors/npc.tscn" id="13_npc"]
 [ext_resource type="Script" path="res://scripts/field/interactable.gd" id="14_interactable"]
 [ext_resource type="PackedScene" path="res://scenes/actors/field_enemy.tscn" id="15_enemy"]
+[ext_resource type="Script" path="res://scripts/save/save_lamp.gd" id="16_savelamp"]
 
 [sub_resource type="Environment" id="Environment_room"]
 background_mode = 1
@@ -470,3 +471,13 @@ speaker_id = "enemy_tough"
 fight_id = "tough"
 model_path = "res://art/placeholder/enemies/drone_variant/enm_drone_variant.glb"
 reach = 1.8
+
+[node name="SaveLamp" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 0, -3.5)
+script = ExtResource("16_savelamp")
+room_id = "test_room"
+spawn_id = "LampSpawn"
+reach = 1.6
+
+[node name="LampSpawn" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 0, -2.4)

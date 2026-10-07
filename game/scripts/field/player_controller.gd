@@ -12,7 +12,11 @@ extends CharacterBody3D
 ## land), never for specific bones, so a different Red model drops in without code changes
 ## (see "Model contract" in docs/style_guide.md).
 ##
-## Collision: layer 1 is the world (walls, floor). Red sits on layer 2 and collides with layer 1.
+## Collision: layer 1 is the world (walls, floor). Red sits on layer 2 and collides with layer 1 only,
+## so map enemies (layer 3) and the crew following her (layer 4) can never block her.
+##
+## Blink: after a fight Red flickers for blink_time_s and cannot be caught (start_blink / is_blinking).
+## Scripted: a climb, a hop or a cutscene moves her directly; physics and input are skipped meanwhile.
 
 ## The playable Red: the placeholder shiba (Ross's locked look). The first blockout stays as a fallback.
 const MODEL_PATH: String = "res://art/placeholder/characters/red/red_shiba.glb"
@@ -44,6 +48,8 @@ var stick: Vector2 = Vector2.ZERO
 var run_held: bool = false
 ## Jump button held. Letting go while rising cuts the jump short.
 var jump_held: bool = false
+## A climb, hop or cutscene is moving her directly: no input, no physics step (see set_scripted).
+var scripted: bool = false
 ## The room camera that movement is relative to. Falls back to the viewport's current camera.
 var camera: Camera3D = null
 
@@ -63,6 +69,7 @@ var _current_animation: StringName = &""
 var _moving: bool = false
 var _running: bool = false
 var _land_left: float = 0.0
+var _blink_left: float = 0.0
 
 
 func _ready() -> void:
@@ -78,6 +85,9 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	tick_blink(delta)
+	if scripted:
+		return
 	if read_engine_input:
 		stick = Input.get_vector(ACTION_LEFT, ACTION_RIGHT, ACTION_UP, ACTION_DOWN)
 		run_held = Input.is_action_pressed(ACTION_RUN)
@@ -87,6 +97,62 @@ func _physics_process(delta: float) -> void:
 		elif Input.is_action_just_pressed(ACTION_JUMP):
 			press_jump()
 	step(delta)
+
+
+## While scripted, the caller moves her (global_position) and she plays `clip` (a PlayerMotion clip name).
+func set_scripted(on: bool, clip: StringName = &"") -> void:
+	scripted = on
+	velocity = Vector3.ZERO
+	_vy = 0.0
+	if on:
+		_buffer_left = 0.0
+		if clip != &"":
+			_play_animation(clip)
+	else:
+		reset_ground_height()
+		_play_animation(PlayerMotion.ANIM_IDLE)
+
+
+## Plays one of the model's clips by name (ignored when the model has no such clip).
+func play_clip(clip: StringName) -> void:
+	_play_animation(clip)
+
+
+## Starts the after-fight blink (default length from field_tuning.json): she flickers and nothing can catch her.
+func start_blink(seconds: float = -1.0) -> void:
+	_blink_left = _tuning.blink_time_s if seconds < 0.0 else seconds
+	_apply_blink_look()
+
+
+func is_blinking() -> bool:
+	return _blink_left > 0.0
+
+
+func get_blink_left() -> float:
+	return _blink_left
+
+
+## True when an enemy touching her starts a fight: not blinking and not being moved by a script.
+func is_catchable() -> bool:
+	return not is_blinking() and not scripted
+
+
+## Counts the blink down and flickers the model. Runs every physics frame; tests call it directly.
+func tick_blink(delta: float) -> void:
+	if _blink_left <= 0.0:
+		return
+	_blink_left = maxf(_blink_left - delta, 0.0)
+	_apply_blink_look()
+
+
+func _apply_blink_look() -> void:
+	if _visual == null:
+		return
+	if _blink_left <= 0.0:
+		_visual.visible = true
+		return
+	var flash: float = maxf(_tuning.blink_flash_s, 0.01)
+	_visual.visible = int(_blink_left / flash) % 2 == 0
 
 
 func set_tuning(tuning: FieldTuning) -> void:
@@ -100,6 +166,15 @@ func set_camera(cam: Camera3D) -> void:
 ## The unit direction Red's model faces (flat).
 func get_facing() -> Vector3:
 	return global_basis.z
+
+
+## The way the stick points in the room (flat unit vector, camera-relative), or zero when she is
+## frozen, scripted or the stick is centered. This is her intent, not her speed: a door in front of
+## her stops her body but not the push.
+func get_move_direction() -> Vector3:
+	if frozen or scripted:
+		return Vector3.ZERO
+	return PlayerMotion.camera_relative_direction(stick, _camera_basis())
 
 
 func is_moving() -> bool:

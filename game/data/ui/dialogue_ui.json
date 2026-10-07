@@ -59,13 +59,43 @@
     "tag_y": -6,
     "choice_row_height": 14
   },
+  "markup": {
+    "_note": "Inline tags allowed in dialogue text. {face:grin} changes the speaker's portrait expression at that point in the line.",
+    "tags": ["face"]
+  },
+  "portrait": {
+    "_note": "Where portraits show. Sizes and crops are in data/ui/portraits.json. A speaker gets one when its entry below has a 'portrait' key (a character in portraits.json).",
+    "in_bubble": true,
+    "in_box": true
+  },
+  "fast_forward": {
+    "_note": "Hold one of these buttons (seconds to hold before it counts) to speed through text: each page shows at once, then turns by itself. Choices always wait for you. A press that was already down when the bubble opened is ignored until it is let go.",
+    "actions": {"cancel": 0.12, "confirm": 0.45},
+    "page_delay_s": 0.09,
+    "advance_lines": true,
+    "line_delay_s": 0.12,
+    "gesture_hold_s": 0.25
+  },
+  "auto_advance": {
+    "_note": "Config 'Auto-advance': a finished page turns by itself after base_s + per_char_s for every character, kept between min_s and max_s. Choices always wait for you.",
+    "base_s": 0.7,
+    "per_char_s": 0.035,
+    "min_s": 0.9,
+    "max_s": 6.0
+  },
+  "crowd": {
+    "_note": "Speaker ids that start with a prefix here are crowd NPCs: plain bottom box, no portrait, name tag from the rest of the id.",
+    "prefixes": ["crowd_"]
+  },
+  "crowd_speaker": {"accent": "#8D97A5", "style": "box", "voice": true},
   "sfx": {"open": "bubble_open", "next": "bubble_next", "item": "item_get", "choice": "menu_tick", "pick": "menu_confirm"},
   "default_speaker": {"name": "", "accent": "chalk", "head_height": 1.0, "style": "bubble", "voice": true},
   "speakers": {
-    "red": {"name": "Red", "accent": "#C8322A", "head_height": 1.0, "style": "bubble", "voice": false},
-    "otis": {"name": "Otis", "accent": "#E0782B", "head_height": 1.47, "style": "bubble", "voice": true},
-    "mox": {"name": "Mox", "accent": "#C9A23A", "head_height": 1.37, "style": "bubble", "voice": true},
-    "zero_old": {"name": "Old Zero", "accent": "#CBA878", "head_height": 1.16, "style": "bubble", "voice": true},
+    "red": {"name": "Red", "accent": "#C8322A", "head_height": 1.0, "style": "bubble", "voice": false, "portrait": "red"},
+    "otis": {"name": "Otis", "accent": "#E0782B", "head_height": 1.47, "style": "bubble", "voice": true, "portrait": "otis"},
+    "mox": {"name": "Mox", "accent": "#C9A23A", "head_height": 1.37, "style": "bubble", "voice": true, "portrait": "mox"},
+    "zero_old": {"name": "Old Zero", "accent": "#CBA878", "head_height": 1.16, "style": "bubble", "voice": true, "portrait": "zero_old"},
+    "kasp": {"name": "Kasp", "accent": "#7A5A3A", "head_height": 1.3, "style": "bubble", "voice": true, "portrait": "kasp"},
     "sign": {"name": "Sign", "accent": "#8D97A5", "head_height": 1.0, "style": "box", "voice": false},
     "narrator": {"name": "", "accent": "chalk", "head_height": 1.0, "style": "box", "voice": false},
     "enemy_grunt": {"name": "Grunt", "accent": "#8D97A5", "head_height": 1.7, "style": "bubble", "voice": true},

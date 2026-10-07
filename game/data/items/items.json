@@ -1,11 +1,27 @@
 {
-  "_about": "Placeholder item names and descriptions for the test field menu. The real item list (Equipment and items task) replaces this; the menu only reads id, name and desc.",
+  "_about": "Every consumable, booster and key item in the slice: ONE source of truth. Battles, the field menu, shops and the sim all read this file. Fields: id, name, kind (heal / juice / revive / cure / rest / throwable / escape / booster / key), desc (placeholder text until M6-2), price (buy price in credits; sells for half, rounded down; 0 = never sold), icon (one of the shared icon ids: food, can, bottle, bomb, key), tint (hex recolor of that icon), target (one_ally / one_down_ally / all_enemies / one_enemy / self / party), use_in (where the Items menu may use it: battle, field, lamp; 'lamp' means the field menu while standing at a save lamp, so the Camp Stove lists only lamp), effect. Effects: heal_hp, heal_hp_pct, restore_juice, restore_juice_pct, revive_hp_pct, cure (status ids), damage (fixed, ignores defense), statuses, escape, rest (full HP and Juice for everyone), boost ({stat: amount}, permanent). Key items have key: true, can never be sold or dropped and are listed on their own tab. Equipment lives in equipment.json.",
+  "max_stack": 99,
+  "sell_divisor": 2,
   "items": [
-    {"id": "ration_bar", "name": "Ration Bar", "kind": "consumable", "desc": "Small heal. Tastes like the wrapper."},
-    {"id": "can_of_chili", "name": "Can of Chili", "kind": "consumable", "desc": "Medium heal. The label is mostly a promise."},
-    {"id": "canned_coffee", "name": "Canned Coffee", "kind": "consumable", "desc": "A little Juice. Drink before yelling."},
-    {"id": "juice_box", "name": "Juice Box", "kind": "consumable", "desc": "A fair bit of Juice. Yes, really."},
-    {"id": "smelling_salts", "name": "Smelling Salts", "kind": "consumable", "desc": "Gets a Downed friend back up with a little HP."},
-    {"id": "camp_stove", "name": "Camp Stove", "kind": "consumable", "desc": "Use at a save lamp: full HP and Juice for everyone."}
+    {"id": "ration_bar", "name": "Ration Bar", "kind": "heal", "desc": "Small heal. Tastes like the wrapper.", "price": 15, "icon": "food", "tint": "#C9A23A", "target": "one_ally", "use_in": ["battle", "field"], "effect": {"heal_hp": 30}},
+    {"id": "can_of_chili", "name": "Can of Chili", "kind": "heal", "desc": "Medium heal. The label is mostly a promise.", "price": 45, "icon": "can", "tint": "#C8322A", "target": "one_ally", "use_in": ["battle", "field"], "effect": {"heal_hp": 70}},
+    {"id": "canned_coffee", "name": "Canned Coffee", "kind": "juice", "desc": "A little Juice. Drink before yelling.", "price": 25, "icon": "can", "tint": "#6B4A2E", "target": "one_ally", "use_in": ["battle", "field"], "effect": {"restore_juice": 6}},
+    {"id": "juice_box", "name": "Juice Box", "kind": "juice", "desc": "A fair bit of Juice. Yes, really.", "price": 60, "icon": "bottle", "tint": "#E0782B", "target": "one_ally", "use_in": ["battle", "field"], "effect": {"restore_juice": 14}},
+    {"id": "smelling_salts", "name": "Smelling Salts", "kind": "revive", "desc": "Gets a Downed friend back up with a little HP.", "price": 40, "icon": "bottle", "tint": "#9FD6C4", "target": "one_down_ally", "use_in": ["battle", "field"], "effect": {"revive_hp_pct": 25}},
+    {"id": "burn_gel", "name": "Burn Gel", "kind": "cure", "desc": "Cures Burnt Toast. Smells like a pharmacy.", "price": 20, "icon": "bottle", "tint": "#E8683A", "target": "one_ally", "use_in": ["battle"], "effect": {"cure": ["burnt_toast"]}},
+    {"id": "appeal_form", "name": "Appeal Form", "kind": "cure", "desc": "Voids a Noise Ticket, in triplicate.", "price": 20, "icon": "food", "tint": "#F2E8D0", "target": "one_ally", "use_in": ["battle"], "effect": {"cure": ["noise_ticket"]}},
+    {"id": "ginger_chews", "name": "Ginger Chews", "kind": "cure", "desc": "Settles Wobbly. Chew thoroughly.", "price": 20, "icon": "food", "tint": "#D9A441", "target": "one_ally", "use_in": ["battle"], "effect": {"cure": ["wobbly"]}},
+    {"id": "camp_stove", "name": "Camp Stove", "kind": "rest", "desc": "Use at a save lamp: full HP and Juice for everyone.", "price": 120, "icon": "can", "tint": "#4F7A5A", "target": "party", "use_in": ["lamp"], "effect": {"rest": true}},
+    {"id": "firecracker_string", "name": "Firecracker String", "kind": "throwable", "desc": "A small bang on every enemy.", "price": 35, "icon": "bomb", "tint": "#C8322A", "target": "all_enemies", "use_in": ["battle"], "effect": {"damage": 12}},
+    {"id": "hot_sauce_bomb", "name": "Hot Sauce Bomb", "kind": "throwable", "desc": "A hit plus Burnt Toast. Wear gloves.", "price": 55, "icon": "bomb", "tint": "#E8683A", "target": "one_enemy", "use_in": ["battle"], "effect": {"damage": 18, "statuses": [{"id": "burnt_toast", "chance": 1.0}]}},
+    {"id": "smoke_bomb", "name": "Smoke Bomb", "kind": "escape", "desc": "Escape a regular fight. Never works on bosses.", "price": 30, "icon": "bomb", "tint": "#8A8F98", "target": "self", "use_in": ["battle"], "effect": {"escape": true}},
+    {"id": "protein_shake", "name": "Protein Shake", "kind": "booster", "desc": "Raises Attack for good. Chalky.", "price": 300, "icon": "bottle", "tint": "#F2E8D0", "target": "one_ally", "use_in": ["field"], "effect": {"boost": {"attack": 2}}},
+
+    {"id": "courier_job_slip", "name": "Courier Job Slip", "kind": "key", "key": true, "desc": "The delivery to the Old Relay Tower.", "price": 0, "icon": "key", "tint": "#C9A23A", "use_in": []},
+    {"id": "delivery_crate", "name": "Delivery Crate", "kind": "key", "key": true, "desc": "Heavier than expected. It is breathing, a bit.", "price": 0, "icon": "key", "tint": "#B08A52", "use_in": []},
+    {"id": "side_job_parcel", "name": "Side-Job Parcel", "kind": "key", "key": true, "desc": "A small delivery for somebody in Harrow Landing.", "price": 0, "icon": "key", "tint": "#E0782B", "use_in": []},
+    {"id": "kasp_access_card", "name": "Kasp's Access Card", "kind": "key", "key": true, "desc": "Laminated, his photo on every one. Opens Signals doors.", "price": 0, "icon": "key", "tint": "#7FB4D6", "use_in": []},
+    {"id": "bell_tune_napkin", "name": "Bell Tune Napkin", "kind": "key", "key": true, "desc": "A tune written down on a napkin. For the bell.", "price": 0, "icon": "key", "tint": "#F2E8D0", "use_in": []},
+    {"id": "beacon_part", "name": "Beacon Part", "kind": "key", "key": true, "desc": "Pulled from the Hushmaster's wreck. (Final text from the Writer.)", "price": 0, "icon": "key", "tint": "#9FD6C4", "use_in": []}
   ]
 }

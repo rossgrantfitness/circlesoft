@@ -6,13 +6,26 @@ extends Node3D
 ## It also sets up the room's talking: one DialogueRunner (every NPC in group "npc" registers as a
 ## speaker), the field menu (menu action) and Red's interactor with its prompt icon.
 ##
-## Expected children: a Marker3D named PlayerSpawn, a DioramaCamera named CameraRig and, optionally,
-## a CameraBounds. Props that should fade when they block the view join the group "fade_occluder".
+## Expected children: a Marker3D named PlayerSpawn (or a Spawns node holding one Marker3D per named
+## spawn, which the SceneRouter picks with `entry_spawn`), a DioramaCamera named CameraRig and,
+## optionally, a CameraBounds. Props that should fade when they block the view join the group
+## "fade_occluder".
+##
+## Exploration (M3-2, M3-5): the crew follows Red (PartyFollow, off with `party_follows`), doors,
+## pickups, crates and climb/hop spots in the room work through the interactor, and map enemies
+## (MapEnemy) that touch Red start a battle with a first-turn rule (FieldEncounters).
 
 @export var player_scene: PackedScene
 @export var spawn_name: String = "PlayerSpawn"
 @export var camera_rig_name: String = "CameraRig"
 @export var bounds_name: String = "CameraBounds"
+## The id in data/world/rooms.json (empty for rooms the router does not know).
+@export var room_id: String = ""
+## Which spawn marker Red starts on. The SceneRouter sets this before the room enters the tree.
+@export var entry_spawn: String = ""
+@export var spawns_name: String = "Spawns"
+## The crew (the party minus Red) walks behind her. Off in the old test room, which has Otis and Mox standing in it.
+@export var party_follows: bool = true
 
 const RESUME_BLOCK_FRAMES: int = 6
 
@@ -24,22 +37,26 @@ var field_menu: FieldMenu = null
 var interactor: PlayerInteractor = null
 var prompt: InteractPrompt = null
 var fights: RoomFights = null
+var party: PartyFollow = null
+var encounters: FieldEncounters = null
 
 ## A fight was chosen (the enemy's Fight! answer finished). Main answers by starting the battle.
 signal battle_requested(encounter_id: String, fight_id: String)
+## A map enemy caught Red. Main starts that encounter with the first-turn rule (party / enemies / normal).
+signal field_battle_requested(encounter_id: String, enemy_id: String, first_turn: String)
 
 var _suspended: bool = false
 
 
 func _ready() -> void:
 	camera_rig = get_node_or_null(camera_rig_name) as DioramaCamera
-	var spawn: Marker3D = get_node_or_null(spawn_name) as Marker3D
+	var spawn: Marker3D = find_spawn(entry_spawn)
 	if camera_rig == null or spawn == null or player_scene == null:
 		push_error("FieldRoom %s needs a player scene, a %s marker and a %s" % [name, spawn_name, camera_rig_name])
 		return
 	player = player_scene.instantiate() as PlayerController
 	add_child(player)
-	player.global_transform = Transform3D(Basis.IDENTITY, spawn.global_position)
+	player.global_transform = Transform3D(Basis.from_euler(Vector3(0.0, spawn.global_rotation.y, 0.0)), spawn.global_position)
 	player.reset_ground_height()
 	player.set_camera(camera_rig.get_camera())
 
@@ -56,7 +73,63 @@ func _ready() -> void:
 	prop_fader.set_camera(camera_rig.get_camera())
 	prop_fader.target_anchor_height = camera_rig.target_anchor_height
 
+	if party_follows:
+		_setup_party()
 	_setup_talking()
+	_setup_encounters()
+
+
+## The marker named `wanted` under the Spawns node (or directly under the room); with no name, or no
+## such marker, the default PlayerSpawn, or the first marker under Spawns.
+func find_spawn(wanted: String) -> Marker3D:
+	if not wanted.is_empty():
+		var named: Marker3D = get_node_or_null(NodePath("%s/%s" % [spawns_name, wanted])) as Marker3D
+		if named == null:
+			named = get_node_or_null(NodePath(wanted)) as Marker3D
+		if named != null:
+			return named
+		push_warning("FieldRoom %s: no spawn '%s', using the default" % [name, wanted])
+	var default_spawn: Marker3D = get_node_or_null(spawn_name) as Marker3D
+	if default_spawn != null:
+		return default_spawn
+	var holder: Node = get_node_or_null(spawns_name)
+	if holder != null:
+		for child: Node in holder.get_children():
+			if child is Marker3D:
+				return child as Marker3D
+	return null
+
+
+## Names of the spawn markers this room has (under Spawns, plus PlayerSpawn).
+func spawn_names() -> Array[String]:
+	var names: Array[String] = []
+	var holder: Node = get_node_or_null(spawns_name)
+	if holder != null:
+		for child: Node in holder.get_children():
+			if child is Marker3D:
+				names.append(str(child.name))
+	if get_node_or_null(spawn_name) is Marker3D:
+		names.append(spawn_name)
+	return names
+
+
+func _setup_party() -> void:
+	var ids: Array[String] = []
+	var state: Node = get_node_or_null("/root/GameState")
+	if state != null:
+		ids.assign(state.call("get_party_ids"))
+	party = PartyFollow.new()
+	party.name = "PartyFollow"
+	add_child(party)
+	party.setup(player, ids, self)
+
+
+func _setup_encounters() -> void:
+	encounters = FieldEncounters.new()
+	encounters.name = "FieldEncounters"
+	add_child(encounters)
+	encounters.setup(self, player)
+	encounters.battle_requested.connect(field_battle_requested.emit)
 
 
 func _setup_talking() -> void:
@@ -65,6 +138,9 @@ func _setup_talking() -> void:
 		if node is Npc and is_ancestor_of(node):
 			var npc: Npc = node as Npc
 			runner.register_speaker(npc.speaker_id, npc, npc.get_head_height())
+	if party != null:
+		for follower: PartyFollower in party.followers:
+			runner.register_speaker(follower.member_id, follower, follower.get_head_height())
 	field_menu = FieldMenu.install(get_tree(), player)
 
 	prompt = InteractPrompt.new()
@@ -120,6 +196,10 @@ func resume() -> void:
 func battle_finished(result: String, _report: Dictionary = {}) -> void:
 	if fights != null:
 		fights.battle_finished(result)
+	if encounters != null:
+		encounters.battle_finished(result)
+	elif player != null:
+		player.start_blink()
 
 
 func _exit_tree() -> void:

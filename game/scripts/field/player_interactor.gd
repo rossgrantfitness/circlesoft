@@ -10,6 +10,8 @@ extends Node
 
 const ACTION_INTERACT: StringName = &"interact"
 const NPC_GROUP: StringName = &"npc"
+const NARRATOR: String = "narrator"
+const MESSAGE_PREFIX: String = "__message_"
 
 signal target_changed(target: Interactable)
 signal interacted(target: Interactable, conversation_id: String)
@@ -55,7 +57,7 @@ func get_target() -> Interactable:
 
 ## True when Red may use something right now.
 func can_interact() -> bool:
-	if player == null or not is_instance_valid(player) or player.frozen or not player.is_on_floor():
+	if player == null or not is_instance_valid(player) or player.frozen or player.scripted or not player.is_on_floor():
 		return false
 	if runner != null and runner.is_running():
 		return false
@@ -78,27 +80,59 @@ func refresh() -> void:
 		prompt.show_icon(_target.current_kind_name() if _target != null else "")
 
 
-## Uses the current target. Returns true if a conversation started.
+## Uses the current target. Returns true if something started (a conversation or the prop's action).
 func try_interact() -> bool:
 	refresh()
-	if _target == null or runner == null:
+	if _target == null:
 		return false
-	var conversation_id: String = _target.current_conversation()
+	var used: Interactable = _target
+	if used.handler.is_valid():
+		used.begin_use(player.global_position)
+		var done: bool = bool(used.handler.call(player, self))
+		interacted.emit(used, "")
+		refresh()
+		return done
+	if runner == null:
+		return false
+	var conversation_id: String = used.current_conversation()
 	if not runner.has_conversation(conversation_id):
 		push_warning("PlayerInteractor: no conversation '%s'" % conversation_id)
 		return false
-	var used: Interactable = _target
 	used.begin_use(player.global_position)
-	if not runner.start(conversation_id):
+	if not start_conversation(conversation_id, used):
+		return false
+	interacted.emit(used, conversation_id)
+	refresh()
+	return true
+
+
+## Starts a conversation and tracks it so `used` gets end_use() when it finishes.
+func start_conversation(conversation_id: String, used: Interactable = null) -> bool:
+	if runner == null or not runner.has_conversation(conversation_id) or not runner.start(conversation_id):
 		return false
 	_active = used
 	if not runner.conversation_finished.is_connected(_on_finished):
 		runner.conversation_finished.connect(_on_finished)
 	if not runner.line_started.is_connected(_on_line_started):
 		runner.line_started.connect(_on_line_started)
-	interacted.emit(used, conversation_id)
-	refresh()
 	return true
+
+
+## Shows plain text lines in the narrator box (a locked door's message, "Got a Ration Bar!").
+func show_messages(texts: Array[String], used: Interactable = null, speaker: String = NARRATOR) -> bool:
+	if runner == null or texts.is_empty():
+		return false
+	var lines: Array = []
+	for text: String in texts:
+		lines.append({"speaker": speaker, "text": text})
+	var conversation_id: String = MESSAGE_PREFIX + str(hash(texts))
+	runner.get_conversation_ids()  # index the data first: add_conversations marks the runner as indexed
+	runner.add_conversations({conversation_id: lines})
+	return start_conversation(conversation_id, used)
+
+
+func show_message(text: String, used: Interactable = null) -> bool:
+	return show_messages([text], used)
 
 
 func _on_line_started(speaker_id: String, _text: String) -> void:

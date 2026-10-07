@@ -9,10 +9,12 @@ extends Node3D
 ## character repeats themselves differently and a prize can only be taken once. `set_flag_on_start`
 ## sets a flag when the talk begins (e.g. otis_met).
 
-enum Kind { TALK, EXAMINE, TAKE }
+enum Kind { TALK, EXAMINE, TAKE, OPEN, CLIMB, HOP }
 
 const GROUP: StringName = &"interactable"
-const KIND_NAMES: Dictionary[int, String] = {Kind.TALK: "talk", Kind.EXAMINE: "examine", Kind.TAKE: "take"}
+const KIND_NAMES: Dictionary[int, String] = {
+	Kind.TALK: "talk", Kind.EXAMINE: "examine", Kind.TAKE: "take", Kind.OPEN: "open", Kind.CLIMB: "climb", Kind.HOP: "hop",
+}
 const AFTER_SAME: String = "same"
 const PATH_GAME_STATE: NodePath = ^"/root/GameState"
 
@@ -24,7 +26,7 @@ signal talk_finished
 ## Flag that, once set, swaps in `after_conversation` (and `after_kind`).
 @export var after_flag: String = ""
 @export var after_conversation: String = ""
-@export_enum("same", "talk", "examine", "take") var after_kind: String = "same"
+@export_enum("same", "talk", "examine", "take", "open", "climb", "hop") var after_kind: String = "same"
 ## Flag set when the conversation starts.
 @export var set_flag_on_start: String = ""
 ## Distance Red can use it from. 0 = the default from data/world/interaction.json.
@@ -33,6 +35,8 @@ signal talk_finished
 
 ## GameState to read flags from. Null means the autoload.
 var game_state: Node = null
+## Set by props that act instead of talking: func(player: PlayerController, interactor: PlayerInteractor) -> bool.
+var handler: Callable = Callable()
 
 
 func _ready() -> void:
@@ -71,6 +75,11 @@ func current_kind_name() -> String:
 	return KIND_NAMES[current_kind()]
 
 
+## True when using it does something: a handler is set, or there is a conversation to play.
+func has_use() -> bool:
+	return handler.is_valid() or not current_conversation().is_empty()
+
+
 func get_reach(tuning: InteractionTuning) -> float:
 	return reach if reach > 0.0 else tuning.reach
 
@@ -91,7 +100,7 @@ func end_use() -> void:
 ## Whether `point` (Red's feet) facing `facing` (flat unit vector) can use this, and how far away
 ## it is: returns -1 when it can't. Close things count even when she is not facing them.
 func usable_distance(point: Vector3, facing: Vector3, tuning: InteractionTuning) -> float:
-	if not enabled or current_conversation().is_empty():
+	if not enabled or not has_use():
 		return -1.0
 	var offset: Vector3 = global_position - point
 	if absf(offset.y) > tuning.max_height_diff:
