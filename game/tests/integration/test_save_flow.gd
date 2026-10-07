@@ -11,6 +11,7 @@ const LAMP_SPAWN: String = "LampSpawn"
 var _manager: Node = null
 var _state: Node = null
 var _old_dir: String = ""
+var _old_auto: bool = false
 var _dir: String = ""
 
 
@@ -19,24 +20,34 @@ func before_each() -> void:
 	_state = tree.root.get_node("GameState")
 	_old_dir = str(_manager.get("save_dir"))
 	_dir = "user://test_flow_saves_%d" % Time.get_ticks_usec()
+	_old_auto = bool(_manager.get("auto_save_enabled"))
 	_manager.set("save_dir", _dir)
+	_manager.set("auto_save_enabled", true)
 	_state.call("reset")
 
 
 func after_each() -> void:
 	_manager.set("save_dir", _old_dir)
+	_manager.set("auto_save_enabled", _old_auto)
 	_manager.set("battle_active", false)
 	_state.set("playing", false)
 	_state.call("reset")
-	if DirAccess.dir_exists_absolute(_dir):
-		for file_name: String in DirAccess.get_files_at(_dir):
-			DirAccess.remove_absolute(_dir.path_join(file_name))
-		DirAccess.remove_absolute(_dir)
+	_remove_dir(_dir)
+
+
+func _remove_dir(path: String) -> void:
+	if not DirAccess.dir_exists_absolute(path):
+		return
+	for file_name: String in DirAccess.get_files_at(path):
+		DirAccess.remove_absolute(path.path_join(file_name))
+	for sub: String in DirAccess.get_directories_at(path):
+		_remove_dir(path.path_join(sub))
+	DirAccess.remove_absolute(path)
 
 
 func _stand_by_the_lamp(room: FieldRoom) -> SaveLamp:
 	var lamp: SaveLamp = room.get_node(LAMP_NODE) as SaveLamp
-	room.player.global_position = lamp.global_position + Vector3(0.0, 0.02, 0.9)
+	room.player.global_position = lamp.global_position + Vector3(0.0, 0.02, 0.6)
 	room.player.rotation.y = 0.0
 	return lamp
 
@@ -144,11 +155,16 @@ func test_retry_restores_the_fights_start_and_writes_no_save() -> void:
 	var calls: Array[int] = [0]
 	var lose: Callable = BattleFlowKit.losing_hook(main)
 	var win: Callable = BattleFlowKit.winning_hook(main)
+	var at_retry: Array[Dictionary] = []
 	main.battle_setup_hook = func(setup: BattleSetup) -> void:
 		calls[0] += 1
 		if calls[0] == 1:
 			lose.call(setup)
 		else:
+			at_retry.append({"bag": int(_state.call("item_count", "ration_bar")),
+				"during": _state.call("is_opened", "crate_during"), "before": _state.call("is_opened", "crate_before"),
+				"credits": _state.call("get_credits"), "spawn": _state.call("get_location")["spawn"],
+				"time": _state.call("get_play_time_s")})
 			win.call(setup)
 	main.start_battle(ENCOUNTER)
 	assert_true(bool(_manager.get("battle_active")), "the auto-save is held back during a fight")
@@ -171,12 +187,14 @@ func test_retry_restores_the_fights_start_and_writes_no_save() -> void:
 		await tree.process_frame
 	assert_true(pressed[0], "the fight was lost")
 	assert_true(await BattleFlowKit.wait_for_new_stage(tree, main, first_stage_id), "the same fight started again")
-	assert_eq(int(_state.call("item_count", "ration_bar")), bag_before)
-	assert_false(_state.call("is_opened", "crate_during"))
-	assert_true(_state.call("is_opened", "crate_before"))
-	assert_eq(_state.call("get_credits"), 40)
-	assert_eq(_state.call("get_location")["spawn"], "PlayerSpawn", "even the place is back")
-	assert_ge(float(_state.call("get_play_time_s")), time_in_fight, "the clock is not rewound")
+	assert_eq(at_retry.size(), 1, "the setup hook saw the retried fight begin")
+	var seen: Dictionary = at_retry[0] if not at_retry.is_empty() else {}
+	assert_eq(seen.get("bag"), bag_before, "the bag was back at the fight's start")
+	assert_eq(seen.get("during"), false)
+	assert_eq(seen.get("before"), true)
+	assert_eq(seen.get("credits"), 40)
+	assert_eq(seen.get("spawn"), "PlayerSpawn", "even the place was back")
+	assert_ge(float(seen.get("time", 0.0)), time_in_fight, "the clock was not rewound")
 	assert_eq(DirAccess.get_files_at(_dir).size() if DirAccess.dir_exists_absolute(_dir) else 0, 0, "Retry writes no save")
 	assert_true(await BattleFlowKit.finish_fight(tree, main, "continue"))
 

@@ -14,8 +14,15 @@ const WINDOW_SIZE: Vector2 = Vector2(1280, 720)
 const LATER_SIZE: Vector2 = Vector2(1920, 1080)
 
 
-func _make_title() -> TitleScreen:
+## A title screen with a stand-in SaveManager (no saves unless asked) so the cursor start and the
+## Continue item never depend on what is on this machine.
+func _make_title(with_save: bool = false) -> TitleScreen:
 	var title: TitleScreen = (load(SCENE_PATH) as PackedScene).instantiate() as TitleScreen
+	var saves: FakeTitleSaves = FakeTitleSaves.new()
+	saves.saves_exist = with_save
+	saves.newest = 2
+	own(saves)
+	title.save_manager = saves
 	add_to_root(title)
 	return title
 
@@ -103,7 +110,7 @@ func test_strings_come_from_data() -> void:
 		ids.append(str(entry["id"]))
 	assert_eq(title.get_item_label_texts(), labels)
 	assert_eq(title.get_item_ids(), ids)
-	assert_has(ids, "start_demo")
+	assert_has(ids, "new_game")
 	assert_has(ids, "quit")
 
 
@@ -209,14 +216,16 @@ func test_cursor_moves_and_wraps() -> void:
 	var title: TitleScreen = _make_title()
 	await tree.process_frame
 	await _open_menu(title)
+	var last: int = title.get_item_ids().size() - 1
 	_press(&"move_down")
 	assert_eq(title.get_cursor_index(), 1)
-	_press(&"move_down")
-	assert_eq(title.get_cursor_index(), 2)
+	for i: int in last - 1:
+		_press(&"move_down")
+	assert_eq(title.get_cursor_index(), last)
 	_press(&"move_down")
 	assert_eq(title.get_cursor_index(), 0, "wraps to the top")
 	_press(&"move_up")
-	assert_eq(title.get_cursor_index(), 2, "wraps to the bottom")
+	assert_eq(title.get_cursor_index(), last, "wraps to the bottom")
 
 
 func test_controller_stick_moves_once_per_push() -> void:
@@ -254,11 +263,12 @@ func test_mouse_hover_moves_cursor_and_click_picks() -> void:
 	var started: Array[bool] = []
 	title.start_demo_requested.connect(func() -> void: started.append(true))
 	_move_mouse(title, _mouse_at_item(title, 1))
-	assert_eq(title.get_cursor_index(), 1, "hover moves the cursor to Quit")
+	assert_eq(title.get_cursor_index(), 1, "hover moves the cursor to Continue")
 	_move_mouse(title, _mouse_at_item(title, 0))
-	assert_eq(title.get_cursor_index(), 0, "hover back to Start Demo")
+	assert_eq(title.get_cursor_index(), 0, "hover back to New Game")
 	_click(_mouse_at_item(title, 0))
-	assert_eq(title.get_state(), TitleScreen.State.LEAVING, "click on Start Demo starts leaving")
+	assert_eq(title.get_state(), TitleScreen.State.NAME_ENTRY, "click on New Game asks for the hero's name")
+	assert_eq(started.size(), 0, "nothing starts before the name is chosen")
 
 
 func test_right_click_backs_out() -> void:
@@ -269,13 +279,15 @@ func test_right_click_backs_out() -> void:
 	assert_eq(title.get_state(), TitleScreen.State.PRESS_START)
 
 
-func test_start_demo_emits_signal_after_fade_to_black() -> void:
+func test_new_game_emits_signal_after_fade_to_black() -> void:
 	var title: TitleScreen = _make_title()
 	await tree.process_frame
 	await _open_menu(title)
 	var heard: Array[int] = []
 	title.start_demo_requested.connect(func() -> void: heard.append(title.get_fade_step()))
 	_press(&"confirm")
+	assert_eq(title.get_state(), TitleScreen.State.NAME_ENTRY)
+	title.get_name_entry().submit()
 	assert_eq(title.get_state(), TitleScreen.State.LEAVING)
 	assert_eq(heard.size(), 0, "not emitted before the fade has run")
 	var waited: float = 0.0
@@ -294,6 +306,7 @@ func test_input_is_ignored_while_leaving() -> void:
 	await tree.process_frame
 	await _open_menu(title)
 	_press(&"confirm")
+	title.get_name_entry().submit()
 	_press(&"move_down")
 	_press(&"cancel")
 	assert_eq(title.get_state(), TitleScreen.State.LEAVING)
@@ -306,8 +319,7 @@ func test_quit_item_calls_the_quit_handler() -> void:
 	var quits: Array[bool] = []
 	title.quit_handler = func() -> void: quits.append(true)
 	await _open_menu(title)
-	_press(&"move_down")
-	_press(&"move_down")  # Start Demo, Battle Test, then Quit
+	_press(&"move_up")  # wraps from New Game to Quit, the last item
 	_press(&"confirm")
 	assert_eq(quits.size(), 1, "Quit runs the handler (get_tree().quit() by default)")
 	assert_eq(title.get_state(), TitleScreen.State.MENU, "quit does not start the demo")

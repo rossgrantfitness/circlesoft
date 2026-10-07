@@ -367,3 +367,10 @@ func test_a_router_signal_drives_the_auto_save() -> void:
 
 class FakeRouter extends Node:
 	signal room_entered(room_id: String)
+
+
+func test_the_autoload_keeps_its_auto_save_off_in_a_headless_run() -> void:
+	var autoload: Node = tree.root.get_node("SaveManager")
+	if DisplayServer.get_name() == "headless":
+		assert_false(bool(autoload.get("auto_save_enabled")), "tests never write the real auto-save")
+	assert_eq(str(autoload.get("save_dir")), "user://saves")

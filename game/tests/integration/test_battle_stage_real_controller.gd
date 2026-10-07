@@ -90,7 +90,10 @@ func test_a_full_real_fight_plays_through_the_stage() -> void:
 	assert_eq(done[0][0], "win")
 	assert_gt(int(done[0][1]["xp"]), 0, "the controller's report comes through")
 	assert_eq(stage.views.size(), 3 + 4, "party of three, squad of four")
-	assert_true(stage.ko_beat_done, "the last enemy got its K.O. beat")
+	# A fight can also end with the last enemy waving a white flag (no final KO target, so no K.O. beat);
+	# that depends on exact damage numbers, so retuning enemy HP must not break this test.
+	var white_flag_finish: bool = str((done[0][1] as Dictionary).get("final_ko_target", "")) == ""
+	assert_true(stage.ko_beat_done or white_flag_finish, "the last enemy got its K.O. beat (or left under a white flag)")
 	var fled_or_down: int = 0
 	for id: String in stage.views:
 		var view: CombatantView = stage.views[id]

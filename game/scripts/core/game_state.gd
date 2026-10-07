@@ -27,6 +27,7 @@ const MEMBER_SAVE_KEYS: Array[String] = ["level", "xp", "hp", "hp_max", "juice",
 const INT_MEMBER_KEYS: Array[String] = ["level", "xp", "hp", "hp_max", "juice", "juice_max"]
 const EQUIPMENT_SLOTS: Array[String] = ["weapon", "armor", "charm"]
 const SAVE_DATA_ID: String = "world/save"
+const ROOMS_DATA_ID: String = "world/rooms"
 const KEY_NEW_GAME: String = "new_game"
 const DEFAULT_HERO_NAME: String = "Red"
 const HERO_ID: String = "red"
@@ -103,9 +104,16 @@ func _apply_new_game_place() -> void:
 	_story_beat = str(start.get("story_beat", ""))
 
 
+## Where a new game starts: the router's start room (rooms.json) and its default spawn when it has
+## them, else data/world/save.json "new_game". The story beat always comes from save.json.
 func _new_game_data() -> Dictionary:
 	var doc: Dictionary = DataDB.get_dict(SAVE_DATA_ID)
-	return doc.get(KEY_NEW_GAME, {})
+	var start: Dictionary = (doc.get(KEY_NEW_GAME, {}) as Dictionary).duplicate()
+	var start_room: String = str(DataDB.get_value(ROOMS_DATA_ID, "start_room", ""))
+	if not start_room.is_empty():
+		start["room"] = start_room
+		start["spawn"] = str(DataDB.get_value(ROOMS_DATA_ID, "rooms.%s.default_spawn" % start_room, start.get("spawn", "")))
+	return start
 
 
 # ---- bag ----

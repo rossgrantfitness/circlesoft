@@ -15,12 +15,12 @@ var _mode: Mode = Mode.LIST
 var _list: MenuList = null
 var _column: MemberColumn = null
 var _tabs_draw: Control = null
+var _header: Control = null
 var _empty_label: Label = null
 var _target_item: String = ""
 var _all_targets: bool = false
 var _message: String = ""
 var _message_warn: bool = false
-var _memory: Dictionary[int, int] = {}
 
 
 func build() -> void:
@@ -29,13 +29,18 @@ func build() -> void:
 	_list = menu.make_list(root, _spec["list"])
 	_list.activated.connect(_on_activated)
 	_list.cursor_moved.connect(_on_row_moved)
-	var column_at: Dictionary = _spec["column"]
-	_column = menu.make_member_column(root, MemberColumn.Style.COLUMN, Vector2(float(column_at["x"]), float(column_at["y"])))
+	var target_at: Dictionary = _spec["target"]
+	_column = menu.make_member_column(root, MemberColumn.Style.PANEL, Vector2(float(target_at["x"]), float(target_at["y"])))
+	_column.interactive = true
 	_column.set_active(false)
+	_column.visible = false
+	_header = menu.make_drawing(root, Vector2.ZERO, FieldMenu.PAGE_AREA.size, _draw_target_header)
+	_header.visible = false
 	_column.picked.connect(_on_target_picked)
 	_column.cursor_moved.connect(func(_id: String) -> void: menu.refresh_info())
 	_empty_label = menu.make_label(root, "body", "text_dim", Vector2(20, 40))
-	_load_tab(0)
+	_tab = int(menu.memory.get("items.tab", 0))
+	_load_tab(_tab, false)
 
 
 func primary_list() -> MenuList:
@@ -67,14 +72,37 @@ func _draw_tabs(canvas: Control) -> void:
 			canvas.draw_rect(Rect2(float(xs[i]), y + 3, UiFonts.text_width("menu", label), 1), MenuDraw.color("lamp_amber"))
 
 
+func _draw_target_header(canvas: Control) -> void:
+	if _target_item.is_empty():
+		return
+	var y: int = int(_spec["target_header_y"])
+	var name: String = menu.backend.item_name(_target_item)
+	UiText.draw(canvas, "menu", Vector2(8, y), name, MenuDraw.color("text_highlight"))
+	var count: String = str(menu.text["items"]["count"]).replace("{n}", str(menu.backend.owned(_target_item)))
+	UiText.draw(canvas, "menu", Vector2(0, y), count, MenuDraw.color("text"), HORIZONTAL_ALIGNMENT_RIGHT, canvas.size.x - 8.0)
+	canvas.draw_rect(Rect2(6, y + 4, canvas.size.x - 12.0, 1), MenuDraw.color("dusk"))
+
+
+func _show_target_view(on: bool) -> void:
+	_list.visible = not on
+	_tabs_draw.visible = not on
+	_header.visible = on
+	_column.visible = on
+	if on:
+		_header.queue_redraw()
+	_empty_label.visible = not on and _list.get_count() == 0
+
+
 # ---- the list ----
 
-func _load_tab(index: int) -> void:
-	_memory[_tab] = _list.get_cursor_index()
+func _load_tab(index: int, remember: bool = true) -> void:
+	if remember:
+		menu.memory["items.row.%d" % _tab] = _list.get_cursor_index()
 	_tab = posmod(index, TABS.size())
+	menu.memory["items.tab"] = _tab
 	_message = ""
 	_list.set_items(_rows())
-	_list.set_index(int(_memory.get(_tab, 0)), false)
+	_list.set_index(int(menu.memory.get("items.row.%d" % _tab, 0)), false)
 	_empty_label.text = str(menu.text["items"]["empty"][TABS[_tab]])
 	_empty_label.visible = _list.get_count() == 0
 	_tabs_draw.queue_redraw()
@@ -101,7 +129,8 @@ func _reload_rows_keeping_cursor() -> void:
 	_empty_label.visible = _list.get_count() == 0
 
 
-func _on_row_moved(_index: int) -> void:
+func _on_row_moved(index: int) -> void:
+	menu.memory["items.row.%d" % _tab] = index
 	_message = ""
 	menu.refresh_info()
 
@@ -110,7 +139,6 @@ func _on_activated(index: int) -> void:
 	var id: String = _list.get_item_id(index)
 	if id.is_empty():
 		return
-	_memory[_tab] = index
 	if TABS[_tab] != "items":
 		_message = str(menu.text["items"]["gear_hint"]) if TABS[_tab] == "gear" else menu.backend.reason_text("key_item")
 		_message_warn = false
@@ -127,12 +155,12 @@ func _start_target(item_id: String) -> void:
 	_message = ""
 	_all_targets = menu.backend.target_kind(item_id) == GearBridge.TARGET_PARTY
 	_list.active = false
+	_show_target_view(true)
 	_column.set_members(menu.backend.party())
 	_column.frame_all = _all_targets
 	if _all_targets:
 		_column.set_dimmed([] as Array[String])
 		_column.set_active(false)
-		_column.visible = true
 	else:
 		var targets: Array[String] = menu.backend.item_targets(item_id)
 		var dimmed: Array[String] = []
@@ -150,6 +178,7 @@ func _end_target() -> void:
 	_mode = Mode.LIST
 	_column.frame_all = false
 	_column.set_active(false)
+	_show_target_view(false)
 	_list.active = true
 	_reload_rows_keeping_cursor()
 	menu.refresh_info()
@@ -183,6 +212,7 @@ func _use_on(member_id: String) -> void:
 	if dimmed.has(_column.selected_id()):
 		_column.select(targets[0])
 	_reload_rows_keeping_cursor()
+	_header.queue_redraw()
 	menu.refresh_info()
 
 

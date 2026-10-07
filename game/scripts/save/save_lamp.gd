@@ -94,6 +94,10 @@ func _ready() -> void:
 		_build_placeholder()
 	_set_glow(false, 0.0)
 	set_process(not manual_ticks)
+	# The room's runner is made after its children are ready: register the hook the moment it joins
+	# the tree (so the room is complete as soon as it loads), and once more if one already exists.
+	get_tree().node_added.connect(_on_node_added)
+	_ensure_hook.call_deferred()
 
 
 func _process(delta: float) -> void:
@@ -122,11 +126,23 @@ func begin_use(from_point: Vector3) -> void:
 	start_check()
 
 
-## Registers the empty hook conversation with the runner (once the real data is indexed).
+## Registers the empty hook conversation with the runner. has_conversation() indexes the real
+## data first (calling add_conversations on its own would mark the runner as indexed and skip data/dialogue/).
 func _ensure_hook() -> void:
-	var active: DialogueRunner = _runner()
-	if active != null and not active.has_conversation(HOOK_CONVERSATION):
-		active.add_conversations({HOOK_CONVERSATION: []})
+	_register_hook(_runner())
+
+
+func _register_hook(active: DialogueRunner) -> void:
+	if active == null or active.has_conversation(HOOK_CONVERSATION):
+		return
+	active.add_conversations({HOOK_CONVERSATION: []})
+
+
+func _on_node_added(node: Node) -> void:
+	if node is DialogueRunner and is_inside_tree():
+		var room: Node = _room()
+		if room != null and room.is_ancestor_of(node):
+			_register_hook(node as DialogueRunner)
 
 
 func usable_distance(point: Vector3, facing: Vector3, tuning: InteractionTuning) -> float:

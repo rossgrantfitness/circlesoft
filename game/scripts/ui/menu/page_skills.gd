@@ -33,6 +33,7 @@ func build() -> void:
 		menu.refresh_info())
 	_empty_label = menu.make_label(root, "body", "text_dim", Vector2(float(_spec["list"]["x"]) + 12.0, 44.0))
 	_empty_label.text = str(menu.text["skills"]["none"])
+	_column.select(str(menu.memory.get("skills.member", _column.selected_id())))
 	_caster = _column.selected_id()
 	_load_skills()
 
@@ -70,6 +71,10 @@ func _load_skills() -> void:
 
 
 func _on_member_moved(member_id: String) -> void:
+	if _mode != Mode.MEMBER:
+		menu.refresh_info()
+		return
+	menu.memory["skills.member"] = member_id
 	_caster = member_id
 	_message = ""
 	_list.set_items([] as Array[Dictionary])

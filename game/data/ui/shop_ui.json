@@ -1,0 +1,54 @@
+{
+  "_about": "Layout for the shops (internal pixels, 384x216). Strings live in data/text/shop.json. Rows and windows use the same chamfered window as the field menu.",
+  "open_steps": 4,
+  "command_window": {
+    "x": 8,
+    "y": 8,
+    "w": 104,
+    "h": 58
+  },
+  "credits_window": {
+    "x": 8,
+    "y": 70,
+    "w": 104,
+    "h": 28
+  },
+  "owned_window": {
+    "x": 8,
+    "y": 102,
+    "w": 104,
+    "h": 68
+  },
+  "list_window": {
+    "x": 116,
+    "y": 8,
+    "w": 260,
+    "h": 162
+  },
+  "info_window": {
+    "x": 8,
+    "y": 173,
+    "w": 368,
+    "h": 35
+  },
+  "quantity_window": {
+    "x": 132,
+    "y": 54,
+    "w": 228,
+    "h": 74
+  },
+  "command_first_y": 8,
+  "command_step": 16,
+  "command_text_x": 20,
+  "cursor_x": 6,
+  "list_title_y": 13,
+  "list_first_y": 20,
+  "list_step": 16,
+  "list_rows": 8,
+  "list_text_x": 20,
+  "fighter_row_y": 30,
+  "fighter_row_step": 14,
+  "fighter_tile": 11,
+  "quantity_step_big": 10,
+  "max_quantity": 99
+}

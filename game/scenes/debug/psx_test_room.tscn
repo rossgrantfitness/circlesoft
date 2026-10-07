@@ -1,4 +1,4 @@
-[gd_scene load_steps=54 format=3]
+[gd_scene load_steps=55 format=3]
 
 [ext_resource type="Script" path="res://scripts/core/psx_room_look.gd" id="1_look"]
 [ext_resource type="Shader" path="res://shaders/psx_lit.gdshader" id="2_lit"]
@@ -16,6 +16,7 @@
 [ext_resource type="Script" path="res://scripts/field/interactable.gd" id="14_interactable"]
 [ext_resource type="PackedScene" path="res://scenes/actors/field_enemy.tscn" id="15_enemy"]
 [ext_resource type="Script" path="res://scripts/save/save_lamp.gd" id="16_savelamp"]
+[ext_resource type="Script" path="res://scripts/ui/shop/shop_counter.gd" id="17_shopcounter"]
 
 [sub_resource type="Environment" id="Environment_room"]
 background_mode = 1
@@ -190,6 +191,8 @@ size = Vector3(1.2, 0.9, 0.06)
 [node name="PsxTestRoom" type="Node3D"]
 script = ExtResource("11_room")
 player_scene = ExtResource("12_player")
+room_id = "test_room"
+party_follows = false
 
 [node name="RoomLook" type="Node" parent="."]
 script = ExtResource("1_look")
@@ -473,11 +476,23 @@ model_path = "res://art/placeholder/enemies/drone_variant/enm_drone_variant.glb"
 reach = 1.8
 
 [node name="SaveLamp" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 0, -3.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4, 0, -3.55)
 script = ExtResource("16_savelamp")
 room_id = "test_room"
 spawn_id = "LampSpawn"
 reach = 1.6
 
 [node name="LampSpawn" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 0, -2.4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4, 0, -2.7)
+
+[node name="GeneralCounter" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.4, 0, -2.6)
+script = ExtResource("17_shopcounter")
+shop_id = "test_general"
+reach = 1.6
+
+[node name="GearCounter" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 0, -2.6)
+script = ExtResource("17_shopcounter")
+shop_id = "test_gear"
+reach = 1.6

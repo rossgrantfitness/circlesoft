@@ -29,6 +29,7 @@ signal loaded(slot: int)
 const SAVE_DIR: String = "user://saves"
 const DATA_ID: String = "world/save"
 const TEXT_ID: String = "text/save"
+const ROOMS_DATA_ID: String = "world/rooms"
 const AUTO_SLOT: int = 0
 const AUTO_FILE: String = "auto.json"
 const SLOT_FILE: String = "slot_%d.json"
@@ -36,6 +37,7 @@ const TEMP_SUFFIX: String = ".tmp"
 const FILE_FORMAT: int = 1
 const DEFAULT_SLOT_COUNT: int = 3
 const NO_SLOT: int = -1
+const HEADLESS_DISPLAY: String = "headless"
 const PATH_GAME_STATE: NodePath = ^"/root/GameState"
 const PATH_ROUTER: NodePath = ^"/root/SceneRouter"
 const ROUTER_SIGNAL: StringName = &"room_entered"
@@ -47,7 +49,8 @@ var save_dir: String = SAVE_DIR
 var game_state: Node = null
 ## Unix time source (seconds). Tests replace it to control "newest".
 var clock: Callable = Callable()
-## Off: notify_room_entered() does nothing (cutscenes, tests).
+## Off: notify_room_entered() does nothing (cutscenes, tests). The autoload turns this off by itself
+## in a headless run.
 var auto_save_enabled: bool = true
 ## True while a fight is on (Main sets it): the auto-save never writes then.
 var battle_active: bool = false
@@ -59,6 +62,10 @@ var _lamp_checks_this_session: int = 0
 
 
 func _ready() -> void:
+	# A headless run is a test run: it must never leave an auto-save in the real saves folder (Continue
+	# would load it). Tests that want the auto-save point `save_dir` at a temp folder and switch it on.
+	if DisplayServer.get_name() == HEADLESS_DISPLAY:
+		auto_save_enabled = false
 	_connect_router_later.call_deferred()
 
 
@@ -297,10 +304,13 @@ func _summary_of(game: Dictionary) -> Dictionary:
 	}
 
 
-## The display name of a room id: data/text/save.json "places", else a tidied id.
+## The display name of a room id: rooms.json "name", else data/text/save.json "places", else a tidied id.
 func place_name(room_id: String) -> String:
 	if room_id.is_empty():
 		return str(DataDB.get_value(TEXT_ID, "unknown_place", "Somewhere"))
+	var room_name: String = str(DataDB.get_value(ROOMS_DATA_ID, "rooms.%s.name" % room_id, ""))
+	if not room_name.is_empty():
+		return room_name
 	var named: String = str(DataDB.get_value(TEXT_ID, "places.%s" % room_id, ""))
 	return named if not named.is_empty() else room_id.replace("_", " ").capitalize()
 

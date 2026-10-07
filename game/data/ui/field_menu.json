@@ -4,18 +4,59 @@
   "page_slide_px": 8,
   "page_slide_steps": 3,
   "commands": [
-    {"id": "items", "page": "items"},
-    {"id": "skills", "page": "skills"},
-    {"id": "equip", "page": "equip"},
-    {"id": "status", "page": "status"},
-    {"id": "party", "page": "party"},
-    {"id": "config", "page": "config"},
-    {"id": "save", "page": "save"}
+    {
+      "id": "items",
+      "page": "items"
+    },
+    {
+      "id": "skills",
+      "page": "skills"
+    },
+    {
+      "id": "equip",
+      "page": "equip"
+    },
+    {
+      "id": "status",
+      "page": "status"
+    },
+    {
+      "id": "party",
+      "page": "party"
+    },
+    {
+      "id": "config",
+      "page": "config"
+    },
+    {
+      "id": "save",
+      "page": "save"
+    }
   ],
-  "main_window": {"x": 8, "y": 8, "w": 92, "h": 128},
-  "place_window": {"x": 8, "y": 140, "w": 92, "h": 30},
-  "side_window": {"x": 108, "y": 8, "w": 268, "h": 162},
-  "info_window": {"x": 8, "y": 174, "w": 368, "h": 34},
+  "main_window": {
+    "x": 8,
+    "y": 8,
+    "w": 92,
+    "h": 128
+  },
+  "place_window": {
+    "x": 8,
+    "y": 140,
+    "w": 92,
+    "h": 30
+  },
+  "side_window": {
+    "x": 108,
+    "y": 8,
+    "w": 268,
+    "h": 162
+  },
+  "info_window": {
+    "x": 8,
+    "y": 173,
+    "w": 368,
+    "h": 35
+  },
   "list_first_y": 10,
   "list_step": 16,
   "list_text_x": 20,
@@ -35,64 +76,138 @@
   "juice_bar_h": 3,
   "bar_label_w": 36,
   "member_column": {
-    "cursor_x": 0,
-    "row_h": 54,
+    "cursor_x": 2,
+    "row_h": 48,
     "compact_row_h": 50,
     "panel_row_h": 44,
     "portrait": 28,
-    "portrait_x": 16,
-    "juice_min_row_h": 50,
-    "width": 112,
-    "compact_width": 54
+    "portrait_x": 20,
+    "compact_portrait_x": 16,
+    "width": 128,
+    "compact_width": 46,
+    "text_x": 54,
+    "panel_inset": 8,
+    "panel_pick_inset": 22
   },
   "main_panel": {
     "x": 0,
-    "y": 6,
-    "w": 268,
-    "footer_y": 150
+    "y": 0,
+    "footer_y": 146
   },
   "items_page": {
-    "tabs_y": 13,
-    "tab_x": [14, 66, 114],
-    "list": {"x": 0, "y": 18, "w": 156, "h": 144, "first_y": 3, "step": 16, "rows": 8},
-    "column": {"x": 154, "y": 0}
+    "tabs_y": 12,
+    "tab_x": [
+      8,
+      50,
+      88
+    ],
+    "list": {
+      "x": 0,
+      "y": 16,
+      "w": 260,
+      "h": 138,
+      "first_y": 3,
+      "step": 16,
+      "rows": 8
+    },
+    "target": {
+      "x": 0,
+      "y": 20
+    },
+    "target_header_y": 12
   },
   "skills_page": {
-    "header_y": 13,
-    "list": {"x": 112, "y": 18, "w": 156, "h": 144, "first_y": 3, "step": 16, "rows": 8},
-    "column": {"x": 0, "y": 0}
+    "header_y": 12,
+    "list": {
+      "x": 128,
+      "y": 16,
+      "w": 132,
+      "h": 138,
+      "first_y": 3,
+      "step": 16,
+      "rows": 8
+    },
+    "column": {
+      "x": 0,
+      "y": 0
+    }
   },
   "equip_page": {
-    "column": {"x": 0, "y": 6},
-    "slots": {"x": 58, "y": 4, "w": 210, "h": 70, "first_y": 4, "step": 16, "text_x": 56, "rows": 4},
+    "column": {
+      "x": 0,
+      "y": 2
+    },
+    "slots": {
+      "x": 46,
+      "y": 2,
+      "w": 214,
+      "h": 48,
+      "first_y": 3,
+      "step": 15,
+      "text_x": 66,
+      "rows": 3,
+      "text_x_items": 22
+    },
     "tag_x": 20,
-    "removable_slots": ["armor", "charm"],
-    "stats": {"x": 58, "y": 80, "step": 12, "label_x": 14, "now_right": 112, "arrow_x": 124, "next_right": 170}
+    "removable_slots": [
+      "armor",
+      "charm"
+    ],
+    "stats": {
+      "x": 46,
+      "y": 53,
+      "step": 12,
+      "label_x": 14,
+      "now_right": 112,
+      "arrow_x": 120,
+      "next_right": 158
+    }
   },
   "status_page": {
-    "column": {"x": 0, "y": 6},
-    "x": 58,
-    "name_y": 14,
-    "bar_hp_y": 29,
-    "bar_juice_y": 42,
-    "stat_y": [60, 73],
-    "stat_cols": [4, 74, 142],
-    "gear_y": [91, 103, 115],
+    "column": {
+      "x": 0,
+      "y": 2
+    },
+    "x": 50,
+    "name_y": 13,
+    "bar_hp_y": 27,
+    "bar_juice_y": 40,
+    "stat_y": [
+      56,
+      69
+    ],
+    "stat_cols": [
+      4,
+      74,
+      144
+    ],
+    "gear_y": [
+      87,
+      99,
+      111
+    ],
     "tag_x": 4,
-    "value_x": 46,
-    "skills_y": [132, 144],
-    "w": 200
+    "value_x": 54,
+    "skills_y": [
+      127,
+      139
+    ],
+    "w": 208,
+    "stat_value_w": 62
   },
   "party_page": {
-    "column": {"x": 0, "y": 6},
-    "label_x": 126,
-    "label_dy": 20,
-    "note_y": 6
+    "column": {
+      "x": 0,
+      "y": 0
+    },
+    "label_x": 140,
+    "label_dy": 22
   },
   "config_page": {
     "row_step": 24,
-    "first_y": 18,
-    "preview_y": 144
+    "first_y": 14,
+    "preview_y": 132
   },
-  "volume_steps": 10
+  "volume_steps": 10,
+  "page_inset": 4
 }

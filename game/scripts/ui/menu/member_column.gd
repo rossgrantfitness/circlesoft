@@ -25,6 +25,8 @@ var audio: UiAudio = UiAudio.new()
 var dimmed: Dictionary[String, bool] = {}
 ## Draw the amber frame around the cursor row (off while the column is only showing information).
 var show_frame: bool = true
+## PANEL style only: leave room for the pick cursor and frame the fighter under it.
+var interactive: bool = false
 ## Keep a dim "last position" frame on the cursor row while the column is not the active list.
 var hold: bool = false
 ## Frame every fighter in amber at once (an item that hits the whole crew).
@@ -47,7 +49,7 @@ func _ready() -> void:
 	list.size = size
 	list.first_row_y = 0
 	list.text_x = 0
-	list.cursor_x = int(column["cursor_x"]) if style != Style.PANEL else 0
+	list.cursor_x = int(column["cursor_x"])
 	list.row_height = _row_height()
 	list.visible_rows = 3
 	list.activated.connect(func(index: int) -> void: picked.emit(list.get_item_id(index)))
@@ -125,7 +127,7 @@ func _draw() -> void:
 		var framed: bool = frame_all or (show_frame and list != null and (live or hold) and i == list.get_cursor_index())
 		match style:
 			Style.PANEL:
-				_draw_panel_row(member, top)
+				_draw_panel_row(member, top, is_dim, framed)
 			Style.COLUMN:
 				_draw_column_row(member, top, is_dim, framed)
 			Style.COMPACT:
@@ -133,7 +135,7 @@ func _draw() -> void:
 
 
 func _frame(top: int, step: int) -> void:
-	var rect: Rect2 = Rect2(13, top + 1, size.x - 15, step - 2)
+	var rect: Rect2 = Rect2(14, top + 1, size.x - 16, step - 2)
 	var live: bool = frame_all or (list != null and list.active)
 	draw_rect(rect, MenuDraw.color("lamp_amber") if live else MenuDraw.color("slate_light"), false, 1.0)
 
@@ -151,24 +153,19 @@ func _draw_column_row(member: Dictionary, top: int, is_dim: bool, framed: bool) 
 		_frame(top, step)
 	var tile: int = int(column["portrait"])
 	var px: int = int(column["portrait_x"])
-	MenuDraw.portrait(self, member, Vector2i(px, top + 3), tile, int(_layout["portrait_initial_size"]), is_dim)
-	var tx: int = px + tile + 6
-	var base: Color = _name_color(is_dim, framed)
-	UiText.draw(self, "menu", Vector2(tx, top + 14), str(member.get("name", "")), base)
-	var level: String = str(_text["status"]["level"]).replace("{level}", str(int(member.get("level", 1))))
-	UiText.draw(self, "menu", Vector2(tx, top + 27), level, MenuDraw.color("text_dim"))
+	MenuDraw.portrait(self, member, Vector2i(px, top + 4), tile, int(_layout["portrait_initial_size"]), is_dim)
+	var tx: int = int(column["text_x"])
+	var right: float = size.x - 4.0
 	var dim_text: Color = MenuDraw.color("text_dim")
 	var white: Color = dim_text if is_dim else MenuDraw.color("text")
-	var hp: String = "%d/%d" % [int(member.get("hp", 0)), int(member.get("hp_max", 0))]
-	var jc: String = "%d/%d" % [int(member.get("juice", 0)), int(member.get("juice_max", 0))]
-	var hp_color: Color = white
-	if int(member.get("hp", 0)) <= 0:
-		hp_color = MenuDraw.color("down")
-	UiText.draw(self, "menu", Vector2(px, top + 42), str(_text["status"]["hp"]), dim_text)
-	UiText.draw(self, "menu", Vector2(0, top + 42), hp, hp_color, HORIZONTAL_ALIGNMENT_RIGHT, size.x - 6)
-	if step >= int(column["juice_min_row_h"]):
-		UiText.draw(self, "menu", Vector2(px, top + 53), str(_text["status"]["juice"]), dim_text)
-		UiText.draw(self, "menu", Vector2(0, top + 53), jc, white, HORIZONTAL_ALIGNMENT_RIGHT, size.x - 6)
+	UiText.draw(self, "menu", Vector2(tx, top + 15), str(member.get("name", "")), _name_color(is_dim, framed))
+	var level: String = str(_text["status"]["level"]).replace("{level}", str(int(member.get("level", 1))))
+	UiText.draw(self, "menu", Vector2(0, top + 15), level, dim_text, HORIZONTAL_ALIGNMENT_RIGHT, right)
+	var hp_color: Color = MenuDraw.color("down") if int(member.get("hp", 0)) <= 0 else white
+	UiText.draw(self, "menu", Vector2(tx, top + 29), str(_text["status"]["hp"]), dim_text)
+	UiText.draw(self, "menu", Vector2(0, top + 29), "%d/%d" % [int(member.get("hp", 0)), int(member.get("hp_max", 0))], hp_color, HORIZONTAL_ALIGNMENT_RIGHT, right)
+	UiText.draw(self, "menu", Vector2(tx, top + 42), str(_text["status"]["juice"]), dim_text)
+	UiText.draw(self, "menu", Vector2(0, top + 42), "%d/%d" % [int(member.get("juice", 0)), int(member.get("juice_max", 0))], white, HORIZONTAL_ALIGNMENT_RIGHT, right)
 
 
 func _draw_compact_row(member: Dictionary, top: int, is_dim: bool, framed: bool) -> void:
@@ -177,20 +174,28 @@ func _draw_compact_row(member: Dictionary, top: int, is_dim: bool, framed: bool)
 	if framed:
 		_frame(top, step)
 	var tile: int = int(column["portrait"])
-	var px: int = int((size.x - 12.0 - float(tile)) / 2.0) + 12
-	MenuDraw.portrait(self, member, Vector2i(px, top + 5), tile, int(_layout["portrait_initial_size"]), is_dim)
-	UiText.draw(self, "menu", Vector2(12, top + 5 + tile + 14), str(member.get("name", "")), _name_color(is_dim, framed),
-			HORIZONTAL_ALIGNMENT_CENTER, size.x - 12.0)
+	var px: int = int(column["compact_portrait_x"])
+	MenuDraw.portrait(self, member, Vector2i(px, top + 4), tile, int(_layout["portrait_initial_size"]), is_dim)
+	UiText.draw(self, "menu", Vector2(px - 2, top + 4 + tile + 12), str(member.get("name", "")), _name_color(is_dim, framed),
+			HORIZONTAL_ALIGNMENT_CENTER, float(tile + 4))
 
 
-func _draw_panel_row(member: Dictionary, top: int) -> void:
+func _draw_panel_row(member: Dictionary, top: int, is_dim: bool, framed: bool) -> void:
+	var column: Dictionary = _layout["member_column"]
+	var inset: int = int(column["panel_pick_inset"]) if interactive else int(column["panel_inset"])
 	var inner_w: int = int(size.x)
 	var tile: int = int(_layout["portrait_size"])
-	MenuDraw.portrait(self, member, Vector2i(10, top + 4), tile, int(_layout["portrait_initial_size"]))
-	UiText.draw(self, "menu", Vector2(46, top + 14), str(member.get("name", "")), MenuDraw.color("text"))
+	var step: int = _row_height()
+	if framed:
+		draw_rect(Rect2(inset - 4, top + 1, inner_w - inset + 2, step - 2), MenuDraw.color("lamp_amber") if list.active or frame_all else MenuDraw.color("slate_light"), false, 1.0)
+	var dim_text: Color = MenuDraw.color("text_dim")
+	MenuDraw.portrait(self, member, Vector2i(inset, top + 6), tile, int(_layout["portrait_initial_size"]), is_dim)
+	var text_x: int = inset + tile + 8
+	UiText.draw(self, "menu", Vector2(text_x, top + 15), str(member.get("name", "")), _name_color(is_dim, framed))
 	var level: String = str(_text["status"]["level"]).replace("{level}", str(int(member.get("level", 1))))
-	UiText.draw(self, "menu", Vector2(0, top + 14), level, MenuDraw.color("text_dim"), HORIZONTAL_ALIGNMENT_RIGHT, inner_w - 12)
-	MenuDraw.bar_row(self, Vector2i(46, top + 28), str(_text["status"]["hp"]), int(member.get("hp", 0)), int(member.get("hp_max", 0)),
-			MenuDraw.color("hp"), int(_layout["hp_bar_h"]), inner_w - 46 - 12, false, int(_layout["bar_label_w"]))
-	MenuDraw.bar_row(self, Vector2i(46, top + 41), str(_text["status"]["juice"]), int(member.get("juice", 0)), int(member.get("juice_max", 0)),
-			MenuDraw.color("juice"), int(_layout["juice_bar_h"]), inner_w - 46 - 12, false, int(_layout["bar_label_w"]))
+	UiText.draw(self, "menu", Vector2(0, top + 15), level, dim_text, HORIZONTAL_ALIGNMENT_RIGHT, inner_w - 8.0)
+	var width: int = inner_w - text_x - 8
+	MenuDraw.bar_row(self, Vector2i(text_x, top + 28), str(_text["status"]["hp"]), int(member.get("hp", 0)), int(member.get("hp_max", 0)),
+			MenuDraw.color("hp"), int(_layout["hp_bar_h"]), width, false, int(_layout["bar_label_w"]), is_dim)
+	MenuDraw.bar_row(self, Vector2i(text_x, top + 40), str(_text["status"]["juice"]), int(member.get("juice", 0)), int(member.get("juice_max", 0)),
+			MenuDraw.color("juice"), int(_layout["juice_bar_h"]), width, false, int(_layout["bar_label_w"]), is_dim)

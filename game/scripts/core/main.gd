@@ -19,6 +19,7 @@ const BATTLE_TEST_SIGNAL: StringName = &"battle_test_requested"
 ## The title's Continue row emits this (UI-B adds it); Main loads the newest save.
 const CONTINUE_SIGNAL: StringName = &"continue_requested"
 const PATH_SAVE_MANAGER: NodePath = ^"/root/SaveManager"
+const PATH_ROUTER: NodePath = ^"/root/SceneRouter"
 const DEFAULT_SPAWN: String = "PlayerSpawn"
 const ROOM_BATTLE_SIGNAL: StringName = &"battle_requested"
 const FIELD_BATTLE_SIGNAL: StringName = &"field_battle_requested"
@@ -139,12 +140,24 @@ func start_new_game() -> void:
 	start_demo()
 
 
-## Continue from the title: loads the newest save (manual or auto) into GameState, starts the room
-## and puts Red on the spawn marker the save names. False (and nothing changes) when there is no save.
+## Continue from the title: loads the newest save (manual or auto) into GameState and starts the room.
+## When the SceneRouter knows the saved room and spawn, it loads the room (no fade); otherwise the demo
+## room starts and Red is put on the spawn marker the save names. False (and nothing changes) when
+## there is no save.
 func continue_game() -> bool:
 	var manager: Node = _save_manager()
 	if manager == null or not bool(manager.call("continue_game")):
 		return false
+	var router: Node = get_node_or_null(PATH_ROUTER)
+	var state: Node = _game_state()
+	var place: Dictionary = state.call("get_location") as Dictionary if state != null else {}
+	var room_id: String = str(place.get("room", ""))
+	var spawn_id: String = str(place.get("spawn", ""))
+	if router != null and router.has_method("has_room") and bool(router.call("has_room", room_id)) \
+			and (spawn_id.is_empty() or bool(router.call("has_spawn", room_id, spawn_id))):
+		_set_playing(true)
+		router.call("start_at", room_id, spawn_id)
+		return true
 	start_demo()
 	_place_player_at_saved_spawn()
 	return true

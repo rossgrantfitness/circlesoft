@@ -45,7 +45,9 @@ const PATH_CONFIG: NodePath = ^"/root/Config"
 const PATH_SAVE_MANAGER: NodePath = ^"/root/SaveManager"
 const GROUP_SAVE_LAMP: StringName = &"save_lamp"
 const GROUP_SAVE_SPOT: StringName = &"save_spot"
-const PAGE_AREA: Rect2 = Rect2(0, 0, 268, 162)
+## The page area inside the side window (the window border and chamfer take 4px all around).
+const PAGE_AREA: Rect2 = Rect2(0, 0, 260, 154)
+const PAGE_INSET: int = 4
 
 ## Red, frozen while the menu is open (released two frames after it closes).
 var player: PlayerController = null
@@ -66,6 +68,8 @@ var layout: Dictionary = {}
 var text: Dictionary = {}
 ## The menus' door to the bag, gear, skills and party. Rebuilt around the injected GameState.
 var backend: GearBridge = null
+## Where each page's cursor was (cleared when the menu opens): pages read and write their own keys.
+var memory: Dictionary = {}
 
 var _state: State = State.CLOSED
 var _page: String = PAGE_MAIN
@@ -135,16 +139,17 @@ func _build() -> void:
 	_main_list.visible_rows = _command_ids.size()
 	_main_list.activated.connect(_on_main_activated)
 	_main_list.cursor_moved.connect(_on_main_moved)
-	_place_label = make_label(_place_window, "menu", "text_dim", Vector2(10, 1))
+	_place_label = make_label(_place_window, "menu", "text_dim", Vector2(10, -1))
 	_place_label.text = str(text["place"]["title"])
-	_place_name = make_label(_place_window, "menu", "text", Vector2(10, 13))
+	_place_name = make_label(_place_window, "menu", "text", Vector2(10, 11))
 	_info_label = make_label(_info_window, "body", "text", Vector2(10, 4))
-	_info_label.size = Vector2(float(layout["info_window"]["w"]) - 20.0, 28.0)
+	_info_label.size = Vector2(float(layout["info_window"]["w"]) - 20.0, 30.0)
 	_info_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_info_label.add_theme_constant_override("line_spacing", -3)
 	_page_root = Control.new()
 	_page_root.name = "PageRoot"
 	_page_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_page_root.position = Vector2(PAGE_INSET, PAGE_INSET)
 	_side_window.add_child(_page_root)
 	_refresh_main_rows()
 
@@ -205,7 +210,7 @@ func make_member_column(parent: Control, style: MemberColumn.Style, at: Vector2)
 	var spec: Dictionary = layout["member_column"]
 	var width: float = float(spec["width"]) if style != MemberColumn.Style.COMPACT else float(spec["compact_width"])
 	if style == MemberColumn.Style.PANEL:
-		width = float(layout["side_window"]["w"]) - at.x
+		width = PAGE_AREA.size.x - at.x
 	column.size = Vector2(width, PAGE_AREA.size.y - at.y)
 	parent.add_child(column)
 	column.set_members(backend.party())
@@ -299,6 +304,7 @@ func open() -> bool:
 		_frozen_by_us = true
 	_page = PAGE_MAIN
 	_pending_save = false
+	memory.clear()
 	_refresh_main_rows()
 	_main_list.set_index(0, false)
 	_main_list.active = true
@@ -417,7 +423,7 @@ func _release() -> void:
 func _apply_slide() -> void:
 	var steps: int = int(layout["page_slide_steps"])
 	var offset: float = float(layout["page_slide_px"]) * float(_slide_left) / float(steps)
-	_page_root.position.x = offset
+	_page_root.position.x = float(PAGE_INSET) + offset
 
 
 ## Jumps every running animation to its end (tests).
@@ -530,7 +536,7 @@ func _show_page(page: String, slide: bool) -> void:
 		_apply_slide()
 	else:
 		_slide_left = 0
-		_page_root.position.x = 0.0
+		_page_root.position.x = float(PAGE_INSET)
 	refresh_info()
 	page_changed.emit(page)
 
@@ -602,7 +608,7 @@ func refresh_info() -> void:
 		shown = MenuPage.info_of(line, warn)
 	elif _page_obj != null:
 		shown = _page_obj.info()
-	_info_label.text = str(shown["text"])
+	MenuDraw.set_info_text(_info_label, str(shown["text"]), int(layout["info_window"]["h"]))
 	_info_label.add_theme_color_override("font_color", MenuDraw.color("reason") if bool(shown["warn"]) else MenuDraw.color("text"))
 
 

@@ -5,6 +5,7 @@ extends Node
 ## the game flow; open scenes/debug/dialogue_test.tscn directly.
 ##
 ## Keys: 1 Otis talk · 2 Mox talk · 3 Zero talk · 4 sign · 5 narrator · 6 Red gestures
+##       7 Mox faces · 8 Otis faces · 9 crowd NPC box (portrait and {face:...} demos)
 ##       Tab / C opens the field menu · E / Z / Enter advance bubbles.
 ## Capture scripts (tests/visual/capture_m1_speech_bubble.gd) use `speakers` and `runner` directly.
 
@@ -14,6 +15,7 @@ const FLOOR_TEXTURE: String = "res://art/placeholder/textures/checker_64.png"
 const LIT_SHADER: String = "res://shaders/psx_lit.gdshader"
 const KEY_CONVERSATIONS: Dictionary[Key, String] = {
 	KEY_1: "otis_talk", KEY_2: "mox_talk", KEY_3: "zero_talk", KEY_4: "examine_sign", KEY_5: "examine_pillar",
+	KEY_7: "demo_mox_faces", KEY_8: "demo_otis_faces", KEY_9: "demo_crowd_dockhand",
 }
 const SPEAKER_LAYOUT: Dictionary[String, Dictionary] = {
 	"red": {"pos": Vector3(0.0, 0.0, 1.4), "height": 1.0, "color": Color(0.9, 0.3, 0.25)},
@@ -21,7 +23,7 @@ const SPEAKER_LAYOUT: Dictionary[String, Dictionary] = {
 	"mox": {"pos": Vector3(3.2, 0.0, 0.6), "height": 1.15, "color": Color(0.9, 0.75, 0.3)},
 	"zero_old": {"pos": Vector3(1.0, 0.0, -1.2), "height": 1.0, "color": Color(0.85, 0.72, 0.5)},
 }
-const HINT_TEXT: String = "1 Otis  2 Mox  3 Zero  4 Sign  5 Pillar  6 Red  Tab Menu"
+const HINT_TEXT: String = "1 Otis  2 Mox  3 Zero  4 Sign  5 Pillar  6 Red  7 Mox faces  8 Otis faces  9 Crowd  Tab Menu"
 
 ## Start this conversation when the scene opens (empty = wait for a key).
 @export var autostart_conversation: String = ""

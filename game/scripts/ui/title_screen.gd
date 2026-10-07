@@ -1,9 +1,15 @@
 class_name TitleScreen
 extends Control
-## The demo start screen: night view of Harrow with a lamp in a window, the LIGHTS LEFT ON logo,
-## a blinking PRESS START, then a small menu (Start Demo / Battle Test / Quit). Battle Test opens an
-## encounter picker window (BattleTestPicker); picking one fades out and emits
-## `battle_test_requested(encounter_id)`.
+## The title screen: night view of Harrow with a lamp in a window, the LIGHTS LEFT ON logo, a
+## blinking PRESS START, then the menu: New Game / Continue / Config / Battle Test / Quit.
+##   New Game     asks for the hero's name (NameEntry, "Red" by default), fades out and emits
+##                `new_game_requested(hero_name)`.
+##   Continue     greyed out until the SaveManager reports a save. Otherwise it fades out and emits
+##                `continue_slot_requested(slot)` then `continue_requested`; Main then loads the newest
+##                save (SaveManager.continue_game()) and routes to the saved place.
+##   Config       the shared ConfigScreen (same component as the field menu's Config page).
+##   Battle Test  a dev entry (data/text/title.json "dev_items") that opens an encounter picker
+##                (BattleTestPicker); picking one fades out and emits `battle_test_requested(id)`.
 ##
 ## Self-contained: it draws into its own 384x216 SubViewport and shows that scaled up by whole
 ## numbers with nearest-neighbor filtering (the same rule as psx_screen), so it works standalone
@@ -14,22 +20,37 @@ extends Control
 ## confirm / start picks; cancel backs out. Mouse: click anywhere to open the menu, hover moves
 ## the cursor, click picks, right-click backs out.
 ##
-## `start_demo_requested` fires AFTER the fade to black has finished, so whoever listens can swap
-## scenes right away on a black screen.
+## The leave signals fire AFTER the fade to black has finished, so whoever listens can swap scenes
+## right away on a black screen.
 
+## New Game was picked and named. Main should connect this one.
+signal new_game_requested(hero_name: String)
+## Continue was picked. Main loads the newest save (SaveManager.continue_game()).
+signal continue_requested
+## Same moment as continue_requested, for listeners that want to know which slot is the newest
+## (SaveManager.newest_slot()); emitted just before it.
+signal continue_slot_requested(slot: int)
+## Old name for New Game, still emitted right after new_game_requested so a Main that has not been
+## updated yet keeps working. Connect new_game_requested instead and ignore this one.
 signal start_demo_requested
 ## An encounter was picked in the Battle Test window. Fires after the fade to black, like start_demo_requested.
 signal battle_test_requested(encounter_id: String)
 signal menu_opened
 signal menu_closed
 
-enum State { PRESS_START, MENU, PICKER, LEAVING }
+enum State { PRESS_START, MENU, PICKER, LEAVING, NAME_ENTRY, CONFIG }
 
 const TEXT_ID: String = "text/title"
 const THEME_ID: String = "ui/ui_theme"
-const ITEM_START_DEMO: String = "start_demo"
+const ITEM_NEW_GAME: String = "new_game"
+const ITEM_CONTINUE: String = "continue"
+const ITEM_CONFIG: String = "config"
 const ITEM_BATTLE_TEST: String = "battle_test"
 const ITEM_QUIT: String = "quit"
+const SAVE_MANAGER_PATH: NodePath = ^"/root/SaveManager"
+const LEAVE_NEW_GAME: String = "new_game"
+const LEAVE_CONTINUE: String = "continue"
+const LEAVE_BATTLE: String = "battle_test"
 const STICK_AXIS_VERTICAL: int = JOY_AXIS_LEFT_Y
 const STICK_PRESS: float = 0.6
 const STICK_RELEASE: float = 0.3
@@ -39,6 +60,10 @@ const LIT_BRIGHT_LEVEL: int = 2
 
 ## Replace to intercept Quit (tests do this); by default Quit calls get_tree().quit().
 var quit_handler: Callable = Callable()
+## Where saves are asked about (has_any_save / newest_slot). Null means the SaveManager autoload.
+var save_manager: Node = null
+## Settings for the embedded Config screen. Null means the Config autoload.
+var config: Node = null
 
 var _c: Dictionary[String, Color] = {}
 var _theme_data: Dictionary = {}
@@ -63,9 +88,15 @@ var _stage_size: Vector2 = Vector2(384, 216)
 var _min_fill: float = 0.8
 var _leave_emitted: bool = false
 var _glow_level: int = -1
+var _cursor_placed: bool = false
 var _pending_battle: String = ""
+var _pending_kind: String = LEAVE_NEW_GAME
+var _pending_name: String = ""
+var _pending_slot: int = -1
 var _picker: BattleTestPicker = null
 var _picker_input: MenuInput = MenuInput.new()
+var _name_entry: NameEntry = null
+var _config_screen: ConfigScreen = null
 
 @onready var _viewport: SubViewport = $PixelViewport
 @onready var _display: TextureRect = $Display
@@ -88,6 +119,8 @@ func _ready() -> void:
 	_apply_fonts_and_text()
 	_build_menu()
 	_build_picker()
+	_build_name_entry()
+	_build_config()
 	_fade.step_count = int(_timing["fade_steps"])
 	_fade.step = _fade.step_count
 	_fade_target = 0
@@ -104,6 +137,8 @@ func _process(delta: float) -> void:
 	_step_clock += delta
 	_press_start.visible = _state == State.PRESS_START and _blink_on()
 	_update_title_glow()
+	if _state == State.NAME_ENTRY:
+		_name_entry.tick(delta)
 	while _step_clock >= _step_s:
 		_step_clock -= _step_s
 		_advance_step()
@@ -131,6 +166,40 @@ func get_picker() -> BattleTestPicker:
 
 func get_cursor_index() -> int:
 	return _cursor_index
+
+
+## The name entry window (hidden until New Game is chosen).
+func get_name_entry() -> NameEntry:
+	return _name_entry
+
+
+## The embedded Config screen (hidden until Config is chosen).
+func get_config_screen() -> ConfigScreen:
+	return _config_screen
+
+
+## True when the menu item can be picked (Continue is not while there is no save).
+func is_item_enabled(item_id: String) -> bool:
+	if item_id == ITEM_CONTINUE:
+		return _has_save()
+	return true
+
+
+## The slot Continue would load (the newest save), or -1 when there is no save.
+func get_continue_slot() -> int:
+	if not _has_save():
+		return -1
+	var manager: Node = _save_node()
+	if manager != null and manager.has_method("newest_slot"):
+		return int(manager.call("newest_slot"))
+	return -1
+
+
+func get_item_enabled_flags() -> Array[bool]:
+	var flags: Array[bool] = []
+	for item: Dictionary in _items:
+		flags.append(is_item_enabled(str(item["id"])))
+	return flags
 
 
 func get_item_ids() -> Array[String]:
@@ -208,7 +277,10 @@ func _load_data() -> void:
 		if fonts[key] is Dictionary:
 			_fonts[key] = UiFonts.get_font(key)
 			_font_sizes[key] = UiFonts.get_size(key)
+	var show_dev: bool = bool(DataDB.get_dict(TEXT_ID).get("dev_items", false))
 	for entry: Dictionary in DataDB.get_dict(TEXT_ID)["menu"]:
+		if bool(entry.get("dev", false)) and not show_dev:
+			continue
 		_items.append(entry)
 
 
@@ -303,6 +375,27 @@ func _build_picker() -> void:
 	_stage.move_child(_picker, _fade.get_index())
 
 
+func _build_name_entry() -> void:
+	_name_entry = NameEntry.new()
+	_name_entry.name = "NameEntry"
+	_name_entry.submitted.connect(_on_name_submitted)
+	_name_entry.cancelled.connect(_close_name_entry)
+	_stage.add_child(_name_entry)
+	_stage.move_child(_name_entry, _fade.get_index())
+
+
+func _build_config() -> void:
+	var rect: Dictionary = _layout["config_window"]
+	_config_screen = ConfigScreen.new()
+	_config_screen.name = "ConfigScreen"
+	_config_screen.config = config
+	_config_screen.position = Vector2(float(rect["x"]), float(rect["y"]))
+	_config_screen.size = Vector2(float(rect["w"]), float(rect["h"]))
+	_config_screen.closed.connect(_close_config)
+	_stage.add_child(_config_screen)
+	_stage.move_child(_config_screen, _fade.get_index())
+
+
 func _item_y(index: int) -> float:
 	return float(_layout["menu_item_first_y"]) + float(index) * float(_layout["menu_item_step"])
 
@@ -352,10 +445,15 @@ func _advance_step() -> void:
 		_fade.step -= 1
 	if _state == State.LEAVING and _fade.step >= _fade.step_count and not _leave_emitted:
 		_leave_emitted = true
-		if _pending_battle.is_empty():
-			start_demo_requested.emit()
-		else:
-			battle_test_requested.emit(_pending_battle)
+		match _pending_kind:
+			LEAVE_BATTLE:
+				battle_test_requested.emit(_pending_battle)
+			LEAVE_CONTINUE:
+				continue_slot_requested.emit(_pending_slot)
+				continue_requested.emit()
+			_:
+				new_game_requested.emit(_pending_name)
+				start_demo_requested.emit()
 	if _window.open_amount < _window_target:
 		_window.open_amount = minf(_window_target, _window.open_amount + _window_step)
 	elif _window.open_amount > _window_target:
@@ -375,6 +473,9 @@ func _input(event: InputEvent) -> void:
 		return
 	if _state == State.PICKER:
 		_input_picker(event)
+		return
+	if _state == State.NAME_ENTRY or _state == State.CONFIG:
+		_input_sub_page(event)
 		return
 	if event is InputEventMouseMotion:
 		_on_mouse_motion(event as InputEventMouseMotion)
@@ -412,6 +513,21 @@ func _input_picker(event: InputEvent) -> void:
 	if command != MenuInput.Cmd.NONE:
 		_consume()
 		_picker.handle_command(command)
+
+
+## The name entry and the Config screen take every event; mouse positions go in as stage pixels.
+func _input_sub_page(event: InputEvent) -> void:
+	var forwarded: InputEvent = event
+	if event is InputEventMouse:
+		forwarded = event.duplicate() as InputEvent
+		(forwarded as InputEventMouse).position = _stage_position((event as InputEventMouse).position)
+	var used: bool = false
+	if _state == State.NAME_ENTRY:
+		used = _name_entry.handle_event(forwarded)
+	else:
+		used = _config_screen.handle_event(forwarded)
+	if used:
+		_consume()
 
 
 func _is_pressed(event: InputEvent, action: StringName, allow_echo: bool = false) -> bool:
@@ -486,9 +602,22 @@ func open_menu() -> void:
 	_window.visible = true
 	_window_target = 1.0
 	_press_start.visible = false
+	if not _cursor_placed:
+		_cursor_placed = true
+		set_cursor(_default_cursor_index(), false)
+	_refresh_item_states()
 	_cursor.restart()
 	_play_sfx("confirm")
 	menu_opened.emit()
+
+
+## The row the cursor starts on: Continue when there is a save to continue, else New Game.
+func _default_cursor_index() -> int:
+	if _has_save():
+		for i: int in _items.size():
+			if str(_items[i]["id"]) == ITEM_CONTINUE:
+				return i
+	return 0
 
 
 func close_menu() -> void:
@@ -525,6 +654,8 @@ func set_cursor(index: int, with_sound: bool = true) -> void:
 func _update_item_colors() -> void:
 	for i: int in _item_labels.size():
 		var key: String = "text_highlight" if i == _cursor_index else "text"
+		if not is_item_enabled(str(_items[i]["id"])):
+			key = "text_dim"
 		_item_labels[i].add_theme_color_override("font_color", _c[key])
 
 
@@ -533,17 +664,96 @@ func choose(index: int) -> void:
 	if _state != State.MENU or index < 0 or index >= _items.size():
 		return
 	var id: String = str(_items[index]["id"])
+	if not is_item_enabled(id):
+		_play_sfx("back")
+		return
 	_play_sfx("confirm")
-	if id == ITEM_START_DEMO:
-		_state = State.LEAVING
-		_fade_target = _fade.step_count
-	elif id == ITEM_BATTLE_TEST:
-		_open_picker()
-	elif id == ITEM_QUIT:
-		if quit_handler.is_valid():
-			quit_handler.call()
-		else:
-			get_tree().quit()
+	match id:
+		ITEM_NEW_GAME:
+			_open_name_entry()
+		ITEM_CONTINUE:
+			_pending_kind = LEAVE_CONTINUE
+			_pending_slot = get_continue_slot()
+			_start_leaving()
+		ITEM_CONFIG:
+			_open_config()
+		ITEM_BATTLE_TEST:
+			_open_picker()
+		ITEM_QUIT:
+			if quit_handler.is_valid():
+				quit_handler.call()
+			else:
+				get_tree().quit()
+
+
+func _start_leaving() -> void:
+	_state = State.LEAVING
+	_fade_target = _fade.step_count
+
+
+func _hide_menu() -> void:
+	_window_target = 0.0
+	for label: Label in _item_labels:
+		label.visible = false
+	_cursor.visible = false
+
+
+func _show_menu() -> void:
+	_state = State.MENU
+	_window.visible = true
+	_window_target = 1.0
+	_cursor.restart()
+	_refresh_item_states()
+
+
+func _open_name_entry() -> void:
+	_state = State.NAME_ENTRY
+	_hide_menu()
+	_name_entry.open()
+
+
+func _close_name_entry() -> void:
+	if _state != State.NAME_ENTRY:
+		return
+	_name_entry.close()
+	_show_menu()
+
+
+func _on_name_submitted(hero_name: String) -> void:
+	if _state != State.NAME_ENTRY:
+		return
+	_name_entry.close()
+	_pending_kind = LEAVE_NEW_GAME
+	_pending_name = hero_name
+	_start_leaving()
+
+
+func _open_config() -> void:
+	_state = State.CONFIG
+	_hide_menu()
+	_config_screen.open()
+
+
+func _close_config() -> void:
+	if _state != State.CONFIG:
+		return
+	_show_menu()
+
+
+## Re-reads whether a save exists (Continue's grey) and repaints the labels.
+func _refresh_item_states() -> void:
+	_update_item_colors()
+
+
+func _save_node() -> Node:
+	if save_manager != null and is_instance_valid(save_manager):
+		return save_manager
+	return get_node_or_null(SAVE_MANAGER_PATH)
+
+
+func _has_save() -> bool:
+	var manager: Node = _save_node()
+	return manager != null and manager.has_method("has_any_save") and bool(manager.call("has_any_save"))
 
 
 func _open_picker() -> void:
@@ -570,8 +780,8 @@ func _on_battle_picked(encounter_id: String) -> void:
 	if _state != State.PICKER:
 		return
 	_pending_battle = encounter_id
-	_state = State.LEAVING
-	_fade_target = _fade.step_count
+	_pending_kind = LEAVE_BATTLE
+	_start_leaving()
 
 
 ## Menu tick hook. AudioManager is still a stub, so this only calls it when it can answer.

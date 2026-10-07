@@ -1,13 +1,35 @@
 {
   "_about": "Strings for the field menu. {name}, {hp}, {juice}, {owner}, {names}, {stat}, {n} are replaced where shown. Item, skill and gear names come from the item and skill data, not from here.",
   "commands": {
-    "items": {"label": "Items", "hint": "Look through your bag and use things."},
-    "skills": {"label": "Skills", "hint": "Check skills. Heals work out here too."},
-    "equip": {"label": "Equip", "hint": "Change weapons, armor and charms."},
-    "status": {"label": "Status", "hint": "Check how everyone is doing."},
-    "party": {"label": "Party", "hint": "Set the order the crew fights in."},
-    "config": {"label": "Config", "hint": "Text speed, voices and timing."},
-    "save": {"label": "Save", "hint": "Save your game at a save lamp.", "locked": "Find a save lamp to save."}
+    "items": {
+      "label": "Items",
+      "hint": "Look through your bag and use things."
+    },
+    "skills": {
+      "label": "Skills",
+      "hint": "Check skills. Heals work out here too."
+    },
+    "equip": {
+      "label": "Equip",
+      "hint": "Change weapons, armor and charms."
+    },
+    "status": {
+      "label": "Status",
+      "hint": "Check how everyone is doing."
+    },
+    "party": {
+      "label": "Party",
+      "hint": "Set the order the crew fights in."
+    },
+    "config": {
+      "label": "Config",
+      "hint": "Text speed, voices and timing."
+    },
+    "save": {
+      "label": "Save",
+      "hint": "Save your game at a save lamp.",
+      "locked": "Find a save lamp to save."
+    }
   },
   "place": {
     "title": "Place",
@@ -18,7 +40,11 @@
     "time": "Time"
   },
   "items": {
-    "tabs": {"items": "Items", "gear": "Gear", "key": "Key Items"},
+    "tabs": {
+      "items": "Items",
+      "gear": "Gear",
+      "key": "Key"
+    },
     "empty": {
       "items": "Nothing in the bag yet.",
       "gear": "No spare gear in the bag.",
@@ -44,7 +70,11 @@
     "cast_juice": "{name} got some Juice back."
   },
   "equip": {
-    "slots": {"weapon": "Weapon", "armor": "Armor", "charm": "Charm"},
+    "slots": {
+      "weapon": "Weapon",
+      "armor": "Armor",
+      "charm": "Charm"
+    },
     "none": "- nothing -",
     "remove": "Take it off",
     "spare": "x{n}",
@@ -54,7 +84,15 @@
     "equipped": "{name} is wearing {item}.",
     "removed": "{name} took off the {slot}.",
     "perks_blocks": "Blocks: {names}.",
-    "stat_names": {"hp": "HP", "juice": "Juice", "attack": "Attack", "defense": "Defense", "heart": "Heart", "speed": "Speed", "luck": "Luck"}
+    "stat_names": {
+      "hp": "HP",
+      "juice": "Juice",
+      "attack": "Attack",
+      "defense": "Defense",
+      "heart": "Heart",
+      "speed": "Speed",
+      "luck": "Luck"
+    }
   },
   "status": {
     "title": "Status",
@@ -63,24 +101,44 @@
     "juice": "Juice",
     "xp_next": "{n} XP to next level",
     "xp_max": "Top level",
-    "gear": {"weapon": "Weapon", "armor": "Armor", "charm": "Charm"},
+    "gear": {
+      "weapon": "Weapon",
+      "armor": "Armor",
+      "charm": "Charm"
+    },
     "skills": "Skills",
     "condition": "Status",
     "fine": "Fine",
     "down": "Down for the Count",
     "no_skills": "none yet",
-    "stat_names": {"hp": "HP", "juice": "Juice", "attack": "Attack", "defense": "Defense", "heart": "Heart", "speed": "Speed", "luck": "Luck"},
+    "stat_names": {
+      "hp": "HP",
+      "juice": "Juice",
+      "attack": "Attack",
+      "defense": "Defense",
+      "heart": "Heart",
+      "speed": "Speed",
+      "luck": "Luck"
+    },
     "hint": "Up and down switch fighters."
   },
   "party": {
     "leader": "Leader",
-    "slots": ["1st", "2nd", "3rd", "4th"],
+    "slots": [
+      "1st",
+      "2nd",
+      "3rd",
+      "4th"
+    ],
     "pick": "Pick a fighter to move.",
     "swap": "Swap {name} with whom?",
     "swapped": "Order set: {names}.",
     "red_leads": "{name} always leads.",
     "fixed": "The order can't be changed right now.",
-    "later": "Lane Chart and Swap come later."
+    "later": [
+      "Lane Chart and Swap",
+      "come later."
+    ]
   },
   "config": {
     "title": "Config",
@@ -92,7 +150,11 @@
     "ms_format": "{ms} ms",
     "on": "On",
     "off": "Off",
-    "speed_names": {"slow": "Slow", "normal": "Normal", "fast": "Fast"},
+    "speed_names": {
+      "slow": "Slow",
+      "normal": "Normal",
+      "fast": "Fast"
+    },
     "hints": {
       "text_speed": "How fast the speech bubbles type out.",
       "voice_volume": "How loud the gibberish voices are.",

@@ -10,6 +10,7 @@ const LAYOUT_ID: String = "ui/field_menu"
 const ARROW_UP: int = 1
 const ARROW_DOWN: int = -1
 const ARROW_SAME: int = 0
+const INFO_LINE_H: int = 13
 
 static var _colors: Dictionary[String, Color] = {}
 
@@ -47,20 +48,20 @@ static func portrait(canvas: CanvasItem, member: Dictionary, at: Vector2i, tile:
 
 ## A label, a bar and "now/max". `at` is (left edge, text baseline); the bar sits just under the text
 ## when `bar_below` is true, else after the label.
-static func bar_row(canvas: CanvasItem, at: Vector2i, label: String, value: int, maximum: int, fill: Color, thickness: int, width: int, bar_below: bool = false, label_w: int = 36) -> void:
+static func bar_row(canvas: CanvasItem, at: Vector2i, label: String, value: int, maximum: int, fill: Color, thickness: int, width: int, bar_below: bool = false, label_w: int = 36, dim: bool = false) -> void:
 	var bar_x: int = at.x if bar_below else at.x + label_w
 	var bar_w: int = width if bar_below else width - label_w - 44
 	var y: int = at.y + 3 if bar_below else at.y - 4 - thickness / 2
 	UiText.draw(canvas, "menu", Vector2(at.x, at.y), label, color("text_dim"))
-	UiText.draw(canvas, "menu", Vector2(0, at.y), "%d/%d" % [value, maximum], color("text"), HORIZONTAL_ALIGNMENT_RIGHT, at.x + width)
+	UiText.draw(canvas, "menu", Vector2(0, at.y), "%d/%d" % [value, maximum], color("text_dim") if dim else color("text"), HORIZONTAL_ALIGNMENT_RIGHT, at.x + width)
 	canvas.draw_rect(Rect2(bar_x - 1, y - 1, bar_w + 2, thickness + 2), color("ink"))
 	canvas.draw_rect(Rect2(bar_x, y, bar_w, thickness), color("dusk"))
 	var filled: int = int(round(float(bar_w) * float(value) / float(maxi(1, maximum))))
-	canvas.draw_rect(Rect2(bar_x, y, filled, thickness), fill)
+	canvas.draw_rect(Rect2(bar_x, y, filled, thickness), fill.darkened(0.55) if dim else fill)
 
 
 ## A solid triangle arrow: up (green) or down (coral) with an Ink shadow. `at` is the top-left of a
-## 7x4 box.
+## 9x5 box.
 static func arrow(canvas: CanvasItem, at: Vector2i, direction: int) -> void:
 	if direction == ARROW_SAME:
 		return
@@ -68,9 +69,9 @@ static func arrow(canvas: CanvasItem, at: Vector2i, direction: int) -> void:
 	for pass_index: int in 2:
 		var offset: int = 1 - pass_index
 		var paint: Color = color("ink") if pass_index == 0 else tint
-		for row: int in 4:
-			var half: int = row if direction == ARROW_UP else 3 - row
-			canvas.draw_rect(Rect2(at.x + 3 - half + offset, at.y + row + offset, half * 2 + 1, 1), paint)
+		for row: int in 5:
+			var half: int = row if direction == ARROW_UP else 4 - row
+			canvas.draw_rect(Rect2(at.x + 4 - half + offset, at.y + row + offset, half * 2 + 1, 1), paint)
 
 
 ## +1 / -1 / 0 for comparing a new stat value against the current one.
@@ -95,3 +96,12 @@ static func format_number(value: int) -> String:
 		if count % 3 == 0 and i > 0:
 			out = "," + out
 	return ("-" if value < 0 else "") + out
+
+
+## Sets an info window's text and centers it vertically: one line sits in the middle, two lines fill
+## the window. `window_h` is the window's height; the label's width is its wrap width.
+static func set_info_text(label: Label, line: String, window_h: int) -> void:
+	label.text = line
+	var wrapped: PackedStringArray = TextWrap.wrap(UiFonts.get_font("dialogue"), UiFonts.get_size("dialogue"), line, int(label.size.x))
+	var rows: int = clampi(wrapped.size(), 1, 2)
+	label.position.y = maxf(1.0, floorf(float(window_h - rows * INFO_LINE_H) / 2.0) - 3.0)

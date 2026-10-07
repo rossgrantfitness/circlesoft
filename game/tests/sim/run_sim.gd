@@ -79,6 +79,10 @@ func _initialize() -> void:
 			var summary: Dictionary = await _walk_summary(sim, player, seed_value)
 			print(_walk_row(summary, markdown))
 			problems.append_array(_check_walk(sim, summary))
+	if walk:
+		var econ: Array[String] = _economy_problems(sim)
+		print(_economy_line(sim))
+		problems.append_array(econ)
 	if check:
 		print("")
 		if problems.is_empty():
@@ -87,6 +91,35 @@ func _initialize() -> void:
 			for problem: String in problems:
 				print("CHECK FAIL: %s" % problem)
 	quit(1 if (check and not problems.is_empty()) else 0)
+
+
+## The price curve against the credits the player has by the Kasp fight (feel_targets.credits_at_kasp).
+func _economy_line(sim: BattleSim) -> String:
+	var items: ItemData = sim.data.item_data
+	return "economy: three shop weapons %d credits, both shop vests %d, credits at Kasp %d, Ration Bar %d" % [
+		_shop_weapons_cost(items), _shop_vests_cost(items), int(sim.data.feel.get("credits_at_kasp", 0)), items.price("ration_bar")]
+
+
+func _shop_weapons_cost(items: ItemData) -> int:
+	return items.price("rebar_blade") + items.price("rivet_hammer") + items.price("pipe_wrench")
+
+
+func _shop_vests_cost(items: ItemData) -> int:
+	return items.price("padded_work_vest") + items.price("hi_vis_vest")
+
+
+## Design doc Economy: by Kasp the player can afford the three shop weapons plus a pocketful of
+## Ration Bars, but not every vest as well.
+func _economy_problems(sim: BattleSim) -> Array[String]:
+	var out: Array[String] = []
+	var items: ItemData = sim.data.item_data
+	var budget: int = int(sim.data.feel.get("credits_at_kasp", 0))
+	var weapons: int = _shop_weapons_cost(items)
+	if weapons + 10 * items.price("ration_bar") > budget:
+		out.append("economy: the three shop weapons plus ten Ration Bars (%d) cost more than the %d credits at Kasp" % [weapons + 10 * items.price("ration_bar"), budget])
+	if weapons + _shop_vests_cost(items) <= budget:
+		out.append("economy: the weapons and both vests (%d) fit in %d credits, so there is no choice to make" % [weapons + _shop_vests_cost(items), budget])
+	return out
 
 
 func _print_header(markdown: bool) -> void:

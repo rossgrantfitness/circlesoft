@@ -1,11 +1,10 @@
 extends TestCase
-## The field menu: opens and closes, freezes Red, moves a cursor that wraps, lists the bag with
-## counts, shows the party, changes Config settings, and stubs Save.
+## The field menu shell: opens and closes, freezes Red, moves a cursor that wraps, lists the bag with
+## counts, shows the party, changes Config settings, greys Save away from a lamp, and opens the lamp's
+## save screen at one. The pages have their own test files (test_field_menu_*.gd).
 
 const MENU_SCENE: String = "res://scenes/ui/field_menu.tscn"
 const PLAYER_SCENE: String = "res://scenes/actors/player.tscn"
-const GAME_STATE_SCRIPT: String = "res://scripts/core/game_state.gd"
-const CONFIG_SCRIPT: String = "res://scripts/core/config.gd"
 const SCRATCH: String = "user://test_menu_config_scratch.json"
 
 var _audio: FakeAudio = null
@@ -20,18 +19,10 @@ func after_each() -> void:
 
 func _make(animated: bool = false) -> FieldMenu:
 	_audio = FakeAudio.new()
-	_state = own((load(GAME_STATE_SCRIPT) as GDScript).new() as Node) as Node
-	_state.call("load_party", DataDB.get_dict("party/party"))
-	_state.call("reset")
-	_config = own((load(CONFIG_SCRIPT) as GDScript).new() as Node) as Node
-	_config.set("save_path", SCRATCH)
-	var menu: FieldMenu = (load(MENU_SCENE) as PackedScene).instantiate() as FieldMenu
-	menu.manual_ticks = true
+	_state = MenuKit.make_state(self)
+	_config = MenuKit.make_config(self, SCRATCH)
+	var menu: FieldMenu = MenuKit.make_menu(self, _state, _audio, _config)
 	menu.animations_enabled = animated
-	menu.game_state = _state
-	menu.config = _config
-	menu.audio.target = _audio
-	add_to_root(menu)
 	return menu
 
 
@@ -62,7 +53,7 @@ func test_open_and_close() -> void:
 	assert_true(menu.is_open())
 	assert_true(menu.visible)
 	assert_eq(menu.get_page(), "main")
-	assert_eq(menu.get_main_ids(), ["items", "status", "config", "save", "close"])
+	assert_eq(menu.get_main_ids(), ["items", "skills", "equip", "status", "party", "config", "save"])
 	menu.close()
 	assert_false(menu.is_open())
 	assert_false(menu.visible)
@@ -84,10 +75,25 @@ func test_menu_button_closes_from_any_page() -> void:
 	assert_false(menu.is_open())
 
 
-func test_close_row_closes() -> void:
+func test_every_page_opens_and_goes_back() -> void:
 	var menu: FieldMenu = _make()
-	_open_page(menu, 4)
-	assert_false(menu.is_open())
+	var pages: Array[String] = ["items", "skills", "equip", "status", "party", "config"]
+	menu.open()
+	for i: int in pages.size():
+		assert_eq(menu.get_main_index(), i)
+		menu.handle_command(MenuInput.Cmd.CONFIRM)
+		assert_eq(menu.get_page(), pages[i])
+		assert_not_null(menu.get_page_object(), pages[i])
+		assert_not_null(menu.get_page_list(), pages[i])
+		# every page answers the d-pad without breaking
+		for command: MenuInput.Cmd in [MenuInput.Cmd.DOWN, MenuInput.Cmd.UP, MenuInput.Cmd.LEFT, MenuInput.Cmd.RIGHT]:
+			menu.handle_command(command)
+			assert_eq(menu.get_page(), pages[i])
+		menu.handle_command(MenuInput.Cmd.CANCEL)
+		assert_eq(menu.get_page(), "main")
+		assert_eq(menu.get_main_index(), i, "the main list kept its row")
+		menu.handle_command(MenuInput.Cmd.DOWN)
+	assert_true(menu.is_open())
 
 
 func test_window_grows_open_in_steps_when_animated() -> void:
@@ -122,7 +128,7 @@ func test_cursor_moves_and_wraps_with_a_tick_each_time() -> void:
 	assert_eq(menu.get_main_index(), 1)
 	menu.handle_command(MenuInput.Cmd.UP)
 	menu.handle_command(MenuInput.Cmd.UP)
-	assert_eq(menu.get_main_index(), 4, "up from the top wraps to the bottom")
+	assert_eq(menu.get_main_index(), 6, "up from the top wraps to the bottom")
 	menu.handle_command(MenuInput.Cmd.DOWN)
 	assert_eq(menu.get_main_index(), 0, "down from the bottom wraps to the top")
 	var ticks: int = _audio.sfx_ids.count("menu_tick")
@@ -195,21 +201,16 @@ func test_items_page_lists_the_bag_with_counts() -> void:
 	assert_eq(menu.get_page_list().get_count(), starting.size() + 1, "a new item shows up after re-entering")
 
 
-func test_item_description_shows_in_the_info_window_and_using_is_a_stub() -> void:
+func test_item_description_shows_in_the_info_window() -> void:
 	var menu: FieldMenu = _make()
 	_open_page(menu, 0)
 	assert_eq(menu.get_info_text(), "Small heal. Tastes like the wrapper.")
-	var before: int = int(_state.call("item_count", "ration_bar"))
-	menu.handle_command(MenuInput.Cmd.CONFIRM)
-	assert_true(menu.get_info_text().contains("Ration Bar"), "stub message names the item")
-	assert_eq(_state.call("item_count", "ration_bar"), before, "the stub does not use anything up")
 
 
 func test_item_list_cursor_moves_and_is_remembered() -> void:
 	var menu: FieldMenu = _make()
 	_open_page(menu, 0)
 	menu.handle_command(MenuInput.Cmd.DOWN)
-	menu.handle_command(MenuInput.Cmd.CONFIRM)  # remembers row 1
 	menu.handle_command(MenuInput.Cmd.CANCEL)
 	assert_eq(menu.get_page(), "main")
 	assert_eq(menu.get_main_index(), 0, "main list kept its row")
@@ -232,28 +233,71 @@ func test_an_empty_bag_is_handled() -> void:
 
 func test_status_page_opens_and_goes_back() -> void:
 	var menu: FieldMenu = _make()
-	_open_page(menu, 1)
+	_open_page(menu, 3)
 	assert_eq(menu.get_page(), "status")
 	menu.handle_command(MenuInput.Cmd.CANCEL)
 	assert_eq(menu.get_page(), "main")
 	assert_true(menu.is_open())
 
 
-func test_save_page_is_a_stub_that_says_save_lamps_only() -> void:
+func test_save_is_greyed_with_a_reason_away_from_a_lamp() -> void:
 	var menu: FieldMenu = _make()
-	_open_page(menu, 3)
-	assert_eq(menu.get_page(), "save")
-	var strings: Dictionary = DataDB.get_dict("text/field_menu")["save"]
-	assert_eq(strings["line1"], "Save lamps only.")
+	menu.open()
+	var rows: Array[Dictionary] = menu.get_main_list().get_items()
+	assert_eq(rows[6]["id"], "save")
+	assert_false(bool(rows[6].get("enabled", true)), "greyed")
+	menu.get_main_list().set_index(6)
+	assert_eq(menu.get_info_text(), "Find a save lamp to save.")
 	menu.handle_command(MenuInput.Cmd.CONFIRM)
-	assert_eq(menu.get_page(), "main", "OK goes back")
+	assert_eq(menu.get_page(), "main", "a greyed row does nothing")
+	assert_true(menu.is_open())
+	assert_false(menu.is_save_pending())
+
+
+func test_save_at_a_lamp_closes_the_menu_and_opens_the_lamps_save_screen() -> void:
+	var menu: FieldMenu = _make()
+	var manager: FakeSaveManager = FakeSaveManager.new()
+	own(manager)
+	menu.save_manager = manager
+	menu.save_spot_override = true
+	menu.open()
+	assert_true(bool(menu.get_main_list().get_items()[6].get("enabled", true)), "lit up at a lamp")
+	menu.get_main_list().set_index(6)
+	menu.handle_command(MenuInput.Cmd.CONFIRM)
+	assert_false(menu.is_open())
+	assert_true(menu.is_save_pending())
+	assert_eq(manager.opened, 0, "waits until the menu has let go of Red")
+	menu.tick(0.016)
+	menu.tick(0.016)
+	menu.tick(0.016)
+	assert_eq(manager.opened, 1)
+	assert_false(menu.is_save_pending())
+	assert_false(manager.rest_asked)
+
+
+func test_the_save_spot_is_found_from_a_lamp_group_near_red() -> void:
+	var player: PlayerController = (load(PLAYER_SCENE) as PackedScene).instantiate() as PlayerController
+	add_to_root(player)
+	player.global_position = Vector3(1.0, 0.0, 1.0)
+	var lamp: Node3D = Node3D.new()
+	lamp.add_to_group(&"save_lamp")
+	add_to_root(lamp)
+	lamp.global_position = Vector3(2.0, 0.0, 1.0)
+	var menu: FieldMenu = _make()
+	menu.player = player
+	assert_true(menu.at_save_spot(), "a lamp a metre away")
+	lamp.global_position = Vector3(9.0, 0.0, 1.0)
+	assert_false(menu.at_save_spot(), "too far")
+	assert_eq(menu.item_context(), "field")
+	lamp.global_position = Vector3(1.5, 0.0, 1.0)
+	assert_eq(menu.item_context(), "lamp")
 
 
 # ---- config ----
 
 func test_config_page_changes_the_settings_in_config() -> void:
 	var menu: FieldMenu = _make()
-	_open_page(menu, 2)
+	_open_page(menu, 5)
 	assert_eq(menu.get_page(), "config")
 	assert_eq(_config.get("text_speed"), "normal")
 	menu.handle_command(MenuInput.Cmd.RIGHT)
@@ -281,7 +325,7 @@ func test_config_page_changes_the_settings_in_config() -> void:
 func test_config_rows_show_the_current_values() -> void:
 	var menu: FieldMenu = _make()
 	_config.call("set_text_speed", "slow")
-	_open_page(menu, 2)
+	_open_page(menu, 5)
 	var rows: Array[Dictionary] = menu.get_page_list().get_items()
 	assert_eq(rows.size(), 5, "text speed, voice, Auto-Timing, Wide Windows, Timing Offset")
 	assert_true(str(rows[0]["value"]).contains("Slow"))
@@ -293,7 +337,7 @@ func test_config_rows_show_the_current_values() -> void:
 
 func test_leaving_the_config_page_saves_the_file() -> void:
 	var menu: FieldMenu = _make()
-	_open_page(menu, 2)
+	_open_page(menu, 5)
 	menu.handle_command(MenuInput.Cmd.RIGHT)
 	assert_false(FileAccess.file_exists(SCRATCH), "not written on every change")
 	menu.handle_command(MenuInput.Cmd.CANCEL)
@@ -304,7 +348,7 @@ func test_leaving_the_config_page_saves_the_file() -> void:
 
 func test_changing_a_setting_ticks_and_the_voice_slider_plays_a_sample() -> void:
 	var menu: FieldMenu = _make()
-	_open_page(menu, 2)
+	_open_page(menu, 5)
 	menu.handle_command(MenuInput.Cmd.DOWN)
 	_audio.sfx_ids.clear()
 	menu.handle_command(MenuInput.Cmd.RIGHT)
@@ -314,7 +358,7 @@ func test_changing_a_setting_ticks_and_the_voice_slider_plays_a_sample() -> void
 
 func test_text_speed_preview_types_out_at_the_chosen_speed() -> void:
 	var menu: FieldMenu = _make()
-	_open_page(menu, 2)
+	_open_page(menu, 5)
 	menu.tick(0.5)
 	var normal: int = menu.get_preview_text().length()
 	assert_gt(normal, 0)
@@ -352,13 +396,13 @@ func test_mouse_hover_moves_the_cursor_and_click_picks() -> void:
 	menu.open()
 	menu._input(_motion(_row_point(menu, 2)))
 	assert_eq(menu.get_main_index(), 2)
-	menu._input(_click(_row_point(menu, 1)))
+	menu._input(_click(_row_point(menu, 3)))
 	assert_eq(menu.get_page(), "status", "click picked the row")
 
 
 func test_right_click_backs_out() -> void:
 	var menu: FieldMenu = _make()
-	_open_page(menu, 1)
+	_open_page(menu, 3)
 	menu._input(_click(Vector2(10, 10), MOUSE_BUTTON_RIGHT))
 	assert_eq(menu.get_page(), "main")
 	menu._input(_click(Vector2(10, 10), MOUSE_BUTTON_RIGHT))

@@ -28,8 +28,7 @@ func _open_config() -> FieldMenu:
 	menu.audio.target = FakeAudio.new()
 	add_to_root(menu)
 	menu.open()
-	menu.handle_command(MenuInput.Cmd.DOWN)
-	menu.handle_command(MenuInput.Cmd.DOWN)
+	_go_to_row(menu, 5)  # Config is the sixth row of the field menu
 	menu.handle_command(MenuInput.Cmd.CONFIRM)
 	assert_eq(menu.get_page(), "config")
 	return menu

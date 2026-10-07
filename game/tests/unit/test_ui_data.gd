@@ -48,7 +48,7 @@ func test_typing_speeds_are_ordered_slow_to_fast() -> void:
 
 func test_field_menu_windows_fit_the_stage() -> void:
 	var layout: Dictionary = DataDB.get_dict("ui/field_menu")
-	for key: String in ["main_window", "place_window", "side_window", "info_window", "save_window"]:
+	for key: String in ["main_window", "place_window", "side_window", "info_window"]:
 		var rect: Dictionary = layout[key]
 		assert_ge(float(rect["x"]), 0.0, key)
 		assert_ge(float(rect["y"]), 0.0, key)

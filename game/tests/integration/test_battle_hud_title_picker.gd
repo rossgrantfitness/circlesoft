@@ -10,6 +10,7 @@ const FADE_WAIT_LIMIT_S: float = 3.0
 
 func _make_title() -> TitleScreen:
 	var title: TitleScreen = (load(SCENE_PATH) as PackedScene).instantiate() as TitleScreen
+	title.save_manager = own(FakeTitleSaves.new()) as Node  # no saves, whatever is on this machine
 	add_to_root(title)
 	return title
 
@@ -34,7 +35,8 @@ func _open_picker(title: TitleScreen) -> void:
 	await tree.process_frame
 	_press(&"confirm")
 	await _wait(MENU_OPEN_WAIT_S)
-	_press(&"move_down")
+	for i: int in title.get_item_ids().find("battle_test"):
+		_press(&"move_down")
 	_press(&"confirm")
 
 
@@ -50,23 +52,24 @@ func test_menu_items_come_from_data_and_include_battle_test() -> void:
 	for entry: Dictionary in DataDB.get_dict("text/title")["menu"]:
 		wanted.append(str(entry["id"]))
 		labels.append(str(entry["label"]))
-	assert_eq(wanted, ["start_demo", "battle_test", "quit"])
+	assert_eq(wanted, ["new_game", "continue", "config", "battle_test", "quit"])
 	assert_eq(title.get_item_ids(), wanted)
-	assert_eq(labels, ["Start Demo", "Battle Test", "Quit"])
+	assert_eq(labels, ["New Game", "Continue", "Config", "Battle Test", "Quit"])
 	assert_eq(title.get_item_label_texts(), labels)
 
 
-func test_version_tag_is_0_2_0_from_data() -> void:
+func test_version_tag_is_0_3_0_from_data() -> void:
 	var title: TitleScreen = _make_title()
 	await tree.process_frame
-	assert_eq(str(DataDB.get_dict("text/title")["version"]), "v0.2.0")
-	assert_eq(title.get_version_text(), "v0.2.0")
+	assert_eq(str(DataDB.get_dict("text/title")["version"]), "v0.3.0")
+	assert_eq(title.get_version_text(), "v0.3.0")
 
 
-func test_the_three_menu_rows_fit_inside_the_menu_window() -> void:
+func test_the_menu_rows_fit_inside_the_menu_window() -> void:
 	var layout: Dictionary = DataDB.get_dict("ui/ui_theme")["title_screen"]
 	var window: Dictionary = layout["menu_window"]
-	var last_bottom: float = float(layout["menu_item_first_y"]) + 3.0 * float(layout["menu_item_step"])
+	var rows: int = (DataDB.get_dict("text/title")["menu"] as Array).size()
+	var last_bottom: float = float(layout["menu_item_first_y"]) + float(rows) * float(layout["menu_item_step"])
 	assert_le(last_bottom, float(window["h"]))
 	assert_le(float(window["y"]) + float(window["h"]), 197.0, "stays above the version and credit line")
 
@@ -154,7 +157,7 @@ func test_cursor_keys_move_through_the_picker_and_cancel_returns_to_the_menu() -
 	assert_false(title.get_picker().is_open())
 	await _wait(0.5)
 	assert_true(title.is_menu_ready(), "the menu window is back")
-	assert_eq(title.get_cursor_index(), 1, "the title cursor is still on Battle Test")
+	assert_eq(title.get_cursor_index(), title.get_item_ids().find("battle_test"), "the title cursor is still on Battle Test")
 
 
 func test_picking_emits_the_signal_with_the_right_id_after_the_fade() -> void:

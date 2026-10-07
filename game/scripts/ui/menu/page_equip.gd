@@ -34,6 +34,7 @@ func build() -> void:
 	_list.active = false
 	_list.activated.connect(_on_row_activated)
 	_list.cursor_moved.connect(_on_row_moved)
+	_column.select(str(menu.memory.get("equip.member", _column.selected_id())))
 	_member = _column.selected_id()
 	_load_slots()
 
@@ -81,6 +82,7 @@ func _load_slots() -> void:
 		rows.append({"id": slot, "label": menu.backend.item_name(item_id) if not item_id.is_empty() else str(menu.text["equip"]["none"]),
 				"enabled": true, "item": item_id})
 	_list.visible_rows = rows.size()
+	_list.text_x = int(_spec["slots"]["text_x"])
 	_list.set_items(rows, true)
 	_preview = {}
 	_canvas.queue_redraw()
@@ -90,13 +92,16 @@ func _load_slots() -> void:
 func _load_candidates() -> void:
 	var rows: Array[Dictionary] = []
 	var worn: Dictionary = menu.backend.equipped(_member)
-	if _is_removable(_slot) and not str(worn[_slot]).is_empty():
-		rows.append({"id": REMOVE_ID, "label": str(menu.text["equip"]["remove"]), "enabled": true})
 	for id: String in menu.backend.spare_gear(_slot):
 		var why: String = menu.backend.equip_reason(_member, _slot, id)
-		rows.append({"id": id, "label": menu.backend.item_name(id), "enabled": why.is_empty(), "reason": why,
-				"value": str(menu.text["equip"]["spare"]).replace("{n}", str(menu.backend.owned(id)))})
+		var row: Dictionary = {"id": id, "label": menu.backend.item_name(id), "enabled": why.is_empty(), "reason": why}
+		if menu.backend.owned(id) > 1:
+			row["value"] = str(menu.text["equip"]["spare"]).replace("{n}", str(menu.backend.owned(id)))
+		rows.append(row)
+	if _is_removable(_slot) and not str(worn[_slot]).is_empty():
+		rows.append({"id": REMOVE_ID, "label": str(menu.text["equip"]["remove"]), "enabled": true})
 	_list.visible_rows = int(_spec["slots"]["rows"])
+	_list.text_x = int(_spec["slots"]["text_x_items"])
 	_list.set_items(rows)
 	_update_preview()
 	menu.refresh_info()
@@ -119,7 +124,7 @@ func _draw_canvas(canvas: Control) -> void:
 	if _mode != Mode.ITEM:
 		var names: Dictionary = _slot_names()
 		for i: int in GearBridge.SLOTS.size():
-			var y: float = float(slots["y"]) + float(slots["first_y"]) + float(i) * float(slots["step"]) + 9.0
+			var y: float = float(slots["y"]) + float(slots["first_y"]) + float(i) * float(slots["step"]) + 11.0
 			UiText.draw(canvas, "tag", Vector2(float(slots["x"]) + float(_spec["tag_x"]), y), str(names[GearBridge.SLOTS[i]]), MenuDraw.color("text_dim"))
 	_draw_stats(canvas)
 
@@ -129,7 +134,7 @@ func _draw_stats(canvas: Control) -> void:
 	var x0: float = float(spec["x"])
 	var y0: float = float(spec["y"])
 	var step: float = float(spec["step"])
-	canvas.draw_rect(Rect2(x0 + 8.0, y0 - 6.0, 210.0 - 16.0, 1), MenuDraw.color("dusk"))
+	canvas.draw_rect(Rect2(x0 + 8.0, y0 - 4.0, float(_spec["slots"]["w"]) - 16.0, 1), MenuDraw.color("dusk"))
 	var now: Dictionary = menu.backend.stats(_member)
 	var names: Dictionary = menu.text["equip"]["stat_names"]
 	var row: int = 0
@@ -142,7 +147,7 @@ func _draw_stats(canvas: Control) -> void:
 			var next: int = int(_preview[key])
 			var direction: int = MenuDraw.direction_of(next, current)
 			if direction != MenuDraw.ARROW_SAME:
-				MenuDraw.arrow(canvas, Vector2i(int(x0 + float(spec["arrow_x"])), int(y) - 9), direction)
+				MenuDraw.arrow(canvas, Vector2i(int(x0 + float(spec["arrow_x"])), int(y) - 10), direction)
 				var tint: Color = MenuDraw.color("up") if direction > 0 else MenuDraw.color("down")
 				UiText.draw(canvas, "menu", Vector2(0, y), str(next), tint, HORIZONTAL_ALIGNMENT_RIGHT, x0 + float(spec["next_right"]))
 		row += 1
@@ -151,6 +156,9 @@ func _draw_stats(canvas: Control) -> void:
 # ---- flow ----
 
 func _on_member_moved(member_id: String) -> void:
+	if _mode != Mode.MEMBER:
+		return
+	menu.memory["equip.member"] = member_id
 	_member = member_id
 	_load_slots()
 
@@ -206,10 +214,12 @@ func _equip_row(row_id: String) -> void:
 
 
 func _back_to_slots() -> void:
+	var keep: String = _message
 	_mode = Mode.SLOT
 	_list.set_items([] as Array[Dictionary])
 	_load_slots()
 	_list.set_index(_slot_memory, false)
+	_message = keep
 	menu.refresh_info()
 
 

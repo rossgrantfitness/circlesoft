@@ -21,16 +21,21 @@ func refresh() -> void:
 		_footer.queue_redraw()
 
 
+## The numbers under the crew: {credits: "1,240", time: "1:23:00"}.
+func footer_text() -> Dictionary:
+	return {"credits": MenuDraw.format_number(menu.backend.credits()), "time": MenuDraw.format_time(menu.backend.play_time_s())}
+
+
 func _draw_footer(canvas: Control) -> void:
 	var spec: Dictionary = menu.layout["main_panel"]
 	var y: int = int(spec["footer_y"])
 	var strings: Dictionary = menu.text["side"]
 	canvas.draw_rect(Rect2(10, y - 12, canvas.size.x - 20, 1), MenuDraw.color("dusk"))
 	UiText.draw(canvas, "menu", Vector2(12, y + 2), str(strings["credits"]), MenuDraw.color("text_dim"))
-	UiText.draw(canvas, "menu", Vector2(0, y + 2), MenuDraw.format_number(menu.backend.credits()), MenuDraw.color("text"),
+	UiText.draw(canvas, "menu", Vector2(0, y + 2), str(footer_text()["credits"]), MenuDraw.color("text"),
 			HORIZONTAL_ALIGNMENT_RIGHT, 118.0)
 	UiText.draw(canvas, "menu", Vector2(146, y + 2), str(strings["time"]), MenuDraw.color("text_dim"))
-	UiText.draw(canvas, "menu", Vector2(0, y + 2), MenuDraw.format_time(menu.backend.play_time_s()), MenuDraw.color("text"),
+	UiText.draw(canvas, "menu", Vector2(0, y + 2), str(footer_text()["time"]), MenuDraw.color("text"),
 			HORIZONTAL_ALIGNMENT_RIGHT, canvas.size.x - 12.0)
 
 

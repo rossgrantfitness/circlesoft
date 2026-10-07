@@ -46,7 +46,9 @@ func _played_state() -> Node:
 func test_new_game_place_comes_from_data() -> void:
 	var state: Node = _make()
 	var start: Dictionary = DataDB.get_dict("world/save")["new_game"]
-	assert_eq(state.call("get_location"), {"room": start["room"], "spawn": start["spawn"]})
+	var start_room: String = str(DataDB.get_value("world/rooms", "start_room", start["room"]))
+	assert_eq(state.call("get_location")["room"], start_room, "a new game starts in the router's start room")
+	assert_false(str(state.call("get_location")["spawn"]).is_empty())
 	assert_eq(state.call("get_story_beat"), start["story_beat"])
 	assert_eq(state.call("get_play_time_s"), 0.0)
 	assert_eq(state.call("get_hero_name"), "Red")
@@ -191,8 +193,8 @@ func test_the_unversioned_pre_save_system_format_still_loads() -> void:
 	assert_eq(int(state.call("get_member", "red")["level"]), 4)
 	assert_eq(int(state.call("get_member", "red")["hp"]), 33)
 	assert_eq(state.call("get_party_ids"), ["red", "otis", "mox"] as Array[String])
-	var start: Dictionary = DataDB.get_dict("world/save")["new_game"]
-	assert_eq(state.call("get_location")["room"], start["room"], "old saves start at the new-game place")
+	var start_room: String = str(DataDB.get_value("world/rooms", "start_room", DataDB.get_dict("world/save")["new_game"]["room"]))
+	assert_eq(state.call("get_location")["room"], start_room, "old saves start at the new-game place")
 	assert_eq(state.call("get_play_time_s"), 0.0)
 	assert_eq(state.call("get_hero_name"), "Red")
 	assert_eq(int(state.call("to_dict")["save_version"]), int(state.call("save_version")), "re-saving writes the new version")

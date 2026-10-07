@@ -72,3 +72,46 @@ All four use the same command policy (from the tech plan): attack the weakest en
 - **The never-pressing player can't finish the slice** with this simple policy (it dies around fight 8 with no Defend and no shopping). Real players who skip Clutch will do better (Defend halves damage and widens windows), but if the slice should be finishable without pressing, soften enemy `attack` by about 15% or add a heal item to the start kit.
 - **The XP curve and enemy lists are test content.** Real placements come with Milestone 3 (the walkthrough order lives in feel_targets.json and is easy to change). Kasp needs his own tier ("boss": 300 to 480 s is already in the targets) and the cue-scramble pulse; the model already supports a scrambled cue (`shown_cue_ms`) and boss flags.
 - Fight time counts 2 s of menu per command as agreed; the HUD's real menu time will move these numbers (about +-20%).
+
+
+## M3-6 update: the same fights with gear (2,000 runs each)
+> Battle Programmer, 2026-10-07. The simulator now dresses the party in the gear from `feel_targets.json` `sim.gear`: the starting gear at level 1 to 2, the three shop weapons (Rebar Blade, Rivet Hammer, Pipe Wrench) from level 3, and a Padded Work Vest on Mox from level 5. `--no-gear` reproduces the tables above.
+
+**What changed in the numbers.** Starting gear alone made fights about a quarter shorter (regular fights dropped to 46 to 55 s against a 60 s floor), so **enemy HP went up 30%** (Signals Grunt 112 to 146, Signals Drone 83 to 108, Whistle Blower 160 to 208, Buzzkill Drone 105 to 136) and the Quota Ambush's HP scale went from 1.3 to 1.45. Attack, defense and everything else stayed. Every row below is inside the feel targets (`--check` passes).
+
+| Encounter | Level | Player | Win rate | Mean s | p10 s | p50 s | p90 s | Rounds | HP left (wins) | XP | Credits |
+| grunt_solo | 1 | perfect | 100.0% | 34 | 34 | 34 | 34 | 3.0 | 100% | 14 | 21 |
+| grunt_solo | 1 | good | 100.0% | 37 | 34 | 34 | 45 | 3.3 | 99% | 14 | 21 |
+| grunt_solo | 1 | auto | 100.0% | 46 | 45 | 46 | 46 | 4.0 | 94% | 14 | 21 |
+| grunt_solo | 1 | miss | 100.0% | 55 | 55 | 55 | 55 | 5.0 | 83% | 14 | 21 |
+| grunt_pair | 2 | perfect | 100.0% | 55 | 49 | 57 | 61 | 4.6 | 100% | 28 | 42 |
+| grunt_pair | 2 | good | 100.0% | 61 | 59 | 61 | 64 | 5.0 | 98% | 28 | 42 |
+| grunt_pair | 2 | auto | 100.0% | 79 | 73 | 74 | 88 | 6.4 | 87% | 28 | 42 |
+| grunt_pair | 2 | miss | 100.0% | 108 | 95 | 107 | 118 | 9.1 | 71% | 28 | 42 |
+| drone_flock | 3 | perfect | 100.0% | 64 | 61 | 64 | 66 | 5.0 | 100% | 50 | 76 |
+| drone_flock | 3 | good | 100.0% | 70 | 64 | 67 | 78 | 5.5 | 97% | 50 | 76 |
+| drone_flock | 3 | auto | 100.0% | 98 | 89 | 94 | 113 | 7.6 | 77% | 50 | 76 |
+| drone_flock | 3 | miss | 100.0% | 141 | 125 | 137 | 159 | 11.5 | 64% | 50 | 76 |
+| squad_four | 4 | perfect | 100.0% | 75 | 72 | 75 | 79 | 5.3 | 100% | 66 | 98 |
+| squad_four | 4 | good | 100.0% | 84 | 75 | 84 | 96 | 6.0 | 96% | 66 | 98 |
+| squad_four | 4 | auto | 100.0% | 127 | 116 | 128 | 140 | 8.9 | 78% | 66 | 98 |
+| squad_four | 4 | miss | 99.9% | 195 | 190 | 194 | 204 | 14.3 | 60% | 66 | 98 |
+| ambush_no_exit | 4 | perfect | 100.0% | 98 | 94 | 96 | 108 | 7.3 | 100% | 68 | 98 |
+| ambush_no_exit | 4 | good | 100.0% | 115 | 105 | 117 | 129 | 8.6 | 94% | 68 | 98 |
+| ambush_no_exit | 4 | auto | 100.0% | 183 | 159 | 184 | 211 | 13.8 | 71% | 68 | 98 |
+| ambush_no_exit | 4 | miss | 0.0% | 105 | 84 | 106 | 127 | 8.2 | 0% | 0 | 0 |
+
+### Walkthrough with gear (100 runs each)
+| Player | Result |
+|---|---|
+| perfect | 100% finish | level 6.0 | 1017 credits | 14.0 fights |
+| good | 100% finish | level 6.0 | 1017 credits | 14.0 fights |
+| auto | 100% finish | level 6.0 | 1017 credits | 14.0 fights |
+| miss | 0% finish | level 0.0 | 0 credits | 12.0 fights |
+
+Economy check (printed with `--walkthrough`): the three shop weapons cost 1,080 credits and both shop vests 480, against about 1,500 credits at Kasp (about 1,017 from battles plus crates and side jobs), so the player affords the weapons and a pocketful of Ration Bars (15 each) but not every vest as well. The check fails if that ever stops being true.
+
+**Things to know.**
+- The never-pressing player now wins almost every Full Signals Squad fight (99.9%, was 54%) because armor and weapons help them as much as anyone. It is inside the band (the floor is 30%, no ceiling), and Clutch still matters a lot: perfect play is 2.6x faster. If Ross wants more bite for never pressing, raise enemy attack rather than HP.
+- Gear does not touch Clutch timing; the windows are unchanged.
+- The Kasp fight is not in the data yet, so the shop weapons are only tuned against the five test encounters.

@@ -36,6 +36,8 @@ func _remove_dir(path: String) -> void:
 		return
 	for file_name: String in DirAccess.get_files_at(path):
 		DirAccess.remove_absolute(path.path_join(file_name))
+	for sub: String in DirAccess.get_directories_at(path):
+		_remove_dir(path.path_join(sub))
 	DirAccess.remove_absolute(path)
 
 

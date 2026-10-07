@@ -14,7 +14,9 @@ func build() -> void:
 	_canvas = menu.make_drawing(root, Vector2.ZERO, FieldMenu.PAGE_AREA.size, _draw_detail)
 	var column_at: Dictionary = _spec["column"]
 	_column = menu.make_member_column(root, MemberColumn.Style.COMPACT, Vector2(float(column_at["x"]), float(column_at["y"])))
-	_column.cursor_moved.connect(func(_id: String) -> void:
+	_column.select(str(menu.memory.get("status.member", _column.selected_id())))
+	_column.cursor_moved.connect(func(id: String) -> void:
+		menu.memory["status.member"] = id
 		_canvas.queue_redraw()
 		menu.refresh_info())
 	_column.picked.connect(func(_id: String) -> void: menu.audio.sfx("tick"))
@@ -106,21 +108,21 @@ func _draw_detail(canvas: Control) -> void:
 	for i: int in stat_keys.size():
 		var cx: float = x0 + float(cols[i % cols.size()])
 		var cy: float = float(rows[i / cols.size()])
-		UiText.draw(canvas, "menu", Vector2(cx, cy), str(names[stat_keys[i]]), dim)
-		UiText.draw(canvas, "menu", Vector2(0, cy), str(int(stats.get(stat_keys[i], 0))), white, HORIZONTAL_ALIGNMENT_RIGHT, cx + 62.0)
+		UiText.draw(canvas, "tag", Vector2(cx, cy), str(names[stat_keys[i]]), dim)
+		UiText.draw(canvas, "menu", Vector2(0, cy), str(int(stats.get(stat_keys[i], 0))), white, HORIZONTAL_ALIGNMENT_RIGHT, cx + float(_spec["stat_value_w"]))
 	var tag_x: float = x0 + float(_spec["tag_x"])
 	var value_x: float = x0 + float(_spec["value_x"])
 	var gear_rows: Array = _spec["gear_y"]
 	for i: int in GearBridge.SLOTS.size():
-		UiText.draw(canvas, "menu", Vector2(tag_x, float(gear_rows[i])), str(strings["gear"][GearBridge.SLOTS[i]]), dim)
+		UiText.draw(canvas, "tag", Vector2(tag_x, float(gear_rows[i])), str(strings["gear"][GearBridge.SLOTS[i]]), dim)
 		UiText.draw(canvas, "menu", Vector2(value_x, float(gear_rows[i])), str((info_now["gear"] as Dictionary)[GearBridge.SLOTS[i]]), white)
 	var skills_rows: Array = _spec["skills_y"]
-	UiText.draw(canvas, "menu", Vector2(tag_x, float(skills_rows[0])), str(strings["skills"]), dim)
+	UiText.draw(canvas, "tag", Vector2(tag_x, float(skills_rows[0])), str(strings["skills"]), dim)
 	var lines: PackedStringArray = _wrap_names(info_now["skills"], int(width - (value_x - x0)) - 4)
 	for i: int in mini(lines.size(), skills_rows.size()):
 		UiText.draw(canvas, "menu", Vector2(value_x, float(skills_rows[i])), lines[i], white)
 	var last_row: float = float(skills_rows[skills_rows.size() - 1]) + 13.0
-	UiText.draw(canvas, "menu", Vector2(tag_x, last_row), str(strings["condition"]), dim)
+	UiText.draw(canvas, "tag", Vector2(tag_x, last_row), str(strings["condition"]), dim)
 	var down: bool = int(who.get("hp", 0)) <= 0
 	UiText.draw(canvas, "menu", Vector2(value_x, last_row), str(info_now["condition"]), MenuDraw.color("down") if down else MenuDraw.color("good"))
 

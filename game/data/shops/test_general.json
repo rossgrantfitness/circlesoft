@@ -1,0 +1,21 @@
+{
+  "_about": "A general store: heals, Juice, revives, cures, Camp Stoves and throwables. `stock` lists item ids from data/items/items.json (prices come from there, so the shop, the sim and the sell-back price always agree). 'kind' is general or gear; a gear shop only lists ids from data/items/equipment.json. Placeholder shop for the test room; the real Harrow shops arrive with M3-4.",
+  "id": "test_general",
+  "name": "Corner Store",
+  "kind": "general",
+  "greeting": "Welcome! Mind the cat. Everything's priced to move.",
+  "stock": [
+    "ration_bar",
+    "can_of_chili",
+    "canned_coffee",
+    "juice_box",
+    "smelling_salts",
+    "burn_gel",
+    "appeal_form",
+    "ginger_chews",
+    "camp_stove",
+    "firecracker_string",
+    "hot_sauce_bomb",
+    "smoke_bomb"
+  ]
+}
