@@ -38,6 +38,12 @@ func mouse(event: InputEvent) -> bool:
 	return list != null and list.handle_mouse(event)
 
 
+## A raw input event before it is turned into a menu command (a page that listens for presses the
+## commands do not carry, like the Config screen's button capture). True when the page used it.
+func raw_event(_event: InputEvent) -> bool:
+	return false
+
+
 ## The list that tests and the default input drive.
 func primary_list() -> MenuList:
 	return null

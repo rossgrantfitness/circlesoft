@@ -217,6 +217,25 @@ func make_member_column(parent: Control, style: MemberColumn.Style, at: Vector2)
 	return column
 
 
+## The node pages may parent full-screen widgets on (above the windows).
+func get_frame() -> Control:
+	return _frame
+
+
+## Where an embedded Config screen sits: the side window and the info window together, in stage pixels.
+func config_screen_rect() -> Rect2:
+	var side: Dictionary = layout["side_window"]
+	var info: Dictionary = layout["info_window"]
+	return Rect2(float(side["x"]), float(side["y"]), float(side["w"]),
+			float(info["y"]) + float(info["h"]) - float(side["y"]))
+
+
+## Hides (or shows) the side window and the info window: the Config screen draws its own.
+func set_side_windows_visible(shown: bool) -> void:
+	_side_window.visible = shown
+	_info_window.visible = shown
+
+
 func state_node() -> Node:
 	return game_state if game_state != null else get_node_or_null(PATH_GAME_STATE)
 
@@ -452,6 +471,9 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventMouse:
 		if _handle_mouse(event):
 			get_viewport().set_input_as_handled()
+		return
+	if _page_obj != null and _page != PAGE_MAIN and _page_obj.raw_event(event):
+		get_viewport().set_input_as_handled()
 		return
 	var command: MenuInput.Cmd = _input_map.classify(event)
 	if command != MenuInput.Cmd.NONE:

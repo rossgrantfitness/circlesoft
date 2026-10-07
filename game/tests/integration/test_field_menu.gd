@@ -293,12 +293,36 @@ func test_the_save_spot_is_found_from_a_lamp_group_near_red() -> void:
 	assert_eq(menu.item_context(), "lamp")
 
 
-# ---- config ----
+# ---- config (the shared ConfigScreen, embedded) ----
+
+func _screen(menu: FieldMenu) -> ConfigScreen:
+	return (menu.get_page_object() as PageConfig).get_screen()
+
+
+func _go_to_config_row(menu: FieldMenu, row_id: String) -> void:
+	var screen: ConfigScreen = _screen(menu)
+	var index: int = screen.get_row_ids().find(row_id)
+	assert_ge(index, 0, "the Config screen has a %s row" % row_id)
+	screen.get_list().set_index(index, false)
+
+
+func test_config_page_embeds_the_shared_config_screen() -> void:
+	var menu: FieldMenu = _make()
+	_open_page(menu, 5)
+	assert_eq(menu.get_page(), "config")
+	var screen: ConfigScreen = _screen(menu)
+	assert_not_null(screen)
+	assert_true(screen.is_open())
+	assert_eq(menu.get_page_list(), screen.get_list())
+	var ids: Array[String] = screen.get_row_ids()
+	for id: String in ["auto_timing", "wide_windows", "timing_offset", "tap_along", "text_speed", "auto_advance", "skip_seen", "voice_volume", "controls"]:
+		assert_has(ids, id)
+
 
 func test_config_page_changes_the_settings_in_config() -> void:
 	var menu: FieldMenu = _make()
 	_open_page(menu, 5)
-	assert_eq(menu.get_page(), "config")
+	_go_to_config_row(menu, "text_speed")
 	assert_eq(_config.get("text_speed"), "normal")
 	menu.handle_command(MenuInput.Cmd.RIGHT)
 	assert_eq(_config.get("text_speed"), "fast")
@@ -307,64 +331,87 @@ func test_config_page_changes_the_settings_in_config() -> void:
 	menu.handle_command(MenuInput.Cmd.LEFT)
 	menu.handle_command(MenuInput.Cmd.LEFT)
 	assert_eq(_config.get("text_speed"), "slow")
-	menu.handle_command(MenuInput.Cmd.DOWN)
-	var before: float = _config.get("voice_volume")
-	menu.handle_command(MenuInput.Cmd.RIGHT)
-	assert_almost_eq(_config.get("voice_volume"), before + 0.1, 0.001)
-	menu.handle_command(MenuInput.Cmd.LEFT)
-	menu.handle_command(MenuInput.Cmd.LEFT)
-	assert_almost_eq(_config.get("voice_volume"), before - 0.1, 0.001)
-	menu.handle_command(MenuInput.Cmd.DOWN)
+	_go_to_config_row(menu, "auto_timing")
 	assert_false(_config.get("auto_timing"))
 	menu.handle_command(MenuInput.Cmd.CONFIRM)
 	assert_true(_config.get("auto_timing"), "confirm toggles")
 	menu.handle_command(MenuInput.Cmd.CONFIRM)
 	assert_false(_config.get("auto_timing"))
+	_go_to_config_row(menu, "voice_volume")
+	var before: float = _config.call("get_volume", "voice")
+	menu.handle_command(MenuInput.Cmd.LEFT)
+	assert_almost_eq(_config.call("get_volume", "voice"), before - 0.1, 0.001)
 
 
 func test_config_rows_show_the_current_values() -> void:
 	var menu: FieldMenu = _make()
 	_config.call("set_text_speed", "slow")
 	_open_page(menu, 5)
-	var rows: Array[Dictionary] = menu.get_page_list().get_items()
-	assert_eq(rows.size(), 5, "text speed, voice, Auto-Timing, Wide Windows, Timing Offset")
-	assert_true(str(rows[0]["value"]).contains("Slow"))
-	assert_true(str(rows[1]["value"]).contains("80"))
-	assert_true(str(rows[2]["value"]).contains("Off"))
-	assert_true(str(rows[3]["value"]).contains("Off"))
-	assert_true(str(rows[4]["value"]).contains("+0 ms"))
+	var screen: ConfigScreen = _screen(menu)
+	assert_eq(screen.get_row_value("text_speed"), "Slow")
+	assert_eq(screen.get_row_value("auto_timing"), "Off")
+	assert_eq(screen.get_row_value("timing_offset"), "0 ms")
 
 
-func test_leaving_the_config_page_saves_the_file() -> void:
+func test_backing_out_of_the_config_screen_saves_and_returns_to_the_main_list() -> void:
 	var menu: FieldMenu = _make()
 	_open_page(menu, 5)
+	_go_to_config_row(menu, "text_speed")
 	menu.handle_command(MenuInput.Cmd.RIGHT)
-	assert_false(FileAccess.file_exists(SCRATCH), "not written on every change")
 	menu.handle_command(MenuInput.Cmd.CANCEL)
+	assert_eq(menu.get_page(), "main")
 	assert_true(FileAccess.file_exists(SCRATCH))
 	var saved: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(SCRATCH))
 	assert_eq(saved["text_speed"], "fast")
+	assert_true(menu.is_open())
 
 
-func test_changing_a_setting_ticks_and_the_voice_slider_plays_a_sample() -> void:
+func test_the_menu_button_closes_everything_from_the_config_page_and_saves() -> void:
 	var menu: FieldMenu = _make()
 	_open_page(menu, 5)
-	menu.handle_command(MenuInput.Cmd.DOWN)
-	_audio.sfx_ids.clear()
-	menu.handle_command(MenuInput.Cmd.RIGHT)
-	assert_has(_audio.sfx_ids, "menu_tick")
-	assert_gt(_audio.voices.size(), 0, "a voice blip so you can hear the new volume")
+	_go_to_config_row(menu, "text_speed")
+	menu.handle_command(MenuInput.Cmd.LEFT)
+	menu.handle_command(MenuInput.Cmd.MENU)
+	assert_false(menu.is_open())
+	var saved: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(SCRATCH))
+	assert_eq(saved["text_speed"], "slow")
+
+
+func test_the_side_and_info_windows_come_back_after_config() -> void:
+	var menu: FieldMenu = _make()
+	_open_page(menu, 5)
+	assert_false(menu.get_node("Frame/SideWindow").visible, "the Config screen draws its own window")
+	assert_false(menu.get_node("Frame/InfoWindow").visible)
+	menu.handle_command(MenuInput.Cmd.CANCEL)
+	assert_true(menu.get_node("Frame/SideWindow").visible)
+	assert_true(menu.get_node("Frame/InfoWindow").visible)
+	assert_null(menu.get_node_or_null("Frame/ConfigScreen"), "the screen is gone")
+
+
+func test_a_config_sub_page_gets_raw_input_and_cancel_goes_back_one_level() -> void:
+	var menu: FieldMenu = _make()
+	_open_page(menu, 5)
+	var screen: ConfigScreen = _screen(menu)
+	_go_to_config_row(menu, "controls")
+	menu.handle_command(MenuInput.Cmd.CONFIRM)
+	assert_true(screen.is_busy(), "the Controls page is up")
+	menu.handle_command(MenuInput.Cmd.CANCEL)
+	assert_false(screen.is_busy())
+	assert_eq(menu.get_page(), "config", "cancel only left the sub-page")
 
 
 func test_text_speed_preview_types_out_at_the_chosen_speed() -> void:
 	var menu: FieldMenu = _make()
 	_open_page(menu, 5)
-	menu.tick(0.5)
-	var normal: int = menu.get_preview_text().length()
-	assert_gt(normal, 0)
+	_go_to_config_row(menu, "text_speed")
+	menu.handle_command(MenuInput.Cmd.RIGHT)  # restarts the preview at fast
+	menu.tick(0.2)
+	var fast: int = menu.get_preview_text().length()
+	assert_gt(fast, 0)
+	menu.handle_command(MenuInput.Cmd.LEFT)
 	menu.handle_command(MenuInput.Cmd.LEFT)  # slow
-	menu.tick(0.5)
-	assert_lt(menu.get_preview_text().length(), normal, "slow types fewer letters in the same time")
+	menu.tick(0.2)
+	assert_lt(menu.get_preview_text().length(), fast, "slow types fewer letters in the same time")
 
 
 # ---- mouse ----
