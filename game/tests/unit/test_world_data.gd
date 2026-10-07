@@ -10,6 +10,8 @@ func _items() -> Array[String]:
 	var ids: Array[String] = []
 	for entry: Dictionary in DataDB.get_dict("items/items")["items"]:
 		ids.append(str(entry["id"]))
+	for entry: Dictionary in DataDB.get_dict("items/equipment")["gear"]:
+		ids.append(str(entry["id"]))
 	return ids
 
 

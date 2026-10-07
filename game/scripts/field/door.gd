@@ -209,7 +209,7 @@ func _build() -> void:
 		label.outline_size = 10
 		label.modulate = Color(1.0, 0.95, 0.8)
 		label.outline_modulate = Color(0.05, 0.05, 0.1)
-		label.no_depth_test = false
+		label.no_depth_test = true
 		label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 		label.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
 		label.position = Vector3(0.0, size.y + 0.45 if door_style == "panel" else 1.0, 0.1)

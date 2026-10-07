@@ -109,7 +109,9 @@ func test_saving_into_an_empty_slot_just_saves() -> void:
 	assert_true(FileAccess.file_exists(_dir + "/slot_2.json"))
 	assert_eq(prompt.get_state(), SavePrompt.State.DONE)
 	assert_eq(prompt.get_hint(), "Saved. Lamp stays on.")
-	assert_true(prompt.get_list().get_items()[1]["label"].contains("Test Room"), "the row updates at once")
+	# A new game starts in rooms.json's start_room (Red's home in Harrow Landing), so that is the place saved.
+	var start_name: String = str(DataDB.get_value("world/rooms", "rooms.%s.name" % DataDB.get_value("world/rooms", "start_room")))
+	assert_true(prompt.get_list().get_items()[1]["label"].contains(start_name), "the row updates at once")
 	_press(prompt, Cmd.CONFIRM)
 	assert_eq(prompt.get_state(), SavePrompt.State.CLOSED)
 	assert_eq(closed, [2] as Array[int])

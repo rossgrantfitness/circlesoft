@@ -5,7 +5,7 @@
   "new_game": {
     "room": "test_room",
     "spawn": "PlayerSpawn",
-    "story_beat": "start"
+    "story_beat": "b1_night"
   },
   "lamp_check": {
     "skip_grace_s": 0.25,

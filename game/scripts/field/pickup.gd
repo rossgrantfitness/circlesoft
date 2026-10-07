@@ -13,6 +13,8 @@ var _clock: float = 0.0
 var _gem: MeshInstance3D = null
 var _spark: MeshInstance3D = null
 var _gone: bool = false
+## How high the gem floats (a pickup's data may say "lift": taller to clear a crate under it).
+var _lift: float = 0.0
 
 
 func _ready() -> void:
@@ -55,7 +57,7 @@ func step(delta: float) -> void:
 	if _gem == null:
 		return
 	var period: float = maxf(tuning.pickup_bob_period_s, 0.01)
-	_gem.position.y = tuning.pickup_lift + tuning.pickup_bob_height * sin(_clock * TAU / period)
+	_gem.position.y = _lift + tuning.pickup_bob_height * sin(_clock * TAU / period)
 	_gem.rotation.y = deg_to_rad(tuning.pickup_spin_deg_per_s) * _clock
 	_spark.visible = fmod(_clock, maxf(tuning.pickup_sparkle_period_s, 0.01)) < tuning.pickup_sparkle_period_s * 0.25
 	_spark.position = _gem.position + Vector3(0.12, 0.16, 0.0)
@@ -105,8 +107,9 @@ func _sfx() -> void:
 
 func _build_glint() -> void:
 	var size: float = tuning.pickup_size
+	_lift = float(pickup_data().get("lift", tuning.pickup_lift))
 	_gem = PropLook.box(Vector3(size, size, size), PropLook.glow(Color(1.0, 0.85, 0.3), 1.4), "Glint")
-	_gem.position.y = tuning.pickup_lift
+	_gem.position.y = _lift
 	_gem.rotation = Vector3(deg_to_rad(35.0), 0.0, deg_to_rad(35.0))
 	add_child(_gem)
 	_spark = PropLook.box(Vector3(size * 0.45, size * 0.45, size * 0.45), PropLook.glow(Color(1.0, 1.0, 0.85), 2.0), "Spark")

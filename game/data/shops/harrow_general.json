@@ -1,0 +1,20 @@
+{
+  "_about": "Harrow Landing's general store (M3-4). Placeholder stock: heals, Juice, cures, a Camp Stove and throwables. Prices come from items.json.",
+  "id": "harrow_general",
+  "name": "Harrow General",
+  "kind": "general",
+  "greeting": "Welcome! Everything's cans, mostly. Mind the ones that rattle.",
+  "stock": [
+    "ration_bar",
+    "can_of_chili",
+    "canned_coffee",
+    "juice_box",
+    "smelling_salts",
+    "burn_gel",
+    "ginger_chews",
+    "camp_stove",
+    "firecracker_string",
+    "hot_sauce_bomb",
+    "smoke_bomb"
+  ]
+}

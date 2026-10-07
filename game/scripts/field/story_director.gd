@@ -43,6 +43,7 @@ var _running: bool = false
 var _waiting_battle: bool = false
 var _background: int = 0
 var _held_player: bool = false
+var _gone: bool = false
 
 
 func setup(p_room: FieldRoom) -> void:
@@ -70,6 +71,10 @@ func _physics_process(_delta: float) -> void:
 		if should_start(scene_id):
 			run_scene(scene_id)
 			return
+
+
+func _exit_tree() -> void:
+	_gone = true
 
 
 func is_running() -> bool:
@@ -131,6 +136,8 @@ func _play(scene_id: String) -> void:
 		var entry: Dictionary = step
 		if Conditions.met(entry.get("if", {}), game_state):
 			await _do(entry)
+		if _gone:
+			return
 	while _background > 0:
 		await get_tree().physics_frame
 	if room.party != null:
@@ -197,11 +204,21 @@ func _say(conversation_id: String) -> void:
 		push_warning("StoryDirector: no conversation '%s'" % conversation_id)
 		return
 	var waited: int = 0
-	while runner.is_running() and waited < MAX_WAIT_FRAMES:
+	while runner.is_running() and waited < MAX_WAIT_FRAMES and is_inside_tree():
 		await get_tree().physics_frame
 		waited += 1
+	if not is_inside_tree():
+		return
 	if room.interactor.start_conversation(conversation_id):
 		await runner.conversation_finished
+		if _gone or not is_inside_tree():
+			return
+		# The runner hands Red back a couple of frames after the last line: wait for that, or it would
+		# hand back the frozen state we set (and she would stay frozen after the scene).
+		waited = 0
+		while runner.is_in_group(UiStage.MODAL_GROUP) and waited < MAX_WAIT_FRAMES:
+			await get_tree().physics_frame
+			waited += 1
 
 
 func _battle(step: Dictionary) -> void:
@@ -242,12 +259,16 @@ func _face(step: Dictionary) -> void:
 		node.call("face_direction", point - node.global_position)
 
 
-## Looks an actor up by name: a node in the room, "red", or "follower:<member id>".
+## Looks an actor up by name: a placed townsperson (by placement id), any node in the room (by node
+## name), "red", or "follower:<member id>".
 func actor(actor_name: String) -> Node3D:
 	if actor_name == "red":
 		return room.player
 	if actor_name.begins_with("follower:"):
 		return room.party.follower_for(actor_name.substr("follower:".length())) if room.party != null else null
+	for node: Node in room.find_children("*", "Node3D", true, false):
+		if node is PlacedNpc and (node as PlacedNpc).placement_id == actor_name:
+			return node as Node3D
 	return room.find_child(actor_name, true, false) as Node3D
 
 

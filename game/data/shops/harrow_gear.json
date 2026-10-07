@@ -1,0 +1,16 @@
+{
+  "_about": "Harrow Landing's junk-and-gear shop (M3-4). The three shop weapons (one each for Red, Otis and Mox: Mox's is on sale before he joins), two vests and two charms. Earplugs and the Lucky Bolt are found or earned in town, so they are not sold here.",
+  "id": "harrow_gear",
+  "name": "Scrap & Dent",
+  "kind": "gear",
+  "greeting": "Everything here has been hit with a hammer. Some of it twice.",
+  "stock": [
+    "rebar_blade",
+    "rivet_hammer",
+    "pipe_wrench",
+    "padded_work_vest",
+    "hi_vis_vest",
+    "oven_mitts",
+    "sore_loser_patch"
+  ]
+}

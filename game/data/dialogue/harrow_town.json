@@ -1,0 +1,681 @@
+{
+  "_about": "PLACEHOLDER lines for Harrow Landing (M3-4): short, goofy stand-ins until the Writer's M6-2 pass. Locked: the bridge lamp examine line (harrow_ex_bridge_lamp) is the story bible's own wording. Townsfolk speak as crowd_* ids (plain box). Lines change by story beat through the 'variants' of each NPC in data/world/placements.json (b1_night, b2_otis_joined, b3_home_again).",
+  "conversations": {
+    "harrow_bettor_b1": [
+      {
+        "speaker": "crowd_bettor",
+        "text": "Two to one says Kasp cracks first. Watch Zero never cracks. They're made of thermos."
+      },
+      {
+        "speaker": "crowd_bettor",
+        "text": "Care to bet, courier? ...No? Smart. I'd lose it."
+      }
+    ],
+    "harrow_bettor_b2": [
+      {
+        "speaker": "crowd_bettor",
+        "text": "A courier and a bear beat Kasp's whole crew?! I have to REWRITE THE BOARD."
+      },
+      {
+        "speaker": "crowd_bettor",
+        "text": "Chalk is expensive, you know."
+      }
+    ],
+    "harrow_bettor_b3": [
+      {
+        "speaker": "crowd_bettor",
+        "text": "Paying out. All of it. Everybody bet on you and NOBODY TOLD ME."
+      },
+      {
+        "speaker": "crowd_bettor",
+        "text": "I'm fine. I'm very fine. Here's your... nothing. Go away."
+      }
+    ],
+    "harrow_neighbor_b1": [
+      {
+        "speaker": "crowd_neighbor",
+        "text": "Your lamp's lit again, Red. Ten years, every night. I set my clock by it."
+      }
+    ],
+    "harrow_neighbor_b2": [
+      {
+        "speaker": "crowd_neighbor",
+        "text": "Heard the docks got loud. Loud docks, lit lamp. Typical Thursday."
+      }
+    ],
+    "harrow_neighbor_b3": [
+      {
+        "speaker": "crowd_neighbor",
+        "text": "Look up. Every window's lit tonight."
+      }
+    ],
+    "harrow_snack_b1": [
+      {
+        "speaker": "crowd_snack_seller",
+        "text": "Half price if you're not wearing headphones. ...You're not. Full price! Kidding. Kind of."
+      }
+    ],
+    "harrow_snack_b2": [
+      {
+        "speaker": "crowd_snack_seller",
+        "text": "Sold out. The Signals stress-eat. Who knew a ticket book was so hungry work?"
+      }
+    ],
+    "harrow_gate_shut": [
+      {
+        "speaker": "crowd_dockhand",
+        "text": "Docks are shut, Red. Signals business. Unless you've got a pickup slip?"
+      }
+    ],
+    "harrow_gate_open": [
+      {
+        "speaker": "crowd_dockhand",
+        "text": "That's a slip, all right. Go on down. I didn't see anything."
+      }
+    ],
+    "harrow_legend_square": [
+      {
+        "speaker": "crowd_barfly",
+        "text": "...and Red flattened FIFTY troopers! With a LAMP!"
+      },
+      {
+        "speaker": "red",
+        "gesture": "head_shake"
+      },
+      {
+        "speaker": "narrator",
+        "text": "(Red holds up three fingers. Then two more. Then flexes.)"
+      },
+      {
+        "speaker": "crowd_barfly",
+        "text": "Five?! Even better! A legend!"
+      }
+    ],
+    "harrow_ex_lamp_post": [
+      {
+        "speaker": "narrator",
+        "text": "The public lamp post. Tall, warm, and slightly crooked. The bulb hums a little song."
+      }
+    ],
+    "harrow_ex_bets_b1": [
+      {
+        "speaker": "narrator",
+        "text": "A chalkboard of bets. KASP VS WATCH ZERO: WHO CRACKS FIRST. Odds are mostly crossed out."
+      }
+    ],
+    "harrow_ex_bets_b2": [
+      {
+        "speaker": "narrator",
+        "text": "The bets board has been rewritten in a hurry. COURIER AND A BEAR: 1 to 1."
+      }
+    ],
+    "harrow_ex_bets_b3": [
+      {
+        "speaker": "narrator",
+        "text": "PAID OUT, says the board, in angry capitals."
+      }
+    ],
+    "harrow_ex_notice": [
+      {
+        "speaker": "sign",
+        "text": "QUIET HOURS ARE HAPPY HOURS. Signals Corps thanks you for your silence."
+      },
+      {
+        "speaker": "sign",
+        "text": "(Someone drew a mustache on Kasp. Someone else drew a bigger one.)"
+      }
+    ],
+    "harrow_window_dark": [
+      {
+        "speaker": "narrator",
+        "text": "The one dark window on the square. A lamp sits on the sill, empty and cold."
+      }
+    ],
+    "harrow_window_done": [
+      {
+        "speaker": "narrator",
+        "text": "The window glows. Somebody inside is humming."
+      }
+    ],
+    "harrow_window_light": [
+      {
+        "speaker": "narrator",
+        "text": "Red pours in the lamp oil, taps the glass twice, and lights the lamp."
+      },
+      {
+        "speaker": "red",
+        "gesture": "thumbs_up"
+      },
+      {
+        "speaker": "narrator",
+        "text": "The dark window glows. Every window on the square is lit."
+      }
+    ],
+    "harrow_window_reward": [
+      {
+        "speaker": "narrator",
+        "text": "Something shiny has appeared on the sill. Payment, apparently."
+      }
+    ],
+    "harrow_dock_1": [
+      {
+        "speaker": "kasp",
+        "text": "Quiet hours are happy hours, dockhands! Ticket for you. Ticket for you. Ticket for the crate!"
+      },
+      {
+        "speaker": "crowd_grunt",
+        "text": "Boss, that crate is just standing there."
+      },
+      {
+        "speaker": "kasp",
+        "text": "STANDING IS A NOISE. Write it up."
+      },
+      {
+        "speaker": "red",
+        "gesture": "exclaim"
+      }
+    ],
+    "harrow_dock_2": [
+      {
+        "speaker": "otis",
+        "text": "Sorry to interrupt, friend. These are my dockhands. They're a bit shy of tickets."
+      },
+      {
+        "speaker": "kasp",
+        "text": "Dockmaster! A bear in the way of the law. Grunts, ticket him!"
+      },
+      {
+        "speaker": "red",
+        "gesture": "exclaim"
+      },
+      {
+        "speaker": "otis",
+        "text": "Mm. She's already swinging. I'll have to catch up."
+      }
+    ],
+    "harrow_dock_3": [
+      {
+        "speaker": "kasp",
+        "text": "This isn't over! I'm... circling back. Circling! Right now! Wheeee!"
+      },
+      {
+        "speaker": "otis",
+        "text": "Well. That was loud. Mind if I tag along, friend?"
+      },
+      {
+        "speaker": "otis",
+        "text": "The crate's in my office. And my hammer's been bored all week."
+      },
+      {
+        "speaker": "red",
+        "gesture": "thumbs_up"
+      }
+    ],
+    "harrow_dock_kasp_idle": [
+      {
+        "speaker": "crowd_grunt",
+        "text": "Not now. We're busy being awful."
+      }
+    ],
+    "harrow_dock_hand_a_b1": [
+      {
+        "speaker": "crowd_dockhand",
+        "text": "Please don't make noise. Please don't make noise..."
+      }
+    ],
+    "harrow_dock_hand_a_b2": [
+      {
+        "speaker": "crowd_dockhand",
+        "text": "You flattened them! ...Mostly. Otis helped. Thanks, anyway!"
+      }
+    ],
+    "harrow_dock_hand_a_b3": [
+      {
+        "speaker": "crowd_dockhand",
+        "text": "I'll never forget it. Well. I'll forget the details. Great fight, though."
+      }
+    ],
+    "harrow_dock_hand_b_b1": [
+      {
+        "speaker": "crowd_dockhand_b",
+        "text": "They wrote me a ticket for 'standing near a crate'."
+      }
+    ],
+    "harrow_dock_hand_b_b2": [
+      {
+        "speaker": "crowd_dockhand_b",
+        "text": "I'm framing my ticket. 'Standing near a crate.' Best day of my career."
+      }
+    ],
+    "harrow_dock_hand_b_b3": [
+      {
+        "speaker": "crowd_dockhand_b",
+        "text": "We reenact the fight on lunch break. I'm the crate. It's a lot of pressure."
+      }
+    ],
+    "harrow_pell_b1": [
+      {
+        "speaker": "crowd_pell",
+        "text": "Shh! I'm trying to look like a crate."
+      }
+    ],
+    "harrow_pell_b2": [
+      {
+        "speaker": "crowd_pell",
+        "text": "Thanks for the save, Red. Pick up work at the courier board? I know about paperwork."
+      }
+    ],
+    "harrow_pell_b3": [
+      {
+        "speaker": "crowd_pell",
+        "text": "Reenact the fight? Sure. I'll be Kasp. Ticket, ticket, ticket..."
+      }
+    ],
+    "harrow_pell_form": [
+      {
+        "speaker": "crowd_pell",
+        "text": "Appeal Form! Signals hands out tickets, but never tell you they come with forms."
+      },
+      {
+        "speaker": "crowd_pell",
+        "text": "Drop it in the APPEALS slot at the checkpoint booth. In triplicate. Well, once. It's a start.",
+        "give_item": "side_job_parcel",
+        "set_flag": "job_appeal_form_got"
+      }
+    ],
+    "harrow_pell_go": [
+      {
+        "speaker": "crowd_pell",
+        "text": "Booth slot, checkpoint. Don't fold it. They hate it when you fold it."
+      }
+    ],
+    "harrow_pell_done": [
+      {
+        "speaker": "crowd_pell",
+        "text": "Filed! They said the appeal is important to them. Ha! First time anyone's said that to me."
+      }
+    ],
+    "harrow_ex_crane": [
+      {
+        "speaker": "narrator",
+        "text": "A crane. It's been 'out of service' for as long as anyone remembers. A sign says so, repeatedly."
+      }
+    ],
+    "harrow_ex_tide": [
+      {
+        "speaker": "narrator",
+        "text": "A tide board, chalked by hand. HIGH: later. LOW: earlier. WET: always."
+      }
+    ],
+    "harrow_ex_roster_window": [
+      {
+        "speaker": "narrator",
+        "text": "A window into Otis's office. A roster board hangs on the wall, every name in neat chalk."
+      }
+    ],
+    "harrow_cp_ticket": [
+      {
+        "speaker": "crowd_grunt",
+        "text": "That's a wind chime. Wind chimes are noise. That's a noise ticket."
+      },
+      {
+        "speaker": "crowd_chime_fan",
+        "text": "It's a CHIME! It's for the WIND!"
+      },
+      {
+        "speaker": "crowd_grunt",
+        "text": "Forty credits. Next."
+      }
+    ],
+    "harrow_cp_grunt": [
+      {
+        "speaker": "crowd_grunt",
+        "text": "Road's closed. Signals business. Move along."
+      }
+    ],
+    "harrow_cp_otis_1": [
+      {
+        "speaker": "otis",
+        "text": "Barrier's stuck, friend. Let me see... there."
+      },
+      {
+        "speaker": "narrator",
+        "text": "(Otis lifts the boom barrier and props it open.)"
+      }
+    ],
+    "harrow_cp_otis_2": [
+      {
+        "speaker": "otis",
+        "text": "Mostly structural."
+      }
+    ],
+    "harrow_cp_fan_a_b1": [
+      {
+        "speaker": "crowd_chime_fan",
+        "text": "They ticketed my chime. A chime! It's got feelings."
+      }
+    ],
+    "harrow_cp_fan_a_b2": [
+      {
+        "speaker": "crowd_chime_fan",
+        "text": "They just LEFT! Radioed up the tower! I can hang my chime up!"
+      }
+    ],
+    "harrow_cp_fan_a_b3": [
+      {
+        "speaker": "crowd_chime_fan",
+        "text": "Chime's back up. Hear that? Neither do I. It's too quiet. I love it."
+      }
+    ],
+    "harrow_cp_fan_b_b1": [
+      {
+        "speaker": "crowd_grumbler",
+        "text": "Forty credits for a ding. Forty! My ding's not worth forty."
+      }
+    ],
+    "harrow_cp_fan_b_b2": [
+      {
+        "speaker": "crowd_grumbler",
+        "text": "Didn't even say goodbye. Rude. I'd have said goodbye."
+      }
+    ],
+    "harrow_cp_fan_b_b3": [
+      {
+        "speaker": "crowd_grumbler",
+        "text": "I hung up my chimes. All twelve. The neighbors are thrilled."
+      }
+    ],
+    "harrow_cp_fan_c_b1": [
+      {
+        "speaker": "crowd_chime_kid",
+        "text": "Don't tell them I have a kazoo."
+      }
+    ],
+    "harrow_cp_fan_c_b2": [
+      {
+        "speaker": "crowd_chime_kid",
+        "text": "KAZOO! KAZOO! KAZOO!"
+      }
+    ],
+    "harrow_cp_fan_c_b3": [
+      {
+        "speaker": "crowd_chime_kid",
+        "text": "Kazoo recital at dawn. Everyone's invited. Everyone's afraid."
+      }
+    ],
+    "harrow_ex_poster": [
+      {
+        "speaker": "sign",
+        "text": "QUIET HOURS ARE HAPPY HOURS! (Kasp's face smiles from every corner, slightly too close.)"
+      }
+    ],
+    "harrow_appeal_empty": [
+      {
+        "speaker": "sign",
+        "text": "APPEALS. Please insert an appeal. Your appeal is important to us."
+      }
+    ],
+    "harrow_appeal_drop": [
+      {
+        "speaker": "narrator",
+        "text": "Red slides the form into the APPEALS slot."
+      },
+      {
+        "speaker": "sign",
+        "text": "Your appeal is important to us. Please hold. Forever."
+      },
+      {
+        "speaker": "crowd_pell",
+        "text": "It's in! I saw it go in! From the arch!"
+      }
+    ],
+    "harrow_appeal_paid": [
+      {
+        "speaker": "narrator",
+        "text": "Pell jogs over, beaming, and hands Red a handful of credits and two spare forms."
+      }
+    ],
+    "harrow_appeal_done": [
+      {
+        "speaker": "sign",
+        "text": "Your appeal has been appealed. Thank you for your patience. (It was not needed.)"
+      }
+    ],
+    "harrow_intro": [
+      {
+        "speaker": "narrator",
+        "text": "Harrow Landing. Night. Every window on Lamp Square is lit but one."
+      },
+      {
+        "speaker": "narrator",
+        "text": "Red's lamp has burned in this window for ten years. Tap the glass twice, then get to work."
+      },
+      {
+        "speaker": "narrator",
+        "text": "(The courier office is next door. Press the button at things to use them.)"
+      }
+    ],
+    "harrow_home_again": [
+      {
+        "speaker": "narrator",
+        "text": "Home again. The lamp is still on."
+      },
+      {
+        "speaker": "narrator",
+        "text": "(PLACEHOLDER: the Writer will give the end of the slice its real line.)"
+      }
+    ],
+    "harrow_ex_tally": [
+      {
+        "speaker": "narrator",
+        "text": "A wall of tally marks. One for every night the lamp has burned."
+      }
+    ],
+    "harrow_ex_photo": [
+      {
+        "speaker": "narrator",
+        "text": "A photo on the shelf. A woman in a flight jacket, waving at whoever took it."
+      }
+    ],
+    "harrow_ex_charts": [
+      {
+        "speaker": "narrator",
+        "text": "Mom's old flight charts, pinned to the wall. Red can't read them. She traces the lines anyway."
+      }
+    ],
+    "harrow_dispatcher_b1": [
+      {
+        "speaker": "crowd_dispatcher",
+        "text": "You're late! Job's on the board! A crate night, I'm told, and I'm told lots of things!"
+      },
+      {
+        "speaker": "crowd_dispatcher",
+        "text": "Read the board. Take a job. Don't touch the stamp."
+      }
+    ],
+    "harrow_dispatcher_b2": [
+      {
+        "speaker": "crowd_dispatcher",
+        "text": "Crate picked up? Then why are you still standing here?"
+      }
+    ],
+    "harrow_dispatcher_b3": [
+      {
+        "speaker": "crowd_dispatcher",
+        "text": "*STAMP* DONE. I have waited all day to do that."
+      }
+    ],
+    "harrow_sleeper": [
+      {
+        "speaker": "crowd_sleeping_courier",
+        "text": "...zzz... not my shift... zzz..."
+      }
+    ],
+    "harrow_store_b1": [
+      {
+        "speaker": "crowd_shopkeeper",
+        "text": "Watch Zero bought every thermos in the shop. Every. Single. One. I've got nothing to put coffee in."
+      }
+    ],
+    "harrow_store_b2": [
+      {
+        "speaker": "crowd_shopkeeper",
+        "text": "I heard about the fight! Tell me everything. Start with my favorite part."
+      }
+    ],
+    "harrow_store_clerk": [
+      {
+        "speaker": "crowd_clerk",
+        "text": "Antacids. For nerves. Signals gave me a ticket quota. It's very stressful, being awful."
+      }
+    ],
+    "harrow_gear_b1": [
+      {
+        "speaker": "crowd_welder",
+        "text": "That's a sword, kid? That's a butter knife with confidence."
+      }
+    ],
+    "harrow_gear_b2": [
+      {
+        "speaker": "crowd_welder",
+        "text": "Heard you dented a Signals helmet. Want a better dent-maker?"
+      }
+    ],
+    "harrow_ex_gear_sign": [
+      {
+        "speaker": "sign",
+        "text": "ASK ABOUT THE WICKED AWESOME. (We don't have it. Ask anyway.)"
+      }
+    ],
+    "harrow_ex_bridge_lamp_alone": [
+      {
+        "speaker": "narrator",
+        "text": "A rusty ship's bridge lamp sits on Otis's desk."
+      }
+    ],
+    "harrow_ex_bridge_lamp": [
+      {
+        "speaker": "narrator",
+        "text": "A rusty ship's bridge lamp sits on Otis's desk."
+      },
+      {
+        "speaker": "otis",
+        "text": "Came off a hull I hauled for the Navy. Somebody'd left it on."
+      }
+    ],
+    "harrow_ex_roster": [
+      {
+        "speaker": "narrator",
+        "text": "A roster board. Every dockhand's name in chalk, in Otis's careful hand."
+      }
+    ],
+    "harrow_ex_coughdrops": [
+      {
+        "speaker": "narrator",
+        "text": "A dented tin of cough drops. One left. Otis is saving it."
+      }
+    ],
+    "harrow_office_chime": [
+      {
+        "speaker": "otis",
+        "text": "Crate's by the door, friend."
+      }
+    ],
+    "harrow_bar_keeper_b1": [
+      {
+        "speaker": "crowd_bartender",
+        "text": "Tonight's special is an argument. Everyone's having one."
+      }
+    ],
+    "harrow_bar_keeper_b2": [
+      {
+        "speaker": "crowd_bartender",
+        "text": "First round's on the house. Don't tell the Signals. Or my accountant."
+      }
+    ],
+    "harrow_fly_a_b1": [
+      {
+        "speaker": "crowd_barfly_a",
+        "text": "The Zeroes are sitting in a tower. For fun. They bring snacks."
+      }
+    ],
+    "harrow_fly_a_b2": [
+      {
+        "speaker": "crowd_barfly_a",
+        "text": "Heard Red flattened 'bout ten of 'em. Or eleven. Math's hard."
+      }
+    ],
+    "harrow_fly_b_b1": [
+      {
+        "speaker": "crowd_barfly_b",
+        "text": "My cousin hears a call from the tower. Louder every night. She says it's humming."
+      }
+    ],
+    "harrow_fly_b_b2": [
+      {
+        "speaker": "crowd_barfly_b",
+        "text": "The call's louder since the fight. Coincidence? Probably. I've been drinking."
+      }
+    ],
+    "harrow_fly_c_b1": [
+      {
+        "speaker": "crowd_barfly_c",
+        "text": "I'd tell you a rumor, but I can't hear myself over the call."
+      }
+    ],
+    "harrow_fly_c_b3": [
+      {
+        "speaker": "crowd_barfly_c",
+        "text": "Fifty troopers. FLATTENED. Don't let anyone tell you forty-nine."
+      }
+    ],
+    "harrow_legend_bar": [
+      {
+        "speaker": "crowd_barfly_c",
+        "text": "...and then Red flattened FIFTY troopers! All at once! With a LAMP!"
+      },
+      {
+        "speaker": "red",
+        "gesture": "head_shake"
+      },
+      {
+        "speaker": "narrator",
+        "text": "(Red holds up three fingers. Then two more. Then flexes.)"
+      },
+      {
+        "speaker": "crowd_barfly_c",
+        "text": "Five! Even better! Somebody write it down!"
+      }
+    ],
+    "harrow_old_dark": [
+      {
+        "speaker": "crowd_old_barfly",
+        "text": "My lamp's out. Spent the oil money on bets. Don't tell anyone. ...Everyone knows."
+      }
+    ],
+    "harrow_old_done": [
+      {
+        "speaker": "crowd_old_barfly",
+        "text": "Lamp's lit. ...That was you, wasn't it? The Kincaid kid. Quiet thanks, kid."
+      }
+    ],
+    "harrow_ex_bar_bets_b1": [
+      {
+        "speaker": "narrator",
+        "text": "THE BETS BOARD. KASP VS ZERO. RAIN BY MORNING: 50 to 1. A drawing of a duck has been added."
+      }
+    ],
+    "harrow_ex_bar_bets_b2": [
+      {
+        "speaker": "narrator",
+        "text": "THE BETS BOARD, REDRAWN. COURIER AND BEAR: 1 to 1. KASP: 100 to 1. RAIN: 50 to 1."
+      }
+    ],
+    "harrow_ex_bar_bets_b3": [
+      {
+        "speaker": "narrator",
+        "text": "THE BETS BOARD. Everything is crossed out. A new line reads: PAID. (Sorry.)"
+      }
+    ]
+  }
+}

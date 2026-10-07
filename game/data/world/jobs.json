@@ -1,0 +1,93 @@
+{
+  "_about": "The courier office's job board (JobBoard). Each job: board (which board), order, title, taken_flag / done_flag, description (shown before taking), take {text, give_items, set_flags}, taken_text (reminder), done_text. Placeholder text until the Writer's M6-2 pass. The main job is finished at the tower (M4); the two side deliveries finish in town: 'The dark window' when the lamp is lit on Lamp Square, 'Appeal in triplicate' when the form is dropped in the checkpoint's APPEALS slot (scenes dark_window_light and appeal_deliver in story_scenes.json).",
+  "text": {
+    "menu": "JOB BOARD. Pick one.",
+    "tag_available": "",
+    "tag_taken": "- taken",
+    "tag_done": "- DONE"
+  },
+  "jobs": {
+    "main": {
+      "board": "cr_board",
+      "order": 1,
+      "title": "Main: Crate to the Tower",
+      "taken_flag": "job_main_taken",
+      "done_flag": "job_main_done",
+      "description": [
+        "MAIN JOB. One crate, from Otis's dock office to the Old Relay Tower.",
+        "Ordered by Watch Zero. Supplies for the sit-in. Thermoses, cushions. Do not ask."
+      ],
+      "take": {
+        "text": "Job taken. Courier Job Slip in hand. Otis's dock office is down the stairs.",
+        "give_items": [
+          {
+            "item": "courier_job_slip",
+            "count": 1
+          }
+        ],
+        "set_flags": [
+          "job_main_taken"
+        ]
+      },
+      "taken_text": [
+        "Crate, one, from Otis's dock office to the Old Relay Tower. Why are you still reading?"
+      ],
+      "done_text": [
+        "Crate delivered. Stamped DONE."
+      ]
+    },
+    "dark_window": {
+      "board": "cr_board",
+      "order": 2,
+      "title": "Side: The dark window",
+      "taken_flag": "job_dark_window_taken",
+      "done_flag": "job_dark_window_done",
+      "description": [
+        "SIDE JOB. Lamp oil, one can, to the dark window on Lamp Square. Tonight.",
+        "Pay: a Lucky Bolt and 100 credits."
+      ],
+      "take": {
+        "text": "Oil can handed over. It's the one dark window on the square.",
+        "give_items": [
+          {
+            "item": "side_job_parcel",
+            "count": 1
+          }
+        ],
+        "set_flags": [
+          "job_dark_window_taken"
+        ]
+      },
+      "taken_text": [
+        "Lamp oil to the dark window on Lamp Square. Hop the crates up to the little balcony."
+      ],
+      "done_text": [
+        "Window's lit. Stamped DONE. Pay's on the sill."
+      ]
+    },
+    "appeal": {
+      "board": "cr_board",
+      "order": 3,
+      "title": "Side: Appeal in triplicate",
+      "taken_flag": "job_appeal_taken",
+      "done_flag": "job_appeal_done",
+      "description": [
+        "SIDE JOB. Collect a form from Pell at the docks. Deliver it to the checkpoint.",
+        "Pay: 150 credits and two Appeal Forms."
+      ],
+      "take": {
+        "text": "Job taken. Pell's on the docks.",
+        "give_items": [],
+        "set_flags": [
+          "job_appeal_taken"
+        ]
+      },
+      "taken_text": [
+        "Get the form from Pell at the docks. Drop it in the checkpoint's APPEALS slot."
+      ],
+      "done_text": [
+        "Appeal filed, in triplicate. Stamped DONE."
+      ]
+    }
+  }
+}

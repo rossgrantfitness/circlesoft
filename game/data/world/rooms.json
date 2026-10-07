@@ -1,25 +1,130 @@
 {
-  "_about": "Every room the SceneRouter can load. 'scene' is the room scene, 'spawns' lists the named spawn markers inside it (a Marker3D under the room's Spawns node, or a child of the room root), 'default_spawn' is where go_to(room) with no spawn puts Red. 'fade' is the dithered fade to black and back when rooms change (seconds for each half, and how many dither steps). Doors, save locations and the new-game start refer to these ids. Add Harrow Landing's rooms here as they are built.",
-  "fade": {"out_s": 0.24, "in_s": 0.24, "steps": 8},
-  "start_room": "test_room",
+  "_about": "Every room the SceneRouter can load. 'scene' is the room scene, 'spawns' lists the named spawn markers inside it (a Marker3D under the room's Spawns node, or a child of the room root), 'default_spawn' is where go_to(room) with no spawn puts Red. 'fade' is the dithered fade to black and back when rooms change (seconds for each half, and how many dither steps). Doors, save locations and the new-game start refer to these ids. Add Harrow Landing's rooms here as they are built. Harrow Landing (M3-4): the nine rooms of docs/maps/harrow_landing.md. 'start_room' is where New Game begins (Red's home). road_mast_road is a stub until M4-1 builds the road.",
+  "fade": {
+    "out_s": 0.24,
+    "in_s": 0.24,
+    "steps": 8
+  },
+  "start_room": "harrow_home",
   "rooms": {
     "test_room": {
       "name": "Test Room",
       "scene": "res://scenes/debug/psx_test_room.tscn",
-      "spawns": ["PlayerSpawn", "from_yard", "LampSpawn"],
+      "spawns": [
+        "PlayerSpawn",
+        "from_yard",
+        "LampSpawn"
+      ],
       "default_spawn": "PlayerSpawn"
     },
     "test_a": {
       "name": "Test Yard A",
       "scene": "res://scenes/rooms/test_a.tscn",
-      "spawns": ["start", "from_b", "from_vault"],
+      "spawns": [
+        "start",
+        "from_b",
+        "from_vault"
+      ],
       "default_spawn": "start"
     },
     "test_b": {
       "name": "Test Yard B",
       "scene": "res://scenes/rooms/test_b.tscn",
-      "spawns": ["from_a", "vault"],
+      "spawns": [
+        "from_a",
+        "vault"
+      ],
       "default_spawn": "from_a"
+    },
+    "harrow_home": {
+      "name": "Red's Home",
+      "scene": "res://scenes/rooms/harrow/harrow_home.tscn",
+      "spawns": [
+        "start",
+        "from_square"
+      ],
+      "default_spawn": "start"
+    },
+    "harrow_square": {
+      "name": "Lamp Square",
+      "scene": "res://scenes/rooms/harrow/harrow_square.tscn",
+      "spawns": [
+        "from_home",
+        "from_courier",
+        "from_store",
+        "from_gear",
+        "from_checkpoint",
+        "from_docks",
+        "from_debug"
+      ],
+      "default_spawn": "from_home"
+    },
+    "harrow_courier": {
+      "name": "Courier Office",
+      "scene": "res://scenes/rooms/harrow/harrow_courier.tscn",
+      "spawns": [
+        "from_square"
+      ],
+      "default_spawn": "from_square"
+    },
+    "harrow_store": {
+      "name": "General Store",
+      "scene": "res://scenes/rooms/harrow/harrow_store.tscn",
+      "spawns": [
+        "from_square"
+      ],
+      "default_spawn": "from_square"
+    },
+    "harrow_gear": {
+      "name": "Gear Shop",
+      "scene": "res://scenes/rooms/harrow/harrow_gear.tscn",
+      "spawns": [
+        "from_square"
+      ],
+      "default_spawn": "from_square"
+    },
+    "harrow_docks": {
+      "name": "The Docks",
+      "scene": "res://scenes/rooms/harrow/harrow_docks.tscn",
+      "spawns": [
+        "from_square",
+        "from_dock_office",
+        "from_bar"
+      ],
+      "default_spawn": "from_square"
+    },
+    "harrow_dock_office": {
+      "name": "Otis's Dock Office",
+      "scene": "res://scenes/rooms/harrow/harrow_dock_office.tscn",
+      "spawns": [
+        "from_docks"
+      ],
+      "default_spawn": "from_docks"
+    },
+    "harrow_bar": {
+      "name": "The Long Wait",
+      "scene": "res://scenes/rooms/harrow/harrow_bar.tscn",
+      "spawns": [
+        "from_docks"
+      ],
+      "default_spawn": "from_docks"
+    },
+    "harrow_checkpoint": {
+      "name": "Signals Checkpoint",
+      "scene": "res://scenes/rooms/harrow/harrow_checkpoint.tscn",
+      "spawns": [
+        "from_square",
+        "from_road"
+      ],
+      "default_spawn": "from_square"
+    },
+    "road_mast_road": {
+      "name": "The Mast Road (to be built, M4-1)",
+      "scene": "res://scenes/rooms/road/road_mast_road.tscn",
+      "spawns": [
+        "from_harrow"
+      ],
+      "default_spawn": "from_harrow"
     }
   }
 }

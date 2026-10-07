@@ -1,0 +1,358 @@
+{
+  "_about": "Placeholder story scenes for Harrow Landing (played by StoryDirector, scripts/field/story_director.gd; the real cutscene system is M6-3). A scene: room, trigger {on: enter, spawn?, area?}, if, once (flag set when it starts), freeze (default true), steps. Steps: say, move {actor, to [x, z], speed, wait}, face, wait {s}, show, hide, set_flag, clear_flag, give_item, take_item, credits, beat, battle {encounter, first_turn}, join {member, at}. Every step may carry its own 'if'. Beats: b1_night, b2_otis_joined, b3_home_again.",
+  "scenes": {
+    "intro_home": {
+      "room": "harrow_home",
+      "steps": [
+        {
+          "do": "say",
+          "conversation": "harrow_intro"
+        }
+      ],
+      "trigger": {
+        "on": "enter",
+        "spawn": [
+          "start"
+        ]
+      },
+      "if": {
+        "beat": [
+          "b1_night"
+        ]
+      },
+      "once": "intro_seen"
+    },
+    "home_again": {
+      "room": "harrow_home",
+      "steps": [
+        {
+          "do": "say",
+          "conversation": "harrow_home_again"
+        }
+      ],
+      "trigger": {
+        "on": "enter"
+      },
+      "if": {
+        "beat": [
+          "b3_home_again"
+        ]
+      },
+      "once": "home_again_seen"
+    },
+    "mox_cameo": {
+      "room": "harrow_square",
+      "steps": [
+        {
+          "do": "show",
+          "actor": "sq_mox_cameo"
+        },
+        {
+          "do": "move",
+          "actor": "sq_mox_cameo",
+          "to": [
+            12.5,
+            4.0
+          ],
+          "speed": 6.0
+        },
+        {
+          "do": "move",
+          "actor": "sq_mox_cameo",
+          "to": [
+            10.5,
+            11.6
+          ],
+          "speed": 6.0
+        },
+        {
+          "do": "hide",
+          "actor": "sq_mox_cameo"
+        }
+      ],
+      "trigger": {
+        "on": "enter",
+        "spawn": [
+          "from_home"
+        ]
+      },
+      "if": {
+        "beat": [
+          "b1_night"
+        ]
+      },
+      "once": "mox_cameo_seen",
+      "freeze": false
+    },
+    "dark_window_light": {
+      "room": "harrow_square",
+      "steps": [
+        {
+          "do": "say",
+          "conversation": "harrow_window_light"
+        },
+        {
+          "do": "take_item",
+          "item": "side_job_parcel",
+          "count": 1
+        },
+        {
+          "do": "set_flag",
+          "flag": "job_dark_window_done"
+        },
+        {
+          "do": "wait",
+          "s": 0.6
+        },
+        {
+          "do": "say",
+          "conversation": "harrow_window_reward"
+        }
+      ]
+    },
+    "dock_scene": {
+      "room": "harrow_docks",
+      "steps": [
+        {
+          "do": "say",
+          "conversation": "harrow_dock_1"
+        },
+        {
+          "do": "show",
+          "actor": "dk_otis"
+        },
+        {
+          "do": "move",
+          "actor": "dk_otis",
+          "to": [
+            9.6,
+            2.4
+          ],
+          "speed": 3.5
+        },
+        {
+          "do": "say",
+          "conversation": "harrow_dock_2"
+        },
+        {
+          "do": "battle",
+          "encounter": "dock_ambush",
+          "first_turn": "party"
+        },
+        {
+          "do": "set_flag",
+          "flag": "dock_fight_won"
+        },
+        {
+          "do": "set_flag",
+          "flag": "otis_joined"
+        },
+        {
+          "do": "beat",
+          "beat": "b2_otis_joined"
+        },
+        {
+          "do": "say",
+          "conversation": "harrow_dock_3"
+        },
+        {
+          "do": "move",
+          "actor": "dk_kasp",
+          "to": [
+            12.0,
+            0.8
+          ],
+          "speed": 4.0,
+          "wait": false
+        },
+        {
+          "do": "move",
+          "actor": "dk_grunt_a",
+          "to": [
+            11.4,
+            0.8
+          ],
+          "speed": 4.0,
+          "wait": false
+        },
+        {
+          "do": "move",
+          "actor": "dk_grunt_b",
+          "to": [
+            12.6,
+            0.8
+          ],
+          "speed": 4.0
+        },
+        {
+          "do": "hide",
+          "actor": "dk_kasp"
+        },
+        {
+          "do": "hide",
+          "actor": "dk_grunt_a"
+        },
+        {
+          "do": "hide",
+          "actor": "dk_grunt_b"
+        },
+        {
+          "do": "join",
+          "member": "otis",
+          "at": "dk_otis"
+        },
+        {
+          "do": "hide",
+          "actor": "dk_otis"
+        }
+      ],
+      "trigger": {
+        "on": "enter",
+        "spawn": [
+          "from_square"
+        ]
+      },
+      "if": {
+        "beat": [
+          "b1_night"
+        ],
+        "not_flag": "dock_fight_won"
+      },
+      "once": "dock_scene_seen"
+    },
+    "checkpoint_b1": {
+      "room": "harrow_checkpoint",
+      "steps": [
+        {
+          "do": "say",
+          "conversation": "harrow_cp_ticket"
+        }
+      ],
+      "trigger": {
+        "on": "enter",
+        "spawn": [
+          "from_square"
+        ]
+      },
+      "if": {
+        "beat": [
+          "b1_night"
+        ]
+      },
+      "once": "checkpoint_b1_seen"
+    },
+    "checkpoint_barrier": {
+      "room": "harrow_checkpoint",
+      "steps": [
+        {
+          "do": "move",
+          "actor": "follower:otis",
+          "to": [
+            10.0,
+            1.6
+          ],
+          "speed": 3.5
+        },
+        {
+          "do": "say",
+          "conversation": "harrow_cp_otis_1"
+        },
+        {
+          "do": "set_flag",
+          "flag": "checkpoint_open"
+        },
+        {
+          "do": "wait",
+          "s": 1.0
+        },
+        {
+          "do": "say",
+          "conversation": "harrow_cp_otis_2"
+        }
+      ],
+      "trigger": {
+        "on": "enter",
+        "spawn": [
+          "from_square"
+        ]
+      },
+      "if": {
+        "beat": [
+          "b2_otis_joined"
+        ],
+        "flag": "otis_joined",
+        "not_flag": "checkpoint_open"
+      },
+      "once": "checkpoint_b2_seen"
+    },
+    "appeal_deliver": {
+      "room": "harrow_checkpoint",
+      "steps": [
+        {
+          "do": "say",
+          "conversation": "harrow_appeal_drop"
+        },
+        {
+          "do": "take_item",
+          "item": "side_job_parcel",
+          "count": 1
+        },
+        {
+          "do": "set_flag",
+          "flag": "job_appeal_done"
+        },
+        {
+          "do": "credits",
+          "amount": 150
+        },
+        {
+          "do": "give_item",
+          "item": "appeal_form",
+          "count": 2
+        },
+        {
+          "do": "say",
+          "conversation": "harrow_appeal_paid"
+        }
+      ]
+    },
+    "office_chime": {
+      "room": "harrow_dock_office",
+      "steps": [
+        {
+          "do": "say",
+          "conversation": "harrow_office_chime"
+        }
+      ],
+      "trigger": {
+        "on": "enter"
+      },
+      "if": {
+        "beat": [
+          "b2_otis_joined"
+        ],
+        "not_item": "delivery_crate",
+        "not_opened": "do_crate"
+      },
+      "once": "office_chime_seen"
+    },
+    "legend_gag_bar": {
+      "room": "harrow_bar",
+      "steps": [
+        {
+          "do": "say",
+          "conversation": "harrow_legend_bar"
+        }
+      ]
+    },
+    "legend_gag_square": {
+      "room": "harrow_square",
+      "steps": [
+        {
+          "do": "say",
+          "conversation": "harrow_legend_square"
+        }
+      ]
+    }
+  }
+}

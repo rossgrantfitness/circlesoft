@@ -1,36 +1,1508 @@
 {
-  "_about": "What stands in each room besides the scenery: pickups, crates, doors and map enemies. The room scene holds the position and the node (its 'placement_id' is the key here); this file holds the contents and the rules, so loot, locks and patrols can change without touching a scene. 'room' is the room id from rooms.json (a test checks the scene really has the node). Opened crates and taken pickups are remembered by id through GameState (mark_opened / is_opened), so they stay taken after a save and load. pickups: item + count and/or credits. crates: items [{item, count}] and/or credits, 'style' is supply (gray Hegemony), chalk (a Coldrunner stash) or wood. doors: to_room + to_spawn; 'requires' is {item, consume, flag}: an item and/or a flag that must be held, 'consume' takes the item the first time; 'locked_message' is what Red reads when it is locked, 'unlocked_message' plays the first time the key works. enemies: enemy is an id in battle/enemies.json (its model and its 'field' speeds), encounter is an id in battle/encounters.json, kind is regular (comes back when you re-enter the room), story or boss (stay beaten: 'defeat_flag' is set on a win), patrol is a list of [x, y, z] offsets from where the enemy stands in the scene.",
+  "_about": "What stands in each room besides the scenery: pickups, crates, doors and map enemies. The room scene holds the position and the node (its 'placement_id' is the key here); this file holds the contents and the rules, so loot, locks and patrols can change without touching a scene. 'room' is the room id from rooms.json (a test checks the scene really has the node). Opened crates and taken pickups are remembered by id through GameState (mark_opened / is_opened), so they stay taken after a save and load. pickups: item + count and/or credits. crates: items [{item, count}] and/or credits, 'style' is supply (gray Hegemony), chalk (a Coldrunner stash) or wood. doors: to_room + to_spawn; 'requires' is {item, consume, flag}: an item and/or a flag that must be held, 'consume' takes the item the first time; 'locked_message' is what Red reads when it is locked, 'unlocked_message' plays the first time the key works. enemies: enemy is an id in battle/enemies.json (its model and its 'field' speeds), encounter is an id in battle/encounters.json, kind is regular (comes back when you re-enter the room), story or boss (stay beaten: 'defeat_flag' is set on a win), patrol is a list of [x, y, z] offsets from where the enemy stands in the scene. More sections: npcs (a townsperson: speaker id, look, appear_if / hidden, variants by story beat), spots (examine / use spots with variants). Any pickup may carry show_if (a Conditions dictionary) and message_extra (one more line after 'Got X!'); doors may carry width, style (panel / mat / arch) and label.",
   "pickups": {
-    "test_a_ration": {"room": "test_a", "item": "ration_bar", "count": 1},
-    "test_a_ledge_credits": {"room": "test_a", "credits": 25},
-    "test_b_coffee": {"room": "test_b", "item": "canned_coffee", "count": 2}
+    "test_a_ration": {
+      "room": "test_a",
+      "item": "ration_bar",
+      "count": 1
+    },
+    "test_a_ledge_credits": {
+      "room": "test_a",
+      "credits": 25
+    },
+    "test_b_coffee": {
+      "room": "test_b",
+      "item": "canned_coffee",
+      "count": 2
+    },
+    "hm_pantry": {
+      "room": "harrow_home",
+      "item": "ration_bar",
+      "count": 2
+    },
+    "dk_chili": {
+      "room": "harrow_docks",
+      "item": "can_of_chili",
+      "count": 2
+    },
+    "dk_pier_coffee": {
+      "room": "harrow_docks",
+      "item": "canned_coffee",
+      "count": 2
+    },
+    "br_jukebox": {
+      "room": "harrow_bar",
+      "item": "ginger_chews",
+      "count": 2
+    },
+    "do_crate": {
+      "room": "harrow_dock_office",
+      "item": "delivery_crate",
+      "count": 1,
+      "message_extra": "A tiny scratch on the lid: MOX WUZ HERE. Kids.",
+      "lift": 1.25
+    },
+    "sq_window_reward": {
+      "room": "harrow_square",
+      "item": "lucky_bolt",
+      "count": 1,
+      "credits": 100,
+      "show_if": {
+        "flag": "job_dark_window_done"
+      }
+    }
   },
   "crates": {
-    "test_a_key_crate": {"room": "test_a", "style": "supply", "items": [{"item": "kasp_access_card", "count": 1}]},
-    "test_b_fence_crate": {"room": "test_b", "style": "chalk", "items": [{"item": "juice_box", "count": 1}], "credits": 15},
-    "test_b_empty_crate": {"room": "test_b", "style": "wood"}
+    "test_a_key_crate": {
+      "room": "test_a",
+      "style": "supply",
+      "items": [
+        {
+          "item": "kasp_access_card",
+          "count": 1
+        }
+      ]
+    },
+    "test_b_fence_crate": {
+      "room": "test_b",
+      "style": "chalk",
+      "items": [
+        {
+          "item": "juice_box",
+          "count": 1
+        }
+      ],
+      "credits": 15
+    },
+    "test_b_empty_crate": {
+      "room": "test_b",
+      "style": "wood"
+    },
+    "sq_alley_stash": {
+      "room": "harrow_square",
+      "style": "chalk",
+      "items": [
+        {
+          "item": "smoke_bomb",
+          "count": 1
+        }
+      ],
+      "credits": 60
+    },
+    "cp_bin": {
+      "room": "harrow_checkpoint",
+      "style": "wood",
+      "items": [
+        {
+          "item": "earplugs",
+          "count": 1
+        }
+      ]
+    }
   },
   "doors": {
-    "test_room_to_yard": {"room": "test_room", "to_room": "test_a", "to_spawn": "start"},
-    "test_a_to_test_room": {"room": "test_a", "to_room": "test_room", "to_spawn": "from_yard"},
-    "test_a_to_b": {"room": "test_a", "to_room": "test_b", "to_spawn": "from_a"},
+    "test_room_to_yard": {
+      "room": "test_room",
+      "to_room": "test_a",
+      "to_spawn": "start"
+    },
+    "test_a_to_test_room": {
+      "room": "test_a",
+      "to_room": "test_room",
+      "to_spawn": "from_yard"
+    },
+    "test_a_to_b": {
+      "room": "test_a",
+      "to_room": "test_b",
+      "to_spawn": "from_a"
+    },
     "test_a_vault": {
-      "room": "test_a", "to_room": "test_b", "to_spawn": "vault",
-      "requires": {"item": "kasp_access_card", "consume": false},
+      "room": "test_a",
+      "to_room": "test_b",
+      "to_spawn": "vault",
+      "requires": {
+        "item": "kasp_access_card",
+        "consume": false
+      },
       "locked_message": "Signals access only.\nThe reader wants a card.",
       "unlocked_message": "The reader blinks green. Kasp's face on\nthe card looks smug about it."
     },
-    "test_b_to_a": {"room": "test_b", "to_room": "test_a", "to_spawn": "from_b"},
-    "test_b_vault_exit": {"room": "test_b", "to_room": "test_a", "to_spawn": "from_vault"}
+    "test_b_to_a": {
+      "room": "test_b",
+      "to_room": "test_a",
+      "to_spawn": "from_b"
+    },
+    "test_b_vault_exit": {
+      "room": "test_b",
+      "to_room": "test_a",
+      "to_spawn": "from_vault"
+    },
+    "sq_to_courier": {
+      "room": "harrow_square",
+      "to_room": "harrow_courier",
+      "to_spawn": "from_square",
+      "label": "COURIER"
+    },
+    "sq_to_store": {
+      "room": "harrow_square",
+      "to_room": "harrow_store",
+      "to_spawn": "from_square",
+      "label": "STORE"
+    },
+    "sq_to_gear": {
+      "room": "harrow_square",
+      "to_room": "harrow_gear",
+      "to_spawn": "from_square",
+      "label": "GEAR"
+    },
+    "sq_to_home": {
+      "room": "harrow_square",
+      "to_room": "harrow_home",
+      "to_spawn": "from_square",
+      "label": "HOME"
+    },
+    "sq_to_checkpoint": {
+      "room": "harrow_square",
+      "to_room": "harrow_checkpoint",
+      "to_spawn": "from_square",
+      "width": 3.0,
+      "style": "arch",
+      "label": "GATE"
+    },
+    "sq_to_docks": {
+      "room": "harrow_square",
+      "to_room": "harrow_docks",
+      "to_spawn": "from_square",
+      "width": 3.0,
+      "style": "mat",
+      "label": "DOCKS",
+      "requires": {
+        "flag": "job_main_taken"
+      },
+      "locked_message": "Docks are shut, Red. Signals business.\nUnless you've got a pickup slip?"
+    },
+    "sq_to_test_room": {
+      "room": "harrow_square",
+      "to_room": "test_room",
+      "to_spawn": "PlayerSpawn",
+      "label": "DEBUG"
+    },
+    "test_room_to_harrow": {
+      "room": "test_room",
+      "to_room": "harrow_square",
+      "to_spawn": "from_debug"
+    },
+    "hm_to_square": {
+      "room": "harrow_home",
+      "to_room": "harrow_square",
+      "to_spawn": "from_home",
+      "style": "mat"
+    },
+    "cr_to_square": {
+      "room": "harrow_courier",
+      "to_room": "harrow_square",
+      "to_spawn": "from_courier",
+      "style": "mat"
+    },
+    "st_to_square": {
+      "room": "harrow_store",
+      "to_room": "harrow_square",
+      "to_spawn": "from_store",
+      "style": "mat"
+    },
+    "gr_to_square": {
+      "room": "harrow_gear",
+      "to_room": "harrow_square",
+      "to_spawn": "from_gear",
+      "style": "mat"
+    },
+    "dk_to_square": {
+      "room": "harrow_docks",
+      "to_room": "harrow_square",
+      "to_spawn": "from_docks",
+      "width": 3.0,
+      "style": "mat",
+      "label": "SQUARE"
+    },
+    "dk_to_office": {
+      "room": "harrow_docks",
+      "to_room": "harrow_dock_office",
+      "to_spawn": "from_docks",
+      "label": "OTIS"
+    },
+    "dk_to_bar": {
+      "room": "harrow_docks",
+      "to_room": "harrow_bar",
+      "to_spawn": "from_docks",
+      "label": "BAR"
+    },
+    "do_to_docks": {
+      "room": "harrow_dock_office",
+      "to_room": "harrow_docks",
+      "to_spawn": "from_dock_office",
+      "style": "mat"
+    },
+    "br_to_docks": {
+      "room": "harrow_bar",
+      "to_room": "harrow_docks",
+      "to_spawn": "from_bar",
+      "style": "mat"
+    },
+    "cp_to_square": {
+      "room": "harrow_checkpoint",
+      "to_room": "harrow_square",
+      "to_spawn": "from_checkpoint",
+      "width": 3.0,
+      "style": "mat"
+    },
+    "cp_to_road": {
+      "room": "harrow_checkpoint",
+      "to_room": "road_mast_road",
+      "to_spawn": "from_harrow",
+      "width": 3.0,
+      "style": "arch",
+      "label": "ROAD",
+      "requires": {
+        "flag": "checkpoint_open"
+      },
+      "locked_message": "Road's closed. Signals business."
+    },
+    "road_to_checkpoint": {
+      "room": "road_mast_road",
+      "to_room": "harrow_checkpoint",
+      "to_spawn": "from_road",
+      "label": "HARROW"
+    }
   },
   "enemies": {
     "test_a_grunt": {
-      "room": "test_a", "enemy": "signals_grunt", "encounter": "grunt_pair", "kind": "regular",
-      "patrol": [[0, 0, 0], [4.5, 0, 0], [4.5, 0, 2.5], [0, 0, 2.5]]
+      "room": "test_a",
+      "enemy": "signals_grunt",
+      "encounter": "grunt_pair",
+      "kind": "regular",
+      "patrol": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4.5,
+          0,
+          0
+        ],
+        [
+          4.5,
+          0,
+          2.5
+        ],
+        [
+          0,
+          0,
+          2.5
+        ]
+      ]
     },
     "test_b_guard": {
-      "room": "test_b", "enemy": "whistle_blower", "encounter": "grunt_solo", "kind": "story",
-      "defeat_flag": "defeated_test_b_guard", "patrol": []
+      "room": "test_b",
+      "enemy": "whistle_blower",
+      "encounter": "grunt_solo",
+      "kind": "story",
+      "defeat_flag": "defeated_test_b_guard",
+      "patrol": []
+    }
+  },
+  "npcs": {
+    "sq_bettor": {
+      "room": "harrow_square",
+      "speaker": "crowd_bettor",
+      "look": {
+        "body": "#8a6f4a",
+        "head": "#d6b48a",
+        "accessory": {
+          "shape": "box",
+          "color": "#3b3b44",
+          "size": [
+            0.5,
+            0.12,
+            0.46
+          ],
+          "pos": [
+            0,
+            1.02,
+            0.02
+          ]
+        }
+      },
+      "variants": [
+        {
+          "if": {
+            "beat": [
+              "b1_night"
+            ]
+          },
+          "conversation": "harrow_bettor_b1"
+        },
+        {
+          "if": {
+            "beat": [
+              "b2_otis_joined"
+            ]
+          },
+          "conversation": "harrow_bettor_b2"
+        },
+        {
+          "if": {
+            "beat": [
+              "b3_home_again"
+            ]
+          },
+          "conversation": "harrow_bettor_b3"
+        },
+        {
+          "conversation": "harrow_bettor_b2"
+        }
+      ]
+    },
+    "sq_neighbor": {
+      "room": "harrow_square",
+      "speaker": "crowd_neighbor",
+      "look": {
+        "body": "#9a8a9e",
+        "head": "#e0c2a4",
+        "accessory": {
+          "shape": "sphere",
+          "color": "#c8b0d0",
+          "size": [
+            0.18
+          ],
+          "pos": [
+            0,
+            1.0,
+            0
+          ]
+        }
+      },
+      "variants": [
+        {
+          "if": {
+            "beat": [
+              "b1_night"
+            ]
+          },
+          "conversation": "harrow_neighbor_b1"
+        },
+        {
+          "if": {
+            "beat": [
+              "b2_otis_joined"
+            ]
+          },
+          "conversation": "harrow_neighbor_b2"
+        },
+        {
+          "if": {
+            "beat": [
+              "b3_home_again"
+            ]
+          },
+          "conversation": "harrow_neighbor_b3"
+        },
+        {
+          "conversation": "harrow_neighbor_b2"
+        }
+      ]
+    },
+    "sq_snack": {
+      "room": "harrow_square",
+      "speaker": "crowd_snack_seller",
+      "look": {
+        "body": "#2a2a35",
+        "head": "#c9a67e",
+        "accessory": {
+          "shape": "sphere",
+          "color": "#e8a838",
+          "size": [
+            0.09
+          ],
+          "pos": [
+            0.3,
+            0.45,
+            0.12
+          ]
+        }
+      },
+      "variants": [
+        {
+          "if": {
+            "beat": [
+              "b1_night"
+            ]
+          },
+          "conversation": "harrow_snack_b1"
+        },
+        {
+          "conversation": "harrow_snack_b2"
+        }
+      ]
+    },
+    "sq_dockhand": {
+      "room": "harrow_square",
+      "speaker": "crowd_dockhand",
+      "look": {
+        "body": "#d9792a",
+        "head": "#e3b48c",
+        "accessory": {
+          "shape": "sphere",
+          "color": "#e8d34a",
+          "size": [
+            0.2
+          ],
+          "pos": [
+            0,
+            1.0,
+            0
+          ]
+        }
+      },
+      "variants": [
+        {
+          "if": {
+            "beat": [
+              "b1_night"
+            ],
+            "flag": "job_main_taken"
+          },
+          "conversation": "harrow_gate_open",
+          "move_to": [
+            8.2,
+            10.2
+          ]
+        },
+        {
+          "if": {
+            "beat": [
+              "b1_night"
+            ]
+          },
+          "conversation": "harrow_gate_shut"
+        }
+      ],
+      "appear_if": {
+        "beat": [
+          "b1_night"
+        ]
+      }
+    },
+    "sq_mox_cameo": {
+      "room": "harrow_square",
+      "speaker": "mox",
+      "look": {
+        "model": "res://art/placeholder/characters/mox/chr_mox.glb",
+        "radius": 0.4,
+        "height": 1.2
+      },
+      "variants": [
+        {
+          "conversation": "harrow_gate_shut"
+        }
+      ],
+      "hidden": true
+    },
+    "sq_legend_barfly": {
+      "room": "harrow_square",
+      "speaker": "crowd_barfly",
+      "look": {
+        "body": "#7d6a58",
+        "head": "#d8b894",
+        "accessory": {
+          "shape": "sphere",
+          "color": "#a04a3a",
+          "size": [
+            0.16
+          ],
+          "pos": [
+            0,
+            1.0,
+            0
+          ]
+        }
+      },
+      "variants": [
+        {
+          "scene": "legend_gag_square"
+        }
+      ],
+      "appear_if": {
+        "beat": [
+          "b3_home_again"
+        ]
+      }
+    },
+    "dk_kasp": {
+      "room": "harrow_docks",
+      "speaker": "kasp",
+      "look": {
+        "model": "res://art/placeholder/enemies/grunt_variant/enm_grunt_variant.glb",
+        "scale": 1.2,
+        "radius": 0.5,
+        "height": 1.5
+      },
+      "variants": [
+        {
+          "conversation": "harrow_dock_kasp_idle"
+        }
+      ],
+      "appear_if": {
+        "beat": [
+          "b1_night"
+        ],
+        "not_flag": "dock_fight_won"
+      }
+    },
+    "dk_grunt_a": {
+      "room": "harrow_docks",
+      "speaker": "crowd_grunt",
+      "look": {
+        "model": "res://art/placeholder/enemies/signals_grunt/enm_signals_grunt.glb",
+        "radius": 0.4,
+        "height": 1.4
+      },
+      "variants": [
+        {
+          "conversation": "harrow_dock_kasp_idle"
+        }
+      ],
+      "appear_if": {
+        "beat": [
+          "b1_night"
+        ],
+        "not_flag": "dock_fight_won"
+      }
+    },
+    "dk_grunt_b": {
+      "room": "harrow_docks",
+      "speaker": "crowd_grunt_b",
+      "look": {
+        "model": "res://art/placeholder/enemies/signals_grunt/enm_signals_grunt.glb",
+        "radius": 0.4,
+        "height": 1.4
+      },
+      "variants": [
+        {
+          "conversation": "harrow_dock_kasp_idle"
+        }
+      ],
+      "appear_if": {
+        "beat": [
+          "b1_night"
+        ],
+        "not_flag": "dock_fight_won"
+      }
+    },
+    "dk_otis": {
+      "room": "harrow_docks",
+      "speaker": "otis",
+      "look": {
+        "model": "res://art/placeholder/characters/otis/chr_otis.glb",
+        "radius": 0.5,
+        "height": 1.3
+      },
+      "variants": [
+        {
+          "conversation": "harrow_dock_kasp_idle"
+        }
+      ],
+      "hidden": true
+    },
+    "dk_hand_a": {
+      "room": "harrow_docks",
+      "speaker": "crowd_dockhand",
+      "look": {
+        "body": "#d9792a",
+        "head": "#e3b48c",
+        "accessory": {
+          "shape": "sphere",
+          "color": "#e8d34a",
+          "size": [
+            0.2
+          ],
+          "pos": [
+            0,
+            1.0,
+            0
+          ]
+        }
+      },
+      "variants": [
+        {
+          "if": {
+            "beat": [
+              "b1_night"
+            ]
+          },
+          "conversation": "harrow_dock_hand_a_b1"
+        },
+        {
+          "if": {
+            "beat": [
+              "b2_otis_joined"
+            ]
+          },
+          "conversation": "harrow_dock_hand_a_b2"
+        },
+        {
+          "if": {
+            "beat": [
+              "b3_home_again"
+            ]
+          },
+          "conversation": "harrow_dock_hand_a_b3"
+        }
+      ]
+    },
+    "dk_hand_b": {
+      "room": "harrow_docks",
+      "speaker": "crowd_dockhand_b",
+      "look": {
+        "body": "#cf6a22",
+        "head": "#d8a47c",
+        "accessory": {
+          "shape": "sphere",
+          "color": "#e8d34a",
+          "size": [
+            0.2
+          ],
+          "pos": [
+            0,
+            1.0,
+            0
+          ]
+        }
+      },
+      "variants": [
+        {
+          "if": {
+            "beat": [
+              "b1_night"
+            ]
+          },
+          "conversation": "harrow_dock_hand_b_b1"
+        },
+        {
+          "if": {
+            "beat": [
+              "b2_otis_joined"
+            ]
+          },
+          "conversation": "harrow_dock_hand_b_b2"
+        },
+        {
+          "if": {
+            "beat": [
+              "b3_home_again"
+            ]
+          },
+          "conversation": "harrow_dock_hand_b_b3"
+        }
+      ]
+    },
+    "dk_pell": {
+      "room": "harrow_docks",
+      "speaker": "crowd_pell",
+      "look": {
+        "body": "#d9792a",
+        "head": "#ecc09a",
+        "accessory": {
+          "shape": "sphere",
+          "color": "#e8d34a",
+          "size": [
+            0.2
+          ],
+          "pos": [
+            0,
+            1.0,
+            0
+          ]
+        }
+      },
+      "variants": [
+        {
+          "if": {
+            "flag": "job_appeal_done"
+          },
+          "conversation": "harrow_pell_done"
+        },
+        {
+          "if": {
+            "flag": "job_appeal_taken",
+            "not_flag": "job_appeal_form_got",
+            "beat": [
+              "b2_otis_joined",
+              "b3_home_again"
+            ]
+          },
+          "conversation": "harrow_pell_form"
+        },
+        {
+          "if": {
+            "flag": "job_appeal_form_got"
+          },
+          "conversation": "harrow_pell_go"
+        },
+        {
+          "if": {
+            "beat": [
+              "b1_night"
+            ]
+          },
+          "conversation": "harrow_pell_b1"
+        },
+        {
+          "if": {
+            "beat": [
+              "b3_home_again"
+            ]
+          },
+          "conversation": "harrow_pell_b3"
+        },
+        {
+          "conversation": "harrow_pell_b2"
+        }
+      ]
+    },
+    "cp_grunt_a": {
+      "room": "harrow_checkpoint",
+      "speaker": "crowd_grunt",
+      "look": {
+        "model": "res://art/placeholder/enemies/signals_grunt/enm_signals_grunt.glb",
+        "radius": 0.4,
+        "height": 1.4
+      },
+      "variants": [
+        {
+          "conversation": "harrow_cp_grunt"
+        }
+      ],
+      "appear_if": {
+        "beat": [
+          "b1_night"
+        ]
+      }
+    },
+    "cp_grunt_b": {
+      "room": "harrow_checkpoint",
+      "speaker": "crowd_grunt_b",
+      "look": {
+        "model": "res://art/placeholder/enemies/signals_grunt/enm_signals_grunt.glb",
+        "radius": 0.4,
+        "height": 1.4
+      },
+      "variants": [
+        {
+          "conversation": "harrow_cp_grunt"
+        }
+      ],
+      "appear_if": {
+        "beat": [
+          "b1_night"
+        ]
+      }
+    },
+    "cp_fan_a": {
+      "room": "harrow_checkpoint",
+      "speaker": "crowd_chime_fan",
+      "look": {
+        "body": "#a7926c",
+        "head": "#e0c2a4",
+        "accessory": {
+          "shape": "sphere",
+          "color": "#d9c08a",
+          "size": [
+            0.14
+          ],
+          "pos": [
+            0,
+            1.0,
+            0
+          ]
+        }
+      },
+      "variants": [
+        {
+          "if": {
+            "beat": [
+              "b1_night"
+            ]
+          },
+          "conversation": "harrow_cp_fan_a_b1"
+        },
+        {
+          "if": {
+            "beat": [
+              "b2_otis_joined"
+            ]
+          },
+          "conversation": "harrow_cp_fan_a_b2"
+        },
+        {
+          "if": {
+            "beat": [
+              "b3_home_again"
+            ]
+          },
+          "conversation": "harrow_cp_fan_a_b3"
+        }
+      ]
+    },
+    "cp_fan_b": {
+      "room": "harrow_checkpoint",
+      "speaker": "crowd_grumbler",
+      "look": {
+        "body": "#8d9aa6",
+        "head": "#e0c2a4",
+        "accessory": {
+          "shape": "sphere",
+          "color": "#c8d0d8",
+          "size": [
+            0.14
+          ],
+          "pos": [
+            0,
+            1.0,
+            0
+          ]
+        }
+      },
+      "variants": [
+        {
+          "if": {
+            "beat": [
+              "b1_night"
+            ]
+          },
+          "conversation": "harrow_cp_fan_b_b1"
+        },
+        {
+          "if": {
+            "beat": [
+              "b2_otis_joined"
+            ]
+          },
+          "conversation": "harrow_cp_fan_b_b2"
+        },
+        {
+          "if": {
+            "beat": [
+              "b3_home_again"
+            ]
+          },
+          "conversation": "harrow_cp_fan_b_b3"
+        }
+      ]
+    },
+    "cp_fan_c": {
+      "room": "harrow_checkpoint",
+      "speaker": "crowd_chime_kid",
+      "look": {
+        "body": "#b58a8a",
+        "head": "#e0c2a4",
+        "accessory": {
+          "shape": "sphere",
+          "color": "#e8c8a8",
+          "size": [
+            0.14
+          ],
+          "pos": [
+            0,
+            1.0,
+            0
+          ]
+        }
+      },
+      "variants": [
+        {
+          "if": {
+            "beat": [
+              "b1_night"
+            ]
+          },
+          "conversation": "harrow_cp_fan_c_b1"
+        },
+        {
+          "if": {
+            "beat": [
+              "b2_otis_joined"
+            ]
+          },
+          "conversation": "harrow_cp_fan_c_b2"
+        },
+        {
+          "if": {
+            "beat": [
+              "b3_home_again"
+            ]
+          },
+          "conversation": "harrow_cp_fan_c_b3"
+        }
+      ]
+    },
+    "cr_dispatcher": {
+      "room": "harrow_courier",
+      "speaker": "crowd_dispatcher",
+      "look": {
+        "body": "#3d5f8a",
+        "head": "#e0c2a4",
+        "accessory": {
+          "shape": "box",
+          "color": "#2d4f7a",
+          "size": [
+            0.5,
+            0.12,
+            0.46
+          ],
+          "pos": [
+            0,
+            1.02,
+            0.02
+          ]
+        }
+      },
+      "variants": [
+        {
+          "if": {
+            "beat": [
+              "b1_night"
+            ]
+          },
+          "conversation": "harrow_dispatcher_b1"
+        },
+        {
+          "if": {
+            "beat": [
+              "b2_otis_joined"
+            ]
+          },
+          "conversation": "harrow_dispatcher_b2"
+        },
+        {
+          "if": {
+            "beat": [
+              "b3_home_again"
+            ]
+          },
+          "conversation": "harrow_dispatcher_b3"
+        }
+      ]
+    },
+    "cr_sleeper": {
+      "room": "harrow_courier",
+      "speaker": "crowd_sleeping_courier",
+      "look": {
+        "body": "#7a7f5a",
+        "head": "#d6b48a",
+        "scale": 0.9
+      },
+      "variants": [
+        {
+          "conversation": "harrow_sleeper"
+        }
+      ]
+    },
+    "st_keeper": {
+      "room": "harrow_store",
+      "speaker": "crowd_shopkeeper",
+      "look": {
+        "body": "#6a8a5a",
+        "head": "#d6b48a",
+        "extra": "wrap",
+        "extra_color": "#d8d0b8"
+      },
+      "variants": [
+        {
+          "if": {
+            "beat": [
+              "b1_night"
+            ]
+          },
+          "conversation": "harrow_store_b1"
+        },
+        {
+          "conversation": "harrow_store_b2"
+        }
+      ]
+    },
+    "st_customer": {
+      "room": "harrow_store",
+      "speaker": "crowd_clerk",
+      "look": {
+        "body": "#6f7f94",
+        "head": "#e0c2a4",
+        "accessory": {
+          "shape": "box",
+          "color": "#52627a",
+          "size": [
+            0.5,
+            0.12,
+            0.46
+          ],
+          "pos": [
+            0,
+            1.02,
+            0.02
+          ]
+        }
+      },
+      "variants": [
+        {
+          "conversation": "harrow_store_clerk"
+        }
+      ],
+      "appear_if": {
+        "beat": [
+          "b1_night"
+        ]
+      }
+    },
+    "gr_keeper": {
+      "room": "harrow_gear",
+      "speaker": "crowd_welder",
+      "look": {
+        "body": "#8a6a4a",
+        "head": "#c9a67e",
+        "extra": "wrap",
+        "extra_color": "#555a60",
+        "accessory": {
+          "shape": "box",
+          "color": "#555a60",
+          "size": [
+            0.42,
+            0.14,
+            0.1
+          ],
+          "pos": [
+            0,
+            0.9,
+            0.26
+          ]
+        }
+      },
+      "variants": [
+        {
+          "if": {
+            "beat": [
+              "b1_night"
+            ]
+          },
+          "conversation": "harrow_gear_b1"
+        },
+        {
+          "conversation": "harrow_gear_b2"
+        }
+      ]
+    },
+    "br_keeper": {
+      "room": "harrow_bar",
+      "speaker": "crowd_bartender",
+      "look": {
+        "body": "#7a4a4a",
+        "head": "#d6b48a",
+        "extra": "wrap",
+        "extra_color": "#e0d8c0"
+      },
+      "variants": [
+        {
+          "if": {
+            "beat": [
+              "b1_night"
+            ]
+          },
+          "conversation": "harrow_bar_keeper_b1"
+        },
+        {
+          "conversation": "harrow_bar_keeper_b2"
+        }
+      ]
+    },
+    "br_fly_a": {
+      "room": "harrow_bar",
+      "speaker": "crowd_barfly_a",
+      "look": {
+        "body": "#7d6a58",
+        "head": "#d8b894",
+        "accessory": {
+          "shape": "sphere",
+          "color": "#9a8a6a",
+          "size": [
+            0.16
+          ],
+          "pos": [
+            0,
+            1.0,
+            0
+          ]
+        }
+      },
+      "variants": [
+        {
+          "if": {
+            "beat": [
+              "b1_night"
+            ]
+          },
+          "conversation": "harrow_fly_a_b1"
+        },
+        {
+          "conversation": "harrow_fly_a_b2"
+        }
+      ]
+    },
+    "br_fly_b": {
+      "room": "harrow_bar",
+      "speaker": "crowd_barfly_b",
+      "look": {
+        "body": "#5a6a7a",
+        "head": "#e0c2a4",
+        "accessory": {
+          "shape": "box",
+          "color": "#44505e",
+          "size": [
+            0.5,
+            0.12,
+            0.46
+          ],
+          "pos": [
+            0,
+            1.02,
+            0.02
+          ]
+        }
+      },
+      "variants": [
+        {
+          "if": {
+            "beat": [
+              "b1_night"
+            ]
+          },
+          "conversation": "harrow_fly_b_b1"
+        },
+        {
+          "conversation": "harrow_fly_b_b2"
+        }
+      ]
+    },
+    "br_fly_c": {
+      "room": "harrow_bar",
+      "speaker": "crowd_barfly_c",
+      "look": {
+        "body": "#8a5a4a",
+        "head": "#d0a884",
+        "accessory": {
+          "shape": "sphere",
+          "color": "#c8a050",
+          "size": [
+            0.15
+          ],
+          "pos": [
+            0,
+            1.0,
+            0
+          ]
+        }
+      },
+      "variants": [
+        {
+          "if": {
+            "beat": [
+              "b1_night"
+            ]
+          },
+          "conversation": "harrow_fly_c_b1"
+        },
+        {
+          "if": {
+            "beat": [
+              "b2_otis_joined"
+            ]
+          },
+          "scene": "legend_gag_bar"
+        },
+        {
+          "conversation": "harrow_fly_c_b3"
+        }
+      ]
+    },
+    "br_old": {
+      "room": "harrow_bar",
+      "speaker": "crowd_old_barfly",
+      "look": {
+        "body": "#6a6a58",
+        "head": "#d8c0a0",
+        "scale": 0.95,
+        "accessory": {
+          "shape": "sphere",
+          "color": "#8a8a7a",
+          "size": [
+            0.14
+          ],
+          "pos": [
+            0,
+            1.0,
+            0
+          ]
+        }
+      },
+      "variants": [
+        {
+          "if": {
+            "flag": "job_dark_window_done"
+          },
+          "conversation": "harrow_old_done"
+        },
+        {
+          "conversation": "harrow_old_dark"
+        }
+      ]
+    }
+  },
+  "spots": {
+    "sq_lamp_post": {
+      "room": "harrow_square",
+      "kind": "examine",
+      "variants": [
+        {
+          "conversation": "harrow_ex_lamp_post"
+        }
+      ]
+    },
+    "sq_bets_board": {
+      "room": "harrow_square",
+      "kind": "examine",
+      "variants": [
+        {
+          "if": {
+            "beat": [
+              "b1_night"
+            ]
+          },
+          "conversation": "harrow_ex_bets_b1"
+        },
+        {
+          "if": {
+            "beat": [
+              "b2_otis_joined"
+            ]
+          },
+          "conversation": "harrow_ex_bets_b2"
+        },
+        {
+          "if": {
+            "beat": [
+              "b3_home_again"
+            ]
+          },
+          "conversation": "harrow_ex_bets_b3"
+        }
+      ]
+    },
+    "sq_notice_board": {
+      "room": "harrow_square",
+      "kind": "examine",
+      "variants": [
+        {
+          "conversation": "harrow_ex_notice"
+        }
+      ]
+    },
+    "sq_window_ledge": {
+      "room": "harrow_square",
+      "kind": "examine",
+      "variants": [
+        {
+          "if": {
+            "flag": "job_dark_window_done"
+          },
+          "conversation": "harrow_window_done"
+        },
+        {
+          "if": {
+            "flag": "job_dark_window_taken",
+            "item": "side_job_parcel"
+          },
+          "scene": "dark_window_light"
+        },
+        {
+          "conversation": "harrow_window_dark"
+        }
+      ],
+      "reach": 1.2
+    },
+    "dk_crane": {
+      "room": "harrow_docks",
+      "kind": "examine",
+      "variants": [
+        {
+          "conversation": "harrow_ex_crane"
+        }
+      ]
+    },
+    "dk_tide_board": {
+      "room": "harrow_docks",
+      "kind": "examine",
+      "variants": [
+        {
+          "conversation": "harrow_ex_tide"
+        }
+      ]
+    },
+    "dk_roster_window": {
+      "room": "harrow_docks",
+      "kind": "examine",
+      "variants": [
+        {
+          "conversation": "harrow_ex_roster_window"
+        }
+      ]
+    },
+    "cp_poster": {
+      "room": "harrow_checkpoint",
+      "kind": "examine",
+      "variants": [
+        {
+          "conversation": "harrow_ex_poster"
+        }
+      ]
+    },
+    "cp_appeals_slot": {
+      "room": "harrow_checkpoint",
+      "kind": "open",
+      "variants": [
+        {
+          "if": {
+            "flag": "job_appeal_done"
+          },
+          "conversation": "harrow_appeal_done"
+        },
+        {
+          "if": {
+            "flag": "job_appeal_form_got",
+            "item": "side_job_parcel"
+          },
+          "scene": "appeal_deliver"
+        },
+        {
+          "conversation": "harrow_appeal_empty"
+        }
+      ],
+      "reach": 1.3
+    },
+    "hm_tally": {
+      "room": "harrow_home",
+      "kind": "examine",
+      "variants": [
+        {
+          "conversation": "harrow_ex_tally"
+        }
+      ]
+    },
+    "hm_photo": {
+      "room": "harrow_home",
+      "kind": "examine",
+      "variants": [
+        {
+          "conversation": "harrow_ex_photo"
+        }
+      ]
+    },
+    "hm_charts": {
+      "room": "harrow_home",
+      "kind": "examine",
+      "variants": [
+        {
+          "conversation": "harrow_ex_charts"
+        }
+      ]
+    },
+    "gr_sign": {
+      "room": "harrow_gear",
+      "kind": "examine",
+      "variants": [
+        {
+          "conversation": "harrow_ex_gear_sign"
+        }
+      ]
+    },
+    "do_lamp": {
+      "room": "harrow_dock_office",
+      "kind": "examine",
+      "variants": [
+        {
+          "if": {
+            "beat": [
+              "b2_otis_joined",
+              "b3_home_again"
+            ]
+          },
+          "conversation": "harrow_ex_bridge_lamp"
+        },
+        {
+          "conversation": "harrow_ex_bridge_lamp_alone"
+        }
+      ]
+    },
+    "do_roster": {
+      "room": "harrow_dock_office",
+      "kind": "examine",
+      "variants": [
+        {
+          "conversation": "harrow_ex_roster"
+        }
+      ]
+    },
+    "do_coughdrops": {
+      "room": "harrow_dock_office",
+      "kind": "examine",
+      "variants": [
+        {
+          "conversation": "harrow_ex_coughdrops"
+        }
+      ]
+    },
+    "br_bets": {
+      "room": "harrow_bar",
+      "kind": "examine",
+      "variants": [
+        {
+          "if": {
+            "beat": [
+              "b1_night"
+            ]
+          },
+          "conversation": "harrow_ex_bar_bets_b1"
+        },
+        {
+          "if": {
+            "beat": [
+              "b2_otis_joined"
+            ]
+          },
+          "conversation": "harrow_ex_bar_bets_b2"
+        },
+        {
+          "if": {
+            "beat": [
+              "b3_home_again"
+            ]
+          },
+          "conversation": "harrow_ex_bar_bets_b3"
+        }
+      ]
+    },
+    "cr_board": {
+      "room": "harrow_courier",
+      "kind": "examine",
+      "variants": []
     }
   }
 }

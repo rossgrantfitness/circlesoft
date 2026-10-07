@@ -8,6 +8,7 @@ const TEST_A: String = "res://scenes/rooms/test_a.tscn"
 const TEST_B: String = "res://scenes/rooms/test_b.tscn"
 const TEST_ROOM: String = "res://scenes/debug/psx_test_room.tscn"
 const KEY_ITEM: String = "kasp_access_card"
+const HARROW_DIR: String = "res://scenes/rooms/harrow/"
 
 
 ## A stand-in for the SceneRouter: records go_to calls.
@@ -37,6 +38,81 @@ static func load_room(test: TestCase, path: String) -> FieldRoom:
 	test.add_to_root(room)
 	prepare(room)
 	return room
+
+
+## A Harrow room by id (home, square, ...): "harrow_square" -> its scene path.
+static func harrow(room_id: String) -> String:
+	return HARROW_DIR + room_id + ".tscn"
+
+
+## Loads a room as if Red came in at `spawn`. `scenes` false turns the room's own story triggers off
+## (so a test that just wants to look at the room is not interrupted by the opening or the dock scene).
+static func load_room_at(test: TestCase, path: String, spawn: String = "", scenes: bool = false) -> FieldRoom:
+	drop_stale_modals(test)
+	var room: FieldRoom = (load(path) as PackedScene).instantiate() as FieldRoom
+	room.entry_spawn = spawn
+	test.add_to_root(room)
+	prepare(room)
+	room.story.instant = true
+	room.story.triggers_enabled = scenes
+	return room
+
+
+## Plays a story scene to its end the way a player would: clicks through every conversation, answers a
+## requested fight with `battle_result` (as Main would) and returns the fights asked for as
+## [[encounter, first_turn], ...]. False in `ok` when the scene never finished.
+static func drive_scene(test: TestCase, room: FieldRoom, scene_id: String = "", battle_result: String = "win") -> Dictionary:
+	var fights: Array = []
+	room.field_battle_requested.connect(func(encounter: String, _id: String, first_turn: String) -> void:
+		fights.append([encounter, first_turn]))
+	var finished: Array = []
+	room.story.scene_finished.connect(func(id: String) -> void: finished.append(id))
+	if not scene_id.is_empty() and not room.story.is_running():
+		room.story.run_scene(scene_id)
+	var guard: int = 0
+	# A scene that starts by itself (a trigger) gets a moment to begin.
+	while scene_id.is_empty() and not room.story.is_running() and finished.is_empty() and guard < 120:
+		await test.tree.physics_frame
+		guard += 1
+	guard = 0
+	var answered: int = 0
+	while finished.is_empty() and guard < 1500:
+		if room.runner.is_running():
+			room.runner.confirm()
+			room.runner.tick(0.5)
+		if fights.size() > answered:
+			answered = fights.size()
+			room.battle_finished(battle_result)
+		await test.tree.physics_frame
+		guard += 1
+	for i: int in 8:
+		room.runner.tick(0.1)
+	return {"ok": not finished.is_empty(), "fights": fights}
+
+
+## Advances the open conversation until the choice shows; true when it does.
+static func to_choice(room: FieldRoom) -> bool:
+	for i: int in 60:
+		var bubble: SpeechBubble = room.runner.get_current_bubble()
+		if bubble != null and bubble.get_state() == SpeechBubble.State.CHOOSING:
+			return true
+		room.runner.confirm()
+		room.runner.tick(0.5)
+	return false
+
+
+## Picks choice `index` and clicks through what follows.
+static func answer(room: FieldRoom, index: int) -> void:
+	room.runner.get_current_bubble().choose(index)
+	finish_conversation(room)
+
+
+## Stands Red one step in front of a node (on the side it faces), looking at it.
+static func stand_before(test: TestCase, room: FieldRoom, node: Node3D, distance: float = 1.0) -> void:
+	var facing: Vector3 = node.global_basis.z
+	facing.y = 0.0
+	var at: Vector3 = node.global_position + facing.normalized() * distance
+	await stand(test, room, Vector3(at.x, 0.0, at.z), node.global_position)
 
 
 ## Switches a room's input to manual (use on a room that was added some other way).

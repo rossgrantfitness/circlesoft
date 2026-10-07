@@ -39,6 +39,11 @@ var current_spawn_id: String = ""
 
 var _busy: bool = false
 var _fade: DitherFade = null
+## The Main that the running change loads into. If it is freed mid-change (the game went back to the
+## title, a test ended) the change is dropped and the router is free again.
+var _transition_host_id: int = 0
+## Bumped by start_at, which replaces a change that is still running (the title's New Game pressed twice).
+var _generation: int = 0
 
 
 # ---- rooms.json ----
@@ -118,10 +123,15 @@ func go_to(room_id: String, spawn_id: String = "") -> bool:
 
 ## The same without the fade to black: the first room of a run, or Continue.
 func start_at(room_id: String, spawn_id: String = "") -> bool:
+	if _busy:
+		_generation += 1
+		_busy = false
 	return await _change_room(room_id, spawn_id, false)
 
 
 func _change_room(room_id: String, spawn_id: String, fade_out: bool) -> bool:
+	if _busy and _transition_host_id != 0 and not is_instance_id_valid(_transition_host_id):
+		_busy = false
 	if _busy:
 		return false
 	var wanted_spawn: String = spawn_id if not spawn_id.is_empty() else default_spawn(room_id)
@@ -130,6 +140,8 @@ func _change_room(room_id: String, spawn_id: String, fade_out: bool) -> bool:
 	var host: Node = _host()
 	var scene: PackedScene = load(scene_path(room_id)) as PackedScene
 	_busy = true
+	var generation: int = _generation
+	_transition_host_id = host.get_instance_id()
 	transition_started.emit(room_id)
 	_hold_player(host.call("get_room") as Node)
 	if fade_out:
@@ -142,13 +154,21 @@ func _change_room(room_id: String, spawn_id: String, fade_out: bool) -> bool:
 		return false
 	_hold_player(room)
 	await get_tree().physics_frame
+	if generation != _generation:
+		return false  # a newer start_at took over
+	if not is_instance_valid(host):
+		_busy = false
+		return false
 	current_room_id = room_id
 	current_spawn_id = wanted_spawn
 	WorldProgress.set_location(room_id, wanted_spawn, game_state)
 	room_entered.emit(room_id)
 	await _fade_to(0, fade_in_s())
+	if generation != _generation:
+		return false
 	_release_player(room)
 	_busy = false
+	_transition_host_id = 0
 	transition_finished.emit(room_id)
 	return true
 
@@ -220,5 +240,8 @@ func _fade_to(target_step: int, seconds: float) -> void:
 	var direction: int = signi(target_step - fade.step)
 	var wait: float = seconds / float(distance)
 	for i: int in distance:
+		if _transition_host_id != 0 and not is_instance_id_valid(_transition_host_id):
+			fade.step = 0
+			return
 		fade.step += direction
 		await get_tree().create_timer(wait).timeout

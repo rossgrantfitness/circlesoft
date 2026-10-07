@@ -1,11 +1,14 @@
 extends TestCase
 ## Milestone 1 integration: main.tscn shows the title first, loads the test room when the title
-## emits start_demo_requested, and goes back to the title on Esc / Start.
+## emits start_demo_requested (New Game: Red's home in Harrow), and goes back to the title on Esc / Start.
 
 const MAIN_SCENE: String = "res://scenes/core/main.tscn"
 const TITLE_STUB: String = "res://tests/fixtures/ui/title_stub.tscn"
 const MISSING_TITLE: String = "res://scenes/ui/no_such_title.tscn"
-const ROOM_NAME: String = "PsxTestRoom"
+## New Game from the title now starts in Red's home in Harrow Landing (rooms.json "start_room").
+const ROOM_NAME: String = "HarrowHome"
+## start_demo() (no title, or the title turned off) still loads the scene Main was given: the test room.
+const DEMO_ROOM_NAME: String = "PsxTestRoom"
 
 
 func after_each() -> void:
@@ -20,8 +23,8 @@ func _make_main(title_path: String, show_title: bool = true) -> Main:
 	return main
 
 
-func _room(main: Main) -> Node:
-	return main.screen.get_world_root().get_node_or_null(ROOM_NAME)
+func _room(main: Main, room_name: String = ROOM_NAME) -> Node:
+	return main.screen.get_world_root().get_node_or_null(room_name)
 
 
 func test_shows_the_title_first_when_it_exists() -> void:
@@ -56,18 +59,20 @@ func test_back_to_title_clears_the_room_and_shows_the_title_again() -> void:
 func test_goes_straight_to_the_room_when_there_is_no_title_scene() -> void:
 	var main: Main = _make_main(MISSING_TITLE)
 	assert_eq(main.get_state(), Main.State.ROOM)
-	assert_not_null(_room(main))
+	assert_not_null(_room(main, DEMO_ROOM_NAME))
 
 
 func test_goes_straight_to_the_room_when_title_is_off() -> void:
 	var main: Main = _make_main(TITLE_STUB, false)
 	assert_eq(main.get_state(), Main.State.ROOM)
-	assert_not_null(_room(main))
+	assert_not_null(_room(main, DEMO_ROOM_NAME))
 
 
 func test_start_button_in_the_room_returns_to_the_title() -> void:
 	var main: Main = _make_main(TITLE_STUB)
 	main.get_title().emit_signal("start_demo_requested")
+	# The opening scene of Harrow holds Esc / Start while it talks: mark it seen.
+	tree.root.get_node("GameState").call("set_flag", "intro_seen", true)
 	await tree.process_frame
 	await tree.process_frame
 	assert_eq(main.get_state(), Main.State.ROOM, "stays in the room with no input")
