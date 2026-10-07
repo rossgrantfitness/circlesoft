@@ -132,11 +132,22 @@ func go_to_title() -> void:
 	_set_state(State.TITLE)
 
 
-## New Game from the title: a fresh GameState, then the room.
+## New Game from the title: a fresh GameState, then the start room (rooms.json "start_room": Red's
+## home in Harrow Landing) through the SceneRouter. With no router or no such room it falls back to
+## the start scene (the test room).
 func start_new_game() -> void:
 	var state: Node = _game_state()
 	if state != null:
 		state.call("reset")
+	var router: Node = get_node_or_null(PATH_ROUTER)
+	var place: Dictionary = state.call("get_location") as Dictionary if state != null else {}
+	var room_id: String = str(place.get("room", ""))
+	var spawn_id: String = str(place.get("spawn", ""))
+	if router != null and router.has_method("has_room") and bool(router.call("has_room", room_id)) \
+			and (spawn_id.is_empty() or bool(router.call("has_spawn", room_id, spawn_id))):
+		_set_playing(true)
+		router.call("start_at", room_id, spawn_id)
+		return
 	start_demo()
 
 

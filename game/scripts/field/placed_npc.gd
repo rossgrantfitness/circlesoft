@@ -57,6 +57,7 @@ func _ready() -> void:
 	if _interactable != null:
 		_interactable.handler = _use
 		_interactable.game_state = game_state
+	_stand_on_the_floor()
 	_build_accessory(look.get("accessory", {}))
 	var moved: Dictionary = Conditions.pick(data.get("variants", []), game_state)
 	if moved.has("move_to"):
@@ -129,3 +130,19 @@ func _build_accessory(spec: Dictionary) -> void:
 	var at: Array = spec.get("pos", [0.0, 0.95, 0.0])
 	_accessory.position = Vector3(float(at[0]), float(at[1]), float(at[2]))
 	_visual.add_child(_accessory)
+
+
+## A model that sits below its origin (the enemy blockouts) is lifted onto the floor.
+func _stand_on_the_floor() -> void:
+	var model: Node3D = get_model()
+	if model == null or _visual == null:
+		return
+	var low: float = INF
+	var to_visual: Transform3D = _visual.global_transform.affine_inverse()
+	for node: Node in model.find_children("*", "MeshInstance3D", true, false):
+		var mesh_instance: MeshInstance3D = node as MeshInstance3D
+		if mesh_instance.mesh == null:
+			continue
+		low = minf(low, (to_visual * mesh_instance.global_transform * mesh_instance.get_aabb()).position.y)
+	if low < 0.0 and low != INF:
+		model.position.y += -low
