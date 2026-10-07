@@ -68,7 +68,8 @@ func tick(delta: float) -> void:
 	if current_icon.is_empty():
 		return
 	_age += delta
-	if follow != null and camera != null and is_instance_valid(follow):
+	if follow != null and camera != null and is_instance_valid(follow) and is_instance_valid(camera) \
+			and follow.is_inside_tree() and camera.is_inside_tree():
 		var head: Vector3 = follow.global_position + Vector3.UP * tuning.prompt_head_height
 		_anchor = BubblePlacement.project_to_stage(camera, head, Vector2(UiStage.STAGE_SIZE))
 	queue_redraw()

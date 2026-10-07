@@ -142,7 +142,6 @@ func test_a_door_takes_red_through_end_to_end() -> void:
 	var door: Door = room.get_node("DoorToB") as Door
 	door.router = _router
 	await ExplorationKit.stand(self, room, Vector3(8.0, 0.0, -3.1), Vector3(8.0, 0.0, -4.0))
-	print("DEBUG door: busy=", UiStage.is_busy(tree), " floor=", room.player.is_on_floor(), " frozen=", room.player.frozen, " target=", room.interactor.get_target(), " pos=", room.player.global_position, " running=", room.runner.is_running(), " modal=", tree.get_nodes_in_group(UiStage.MODAL_GROUP))
 	assert_true(room.interactor.try_interact())
 	assert_true(_router.call("is_busy"))
 	while _router.call("is_busy"):
@@ -209,3 +208,30 @@ func test_a_battle_from_a_routed_room_comes_back_to_that_room_and_the_router_wai
 	assert_true(room.player.is_blinking(), "Red blinks after the fight")
 	assert_true(await _router.call("go_to", "test_a", "start"), "and the router works again")
 	assert_eq(_room().room_id, "test_a")
+
+
+func test_the_old_test_room_has_a_door_to_the_yard_and_back() -> void:
+	_start(ExplorationKit.TEST_ROOM)
+	await tree.process_frame
+	var room: FieldRoom = _room()
+	ExplorationKit.prepare(room)
+	var door: Door = room.get_node("DoorToYard") as Door
+	door.router = _router
+	await ExplorationKit.stand(self, room, Vector3(-4.1, 0.0, -1.4), Vector3(-5.0, 0.0, -1.4))
+	assert_eq(room.interactor.get_target(), door.interactable)
+	assert_true(room.interactor.try_interact())
+	while _router.call("is_busy"):
+		await tree.process_frame
+	assert_eq(_room().room_id, "test_a")
+	var yard: FieldRoom = _room()
+	ExplorationKit.prepare(yard)
+	var back: Door = yard.get_node("DoorToTestRoom") as Door
+	back.router = _router
+	await ExplorationKit.stand(self, yard, Vector3(-5.1, 0.0, -0.8), Vector3(-6.0, 0.0, -0.8))
+	assert_true(yard.interactor.try_interact())
+	while _router.call("is_busy"):
+		await tree.process_frame
+	assert_eq(_room().room_id, "test_room")
+	var arrival: Marker3D = _room().get_node("Spawns/from_yard") as Marker3D
+	assert_lt(_room().player.global_position.distance_to(arrival.global_position), 0.3)
+	assert_eq(_entered, ["test_a", "test_room"] as Array[String])

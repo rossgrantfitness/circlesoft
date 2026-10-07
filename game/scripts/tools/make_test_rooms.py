@@ -141,8 +141,8 @@ def inst(r, path):
     return r.ext_res("PackedScene", path)
 
 
-def door(r, name, pid, x, z0):
-    r.node(name, "", ".", (x, 0, z0), instance=inst(r, "res://scenes/props/door.tscn"), extra='placement_id = "%s"' % pid)
+def door(r, name, pid, x, z0, yaw=0):
+    r.node(name, "", ".", (x, 0, z0), yaw_deg=yaw, instance=inst(r, "res://scenes/props/door.tscn"), extra='placement_id = "%s"' % pid)
 
 
 def crate(r, name, pid, pos):
@@ -166,6 +166,7 @@ def room_a():
     r = build("test_a", "TestYardA", -6, 10, -4, 4, None)
     plat_mat = r.material((0.45, 0.55, 0.75), (2, 1))
     spawns(r, [("start", (-4.5, 0, 1.5), 90), ("from_b", (8, 0, -2.8), 0), ("from_vault", (-1.5, 0, -2.8), 0)])
+    door(r, "DoorToTestRoom", "test_a_to_test_room", -6, -0.8, 90)
     r.node("PlayerSpawn", "Marker3D", pos=(-4.5, 0, 1.5), yaw_deg=90)
     door(r, "DoorToB", "test_a_to_b", 8, -4)
     door(r, "VaultDoor", "test_a_vault", -1.5, -4)

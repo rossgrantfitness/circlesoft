@@ -28,6 +28,13 @@ func before_each() -> void:
 
 
 func after_each() -> void:
+	# SavePrompt.open() builds on the first UiStage in the tree, which may be an older one that outlives
+	# this test: take our screens down ourselves so none is left holding the "busy" lock.
+	for node: Node in tree.get_nodes_in_group(UiStage.MODAL_GROUP):
+		if node is SavePrompt:
+			node.remove_from_group(UiStage.MODAL_GROUP)
+			node.get_parent().remove_child(node)
+			node.free()
 	_remove_dir(_dir)
 
 

@@ -11,6 +11,8 @@
     "test_b_empty_crate": {"room": "test_b", "style": "wood"}
   },
   "doors": {
+    "test_room_to_yard": {"room": "test_room", "to_room": "test_a", "to_spawn": "start"},
+    "test_a_to_test_room": {"room": "test_a", "to_room": "test_room", "to_spawn": "from_yard"},
     "test_a_to_b": {"room": "test_a", "to_room": "test_b", "to_spawn": "from_a"},
     "test_a_vault": {
       "room": "test_a", "to_room": "test_b", "to_spawn": "vault",

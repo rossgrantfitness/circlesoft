@@ -23,8 +23,16 @@ class RouterStub extends Node:
 		return true
 
 
+## Takes the "busy" lock off any bubble or screen an earlier test left on the shared UI stage, so one
+## test's leftovers cannot stop Red from using a door in the next. Call before building a room.
+static func drop_stale_modals(test: TestCase) -> void:
+	for node: Node in test.tree.get_nodes_in_group(UiStage.MODAL_GROUP):
+		node.remove_from_group(UiStage.MODAL_GROUP)
+
+
 ## Loads a room into the root: Red's input off, text instant, camera live, followers on if the room has them.
 static func load_room(test: TestCase, path: String) -> FieldRoom:
+	drop_stale_modals(test)
 	var room: FieldRoom = (load(path) as PackedScene).instantiate() as FieldRoom
 	test.add_to_root(room)
 	prepare(room)
@@ -43,6 +51,7 @@ static func prepare(room: FieldRoom) -> void:
 ## A Main that starts straight in `path` (no title) with an instant battle stage, plus a SceneRouter
 ## wired to it with no fade timing. Returns {main, router}.
 static func make_main_and_router(test: TestCase, path: String) -> Dictionary:
+	drop_stale_modals(test)
 	var main: Main = (load(BattleFlowKit.MAIN_SCENE) as PackedScene).instantiate() as Main
 	main.show_title = false
 	main.debug_overlay_enabled = false

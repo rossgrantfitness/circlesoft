@@ -155,6 +155,10 @@ transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 8, 0, -2
 [node name="from_vault" type="Marker3D" parent="Spawns"]
 transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, -1.5, 0, -2.8)
 
+[node name="DoorToTestRoom" parent="." instance=ExtResource("10_r")]
+transform = Transform3D(0.0000, 0, 1.0000, 0, 1, 0, -1.0000, 0, 0.0000, -6, 0, -0.8)
+placement_id = "test_a_to_test_room"
+
 [node name="PlayerSpawn" type="Marker3D" parent="."]
 transform = Transform3D(0.0000, 0, 1.0000, 0, 1, 0, -1.0000, 0, 0.0000, -4.5, 0, 1.5)
 
