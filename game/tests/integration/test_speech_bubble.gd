@@ -320,13 +320,31 @@ func test_without_a_speaker_the_bubble_uses_a_fixed_anchor() -> void:
 
 
 func test_confirm_press_through_input_advances_when_listening() -> void:
+	# Start from a clean slate: nothing held over from an earlier test, flushed for a frame.
+	for action: StringName in InputMap.get_actions():
+		Input.action_release(action)
+	Input.flush_buffered_events()
+	await tree.process_frame
 	var bubble: SpeechBubble = _make()
 	bubble.listen_input = true
 	bubble.setup_text("otis", SHORT)
 	_open(bubble)
-	await tree.process_frame  # the guard ignores input on the frame the bubble was made
+	# The bubble ignores input on the frame it was made. Wait until the frame counter has really
+	# moved on (and one more frame, so every _ready and _process has run), not just "a frame".
+	var made_on: int = Engine.get_process_frames()
+	var guard: int = 0
+	while Engine.get_process_frames() == made_on and guard < 20:
+		await tree.process_frame
+		guard += 1
+	await tree.process_frame
+	assert_ne(Engine.get_process_frames(), made_on, "the frame counter moved on")
+	assert_eq(bubble.get_state(), SpeechBubble.State.TYPING, "listening and still typing before the press")
 	var event: InputEventAction = InputEventAction.new()
 	event.action = &"confirm"
 	event.pressed = true
 	tree.root.push_input(event)
 	assert_eq(bubble.get_state(), SpeechBubble.State.WAITING, "confirm skipped the typing")
+	var release: InputEventAction = InputEventAction.new()
+	release.action = &"confirm"
+	release.pressed = false
+	tree.root.push_input(release)

@@ -86,7 +86,8 @@ func _find_shop() -> Node:
 	var stage: Node = get_first_node_in_group("ui_stage")
 	var stage_root: Node = stage.call("get_stage_root")
 	for child: Node in stage_root.get_children():
-		if child.name.begins_with("ShopMenu") or child.get_script() != null and str(child.get_script().resource_path).ends_with("shop_menu.gd"):
+		var script: Script = child.get_script() as Script
+		if script != null and script.resource_path.ends_with("shop_menu.gd") and bool(child.call("is_open")):
 			return child
 	return null
 

@@ -479,7 +479,7 @@ func test_pressing_interact_at_a_counter_in_the_test_room_opens_the_shop() -> vo
 	room.interactor.read_engine_input = false
 	room.runner.manual_ticks = true
 	var counter: ShopCounter = room.get_node("GeneralCounter") as ShopCounter
-	var menu: ShopMenu = ShopMenu.install(tree, room.player)
+	var menu: ShopMenu = own(ShopMenu.install(tree, room.player)) as ShopMenu
 	menu.manual_ticks = true
 	menu.animations_enabled = false
 	counter.shop_menu = menu
@@ -496,3 +496,6 @@ func test_pressing_interact_at_a_counter_in_the_test_room_opens_the_shop() -> vo
 	for i: int in 4:
 		menu.tick(0.016)
 	assert_false(room.player.frozen, "Red is free again when the shop closes")
+	# End on a process frame: tests after this one that count frames (the speech bubble's input guard)
+	# must not start in the middle of a physics step.
+	await tree.process_frame
