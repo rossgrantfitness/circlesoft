@@ -42,11 +42,9 @@ func test_saving_from_the_menu_at_a_lamp_writes_a_slot_and_frees_red() -> void:
 	assert_not_null(prompt, "the lamp's save screen opened")
 	assert_true(player.frozen, "Red stays put while saving")
 	prompt.finish_animations()
-	# Slot 1 is the first row after the auto-save row; two confirms save into it.
 	for i: int in 3:
 		prompt.tick(0.016)
-	prompt.handle_command(MenuInput.Cmd.DOWN)
-	prompt.handle_command(MenuInput.Cmd.CONFIRM)
+	prompt.handle_command(MenuInput.Cmd.CONFIRM)  # the cursor starts on the first manual slot
 	assert_eq(prompt.get_saved_slot(), 1)
 	assert_eq(int((manager.call("slot_summary", 1) as Dictionary)["credits"]), 321, "the slot holds the game as it was")
 	prompt.close()

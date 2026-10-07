@@ -266,14 +266,6 @@ func mouse(event: InputEvent) -> bool:
 	return _list.handle_mouse(event)
 
 
-func refresh() -> void:
-	_column.set_members(menu.backend.party())
-	if _mode == Mode.ITEM:
-		_load_candidates()
-	else:
-		_load_slots()
-
-
 func info() -> Dictionary:
 	if not _message.is_empty():
 		return MenuPage.info_of(_message, _message_warn)

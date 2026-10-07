@@ -1,6 +1,10 @@
 {
   "_about": "Strings for the shops. {name}, {n}, {total}, {item} are replaced where shown. 'reasons' are keyed by the ShopLogic blocker ids.",
-  "commands": {"buy": "Buy", "sell": "Sell", "leave": "Leave"},
+  "commands": {
+    "buy": "Buy",
+    "sell": "Sell",
+    "leave": "Leave"
+  },
   "hints": {
     "buy": "See what's on the shelf.",
     "sell": "Sell things from your bag for half what they cost.",
@@ -8,8 +12,10 @@
   },
   "credits": "Credits",
   "owned": "Owned",
-  "price_suffix": "",
-  "list_title": {"buy": "For sale", "sell": "Your bag"},
+  "list_title": {
+    "buy": "For sale",
+    "sell": "Your bag"
+  },
   "empty_sell": "Nothing here to sell.",
   "quantity": {
     "how_many_buy": "How many?",
@@ -19,8 +25,6 @@
   },
   "bought": "Bought {n} {item}. Thank you!",
   "sold": "Sold {n} {item}. Pleasure doing business.",
-  "goodbye": "Come back soon.",
-  "fighters": {"cannot": "can't wear", "same": "no change"},
   "reasons": {
     "unknown_item": "The shop doesn't deal in that.",
     "bad_quantity": "Pick at least one.",

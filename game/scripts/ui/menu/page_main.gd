@@ -14,13 +14,6 @@ func build() -> void:
 	_footer = menu.make_drawing(root, Vector2.ZERO, FieldMenu.PAGE_AREA.size, _draw_footer)
 
 
-func refresh() -> void:
-	if _column != null:
-		_column.set_members(menu.backend.party())
-	if _footer != null:
-		_footer.queue_redraw()
-
-
 ## The numbers under the crew: {credits: "1,240", time: "1:23:00"}.
 func footer_text() -> Dictionary:
 	return {"credits": MenuDraw.format_number(menu.backend.credits()), "time": MenuDraw.format_time(menu.backend.play_time_s())}

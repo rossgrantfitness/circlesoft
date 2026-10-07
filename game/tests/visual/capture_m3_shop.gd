@@ -33,8 +33,14 @@ func _initialize() -> void:
 	state.call("add_item", "rebar_blade", 1)
 	await _frames(10)
 
+	var gear: Node3D = _room.get_node("GearCounter")
+	var player: Node3D = _room.get("player")
+	player.global_position = gear.global_position + Vector3(-1.1, 0.02, 1.4)
+	player.rotation.y = PI * 0.75
+	await _frames(40)
+	await _save("m3_shop_counters.png")
+
 	await _use_counter("GearCounter")
-	await _save("m3_shop_counter.png")
 	_shop = await _find_shop()
 	_shop.set("animations_enabled", false)
 	await _seconds(1.0)

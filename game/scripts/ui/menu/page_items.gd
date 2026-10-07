@@ -283,11 +283,6 @@ func mouse(event: InputEvent) -> bool:
 	return _list.handle_mouse(event)
 
 
-func refresh() -> void:
-	_column.set_members(menu.backend.party())
-	_reload_rows_keeping_cursor()
-
-
 func info() -> Dictionary:
 	if _mode == Mode.TARGET:
 		if not _message.is_empty():

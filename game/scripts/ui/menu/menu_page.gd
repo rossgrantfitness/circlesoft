@@ -64,10 +64,5 @@ func leave() -> void:
 	pass
 
 
-## Called by FieldMenu after anything outside the page changed the party (rest, battle results).
-func refresh() -> void:
-	pass
-
-
 static func info_of(text: String, warn: bool = false) -> Dictionary:
 	return {"text": text, "warn": warn}

@@ -277,11 +277,6 @@ func _equip_text(why: String, member_id: String, item_id: String) -> String:
 			return reason_text("cant_equip")
 
 
-## Owner and weight rules only (the shop arrows use this): "" = fine.
-func wear_reason(member_id: String, item_id: String) -> String:
-	return _equip_text(Equipment.wear_blocker(member_id, item_id), member_id, item_id)
-
-
 func equip(member_id: String, slot: String, item_id: String) -> bool:
 	return Equipment.equip(member_id, slot, item_id, st())
 
@@ -289,11 +284,6 @@ func equip(member_id: String, slot: String, item_id: String) -> bool:
 ## {can_wear, slot, arrow, delta} from Equipment.compare (the shop arrows).
 func compare(member_id: String, item_id: String) -> Dictionary:
 	return Equipment.compare(member_id, item_id, st())
-
-
-## What a loadout scores (the Equip arrows use the same rule as the shop).
-func score_of(loadout: Dictionary) -> float:
-	return Equipment.loadout_score(loadout)
 
 
 # ---- skills ----

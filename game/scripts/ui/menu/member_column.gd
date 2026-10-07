@@ -112,10 +112,6 @@ func select(member_id: String) -> void:
 			return
 
 
-func refresh() -> void:
-	queue_redraw()
-
-
 func _draw() -> void:
 	var step: int = _row_height()
 	for i: int in members.size():

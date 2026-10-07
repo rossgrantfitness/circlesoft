@@ -188,11 +188,6 @@ func mouse(event: InputEvent) -> bool:
 	return _column.list.handle_mouse(event)
 
 
-func refresh() -> void:
-	_column.set_members(menu.backend.party())
-	_load_skills()
-
-
 func info() -> Dictionary:
 	if not _message.is_empty():
 		return MenuPage.info_of(_message, _message_warn)

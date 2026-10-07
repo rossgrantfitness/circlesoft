@@ -118,12 +118,6 @@ func mouse(event: InputEvent) -> bool:
 	return _column.list.handle_mouse(event)
 
 
-func refresh() -> void:
-	_column.set_members(menu.backend.party())
-	_apply_locks()
-	_canvas.queue_redraw()
-
-
 func _draw_labels(canvas: Control) -> void:
 	var strings: Dictionary = menu.text["party"]
 	var slots: Array = strings["slots"]

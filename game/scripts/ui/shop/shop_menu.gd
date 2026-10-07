@@ -427,7 +427,6 @@ func _on_command_activated(index: int) -> void:
 		ROW_SELL:
 			_enter_list(Mode.SELL)
 		ROW_LEAVE:
-			_message = str(text["goodbye"])
 			close()
 
 

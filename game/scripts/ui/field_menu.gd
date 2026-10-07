@@ -580,13 +580,6 @@ func _make_page(page: String) -> MenuPage:
 	return PageMain.new(self, _page_root)
 
 
-## Tells the page to redraw from the current party (after something outside it changed it).
-func refresh_pages() -> void:
-	if _page_obj != null:
-		_page_obj.refresh()
-	_refresh_main_rows()
-
-
 # ---- save ----
 
 func _begin_save() -> void:

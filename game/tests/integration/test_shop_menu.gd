@@ -438,26 +438,26 @@ func test_mouse_picks_rows_and_the_wheel_changes_the_amount() -> void:
 
 # ---- the counter ----
 
-func test_a_counter_opens_its_shop_once_the_ui_is_free() -> void:
+func test_a_counter_opens_its_shop_when_used() -> void:
 	var menu: ShopMenu = _make()
 	var counter: ShopCounter = ShopCounter.new()
 	counter.shop_id = "test_gear"
 	counter.shop_menu = menu
 	add_to_root(counter)
-	assert_eq(counter.current_conversation(), "shop_counter", "the hook conversation the interactor starts")
-	assert_eq(counter.get_child_count() > 0, true, "a placeholder counter is built")
+	assert_true(counter.has_use(), "the counter acts through the interact handler")
+	assert_true(counter.get_child_count() > 0, "a placeholder counter is built")
 	var busy: Node = Node.new()
 	add_to_root(busy)
 	busy.add_to_group(UiStage.MODAL_GROUP)
-	counter.begin_use(Vector3.ZERO)
-	assert_true(counter.is_opening())
-	assert_false(counter.tick_open(), "waits while a bubble is up")
+	assert_false(bool(counter.handler.call(null, null)), "nothing opens while a bubble is up")
 	assert_false(menu.is_open())
 	busy.remove_from_group(UiStage.MODAL_GROUP)
-	assert_true(counter.tick_open())
+	var opened_ids: Array[String] = []
+	counter.shop_opened.connect(func(id: String) -> void: opened_ids.append(id))
+	assert_true(bool(counter.handler.call(null, null)))
 	assert_true(menu.is_open())
 	assert_eq(menu.get_shop_id(), "test_gear")
-	assert_false(counter.is_opening())
+	assert_eq(opened_ids, ["test_gear"])
 
 
 func test_the_test_room_has_a_general_store_and_a_gear_shop_counter() -> void:
@@ -490,10 +490,6 @@ func test_pressing_interact_at_a_counter_in_the_test_room_opens_the_shop() -> vo
 	room.interactor.refresh()
 	assert_eq(room.interactor.get_target(), counter, "Red is facing the counter")
 	assert_true(room.interactor.try_interact())
-	for i: int in 12:
-		await tree.process_frame
-		room.runner.tick(0.016)
-		menu.tick(0.016)
 	assert_true(menu.is_open(), "the shop opened")
 	assert_true(room.player.frozen)
 	menu.close()

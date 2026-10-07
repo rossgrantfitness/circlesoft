@@ -45,11 +45,6 @@ func mouse(event: InputEvent) -> bool:
 	return _column.list.handle_mouse(event)
 
 
-func refresh() -> void:
-	_column.set_members(menu.backend.party())
-	_canvas.queue_redraw()
-
-
 func info() -> Dictionary:
 	return MenuPage.info_of(str(menu.text["status"]["hint"]))
 

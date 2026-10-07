@@ -5,12 +5,10 @@ extends Interactable
 ## the node has no children, with a collision box so Red walks up to it instead of through it.
 ## Real shop fronts replace it later; the interaction stays the same.
 ##
-## How it plugs into the existing interact button: its `conversation` is the empty hook
-## "shop_counter" (the same trick the save lamps use), so the interactor picks it like anything else
-## and calls begin_use(). The shop opens once the interactor's own hook has let go of Red and the UI
-## (a couple of frames), so Red's frozen state is never fought over.
+## It acts instead of talking: the Interactable `handler` hook (see PlayerInteractor.try_interact)
+## opens the shop screen straight away. The interactor only fires when no bubble or menu is up, so
+## there is nothing to wait for.
 
-const HOOK_CONVERSATION: String = "shop_counter"
 const GROUP_COUNTER: StringName = &"shop_counter"
 const SHADER_LIT: String = "res://shaders/psx_lit.gdshader"
 const TEXTURE_PATH: String = "res://art/placeholder/textures/checker_128.png"
@@ -18,7 +16,6 @@ const COLOR_BODY: Color = Color(0.55, 0.36, 0.23)
 const COLOR_TOP: Color = Color(0.72, 0.55, 0.36)
 const COLOR_SIGN_GENERAL: Color = Color(0.95, 0.7, 0.28)
 const COLOR_SIGN_GEAR: Color = Color(0.45, 0.62, 0.78)
-const WAIT_FRAMES_MAX: int = 120
 
 signal shop_opened(shop_id: String)
 
@@ -29,20 +26,15 @@ signal shop_opened(shop_id: String)
 ## Sign text; empty uses the shop's name.
 @export var sign_text: String = ""
 
-## Injected for tests: the shop screen to open and the player to freeze. Null means "make one on the
-## UI stage" and "the owning FieldRoom's player".
+## Injected for tests: the shop screen to open. Null means "make one on the UI stage".
 var shop_menu: ShopMenu = null
-var player: Node = null
-var runner: DialogueRunner = null
 
-var _opening: bool = false
-var _waited: int = 0
 var _own_menu: ShopMenu = null
 
 
 func _init() -> void:
-	conversation = HOOK_CONVERSATION
 	kind = Kind.TALK
+	handler = _use
 
 
 func _ready() -> void:
@@ -50,9 +42,6 @@ func _ready() -> void:
 	add_to_group(GROUP_COUNTER)
 	if build_placeholder and get_child_count() == 0:
 		_build_placeholder()
-	set_process(false)
-	get_tree().node_added.connect(_on_node_added)
-	_ensure_hook.call_deferred()
 
 
 func _exit_tree() -> void:
@@ -62,96 +51,22 @@ func _exit_tree() -> void:
 	_own_menu = null
 
 
-func _process(_delta: float) -> void:
-	tick_open()
-
-
-## The interact button's hook: start waiting for the UI to be free, then open the shop.
-func begin_use(from_point: Vector3) -> void:
-	super.begin_use(from_point)
-	_opening = true
-	_waited = 0
-	set_process(true)
-
-
-func is_opening() -> bool:
-	return _opening
-
-
-## Opens the shop when nothing else holds the UI. Returns true once it is open. Called every frame
-## after begin_use(); tests call it by hand.
-func tick_open() -> bool:
-	if not _opening:
-		return false
-	_waited += 1
-	if _waited > WAIT_FRAMES_MAX:
-		_opening = false
-		set_process(false)
-		return false
-	if UiStage.is_busy(get_tree()):
-		return false
-	var menu: ShopMenu = _menu()
+## The interact button's action: open the shop. Returns true when it opened.
+func _use(user: Node, _interactor: Node) -> bool:
+	var menu: ShopMenu = _menu(user)
 	if menu == null or not menu.open_shop(shop_id):
 		return false
-	_opening = false
-	set_process(false)
 	shop_opened.emit(shop_id)
 	return true
 
 
-func _menu() -> ShopMenu:
+func _menu(user: Node) -> ShopMenu:
 	if shop_menu != null and is_instance_valid(shop_menu):
 		return shop_menu
 	if _own_menu == null or not is_instance_valid(_own_menu):
-		_own_menu = ShopMenu.install(get_tree(), _player() as PlayerController)
+		_own_menu = ShopMenu.install(get_tree(), user as PlayerController)
+	_own_menu.player = user as PlayerController
 	return _own_menu
-
-
-func _room() -> Node:
-	var node: Node = get_parent()
-	while node != null:
-		if node is FieldRoom:
-			return node
-		node = node.get_parent()
-	return null
-
-
-func _player() -> Node:
-	if player != null:
-		return player
-	var room: Node = _room()
-	return room.get("player") as Node if room != null else null
-
-
-func _runner() -> DialogueRunner:
-	if runner != null:
-		return runner
-	var room: Node = _room()
-	return room.get("runner") as DialogueRunner if room != null else null
-
-
-# ---- the empty hook conversation (same trick as the save lamps) ----
-
-func _ensure_hook() -> void:
-	_register_hook(_runner())
-
-
-func _register_hook(active: DialogueRunner) -> void:
-	if active == null or active.has_conversation(HOOK_CONVERSATION):
-		return
-	active.add_conversations({HOOK_CONVERSATION: []})
-
-
-func _on_node_added(node: Node) -> void:
-	if node is DialogueRunner and is_inside_tree():
-		var room: Node = _room()
-		if room != null and room.is_ancestor_of(node):
-			_register_hook(node as DialogueRunner)
-
-
-func usable_distance(point: Vector3, facing: Vector3, tuning: InteractionTuning) -> float:
-	_ensure_hook()
-	return super.usable_distance(point, facing, tuning)
 
 
 # ---- placeholder counter ----
