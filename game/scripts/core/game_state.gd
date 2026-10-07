@@ -80,6 +80,22 @@ func load_party(doc: Dictionary) -> void:
 	var starting: Dictionary = doc.get(KEY_STARTING_ITEMS, {})
 	for id: String in starting:
 		_starting_items[id] = int(starting[id])
+	_sync_starting_stats()
+
+
+## The starting numbers have one source: the growth table plus the starting gear, through
+## StatCalc.sync_maximums (party.json carries no HP or Juice). Every member that has a growth table
+## gets its maximums from it and starts at full HP and Juice; the result is also the base that
+## reset() goes back to.
+func _sync_starting_stats() -> void:
+	var growth: Dictionary = BattleData.shared().growth
+	for id: String in _members:
+		if not growth.has(id):
+			continue
+		_members[id].erase("hp")
+		_members[id].erase("juice")
+		StatCalc.sync_maximums(id, {}, self)
+		_base_members[id] = _members[id].duplicate(true)
 
 
 ## Back to a fresh run: starting bag, no flags, starting member stats, the new-game place and beat.
@@ -209,6 +225,21 @@ func get_member(member_id: String) -> Dictionary:
 
 func get_party_ids() -> Array[String]:
 	return _party_ids.duplicate()
+
+
+## Puts the party in a new order (the Party page). `ids` must be the same members, each once, and
+## Red stays first (the leader). Returns false and changes nothing otherwise. The order is saved
+## in to_dict()'s "party" list and comes back with from_dict().
+func set_party_order(ids: Array[String]) -> bool:
+	if ids.size() != _party_ids.size() or ids.is_empty() or (_party_ids.has(HERO_ID) and ids[0] != HERO_ID):
+		return false
+	var seen: Dictionary[String, bool] = {}
+	for id: String in ids:
+		if not _party_ids.has(id) or seen.has(id):
+			return false
+		seen[id] = true
+	_party_ids = ids.duplicate()
+	return true
 
 
 ## Merges fields (level, xp, hp, hp_max, juice, juice_max, ...) into a party member. Used by the

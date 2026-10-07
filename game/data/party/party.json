@@ -1,5 +1,5 @@
 {
-  "_about": "Placeholder party and starting bag for the test room. Real stats come from characters.json later (task M2). Each member's equipment is what they wear on a new game (copied from items/equipment.json starting_gear; Equipment falls back to that file when a member has none).",
+  "_about": "Placeholder party and starting bag for the test room. HP and Juice are not here on purpose: GameState works them out once from the growth table (data/party/growth.csv) plus the starting gear (StatCalc.sync_maximums), so Status, Equip and battles agree. Real stats come from characters.json later (task M2). Each member's equipment is what they wear on a new game (copied from items/equipment.json starting_gear; Equipment falls back to that file when a member has none).",
   "default_party": [
     "red",
     "otis",
@@ -9,10 +9,6 @@
     "red": {
       "name": "Red",
       "level": 3,
-      "hp": 42,
-      "hp_max": 42,
-      "juice": 8,
-      "juice_max": 12,
       "accent": "#C8322A",
       "initial": "R",
       "weapon": "Scrap Sword",
@@ -25,10 +21,6 @@
     "otis": {
       "name": "Otis",
       "level": 3,
-      "hp": 61,
-      "hp_max": 66,
-      "juice": 5,
-      "juice_max": 10,
       "accent": "#E0782B",
       "initial": "O",
       "weapon": "Dock Mallet",
@@ -41,10 +33,6 @@
     "mox": {
       "name": "Mox",
       "level": 3,
-      "hp": 30,
-      "hp_max": 34,
-      "juice": 14,
-      "juice_max": 16,
       "accent": "#C9A23A",
       "initial": "M",
       "weapon": "Big Wrench",
