@@ -2,6 +2,10 @@
 
 > A running record of what the studio is doing, newest at the top. Updated as work happens so Ross can follow along.
 
+## 2026-10-07
+
+- **Milestone 3 (Harrow Landing) started, placeholder graphics only.** Creative Director drafting the town/road/tower layout maps for Ross; in parallel: exploration core + roaming enemies, save system, gear and items, field menu + shops, dialogue polish + title/config. Plan: docs/m3_plan.md.
+
 ## 2026-10-06
 
 - **🎮 Battle build (v0.2.0) delivered to Ross:** Windows + Mac + the Godot project. 889 tests passed before export; end-to-end playthrough in the real renderer (Battle Test fight, room fight, lose + Retry) 14/14. Title → Battle Test picks any of 5 fights; the test room has 4 challengers.
