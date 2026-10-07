@@ -4,6 +4,7 @@
 
 ## 2026-10-07
 
+- **Harrow Landing graybox built (1421 tests):** 9 rooms, ~25 townsfolk with lines by story beat, both shops, job board + 2 side deliveries, 5 hidden items, the dock fight, story scenes; New Game starts in Red's home. My real-renderer playthrough (Battle Test, New Game, save at the lamp, square, store purchase, field menu, Continue) passes 28/28. Building v0.3.0 for Ross.
 - **Ross approved the layout maps (all six recommended picks).** Gameplay Programmer A now building Harrow Landing as a graybox (M3-4). Field menu + shops done (1369 tests); small follow-ups (party order, starting-stat sync, flaky B4) in progress.
 - **M3 systems landing (1361 tests pass):** gear and items (7 weapons, 5 armor, 4 charms, 13 items, 6 key items; enemy HP re-tuned +30%); save system (3 slots + auto, save lamps, Continue); dialogue polish + title (New Game with name entry, Continue, Config) + full Config screen with tap-along timing test; exploration (crew follows Red, doors/locked doors, crates/pickups, climb/hop, SceneRouter) + roaming map enemies with first-strike rules. Layout maps (M3-1) sent to Ross for sign-off. Field menu + shops still building.
 - **Milestone 3 (Harrow Landing) started, placeholder graphics only.** Creative Director drafting the town/road/tower layout maps for Ross; in parallel: exploration core + roaming enemies, save system, gear and items, field menu + shops, dialogue polish + title/config. Plan: docs/m3_plan.md.

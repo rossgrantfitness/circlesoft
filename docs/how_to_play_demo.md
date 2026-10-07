@@ -1,6 +1,10 @@
-# LIGHTS LEFT ON: Milestone 1 demo (how to play)
+# LIGHTS LEFT ON: v0.3.0 (how to play)
 
-This is a small test build. It has a title screen and one little test room where you can walk, run and jump with Red, talk to Otis, Mox and an old Zero, examine things, open the field menu, and flip the old-PlayStation graphics effects on and off. There is no story yet, but there are four enemies standing in the room that you can fight (see "Fighting" below). We want to know how the look and the camera feel to you.
+This build has the start of the real game: **Harrow Landing**, the first town, as a graybox (simple blocks and stand-in figures, no final art yet). Choose **New Game** on the title screen and Red wakes up at home at night. From there: the courier office next door, Lamp Square, the general store and gear shop, the bar, Otis's dock office, the docks (with the first story fight) and the Signals checkpoint. About 25 townsfolk have short placeholder lines that change as the story moves on. The job board has two side deliveries, and 5 items are hidden around town.
+
+**Saving:** walk up to a save lamp and press E (the lamp in Red's home also rests the party for free). The game also auto-saves each time you enter a new area. **Continue** on the title loads your newest save.
+
+**Battle Test** on the title screen still jumps straight into any of the test fights. The old test room is behind the DEBUG door on the west side of Lamp Square.
 
 ## Opening it on Windows
 
@@ -66,7 +70,9 @@ F1 shows or hides a list of the graphics effects. Press the key to flip each one
 - **The PSX look.** Turn each effect off and on with F2 to F7. Which ones do you love, and which are too much? Try F8 and F9 too.
 - **Talking.** Walk up to Otis, Mox or the old Zero (rough stand-in models in Red's style) and press E. They turn to face Red and talk in comic speech bubbles with gibberish voices. Mox asks you a yes/no question.
 - **Examining.** Try the pillar, the lamp, the crates, the sign and the window. The gold prize crate on the raised platform needs a jump to reach.
-- **The field menu.** Press Tab (or Y). Try Config to change text speed and voice volume.
+- **The field menu.** Press Tab (or Y): Items, Skills, Equip (green/red arrows compare gear), Status, Party (reorder the crew; Red stays in front), Config (all settings, including a tap-along test that tunes Clutch timing to your screen) and Save (only at a save lamp).
+- **Shops.** Walk up to a counter and press E. Buy, sell at half price, pick how many; the gear shop shows who each item would make stronger.
+- **Roaming enemies** (in the test yards behind the test room's west door): they patrol and chase you. Sneak up from behind for a first strike; get caught from behind and they strike first.
 - **Red.** This is the shiba Red you approved, with rough stand-in animations only (stand, walk, run, jump, fall, land). Does her size on screen feel right?
 
 Tell us what you think. All of it goes straight into the style guide.
