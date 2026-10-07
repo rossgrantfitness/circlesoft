@@ -2,8 +2,9 @@ class_name TitleScreen
 extends Control
 ## The title screen: night view of Harrow with a lamp in a window, the LIGHTS LEFT ON logo, a
 ## blinking PRESS START, then the menu: New Game / Continue / Config / Battle Test / Quit.
-##   New Game     asks for the hero's name (NameEntry, "Red" by default), fades out and emits
-##                `new_game_requested(hero_name)`.
+##   New Game     asks for the hero's name (NameEntry, "Red" by default), fades out, emits
+##                `new_game_requested(hero_name)` and `start_demo_requested`, then calls
+##                GameState.set_hero_name(hero_name) (after Main's reset has run).
 ##   Continue     greyed out until the SaveManager reports a save. Otherwise it fades out and emits
 ##                `continue_slot_requested(slot)` then `continue_requested`; Main then loads the newest
 ##                save (SaveManager.continue_game()) and routes to the saved place.
@@ -62,6 +63,8 @@ const LIT_BRIGHT_LEVEL: int = 2
 var quit_handler: Callable = Callable()
 ## Where saves are asked about (has_any_save / newest_slot). Null means the SaveManager autoload.
 var save_manager: Node = null
+## Who gets the hero's name (set_hero_name). Null means the GameState autoload.
+var game_state: Node = null
 ## Settings for the embedded Config screen. Null means the Config autoload.
 var config: Node = null
 
@@ -454,6 +457,9 @@ func _advance_step() -> void:
 			_:
 				new_game_requested.emit(_pending_name)
 				start_demo_requested.emit()
+				# Main's New Game resets GameState inside start_demo_requested, so the name goes in
+				# after it has run.
+				_apply_hero_name()
 	if _window.open_amount < _window_target:
 		_window.open_amount = minf(_window_target, _window.open_amount + _window_step)
 	elif _window.open_amount > _window_target:
@@ -743,6 +749,12 @@ func _close_config() -> void:
 ## Re-reads whether a save exists (Continue's grey) and repaints the labels.
 func _refresh_item_states() -> void:
 	_update_item_colors()
+
+
+func _apply_hero_name() -> void:
+	var state: Node = game_state if game_state != null and is_instance_valid(game_state) else get_node_or_null(^"/root/GameState")
+	if state != null and state.has_method("set_hero_name"):
+		state.call("set_hero_name", _pending_name)
 
 
 func _save_node() -> Node:

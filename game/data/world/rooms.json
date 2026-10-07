@@ -6,7 +6,7 @@
     "test_room": {
       "name": "Test Room",
       "scene": "res://scenes/debug/psx_test_room.tscn",
-      "spawns": ["PlayerSpawn", "from_yard"],
+      "spawns": ["PlayerSpawn", "from_yard", "LampSpawn"],
       "default_spawn": "PlayerSpawn"
     },
     "test_a": {

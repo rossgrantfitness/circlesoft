@@ -235,3 +235,23 @@ func test_the_old_test_room_has_a_door_to_the_yard_and_back() -> void:
 	var arrival: Marker3D = _room().get_node("Spawns/from_yard") as Marker3D
 	assert_lt(_room().player.global_position.distance_to(arrival.global_position), 0.3)
 	assert_eq(_entered, ["test_a", "test_room"] as Array[String])
+
+
+func test_continue_goes_through_start_at_from_the_title_using_the_saved_location() -> void:
+	var main: Main = (load(BattleFlowKit.MAIN_SCENE) as PackedScene).instantiate() as Main
+	main.show_title = true
+	main.debug_overlay_enabled = false
+	ExplorationKit.drop_stale_modals(self)
+	add_to_root(main)
+	await tree.process_frame
+	assert_eq(main.get_state(), Main.State.TITLE)
+	var router: Node = tree.root.get_node("SceneRouter")
+	router.set("instant", true)
+	_state.call("set_location", "test_b", "vault")
+	assert_true(await router.call("start_at", "test_b", "vault"), "the saved room and spawn are known to the router")
+	assert_eq(main.get_state(), Main.State.ROOM)
+	assert_eq((main.get_room() as FieldRoom).room_id, "test_b")
+	var marker: Marker3D = (main.get_room() as FieldRoom).get_node("Spawns/vault") as Marker3D
+	assert_lt((main.get_room() as FieldRoom).player.global_position.distance_to(marker.global_position), 0.3)
+	assert_true(await router.call("start_at", "test_room", "LampSpawn"), "the lamp spawn is a routable spawn")
+	router.set("instant", false)

@@ -10,11 +10,6 @@ var _audio: FakeAudio = null
 var _state: Node = null
 
 
-func before_each() -> void:
-	for node: Node in tree.get_nodes_in_group(UiStage.MODAL_GROUP):
-		print("MODAL LEFTOVER: ", node.get_path(), " ", node.get_script().resource_path if node.get_script() != null else node.get_class())
-
-
 func _make(credits: int = 500) -> ShopMenu:
 	_audio = FakeAudio.new()
 	_state = MenuKit.make_state(self)

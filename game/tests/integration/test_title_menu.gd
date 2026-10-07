@@ -230,6 +230,24 @@ func test_a_typed_name_is_what_new_game_reports() -> void:
 	assert_eq(names, ["Ruby"])
 
 
+func test_the_name_reaches_game_state_after_main_has_reset_it() -> void:
+	var title: TitleScreen = _make_title()
+	var state: Node = own((load("res://scripts/core/game_state.gd") as GDScript).new() as Node) as Node
+	state.call("load_party", DataDB.get_dict("party/party"))
+	state.call("reset")
+	title.game_state = state
+	# Stand in for Main: its New Game handler resets the state.
+	title.start_demo_requested.connect(func() -> void: state.call("reset"))
+	await _open_menu(title)
+	_press(&"confirm")
+	var done: Array[String] = []
+	title.new_game_requested.connect(func(hero_name: String) -> void: done.append(hero_name))
+	title.get_name_entry().set_name_text("Ruby")
+	title.get_name_entry().submit()
+	await _wait_for_leave(title, done)
+	assert_eq(state.call("get_hero_name"), "Ruby")
+
+
 func test_cancelling_the_name_goes_back_to_the_menu() -> void:
 	var title: TitleScreen = _make_title()
 	await _open_menu(title)

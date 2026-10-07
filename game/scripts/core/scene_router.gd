@@ -186,8 +186,9 @@ func _hold_player(room: Node) -> void:
 		red.stick = Vector2.ZERO
 
 
-func _release_player(room: Node) -> void:
-	var red: PlayerController = room.get("player") as PlayerController if room != null and is_instance_valid(room) else null
+func _release_player(room: Variant) -> void:
+	# The room can be gone by now (the game went back to the title during the fade).
+	var red: PlayerController = (room as Node).get("player") as PlayerController if is_instance_valid(room) else null
 	if red != null:
 		red.frozen = false
 

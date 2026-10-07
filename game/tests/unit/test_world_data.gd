@@ -56,7 +56,7 @@ func test_every_room_has_a_scene_and_its_spawn_markers() -> void:
 		assert_has(spawns, str(entry["default_spawn"]), room_id + " default spawn is one of them")
 		for spawn_id: String in spawns:
 			assert_not_null(room.find_spawn(spawn_id), "%s has the marker %s" % [room_id, spawn_id])
-			assert_has(room.spawn_names(), spawn_id, "%s: %s is a real marker, not a fallback" % [room_id, spawn_id])
+			assert_eq(str(room.find_spawn(spawn_id).name), spawn_id, "%s: %s is a real marker, not a fallback" % [room_id, spawn_id])
 
 
 func test_start_room_and_new_game_room_exist() -> void:
