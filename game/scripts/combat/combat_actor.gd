@@ -14,6 +14,8 @@ const HITBOX_NAME: String = "Hitbox"
 
 @export var actor_id: StringName = &""
 @export var team: StringName = &"enemy"
+## Which set in moves.json this fighter plays (&"red", &"grunt", &"brute").
+@export var move_set_id: StringName = &""
 
 var hp: int = 100
 var hp_max: int = 100
@@ -65,7 +67,8 @@ func find_director() -> CombatDirector:
 	return _director
 
 
-func _set_director(director: CombatDirector) -> void:
+## Called by the director when it registers this fighter.
+func bind_director(director: CombatDirector) -> void:
 	_director = director
 	if _hitbox != null:
 		_hitbox.director = director

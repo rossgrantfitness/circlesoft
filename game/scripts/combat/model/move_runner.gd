@@ -295,7 +295,8 @@ static func _build_timeline(move: Dictionary) -> Array[Dictionary]:
 		rows.append(_row(float(move["telegraph_ms"]), ORDER_TELEGRAPH, {"type": "telegraph"}))
 	var boxes: Array = move["hitboxes"]
 	for i: int in range(boxes.size()):
-		var box: Dictionary = boxes[i]
+		var box: Dictionary = (boxes[i] as Dictionary).duplicate()
+		box["index"] = i       # so Hitbox.activate(box, ...) and deactivate(index) agree
 		rows.append(_row(float(box.get("from_ms", startup)), ORDER_ON, {"type": "hitbox_on", "index": i, "box": box}))
 		rows.append(_row(float(box.get("to_ms", startup + active)), ORDER_OFF, {"type": "hitbox_off", "index": i}))
 	var anim: Dictionary = move.get("anim", {})

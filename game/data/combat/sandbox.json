@@ -44,7 +44,7 @@
     ]
   },
   "lighting": {
-    "key": {"color": "#ffd9b0", "energy": 1.0, "rot_deg": [-58.0, 35.0, 0.0], "shadow": false, "shadow_max_distance_m": 20.0},
+    "key": {"color": "#ffd9b0", "energy": 1.0, "rot_deg": [-58.0, 35.0, 0.0], "shadow": true, "shadow_max_distance_m": 30.0},
     "ambient": {"color": "#59607a", "energy": 0.9},
     "background": "#14172a",
     "fog": {"color": "#1f2540", "density": 0.012},

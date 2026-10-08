@@ -40,6 +40,7 @@ var hit_feel: Dictionary = {}
 ## lines up. Headless tests that step by hand set it false and use stamp_usec().
 var sync_to_wall_clock: bool = true
 
+var _moves: MoveSet = MoveSet.load_default()
 var _actors: Array[CombatActor] = []
 var _by_id: Dictionary = {}
 var _parry_presses: Array[int] = []        # real usec
@@ -90,7 +91,7 @@ func register(actor: CombatActor) -> void:
 	_ensure_parts()
 	_actors.append(actor)
 	_by_id[actor.actor_id] = actor
-	actor._set_director(self)
+	actor.bind_director(self)
 	actor.clock.anchor_real(stamp_usec())
 	if actor.team == PLAYER_TEAM:
 		time.player_id = actor.actor_id
@@ -228,9 +229,11 @@ func report_dash(real_usec: int) -> void:
 
 ## An enemy move reached its telegraph: remember it as a threat, and tell the HUD and FX.
 func telegraph(attacker: CombatActor, move_id: StringName, impact_local_usec: int) -> void:
-	var move: Dictionary = MoveSet.load_default().get_move(StringName(attacker.get("move_set_id")) if attacker.get("move_set_id") != null else &"", move_id)
+	var move: Dictionary = _moves.get_move(attacker.move_set_id, move_id)
 	var boxes: Array = move.get("hitboxes", [])
 	var key: String = "%s:%s:%d" % [attacker.actor_id, move_id, attacker.current_swing_id()]
+	if _flared.size() > 256:
+		_flared.clear()
 	_threats.append({"attacker": attacker.actor_id, "move_id": move_id, "impact_usec": impact_local_usec, "boxes": boxes,
 			"flared": false, "dodge_flare": bool(move.get("dodge_flare", true)), "key": key})
 	var in_ms: float = float(impact_local_usec - attacker.clock.now_usec()) / 1000.0
