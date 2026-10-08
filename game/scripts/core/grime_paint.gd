@@ -1,0 +1,458 @@
+class_name GrimePaint
+extends RefCounted
+## Code-painted grime for the "grim" look profile: no texture files, every pixel comes from a seed, so the
+## same call always paints the same picture. All textures are small (32 to 128 px), nearest-filtered by the
+## shaders, and use 1-bit alpha (a pixel is there or it is not), as the style guide asks.
+##
+## Surfaces (floor, wall, panel) are painted fresh in a near-neutral grey, because the room's own material
+## tint still multiplies them; the profile drains that tint separately. Decals (posters, warning stripes,
+## fence, puddle) are small and shared by every room, so a prop costs one cached texture.
+
+const FLOOR_PX: int = 128
+const WALL_PX: int = 128
+const BAYER: Array[int] = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5]
+
+## Painted images by what they were made from, so each shows up once.
+static var _cache: Dictionary[String, ImageTexture] = {}
+static var _char_cache: Dictionary[String, ImageTexture] = {}
+
+
+static func clear_cache() -> void:
+	_cache.clear()
+	_char_cache.clear()
+
+
+static func cached_count() -> int:
+	return _cache.size() + _char_cache.size()
+
+
+# ---- small helpers ----
+
+static func _hash(x: int, y: int, salt: int) -> float:
+	return BattleTextures.noise(x, y, salt)
+
+
+## Smooth value noise (0..1) with `cell` px between lattice points; wraps so tiles repeat seamlessly.
+static func _value_noise(x: int, y: int, cell: int, size: int, salt: int) -> float:
+	var cells: int = maxi(size / cell, 1)
+	var fx: float = float(x) / float(cell)
+	var fy: float = float(y) / float(cell)
+	var x0: int = int(floorf(fx))
+	var y0: int = int(floorf(fy))
+	var tx: float = fx - float(x0)
+	var ty: float = fy - float(y0)
+	tx = tx * tx * (3.0 - 2.0 * tx)
+	ty = ty * ty * (3.0 - 2.0 * ty)
+	var a: float = _hash(posmod(x0, cells), posmod(y0, cells), salt)
+	var b: float = _hash(posmod(x0 + 1, cells), posmod(y0, cells), salt)
+	var c: float = _hash(posmod(x0, cells), posmod(y0 + 1, cells), salt)
+	var d: float = _hash(posmod(x0 + 1, cells), posmod(y0 + 1, cells), salt)
+	return lerpf(lerpf(a, b, tx), lerpf(c, d, tx), ty)
+
+
+## Two octaves of wrapping noise: big blotches plus finer dirt.
+static func _blotch(x: int, y: int, size: int, salt: int) -> float:
+	return _value_noise(x, y, size / 4, size, salt) * 0.65 + _value_noise(x, y, size / 8, size, salt + 31) * 0.35
+
+
+## Ordered-dither threshold (0..1) so a grime layer is a checker-like pattern, never a soft blend.
+static func _bayer(x: int, y: int) -> float:
+	return (float(BAYER[(y % 4) * 4 + (x % 4)]) + 0.5) / 16.0
+
+
+## Lays `color` over the pixel where the dithered coverage says so.
+static func _splat(img: Image, x: int, y: int, color: Color, coverage: float) -> void:
+	if coverage <= 0.0:
+		return
+	if coverage >= 1.0 or _bayer(x, y) < coverage:
+		img.set_pixel(x, y, Color(color.r, color.g, color.b, img.get_pixel(x, y).a))
+
+
+static func _rect(img: Image, x: int, y: int, w: int, h: int, color: Color) -> void:
+	for yy: int in range(maxi(y, 0), mini(y + h, img.get_height())):
+		for xx: int in range(maxi(x, 0), mini(x + w, img.get_width())):
+			img.set_pixel(xx, yy, color)
+
+
+static func _image(w: int, h: int, fill: Color) -> Image:
+	var img: Image = Image.create(w, h, false, Image.FORMAT_RGBA8)
+	img.fill(fill)
+	return img
+
+
+static func _texture(img: Image) -> ImageTexture:
+	return ImageTexture.create_from_image(img)
+
+
+static func _color(grime: Dictionary, key: String, fallback: String) -> Color:
+	return Color.html(str(grime.get(key, fallback)))
+
+
+# ---- room surfaces ----
+
+## Which kind of grimed surface to paint for a placeholder texture path ("" = leave the texture alone).
+static func kind_for_path(path: String) -> String:
+	var file: String = path.get_file().get_basename()
+	if file.begins_with("checker_64") or file.begins_with("checker_256"):
+		return "floor"
+	if file.begins_with("checker_128"):
+		return "panel"
+	if file.begins_with("wall"):
+		return "wall"
+	return ""
+
+
+static func surface_texture(kind: String, grime: Dictionary) -> ImageTexture:
+	var key: String = "surface:%s:%s" % [kind, str(grime)]
+	if not _cache.has(key):
+		_cache[key] = _texture(surface_image(kind, grime))
+	return _cache[key]
+
+
+## A dirty tileable surface. kind: "floor" (poured concrete plates, oil, puddle rings), "wall" (corrugated
+## sheet metal, rust streaks, seams) or "panel" (flat welded plate with stains).
+static func surface_image(kind: String, grime: Dictionary) -> Image:
+	var size: int = FLOOR_PX if kind == "floor" else WALL_PX
+	var base: Color = Color(0.56, 0.55, 0.52)
+	var dirt: Color = _color(grime, "dirt_color", "#17140f")
+	var rust: Color = _color(grime, "rust_color", "#6a3a1c")
+	var oil: Color = _color(grime, "oil_color", "#0a0b09")
+	var dirt_amount: float = float(grime.get("dirt", 0.7))
+	var rust_amount: float = float(grime.get("rust", 0.6))
+	var stain_amount: float = float(grime.get("stain", 0.6))
+	var salt: int = 3 if kind == "floor" else (5 if kind == "wall" else 9)
+	var img: Image = _image(size, size, base)
+	for y: int in size:
+		for x: int in size:
+			var c: Color = base
+			var grain: float = _hash(x, y, salt)
+			if grain > 0.82:
+				c = base.darkened(0.16)
+			elif grain < 0.07:
+				c = base.lightened(0.1)
+			if kind == "wall":
+				var rib: int = x % 8
+				if rib == 0:
+					c = c.darkened(0.3)
+				elif rib < 3:
+					c = c.lightened(0.07)
+			elif kind == "floor":
+				var plate: int = 32
+				if x % plate == 0 or y % plate == 0:
+					c = c.darkened(0.45)
+				elif x % plate == 1 or y % plate == 1:
+					c = c.lightened(0.06)
+			else:
+				if x % 32 == 0 or y % 32 == 0:
+					c = c.darkened(0.4)
+			img.set_pixel(x, y, c)
+	# rivet rows on walls and panels
+	if kind != "floor":
+		for rx: int in range(4, size, 16):
+			for ry: int in [3, size - 4]:
+				_rect(img, rx, ry, 2, 2, base.darkened(0.5))
+				img.set_pixel(rx, ry, base.lightened(0.18))
+	# big dirty blotches: two tones, dithered edges
+	for y: int in size:
+		for x: int in size:
+			var n: float = _blotch(x, y, size, salt + 100)
+			_splat(img, x, y, dirt, clampf((n - 0.38) * 3.2, 0.0, 1.0) * dirt_amount)
+			var m: float = _blotch(x, y, size, salt + 200)
+			_splat(img, x, y, oil, clampf((m - 0.62) * 5.0, 0.0, 1.0) * stain_amount)
+	# rust patches
+	for y: int in size:
+		for x: int in size:
+			var r: float = _blotch(x, y, size, salt + 300)
+			_splat(img, x, y, rust, clampf((r - 0.55) * 4.0, 0.0, 1.0) * rust_amount)
+	# streaks: long vertical drips on walls and panels, scuff lines on floors
+	for i: int in 9:
+		var sx: int = int(_hash(i, 1, salt + 400) * float(size))
+		var length: int = 18 + int(_hash(i, 2, salt + 400) * 70.0)
+		var top: int = int(_hash(i, 3, salt + 400) * float(size))
+		var is_rust: bool = _hash(i, 4, salt + 400) < 0.55
+		var streak_color: Color = rust.darkened(0.15) if is_rust else oil
+		for k: int in length:
+			var yy: int = top + k
+			if kind == "floor":
+				var xx: int = (sx + k) % size
+				if (k % 3) != 0:
+					img.set_pixel(xx, yy % size, streak_color.lerp(base, 0.25))
+			else:
+				var wobble: int = int(sin(float(k) * 0.45 + float(i)) * 1.2)
+				if (k + i) % 4 != 0 and yy < size:
+					var xx2: int = (sx + wobble) % size
+					img.set_pixel(xx2, yy, streak_color)
+					if k < length / 2:
+						_splat(img, (xx2 + 1) % size, yy, streak_color, 0.5)
+	# edge dirt where tiles meet (the seams look filthy, which also hides the tiling)
+	for y: int in size:
+		for x: int in size:
+			var edge: int = mini(mini(x, size - 1 - x), mini(y, size - 1 - y))
+			if edge < 6:
+				_splat(img, x, y, dirt, (1.0 - float(edge) / 6.0) * 0.55 * dirt_amount)
+	return img
+
+
+# ---- decals and little props ----
+
+static func decal_texture(id: String, grime: Dictionary = {}) -> ImageTexture:
+	var key: String = "decal:%s" % id
+	if not _cache.has(key):
+		var img: Image = null
+		match id:
+			"poster_mast":
+				img = poster_image(0)
+			"poster_eye":
+				img = poster_image(1)
+			"poster_ration":
+				img = poster_image(2)
+			"stripes":
+				img = stripes_image()
+			"fence":
+				img = fence_image()
+			"barbed":
+				img = barbed_image()
+			"puddle":
+				img = puddle_image()
+			"metal":
+				img = metal_image(grime)
+			"grate":
+				img = grate_image()
+			_:
+				img = _image(8, 8, Color.MAGENTA)
+		_cache[key] = _texture(img)
+	return _cache[key]
+
+
+## The Signals Corps mark: a mast with three signal arcs. Painted on a worn paper poster.
+static func _paint_signals_mark(img: Image, cx: int, cy: int, scale: int, color: Color) -> void:
+	_rect(img, cx - scale / 2, cy - scale * 3, scale, scale * 6, color)          # the mast
+	_rect(img, cx - scale * 2, cy + scale * 3, scale * 4, scale, color)          # its foot
+	for ring: int in 3:
+		var radius: float = float(scale * (3 + ring * 3))
+		for step: int in 80:
+			var angle: float = -PI * 0.85 + PI * 0.7 * float(step) / 79.0
+			for side: int in [-1, 1]:
+				var px: int = cx + int(roundf(cos(angle) * radius)) * side
+				var py: int = cy - scale * 3 + int(roundf(sin(angle) * radius))
+				if px >= 0 and py >= 0 and px < img.get_width() and py < img.get_height():
+					img.set_pixel(px, py, color)
+					if scale > 1:
+						img.set_pixel(px, mini(py + 1, img.get_height() - 1), color)
+
+
+## A 32x48 propaganda poster. variant 0: the mast mark over a title bar; 1: a watching eye in a ring; 2: a
+## ration-card slogan with a fist. Worn paper, torn corners, a water stain. No readable text: bars stand in.
+static func poster_image(variant: int) -> Image:
+	var w: int = 32
+	var h: int = 48
+	var paper: Color = Color("#8d8670") if variant != 2 else Color("#7d786a")
+	var ink: Color = Color("#17151a")
+	var signals: Color = Color("#4a5f78")
+	var alarm: Color = Color("#8a2f33")
+	var img: Image = _image(w, h, paper)
+	for y: int in h:
+		for x: int in w:
+			var n: float = _hash(x, y, 40 + variant)
+			if n > 0.9:
+				img.set_pixel(x, y, paper.darkened(0.12))
+	_rect(img, 0, 0, w, 2, ink)
+	_rect(img, 0, h - 2, w, 2, ink)
+	_rect(img, 0, 0, 2, h, ink)
+	_rect(img, w - 2, 0, 2, h, ink)
+	match variant:
+		0:
+			_rect(img, 3, 3, w - 6, 5, signals)
+			_paint_signals_mark(img, 16, 24, 1, ink)
+			_rect(img, 4, 39, w - 8, 2, ink)
+			_rect(img, 7, 43, w - 14, 2, ink)
+		1:
+			_rect(img, 3, 3, w - 6, 6, alarm)
+			for y: int in range(14, 34):
+				for x: int in range(4, 28):
+					var dx: float = float(x - 16) / 12.0
+					var dy: float = float(y - 24) / 9.0
+					var d: float = dx * dx + dy * dy
+					if d < 1.0 and d > 0.78:
+						img.set_pixel(x, y, ink)
+					elif d <= 0.78 and d > 0.2:
+						img.set_pixel(x, y, paper.lightened(0.15))
+					if d <= 0.22:
+						img.set_pixel(x, y, ink)
+			_rect(img, 4, 38, w - 8, 3, ink)
+			_rect(img, 8, 43, w - 16, 2, ink)
+		_:
+			_rect(img, 3, 3, w - 6, 5, ink)
+			_rect(img, 5, 12, 22, 3, alarm)
+			_rect(img, 5, 18, 22, 3, ink)
+			_rect(img, 5, 24, 16, 3, ink)
+			_rect(img, 11, 31, 10, 11, ink)
+			_rect(img, 9, 31, 2, 6, ink)
+			_rect(img, 21, 31, 2, 6, ink)
+			_rect(img, 4, 44, w - 8, 2, alarm)
+	# wear: water stain running from the top, torn bottom corner, peeled strip
+	for y: int in h:
+		for x: int in w:
+			var stain: float = _value_noise(x, y, 8, 32, 77 + variant)
+			if y < 26 and stain > 0.6 and (x + y) % 2 == 0:
+				img.set_pixel(x, y, img.get_pixel(x, y).darkened(0.35))
+	for k: int in 7:
+		for j: int in (7 - k):
+			if w - 1 - j >= 0 and h - 1 - k >= 0:
+				img.set_pixel(w - 1 - j, h - 1 - k, Color(0, 0, 0, 0))
+	for y: int in range(0, 12):
+		img.set_pixel(0, y, Color(0, 0, 0, 0))
+	return img
+
+
+## Yellow and black diagonal hazard stripes (tileable, 32x32). Colors stay saturated: warning is an accent.
+static func stripes_image() -> Image:
+	var img: Image = _image(32, 32, Color("#b99a22"))
+	var black: Color = Color("#1a1812")
+	for y: int in 32:
+		for x: int in 32:
+			if ((x + y) / 8) % 2 == 0:
+				img.set_pixel(x, y, black)
+			elif _hash(x, y, 55) > 0.88:
+				img.set_pixel(x, y, Color("#8a7218"))
+			if _hash(x, y, 56) > 0.93:
+				img.set_pixel(x, y, Color("#2a2a26"))
+	return img
+
+
+## Chain-link fence (32x32, 1-bit alpha): diamonds of thin wire.
+static func fence_image() -> Image:
+	var img: Image = _image(32, 32, Color(0, 0, 0, 0))
+	var wire: Color = Color("#7b7d78")
+	var dark: Color = Color("#2c2d29")
+	for y: int in 32:
+		for x: int in 32:
+			var a: int = (x + y) % 16
+			var b: int = (x - y + 64) % 16
+			if a < 2 or b < 2:
+				img.set_pixel(x, y, wire if _hash(x, y, 60) > 0.25 else dark)
+	_rect(img, 0, 0, 32, 2, wire)
+	_rect(img, 0, 0, 32, 1, dark)
+	return img
+
+
+## Barbed wire (32x8): a sagging strand with barbs.
+static func barbed_image() -> Image:
+	var img: Image = _image(32, 8, Color(0, 0, 0, 0))
+	var wire: Color = Color("#6d6f69")
+	for x: int in 32:
+		var y: int = 3 + int(roundf(sin(float(x) * 0.4) * 1.0))
+		img.set_pixel(x, y, wire)
+		img.set_pixel(x, y + 1, wire.darkened(0.3))
+	for x: int in range(2, 32, 8):
+		img.set_pixel(x, 1, wire)
+		img.set_pixel(x, 2, wire)
+		img.set_pixel(x + 1, 6, wire)
+		img.set_pixel(x + 1, 5, wire)
+		img.set_pixel(x - 1, 1, wire)
+		img.set_pixel(x + 2, 6, wire)
+	return img
+
+
+## A puddle (32x32): dark oily water, a pale reflected lamp, dithered edge, 1-bit alpha.
+static func puddle_image() -> Image:
+	var img: Image = _image(32, 32, Color(0, 0, 0, 0))
+	for y: int in 32:
+		for x: int in 32:
+			var dx: float = (float(x) - 15.5) / 15.0
+			var dy: float = (float(y) - 15.5) / 11.0
+			var wobble: float = (_value_noise(x, y, 8, 32, 90) - 0.5) * 0.45
+			var d: float = sqrt(dx * dx + dy * dy) + wobble
+			if d < 0.78:
+				var c: Color = Color("#0c1112")
+				if d > 0.55 and (x + y) % 2 == 0:
+					c = Color("#1a2224")
+				if absf(float(x) - 21.0) < 3.0 and absf(float(y) - 12.0) < 1.5 and d < 0.6:
+					c = Color("#77826f")
+				if (d > 0.3 and d < 0.38) or (d > 0.1 and d < 0.14 and (x + y) % 2 == 0):
+					c = Color("#222c2e")
+				img.set_pixel(x, y, c)
+			elif d < 1.0 and (x + y) % 2 == 0:
+				img.set_pixel(x, y, Color("#14110d"))
+	return img
+
+
+## Dirty metal for loudspeakers, floodlights and posts (32x32): scuffed dark grey with rust at the edges.
+static func metal_image(grime: Dictionary) -> Image:
+	var rust: Color = _color(grime, "rust_color", "#6a3a1c")
+	var img: Image = _image(32, 32, Color(0.5, 0.5, 0.48))
+	for y: int in 32:
+		for x: int in 32:
+			var n: float = _hash(x, y, 70)
+			if n > 0.85:
+				img.set_pixel(x, y, Color(0.38, 0.38, 0.36))
+			elif n < 0.06:
+				img.set_pixel(x, y, Color(0.62, 0.62, 0.58))
+			if y % 16 == 0:
+				img.set_pixel(x, y, Color(0.3, 0.3, 0.29))
+			_splat(img, x, y, rust, clampf((_value_noise(x, y, 8, 32, 71) - 0.5) * 3.0, 0.0, 1.0) * 0.8)
+	return img
+
+
+## A drain grate (32x32): dark slots in a grey plate.
+static func grate_image() -> Image:
+	var img: Image = _image(32, 32, Color("#4a4a46"))
+	for y: int in range(3, 29):
+		for x: int in range(3, 29):
+			if x % 4 != 0:
+				img.set_pixel(x, y, Color("#0b0b09"))
+	return img
+
+
+# ---- characters ----
+
+## A dulled, scuffed, matte copy of a character texture: colors drained and darkened, bright gloss spots
+## pulled down to the surrounding tone, then scuffs and grime flecks. Pure function of its inputs.
+static func dull_character_image(src: Image, cfg: Dictionary, salt: int = 0) -> Image:
+	var img: Image = src.duplicate() as Image
+	if img.get_format() != Image.FORMAT_RGBA8:
+		img.convert(Image.FORMAT_RGBA8)
+	var saturation: float = float(cfg.get("saturation", 0.5))
+	var brightness: float = float(cfg.get("value", 0.8))
+	var gloss_ceiling: float = float(cfg.get("gloss_ceiling", 0.62))
+	var scuff: float = float(cfg.get("scuff", 0.2))
+	var dirt: Color = Color.html(str(cfg.get("dirt_color", "#1b1812")))
+	var warm: Color = Color.html(str(cfg.get("warm_cast", "#d8c9a8")))
+	var cast: float = float(cfg.get("warm_cast_amount", 0.12))
+	var w: int = img.get_width()
+	var h: int = img.get_height()
+	for y: int in h:
+		for x: int in w:
+			var c: Color = img.get_pixel(x, y)
+			if c.a < 0.5:
+				continue
+			var luma: float = c.r * LookProfiles.LUMA.x + c.g * LookProfiles.LUMA.y + c.b * LookProfiles.LUMA.z
+			if luma > gloss_ceiling and c.get_luminance() > 0.8:
+				c = c.darkened(0.35)           # chalk gloss spots and catch-lights: no toy sheen
+			c = LookProfiles.drain(c, saturation, brightness)
+			c = c.lerp(Color(c.r * warm.r, c.g * warm.g, c.b * warm.b, c.a), cast)
+			var n: float = _hash(x, y, 200 + salt)
+			if n > 1.0 - scuff * 0.5:
+				c = c.lerp(dirt, 0.55)
+			elif n < scuff * 0.22:
+				c = c.lightened(0.07)
+			# grimy lower half: dirt creeps up from the bottom of each 16 px cell
+			var blotch: float = _value_noise(x, y, 8, maxi(w, 8), 210 + salt)
+			if blotch > 0.62 and ((x + y) & 1) == 0:
+				c = c.lerp(dirt, 0.4)
+			img.set_pixel(x, y, c)
+	return img
+
+
+static func dull_character_texture(src: Texture2D, cfg: Dictionary) -> Texture2D:
+	if src == null:
+		return null
+	var key: String = "char:%d:%s" % [src.get_instance_id(), str(cfg)]
+	if _char_cache.has(key):
+		return _char_cache[key]
+	var image: Image = src.get_image()
+	if image == null or image.is_empty():
+		return src
+	var salt: int = int(src.get_width()) + int(src.get_height())
+	_char_cache[key] = _texture(dull_character_image(image, cfg, salt))
+	return _char_cache[key]
