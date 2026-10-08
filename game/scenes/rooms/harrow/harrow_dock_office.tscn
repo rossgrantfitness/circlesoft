@@ -122,7 +122,6 @@ size = Vector3(0.9, 0.9, 0.9)
 script = ExtResource("1_r")
 player_scene = ExtResource("2_r")
 room_id = "harrow_dock_office"
-crew_by_flags = true
 
 [node name="RoomLook" type="Node" parent="."]
 script = ExtResource("3_r")

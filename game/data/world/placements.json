@@ -2343,7 +2343,10 @@
         {
           "conversation": "train_ex_crate"
         }
-      ]
+      ],
+      "show_if": {
+        "not_flag": "train_open_done"
+      }
     },
     "tr_fc_lights": {
       "room": "train_flatcar",

@@ -15,6 +15,7 @@ const ID_ENCOUNTERS: String = "battle/encounters"
 const ID_FORMULAS: String = "battle/formulas"
 const ID_FEEL: String = "battle/feel_targets"
 const ID_BATTLE_ITEMS: String = "battle/battle_items"
+const ID_BOSS_LINES: String = "text/boss_lines"
 const ID_CHARACTERS: String = "party/characters"
 const ID_GROWTH: String = "party/growth"
 const ID_XP_CURVE: String = "party/xp_curve"
@@ -25,7 +26,7 @@ const DATA_DB_NODE: NodePath = ^"DataDB"
 const STAT_KEYS: Array[String] = ["hp", "juice", "attack", "defense", "heart", "speed", "luck"]
 const RATINGS: Array[String] = ["miss", "nice", "rad", "totally_rad"]
 const PRESS_TYPES: Array[String] = ["tap", "hold_release", "string"]
-const EFFECT_KINDS: Array[String] = ["damage", "heal", "restore_juice", "status", "wheel"]
+const EFFECT_KINDS: Array[String] = ["damage", "heal", "restore_juice", "status", "wheel", "jam"]
 const EFFECT_TARGETS: Array[String] = ["primary", "random_other_enemy", "all_enemies", "all_allies", "self"]
 const SKILL_TARGETS: Array[String] = ["one_enemy", "all_enemies", "one_ally", "all_allies", "self", "one_down_ally"]
 const MS_KEYS: Array[String] = ["windup", "impact", "end"]
@@ -44,6 +45,8 @@ var battle_items: Dictionary = {}
 var field_item_ids: Array[String] = []
 ## Consumables, boosters, key items and gear (items/items.json and items/equipment.json).
 var item_data: ItemData = null
+## boss id -> {event: [lines]} from text/boss_lines.json (placeholder memo lines until M6-2).
+var boss_lines: Dictionary = {}
 var characters: Dictionary = {}
 var character_order: Array[String] = []
 var rules: Dictionary = {}
@@ -120,6 +123,10 @@ func _read(provider: Object) -> void:
 		var entry: Dictionary = item_data.item(item_id)
 		battle_items[item_id] = {"id": item_id, "name": str(entry.get("name", item_id)),
 			"target": str(entry.get("target", "one_ally")), "effect": (entry.get("effect", {}) as Dictionary).duplicate(true)}
+	var lines_doc: Dictionary = _copy(provider, ID_BOSS_LINES)
+	for boss_id: String in lines_doc:
+		if not boss_id.begins_with("_"):
+			boss_lines[boss_id] = lines_doc[boss_id]
 	var char_doc: Dictionary = _copy(provider, ID_CHARACTERS)
 	rules = char_doc.get("rules", {})
 	for entry: Variant in char_doc.get("characters", []):
@@ -291,6 +298,16 @@ func _validate_skills(errs: Array[String]) -> void:
 			errs.append("%s: no effects" % tag)
 		for fx_variant: Variant in effects:
 			_validate_effect(errs, tag, fx_variant as Dictionary, presses.size(), int(timeline["end"]), true)
+		if skill.has("part_mult") and float(skill["part_mult"]) <= 0.0:
+			errs.append("%s: part_mult must be positive" % tag)
+		if int(skill.get("cooldown_turns", 0)) < 0:
+			errs.append("%s: cooldown_turns can't be negative" % tag)
+		if skill.has("telegraph"):
+			var telegraph: Dictionary = skill["telegraph"]
+			if int(telegraph.get("bangs", 0)) < 1 or int(telegraph.get("bangs", 0)) > 3:
+				errs.append("%s: telegraph bangs must be 1 to 3" % tag)
+			if int(timeline["impact"]) - int(timeline["windup"]) < 0 or int(timeline["windup"]) < int(data_min_telegraph_windup()):
+				errs.append("%s: a telegraphed attack needs a longer wind-up (formulas.json boss.min_telegraph_windup_ms)" % tag)
 
 
 func _validate_effect(errs: Array[String], tag: String, fx: Dictionary, press_count: int, end_ms: int, top_level: bool) -> void:
@@ -355,7 +372,7 @@ func _validate_enemies(errs: Array[String]) -> void:
 			var skill: Dictionary = skills[skill_id]
 			if str(skill.get("user", "")) != enemy_id:
 				errs.append("%s: skill %s belongs to %s" % [tag, skill_id, str(skill.get("user", ""))])
-			if (skill["presses"] as Array).is_empty():
+			if (skill["presses"] as Array).is_empty() and not _has_effect_kind(skill, "jam"):
 				errs.append("%s: attack %s has no block press" % [tag, skill_id])
 			if float(entry.get("weight", 0)) <= 0.0:
 				errs.append("%s: AI weight must be positive" % tag)
@@ -372,10 +389,66 @@ func _validate_enemies(errs: Array[String]) -> void:
 		for status_id: String in enemy.get("status_resist", {}):
 			if not statuses.has(status_id):
 				errs.append("%s: resists unknown status %s" % [tag, status_id])
+		_validate_boss(errs, enemy_id, enemy)
 		if enemy.has("flee_at_hp_pct"):
 			var flee: float = float(enemy["flee_at_hp_pct"])
 			if flee <= 0.0 or flee >= 100.0:
 				errs.append("%s: flee_at_hp_pct out of range" % tag)
+
+
+func data_min_telegraph_windup() -> float:
+	return f("boss", "min_telegraph_windup_ms", 0.0)
+
+
+func _has_effect_kind(skill: Dictionary, kind: String) -> bool:
+	for fx_variant: Variant in skill.get("effects", []):
+		if str((fx_variant as Dictionary).get("kind", "")) == kind:
+			return true
+	return false
+
+
+## Boss extras: parts, phases, the jam pulse table, lines and telegraphs (see BattleBoss).
+func _validate_boss(errs: Array[String], enemy_id: String, enemy: Dictionary) -> void:
+	var tag: String = "enemy %s" % enemy_id
+	var has_any: bool = enemy.has("parts") or enemy.has("phases") or enemy.has("cue_scramble")
+	if not has_any:
+		return
+	if not BattleBoss.is_multi_part(enemy):
+		errs.append("%s: a boss needs parts and at least two phases" % tag)
+		return
+	var phase_ids: Array[String] = []
+	for phase_variant: Variant in enemy["phases"]:
+		phase_ids.append(str((phase_variant as Dictionary).get("id", "")))
+	for part_variant: Variant in enemy["parts"]:
+		var part: Dictionary = part_variant
+		if str(part.get("id", "")).is_empty() or int(part.get("hp", 0)) <= 0:
+			errs.append("%s: every part needs an id and HP" % tag)
+	var rows: Array = (enemy.get("cue_scramble", {}) as Dictionary).get("by_pairs_broken", [])
+	if rows.is_empty():
+		errs.append("%s: cue_scramble needs by_pairs_broken rows" % tag)
+	var last_strength: float = 99999.0
+	for row_variant: Variant in rows:
+		var row: Dictionary = row_variant
+		var offsets: Array = row.get("offset_ms", [])
+		if offsets.size() != 2 or float(offsets[0]) <= 0.0 or float(offsets[1]) < float(offsets[0]):
+			errs.append("%s: cue_scramble offset_ms needs [min, max]" % tag)
+			continue
+		var strength: float = float(offsets[1]) * (1.0 + float(row.get("dropout_chance", 0.0)))
+		if strength > last_strength:
+			errs.append("%s: each broken pair must weaken the pulse, not strengthen it" % tag)
+		last_strength = strength
+		if float(row.get("dropout_chance", 0.0)) < 0.0 or float(row.get("dropout_chance", 0.0)) > 1.0:
+			errs.append("%s: dropout_chance out of range" % tag)
+	for entry_variant: Variant in enemy.get("ai", []):
+		var cond: Dictionary = (entry_variant as Dictionary).get("if", {})
+		if cond.has("phase_is") and not phase_ids.has(str(cond["phase_is"])):
+			errs.append("%s: AI names unknown phase %s" % [tag, str(cond["phase_is"])])
+	if not boss_lines.has(enemy_id):
+		errs.append("%s: no lines in text/boss_lines.json" % tag)
+	else:
+		for key: String in ["start", "rig_turn", "pulse", "leg_break", "topple", "foot_turn", "defeat"]:
+			if not (boss_lines[enemy_id] as Dictionary).has(key):
+				errs.append("%s: boss lines missing '%s'" % [tag, key])
 
 
 func _validate_encounters(errs: Array[String]) -> void:
@@ -393,6 +466,18 @@ func _validate_encounters(errs: Array[String]) -> void:
 				errs.append("%s: missing %s" % [tag, key])
 		if not (feel.get("fight_seconds", {}) as Dictionary).has(str(encounter.get("tier", ""))):
 			errs.append("%s: tier has no feel target" % tag)
+		for who: Variant in encounter.get("suggested_party", []):
+			if not characters.has(str(who)):
+				errs.append("%s: suggested_party names unknown fighter %s" % [tag, str(who)])
+		for drop_variant: Variant in encounter.get("drops", []):
+			var drop: Dictionary = drop_variant
+			if not item_data.knows(str(drop.get("item", ""))):
+				errs.append("%s: drops unknown item %s" % [tag, str(drop.get("item", ""))])
+			if float(drop.get("chance", 1.0)) <= 0.0 or float(drop.get("chance", 1.0)) > 1.0:
+				errs.append("%s: drop chance out of range" % tag)
+		for key: String in (encounter.get("reward_scale", {}) as Dictionary):
+			if not ["xp", "credits"].has(key) or float(encounter["reward_scale"][key]) <= 0.0:
+				errs.append("%s: bad reward_scale '%s'" % [tag, key])
 
 
 func _validate_party(errs: Array[String]) -> void:

@@ -347,6 +347,14 @@
         {
           "do": "say",
           "conversation": "train_open_3"
+        },
+        {
+          "do": "hide",
+          "actor": "SeatCrate"
+        },
+        {
+          "do": "set_flag",
+          "flag": "train_open_done"
         }
       ],
       "trigger": {

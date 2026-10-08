@@ -154,7 +154,17 @@ func _play(scene_id: String) -> void:
 	_held_player = false
 	_running = false
 	current_scene = ""
+	_refresh_spots()
 	scene_finished.emit(scene_id)
+
+
+## A scene may have changed a flag a spot's show_if reads (the crate she just shouldered): ask them again.
+func _refresh_spots() -> void:
+	if room == null or not is_instance_valid(room):
+		return
+	for node: Node in room.find_children("*", "Node3D", true, false):
+		if node is SceneSpot:
+			(node as SceneSpot).refresh()
 
 
 func _steps(steps: Array) -> void:

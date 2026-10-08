@@ -18,7 +18,8 @@ import os
 DATA = os.path.join(os.path.dirname(__file__), "..", "..", "data", "world", "look_dressing.json")
 WORKS = ("road_mast_road", "road_mast_foot", "tower_sump", "tower_cable_hall", "tower_bell_gallery", "tower_generator",
          "tower_jammer_deck", "tower_landing", "tower_roof")  # written by make_works_dressing.py
-KEEP = ("harrow_square", "harrow_checkpoint", "battle") + WORKS
+TRAIN = ("train_flatcar", "train_hopper", "train_boxcar")  # written by make_train_rooms.py
+KEEP = ("harrow_square", "harrow_checkpoint", "battle") + WORKS + TRAIN
 
 TEAL, SODIUM, PINK = "#5fe0c8", "#ff9a3c", "#ff3e9a"
 

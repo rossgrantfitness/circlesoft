@@ -57,8 +57,16 @@ func _initialize() -> void:
 			gear = false
 	var sim: BattleSim = BattleSim.new()
 	sim.use_gear = gear
-	var encounters: Array[String] = sim.data.encounter_order if encounter_arg == "all" else [encounter_arg] as Array[String]
-	var players: Array[String] = BattleSim.PLAYERS if player_arg == "all" else [player_arg] as Array[String]
+	var encounters: Array[String] = []
+	if encounter_arg == "all":
+		encounters.append_array(sim.data.encounter_order)
+	else:
+		encounters.append(encounter_arg)
+	var players: Array[String] = []
+	if player_arg == "all":
+		players.append_array(BattleSim.PLAYERS)
+	else:
+		players.append(player_arg)
 	var problems: Array[String] = []
 	_print_header(markdown)
 	var all_stats: Array[Dictionary] = []

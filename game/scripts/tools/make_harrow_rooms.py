@@ -98,13 +98,22 @@ class H(Room):
         for name, (x, z), face in markers:
             self.node(name, "Marker3D", "Spawns", (x, 0, z), yaw_deg=yaw_to(*face))
 
-    def flag_visible(self, name, show_if, x, y, z):
+    def window(self, name, window_id, x, y, z, yaw=0, size=(0.5, 0.6)):
+        """One of Lamp Square's twelve window lamps (lit or dark by data/world/windows.json)."""
+        script = self.ext_res("Script", "res://scripts/field/window_lamp.gd")
+        self.node(name, "Node3D", ".", (x, y, z), yaw_deg=yaw,
+                  extra='script = %s\nwindow_id = "%s"\nsize = Vector2(%s, %s)' % (script, window_id, size[0], size[1]))
+
+    def flag_visible(self, name, show_if, x, y, z, hide_if=None):
         script = self.ext_res("Script", "res://scripts/field/flag_visible.gd")
-        self.node(name, "Node3D", ".", (x, y, z), extra='script = %s\nshow_if = "%s"' % (script, show_if.replace('"', '\\"')))
+        extra = 'script = %s\nshow_if = "%s"' % (script, show_if.replace('"', '\\"'))
+        if hide_if:
+            extra += '\nhide_if = "%s"' % hide_if.replace('"', '\\"')
+        self.node(name, "Node3D", ".", (x, y, z), extra=extra)
 
 
-def start(room_id, title, w, d, yaw, cam_center, cam_size, wall_h, floor_tint, wall_tint, floor_tex="checker_64"):
-    r = H(room_id, title, w, d)
+def start(room_id, title, w, d, yaw, cam_center, cam_size, wall_h, floor_tint, wall_tint, floor_tex="checker_64", room_class=None):
+    r = (room_class or H)(room_id, title, w, d)
     script_room = r.ext_res("Script", "res://scripts/field/field_room.gd")
     player = r.ext_res("PackedScene", "res://scenes/actors/player.tscn")
     look = r.ext_res("Script", "res://scripts/core/psx_room_look.gd")
@@ -188,11 +197,13 @@ def square():
     shop("FrontCourier", 2.0, 6.0, (0.78, 0.62, 0.3))
     shop("FrontStore", 6.5, 10.5, (0.45, 0.62, 0.42))
     shop("FrontGear", 14.5, 17.5, (0.42, 0.52, 0.72))
-    lamps(r, r.wall_mat, [("LampA", 2.6, 3.2, 0.12, 0.5, 0.6), ("LampB", 5.4, 3.2, 0.12, 0.5, 0.6), ("LampC", 9.6, 3.2, 0.12, 0.5, 0.6),
-                          ("LampD", 15.0, 3.2, 0.12, 0.5, 0.6), ("LampE", 17.0, 3.2, 0.12, 0.5, 0.6), ("LampF", 0.12, 3.2, 8.0, 0.05, 0.5)])
-    r.box("DarkWindow", 7.0, 2.6, 0.14, 1.2, 0.9, 0.04, r.lit((0.08, 0.09, 0.14), (1, 1), "checker_64"))
-    r.flag_visible("LitWindow", '{"flag": "job_dark_window_done"}', 7.0, 2.6, 0.17)
-    r.box("LitWindowQuad", 0, 0, 0, 1.2, 0.9, 0.04, r.glow((1.0, 0.82, 0.45), 1.5), parent="LitWindow")
+    # the twelve window lamps (docs/maps/harrow_landing.md): each is its own switch in data/world/windows.json.
+    # N wall: win_01 to win_08 (win_03 is the dark window above the store); W wall: win_09 to win_12.
+    for wid, x in (("win_01", 2.0), ("win_02", 5.5), ("win_04", 10.0), ("win_05", 14.5), ("win_06", 17.5), ("win_07", 18.8), ("win_08", 21.0)):
+        r.window("Window" + wid[-2:], wid, x, 2.6, 0.12)
+    r.window("Window03", "win_03", 7.0, 2.6, 0.14, size=(1.2, 0.9))
+    for wid, z in (("win_09", 2.0), ("win_10", 5.5), ("win_11", 8.0), ("win_12", 10.5)):
+        r.window("Window" + wid[-2:], wid, 0.12, 2.6, z, yaw=90)
     # the balcony and its crate step (the dark window's side job)
     r.box("Balcony", 7.0, 0.9, 0.3, 2.0, 1.8, 0.6, r.lit((0.5, 0.42, 0.34)), solid=True)
     r.box("CrateStep", 6.5, 0.45, 1.2, 0.9, 0.9, 0.9, r.lit((0.8, 0.5, 0.35)), solid=True)
@@ -277,9 +288,13 @@ def docks():
     r.pickup("ChiliPickup", "dk_chili", 2.0, 6.0, y=1.8)
     r.pickup("PierCoffee", "dk_pier_coffee", 21.5, 12.4)
     # people
-    r.npc("Kasp", "dk_kasp", 13.0, 4.0, face=(0, -1))
-    r.npc("GruntA", "dk_grunt_a", 12.0, 5.0, face=(0, -1))
-    r.npc("GruntB", "dk_grunt_b", 14.0, 5.0, face=(0, -1))
+    r.npc("Kasp", "dk_kasp", 14.0, 7.0, face=(0.4, 1))
+    r.npc("GruntA", "dk_grunt_a", 12.0, 5.0, face=(0.5, 1))
+    r.npc("GruntB", "dk_grunt_b", 16.0, 6.0, face=(-0.3, 1))
+    # the washed-up delivery crate (B1 only, until the dock fight is won): wet-dark, with a puddle under it
+    r.flag_visible("WashedUpCrate", '{"beat": ["b1_night"]}', 15.0, 0.0, 8.2, hide_if='{"flag": "dock_fight_won"}')
+    r.box("WetCrate", 0, 0.45, 0, 0.9, 0.9, 0.9, r.lit((0.38, 0.27, 0.22)), solid=True, parent="WashedUpCrate")
+    r.box("WetPuddle", 0, 0.02, 0.2, 2.0, 0.02, 1.5, r.lit((0.08, 0.12, 0.2), (1, 1), "checker_64"), parent="WashedUpCrate")
     r.npc("Otis", "dk_otis", 5.0, 1.0, face=(0, 1))
     r.npc("HandA", "dk_hand_a", 9.0, 3.0, face=(1, 0.3))
     r.npc("HandB", "dk_hand_b", 8.2, 3.7, face=(1, -0.2))

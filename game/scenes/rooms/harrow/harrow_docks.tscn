@@ -1,4 +1,4 @@
-[gd_scene load_steps=61 format=3]
+[gd_scene load_steps=65 format=3]
 
 [ext_resource type="Script" path="res://scripts/field/field_room.gd" id="1_r"]
 [ext_resource type="PackedScene" path="res://scenes/actors/player.tscn" id="2_r"]
@@ -14,7 +14,8 @@
 [ext_resource type="PackedScene" path="res://scenes/props/door.tscn" id="12_r"]
 [ext_resource type="PackedScene" path="res://scenes/props/pickup.tscn" id="13_r"]
 [ext_resource type="PackedScene" path="res://scenes/actors/placed_npc.tscn" id="14_r"]
-[ext_resource type="Script" path="res://scripts/field/grim_dressing.gd" id="15_r"]
+[ext_resource type="Script" path="res://scripts/field/flag_visible.gd" id="15_r"]
+[ext_resource type="Script" path="res://scripts/field/grim_dressing.gd" id="16_r"]
 
 [sub_resource type="Environment" id="Environment_1"]
 background_mode = 1
@@ -220,11 +221,27 @@ shader_parameter/uv_scale = Vector2(1, 1)
 shader_parameter/albedo_tint = Color(0.7, 0.45, 0.32, 1)
 shader_parameter/affine_amount = 0.3
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_46"]
+shader = ExtResource("6_r")
+shader_parameter/albedo_texture = ExtResource("9_r")
+shader_parameter/uv_scale = Vector2(1, 1)
+shader_parameter/albedo_tint = Color(0.38, 0.27, 0.22, 1)
+shader_parameter/affine_amount = 0.3
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_47"]
+shader = ExtResource("6_r")
+shader_parameter/albedo_texture = ExtResource("7_r")
+shader_parameter/uv_scale = Vector2(1, 1)
+shader_parameter/albedo_tint = Color(0.08, 0.12, 0.2, 1)
+shader_parameter/affine_amount = 0.3
+
+[sub_resource type="BoxMesh" id="BoxMesh_48"]
+size = Vector3(2.0, 0.02, 1.5)
+
 [node name="HarrowDocks" type="Node3D"]
 script = ExtResource("1_r")
 player_scene = ExtResource("2_r")
 room_id = "harrow_docks"
-crew_by_flags = true
 
 [node name="RoomLook" type="Node" parent="."]
 script = ExtResource("3_r")
@@ -469,16 +486,36 @@ transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 21.5, 0.
 placement_id = "dk_pier_coffee"
 
 [node name="Kasp" parent="." instance=ExtResource("14_r")]
-transform = Transform3D(-1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, -1.0000, 13.0, 0.0, 4.0)
+transform = Transform3D(0.9285, 0, 0.3714, 0, 1, 0, -0.3714, 0, 0.9285, 14.0, 0.0, 7.0)
 placement_id = "dk_kasp"
 
 [node name="GruntA" parent="." instance=ExtResource("14_r")]
-transform = Transform3D(-1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, -1.0000, 12.0, 0.0, 5.0)
+transform = Transform3D(0.8944, 0, 0.4472, 0, 1, 0, -0.4472, 0, 0.8944, 12.0, 0.0, 5.0)
 placement_id = "dk_grunt_a"
 
 [node name="GruntB" parent="." instance=ExtResource("14_r")]
-transform = Transform3D(-1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, -1.0000, 14.0, 0.0, 5.0)
+transform = Transform3D(0.9578, 0, -0.2873, 0, 1, 0, 0.2873, 0, 0.9578, 16.0, 0.0, 6.0)
 placement_id = "dk_grunt_b"
+
+[node name="WashedUpCrate" type="Node3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 15.0, 0.0, 8.2)
+script = ExtResource("15_r")
+show_if = "{\"beat\": [\"b1_night\"]}"
+hide_if = "{\"flag\": \"dock_fight_won\"}"
+
+[node name="WetCrate" type="MeshInstance3D" parent="WashedUpCrate"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 0, 0.45, 0)
+mesh = SubResource("BoxMesh_43")
+surface_material_override/0 = SubResource("ShaderMaterial_46")
+
+[node name="WetCrateShape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 0, 0.45, 0)
+shape = SubResource("BoxShape3D_44")
+
+[node name="WetPuddle" type="MeshInstance3D" parent="WashedUpCrate"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 0, 0.02, 0.2)
+mesh = SubResource("BoxMesh_48")
+surface_material_override/0 = SubResource("ShaderMaterial_47")
 
 [node name="Otis" parent="." instance=ExtResource("14_r")]
 transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 5.0, 0.0, 1.0)
@@ -511,5 +548,5 @@ transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 19.0, 0,
 transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 12.0, 0, 1.5)
 
 [node name="GrimDressing" type="Node3D" parent="."]
-script = ExtResource("15_r")
+script = ExtResource("16_r")
 dressing_id = "harrow_docks"

@@ -6525,6 +6525,386 @@
      "height": 3.0
     }
    ]
+  },
+  "train_flatcar": {
+   "key_light": {
+    "color": "#c4d4e4",
+    "energy": 0.8,
+    "dir_deg": [
+     -48.0,
+     36.0
+    ]
+   },
+   "items": [
+    {
+     "type": "skyline",
+     "pos": [
+      10.0,
+      0,
+      -9.0
+     ],
+     "length": 60.0,
+     "count": 16,
+     "seed": 31,
+     "base_y": 2.5,
+     "max_height": 8.0
+    },
+    {
+     "type": "loudspeaker",
+     "pos": [
+      0.5,
+      2.7,
+      5.4
+     ]
+    },
+    {
+     "type": "floodlight",
+     "pos": [
+      1.2,
+      0,
+      5.2
+     ],
+     "aim_deg": -25.0,
+     "height": 2.6
+    },
+    {
+     "type": "cable",
+     "from": [
+      3.0,
+      3.6,
+      1.3
+     ],
+     "to": [
+      17.0,
+      3.6,
+      1.3
+     ],
+     "sag": 0.45,
+     "strands": 3,
+     "segments": 8
+    },
+    {
+     "type": "pipe",
+     "from": [
+      0.2,
+      2.8,
+      0.3
+     ],
+     "to": [
+      19.8,
+      2.8,
+      0.3
+     ],
+     "radius": 0.06
+    },
+    {
+     "type": "stripes",
+     "pos": [
+      10.0,
+      0.03,
+      5.8
+     ],
+     "size": [
+      18.0,
+      0.03,
+      0.2
+     ]
+    },
+    {
+     "type": "puddle",
+     "pos": [
+      14.0,
+      0,
+      4.4
+     ],
+     "size": [
+      1.8,
+      1.0
+     ]
+    },
+    {
+     "type": "smear",
+     "pos": [
+      18.5,
+      0,
+      1.2
+     ],
+     "size": [
+      1.2,
+      1.6
+     ],
+     "color": "#ff9a3c",
+     "energy": 0.4
+    },
+    {
+     "type": "poster",
+     "pos": [
+      19.7,
+      1.7,
+      5.5
+     ],
+     "yaw": 90,
+     "variant": 0,
+     "size": [
+      0.7,
+      1.05
+     ]
+    }
+   ]
+  },
+  "train_hopper": {
+   "key_light": {
+    "color": "#c4d4e4",
+    "energy": 0.8,
+    "dir_deg": [
+     -48.0,
+     36.0
+    ]
+   },
+   "items": [
+    {
+     "type": "skyline",
+     "pos": [
+      11.0,
+      0,
+      -9.0
+     ],
+     "length": 64.0,
+     "count": 16,
+     "seed": 32,
+     "base_y": 2.5,
+     "max_height": 8.0
+    },
+    {
+     "type": "neon",
+     "pos": [
+      4.0,
+      2.0,
+      0.13
+     ],
+     "text": "QUOTA",
+     "color": "#ff9a3c",
+     "height": 0.34,
+     "pattern": "1111h111011",
+     "phase": 3,
+     "light_energy": 1.0,
+     "light_range": 3.0
+    },
+    {
+     "type": "loudspeaker",
+     "pos": [
+      2.8,
+      2.3,
+      0.3
+     ]
+    },
+    {
+     "type": "pipe",
+     "from": [
+      0.2,
+      2.2,
+      0.2
+     ],
+     "to": [
+      21.8,
+      2.2,
+      0.2
+     ],
+     "radius": 0.07
+    },
+    {
+     "type": "cable",
+     "from": [
+      13.0,
+      2.4,
+      0.4
+     ],
+     "to": [
+      21.0,
+      2.4,
+      0.4
+     ],
+     "sag": 0.3,
+     "strands": 2,
+     "segments": 6
+    },
+    {
+     "type": "steam",
+     "pos": [
+      8.0,
+      0,
+      6.4
+     ],
+     "rise": 0.9
+    },
+    {
+     "type": "steam",
+     "pos": [
+      20.8,
+      0,
+      3.2
+     ],
+     "rise": 0.9
+    },
+    {
+     "type": "stripes",
+     "pos": [
+      11.0,
+      0.03,
+      1.0
+     ],
+     "size": [
+      20.0,
+      0.03,
+      0.12
+     ]
+    },
+    {
+     "type": "smear",
+     "pos": [
+      19.0,
+      0,
+      5.0
+     ],
+     "size": [
+      1.0,
+      1.6
+     ],
+     "color": "#ff9a3c",
+     "energy": 0.35
+    },
+    {
+     "type": "puddle",
+     "pos": [
+      15.5,
+      0,
+      3.7
+     ],
+     "size": [
+      1.6,
+      0.8
+     ]
+    }
+   ]
+  },
+  "train_boxcar": {
+   "key_light": {
+    "color": "#c4d4e4",
+    "energy": 0.8,
+    "dir_deg": [
+     -48.0,
+     36.0
+    ]
+   },
+   "items": [
+    {
+     "type": "hang_lamp",
+     "pos": [
+      7.0,
+      3.0,
+      2.5
+     ],
+     "drop": 0.5,
+     "color": "#ff9a3c",
+     "energy": 1.4,
+     "range": 5.0
+    },
+    {
+     "type": "poster",
+     "pos": [
+      3.0,
+      1.7,
+      0.08
+     ],
+     "variant": 1,
+     "size": [
+      0.7,
+      1.05
+     ]
+    },
+    {
+     "type": "poster",
+     "pos": [
+      14.8,
+      1.7,
+      0.08
+     ],
+     "variant": 2,
+     "size": [
+      0.62,
+      0.93
+     ]
+    },
+    {
+     "type": "pipe",
+     "from": [
+      0.2,
+      2.7,
+      0.2
+     ],
+     "to": [
+      15.8,
+      2.7,
+      0.2
+     ],
+     "radius": 0.06
+    },
+    {
+     "type": "cable",
+     "from": [
+      0.5,
+      2.9,
+      0.4
+     ],
+     "to": [
+      15.5,
+      2.9,
+      0.4
+     ],
+     "sag": 0.3,
+     "strands": 2,
+     "segments": 6
+    },
+    {
+     "type": "stripes",
+     "pos": [
+      11.5,
+      0.03,
+      5.75
+     ],
+     "size": [
+      5.0,
+      0.03,
+      0.18
+     ]
+    },
+    {
+     "type": "smear",
+     "pos": [
+      11.5,
+      0,
+      5.4
+     ],
+     "size": [
+      3.0,
+      0.8
+     ],
+     "color": "#5fe0c8",
+     "energy": 0.3
+    },
+    {
+     "type": "puddle",
+     "pos": [
+      4.5,
+      0,
+      5.0
+     ],
+     "size": [
+      1.4,
+      0.8
+     ]
+    }
+   ]
   }
  }
 }

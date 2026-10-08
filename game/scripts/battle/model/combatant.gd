@@ -34,6 +34,11 @@ var bonus: Dictionary = {}
 var perks: Dictionary = {}
 ## Worn gear {weapon, armor, charm} (party only); carried back out in the battle result.
 var equipment: Dictionary = {}
+## Boss extras (see BattleBoss): the current phase id ("" for ordinary fighters), the parts still
+## to break ({id, name, hp, hp_max, legs, broken}) and skill cooldowns (skill id -> own turns left).
+var phase: String = ""
+var parts: Array[Dictionary] = []
+var cooldowns: Dictionary = {}
 
 
 func is_party() -> bool:
@@ -60,9 +65,13 @@ func to_snapshot() -> Dictionary:
 	var ids: Array[String] = []
 	for status_id: String in statuses:
 		ids.append(status_id)
-	return {
+	var snap: Dictionary = {
 		"id": id, "side": side, "slot": slot, "name": display_name, "kind": kind, "model": model,
 		"hp": hp, "hp_max": hp_max, "juice": juice, "juice_max": juice_max, "level": level,
 		"speed": int(stat("speed")), "statuses": ids, "down": down, "is_boss": is_boss,
 		"fled": fled, "defending": defending,
 	}
+	if not phase.is_empty():
+		snap["phase"] = phase
+		snap["parts"] = BattleBoss.parts_snapshot(self)
+	return snap
