@@ -8,8 +8,14 @@ extends Node
 ## The title screen is a scene at TITLE_SCENE_PATH whose root has a `start_demo_requested` signal.
 ## If that scene is not there yet (or show_title is off), the room loads straight away.
 ## The F-key PSX debug overlay is added to the sharp UI layer.
+##
+## Combat sandbox (the LIGHTS ON feel prototype, docs/pivot/combat_api.md): when the build has the
+## `sandbox` feature tag, or the command line has `-- --sandbox`, Main skips the title and loads the
+## arena scene into the PSX world (start_sandbox()). Esc belongs to the sandbox's own pause menu there,
+## so the "back to the title" shortcut is off in the SANDBOX state. Without the tag or the flag
+## nothing here changes.
 
-enum State { NONE, TITLE, ROOM, BATTLE }
+enum State { NONE, TITLE, ROOM, BATTLE, SANDBOX }
 
 const TITLE_SCENE_PATH: String = "res://scenes/ui/title_screen.tscn"
 const START_SIGNAL: StringName = &"start_demo_requested"
@@ -32,6 +38,9 @@ const RESULT_RAN: String = "ran"
 const RESULT_LOSE: String = "lose"
 const CHOICE_RETRY: String = "retry"
 const GROUP: StringName = &"main_flow"
+const SANDBOX_FEATURE: String = "sandbox"
+const SANDBOX_ARG: String = "--sandbox"
+const SANDBOX_SCENE_PATH: String = "res://scenes/sandbox/combat_sandbox.tscn"
 
 ## A battle is over and the game is back where it came from (the room or the title). `report` is the
 ## battle's report; for a retry this is not sent until the retried fight ends.
@@ -44,6 +53,11 @@ signal battle_finished(result: String, report: Dictionary)
 ## Turn off to go straight into the room (visual capture scripts do this).
 @export var show_title: bool = true
 @export var debug_overlay_enabled: bool = true
+## Boot the combat sandbox when the `sandbox` feature tag or the `--sandbox` argument is present.
+## Tests that build a Main turn this off so a sandbox launch of the test runner can't change them.
+@export var sandbox_boot_enabled: bool = true
+## Where the sandbox arena scene lives.
+@export var sandbox_scene_path: String = SANDBOX_SCENE_PATH
 
 var overlay: PsxDebugOverlay = null
 ## GameState and Config to use. Null means the autoloads. Tests pass their own.
@@ -59,6 +73,7 @@ var _state: State = State.NONE
 var _title: Node = null
 var _state_frame: int = -1
 var _room: Node = null
+var _sandbox: Node = null
 var _kept_world: Array[Node] = []
 var _battle: Node = null
 var _battle_snapshot: Dictionary = {}
@@ -75,6 +90,8 @@ func _ready() -> void:
 		overlay = PsxDebugOverlay.new()
 		overlay.name = "PsxDebugOverlay"
 		screen.get_ui_layer().add_child(overlay)
+	if sandbox_boot_enabled and wants_sandbox() and start_sandbox() != null:
+		return
 	if show_title and ResourceLoader.exists(title_scene_path):
 		go_to_title()
 	else:
@@ -91,6 +108,33 @@ func _process(_delta: float) -> void:
 
 func get_state() -> State:
 	return _state
+
+
+## True when this run should boot the combat sandbox: the `sandbox` feature tag (the sandbox export
+## presets) or `-- --sandbox` on the command line.
+static func wants_sandbox() -> bool:
+	return OS.has_feature(SANDBOX_FEATURE) or OS.get_cmdline_user_args().has(SANDBOX_ARG)
+
+
+## The sandbox arena while it is the thing playing, else null.
+func get_sandbox() -> Node:
+	return _sandbox
+
+
+## Skips the title and puts the combat sandbox arena in the PSX world. Returns the arena, or null
+## (after an error) when the scene is missing, in which case the normal boot carries on.
+func start_sandbox() -> Node:
+	var scene: PackedScene = load(sandbox_scene_path) as PackedScene if ResourceLoader.exists(sandbox_scene_path) else null
+	if scene == null:
+		push_error("Main: no sandbox scene at %s" % sandbox_scene_path)
+		return null
+	_free_title()
+	_free_battle()
+	_free_kept_room()
+	_room = null
+	_sandbox = screen.load_world(scene)
+	_set_state(State.SANDBOX)
+	return _sandbox
 
 
 func get_title() -> Node:
@@ -114,6 +158,7 @@ func go_to_title() -> void:
 	_free_kept_room()
 	screen.clear_world()
 	_room = null
+	_sandbox = null
 	_free_title()
 	var scene: PackedScene = load(title_scene_path) as PackedScene if ResourceLoader.exists(title_scene_path) else null
 	if scene == null:
@@ -207,6 +252,7 @@ func start_demo() -> void:
 	_free_battle()
 	_free_kept_room()
 	_room = null
+	_sandbox = null
 	if start_scene != null:
 		_room = screen.load_world(start_scene)
 		_connect_room(_room)

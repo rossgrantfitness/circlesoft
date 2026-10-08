@@ -1,0 +1,210 @@
+{
+ "_about": "Key poses of the Cyberwolf Sentinel's clips (15 fps, stepped; written by scripts/tools/rig_*.py). Use these seconds as clip_s in moves.json anim.keys.",
+ "fps": 15,
+ "clips": {
+  "idle": {
+   "length_s": 1.6,
+   "loop": true,
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 8,
+     "clip_s": 0.5333
+    },
+    {
+     "frame": 16,
+     "clip_s": 1.0667
+    }
+   ]
+  },
+  "walk": {
+   "length_s": 0.9333,
+   "loop": true,
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 3,
+     "clip_s": 0.2
+    },
+    {
+     "frame": 7,
+     "clip_s": 0.4667
+    },
+    {
+     "frame": 10,
+     "clip_s": 0.6667
+    }
+   ]
+  },
+  "run": {
+   "length_s": 0.5333,
+   "loop": true,
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 2,
+     "clip_s": 0.1333
+    },
+    {
+     "frame": 4,
+     "clip_s": 0.2667
+    },
+    {
+     "frame": 6,
+     "clip_s": 0.4
+    }
+   ]
+  },
+  "attack_windup": {
+   "length_s": 0.5333,
+   "loop": false,
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 2,
+     "clip_s": 0.1333
+    },
+    {
+     "frame": 4,
+     "clip_s": 0.2667
+    },
+    {
+     "frame": 6,
+     "clip_s": 0.4
+    }
+   ]
+  },
+  "attack_swing": {
+   "length_s": 0.5333,
+   "loop": false,
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 1,
+     "clip_s": 0.0667
+    },
+    {
+     "frame": 3,
+     "clip_s": 0.2
+    },
+    {
+     "frame": 6,
+     "clip_s": 0.4
+    }
+   ]
+  },
+  "hurt": {
+   "length_s": 0.4,
+   "loop": false,
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 2,
+     "clip_s": 0.1333
+    },
+    {
+     "frame": 4,
+     "clip_s": 0.2667
+    }
+   ]
+  },
+  "stagger": {
+   "length_s": 0.8,
+   "loop": true,
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 4,
+     "clip_s": 0.2667
+    },
+    {
+     "frame": 8,
+     "clip_s": 0.5333
+    }
+   ]
+  },
+  "launched": {
+   "length_s": 0.5333,
+   "loop": true,
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 4,
+     "clip_s": 0.2667
+    }
+   ]
+  },
+  "knockdown": {
+   "length_s": 0.6667,
+   "loop": false,
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 3,
+     "clip_s": 0.2
+    },
+    {
+     "frame": 5,
+     "clip_s": 0.3333
+    },
+    {
+     "frame": 7,
+     "clip_s": 0.4667
+    }
+   ]
+  },
+  "getup": {
+   "length_s": 0.8,
+   "loop": false,
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 3,
+     "clip_s": 0.2
+    },
+    {
+     "frame": 6,
+     "clip_s": 0.4
+    },
+    {
+     "frame": 9,
+     "clip_s": 0.6
+    },
+    {
+     "frame": 11,
+     "clip_s": 0.7333
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,15 @@
+{
+ "_about": "Noise (the style meter) and the Lights On stub (docs/pivot/combat_api.md 4.5). Rank names are Level 1 (the studio may rename them); the numbers are starting guesses for Ross to tune.",
+ "version": 1,
+ "max_points": 100,
+ "ranks": [
+  {"id": "quiet", "name": "", "at": 0},
+  {"id": "nice", "name": "Nice!", "at": 20},
+  {"id": "rad", "name": "Rad!", "at": 50},
+  {"id": "totally_rad", "name": "TOTALLY RAD!", "at": 80}
+ ],
+ "variety": {"window_ms": 4000, "repeat_mult": 0.6, "min_mult": 0.2},
+ "drain": {"idle_ms": 2500, "per_s": 6.0},
+ "bonuses": {"parry": 12, "perfect_parry": 20, "perfect_dodge": 15, "launch": 8, "air_hit": 3},
+ "lights_on": {"duration_s": 12.0, "damage_mult": 1.5, "super_armor": true}
+}

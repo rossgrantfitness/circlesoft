@@ -1,5 +1,5 @@
 {
- "_about": "Look profiles (Technical Artist, 2026-10-08, the grim look test). Switch with F11 in the PSX options overlay (auto, classic, grim). A scene picks its own profile from scene_defaults unless the overlay forced one. 'classic' is the toy-box look Ross approved first and is never changed; it stays one F11 press away. GRIM IS THE DEFAULT EVERYWHERE since Ross approved the look test (2026-10-08). 'grim' is the greasy, desaturated, oppressive look from Ross's 2026-10-08 tone decision ('desaturate, darken, grime things up a bit'). Read by scripts/core/look_profiles.gd; every key has a test. grade.* feed the PSX post shader (shaders/psx_post.gdshader); post.* are its color levels and dither size; lighting.* are multipliers on a room's own ambient and lights (PsxRoomLook); fog.* tint and shorten the fog; materials.* drain and darken room material tints (GrimDressing); grime.* are the code-painted grime colors and amounts (GrimePaint); characters.* is the dull, matte, scuffed pass on character textures; models maps a classic model path to this profile's variant; backdrop.* replaces keys of the battle set (BattleBackdrop).",
+ "_about": "Look profiles (Technical Artist, 2026-10-08, the grim look test). Switch with F11 in the PSX options overlay (auto, classic, grim). A scene picks its own profile from scene_defaults unless the overlay forced one. 'classic' is the toy-box look Ross approved first and is never changed; it stays one F11 press away. GRIM IS THE DEFAULT EVERYWHERE since Ross approved the look test (2026-10-08). 'grim' is the greasy, desaturated, oppressive look from Ross's 2026-10-08 tone decision ('desaturate, darken, grime things up a bit'). Read by scripts/core/look_profiles.gd; every key has a test. grade.* feed the PSX post shader (shaders/psx_post.gdshader); post.* are its color levels and dither size; lighting.* are multipliers on a room's own ambient and lights (PsxRoomLook); fog.* tint and shorten the fog; materials.* drain and darken room material tints (GrimDressing); grime.* are the code-painted grime colors and amounts (GrimePaint); characters.* is the dull, matte, scuffed pass on character textures; models maps a classic model path to this profile's variant; backdrop.* replaces keys of the battle set (BattleBackdrop). 'grim_ps2' (added 2026-10-08, Technical Artist) is the early-PS2 look for the combat sandbox: see its own _about; it is never anyone's default.",
  "default": "grim",
  "scene_defaults": {
   "_note": "Which profile a scene gets on its own, if it should differ from 'default'. Keys are room ids (data/world/rooms.json) or 'battle'. Empty: grim everywhere since Ross approved it (2026-10-08). F11 in the overlay forces any profile on every scene."
@@ -203,6 +203,202 @@
     "range": 3.2,
     "height": 0.7,
     "forward": 0.25
+   }
+  },
+  "grim_ps2": {
+   "name": "Grim PS2 (combat sandbox)",
+   "grade": {
+    "_note": "amount 1 = fully on. desat drains colour (accent_keep spares bright saturated pixels: lamps, warning stripes, the call's teal). crush/gamma/gain darken. The split tone pushes shadows teal and highlights sodium orange.",
+    "amount": 1.0,
+    "desat": 0.75,
+    "accent_keep": 0.8,
+    "gain": 1.0,
+    "gamma": 1.1,
+    "crush": 0.03,
+    "shadow_tint": [
+     0.55,
+     0.78,
+     0.74
+    ],
+    "highlight_tint": [
+     0.96,
+     0.84,
+     0.66
+    ],
+    "tint_amount": 0.6,
+    "grain": 0.065,
+    "grain_fps": 12.0,
+    "vignette": 0.4
+   },
+   "post": {
+    "color_levels": 256,
+    "dither_amount": 0.0
+   },
+   "lighting": {
+    "ambient_color_mul": [
+     0.85,
+     0.95,
+     0.95
+    ],
+    "ambient_energy_mul": 1.3,
+    "point_energy_mul": 1.0,
+    "key_energy_mul": 1.6,
+    "dressing_key_scale": 0.9
+   },
+   "fog": {
+    "color": "#2a2c24",
+    "mix": 1.0,
+    "near_mul": 1.0,
+    "far_mul": 1.0,
+    "near_m": 18.0,
+    "far_m": 75.0,
+    "smooth": true
+   },
+   "materials": {
+    "saturation": 0.5,
+    "value": 1.25
+   },
+   "grime": {
+    "dirt": 0.8,
+    "rust": 0.7,
+    "stain": 0.7,
+    "dirt_color": "#17140f",
+    "rust_color": "#6a3a1c",
+    "oil_color": "#161815"
+   },
+   "dressing": true,
+   "characters": {
+    "_note": "Ross's own art is NEVER repainted (dull false, no prepainted list): only the edge light and a small lift for readability. Edge light stays 'not too bright' (F56); the glow threshold sits above it so it never blooms. by_model keys match the model path.",
+    "dull": false,
+    "saturation": 0.62,
+    "value": 0.9,
+    "gloss_ceiling": 0.62,
+    "scuff": 0.35,
+    "dirt_color": "#1b1812",
+    "warm_cast": "#d8c9a8",
+    "warm_cast_amount": 0.2,
+    "tint_saturation": 1.0,
+    "tint_value": 1.1,
+    "rim_color": "#cfe6ee",
+    "rim_strength": 0.55,
+    "rim_power": 1.7,
+    "rim_top_bias": 0.3,
+    "rim_bands": 4,
+    "roles": {
+     "party": {
+      "rim_color": "#ffe2b0",
+      "rim_strength": 0.6,
+      "rim_power": 1.6
+     },
+     "player": {
+      "rim_color": "#ffe2b0",
+      "rim_strength": 0.6,
+      "rim_power": 1.6
+     },
+     "enemy": {
+      "rim_color": "#cfe8f2",
+      "rim_strength": 0.5,
+      "rim_power": 1.7
+     },
+     "npc": {
+      "rim_strength": 0.45
+     }
+    },
+    "by_model": {
+     "red_ross": {
+      "rim_color": "#ffe2b0",
+      "rim_strength": 0.6,
+      "rim_power": 1.6,
+      "tint_value": 1.1
+     },
+     "cyberwolf": {
+      "rim_color": "#cfe8f2",
+      "rim_strength": 0.5,
+      "rim_power": 1.7,
+      "tint_value": 1.15
+     },
+     "enm_sandbox": {
+      "rim_color": "#cfe8f2",
+      "rim_strength": 0.5,
+      "saturation": 1.0,
+      "tint_value": 1.2
+     },
+     "sword_": {
+      "rim_strength": 0.0,
+      "tint_value": 1.0
+     }
+    },
+    "contact_shadow": 1.0
+   },
+   "player_lamp": {
+    "_note": "Red carries her lamp: a small warm light that rides with her in the grim look.",
+    "color": "#ffb347",
+    "energy": 1.7,
+    "range": 3.2,
+    "height": 0.7,
+    "forward": 0.25
+   },
+   "_about": "The early-PS2 look for the combat sandbox (Ross, 2026-10-08: 'the psx look needs a upgrade to ps2'; docs/pivot/combat_api.md section 6). Grim's grade, fog and edge light kept; 640x360 smooth picture, retro wobble (vertex jitter, affine warp), dither and 15-bit colour off, a real-time key-light shadow, glow, gentle smooth fog. Applied by scripts/core/ps2_look.gd (a look-aware node the sandbox adds); a scene without that node only gets the grade and fog. texture_filter is per texture group: smooth (linear + mipmaps) or nearest (crisp pixels); Ross has not chosen for the city tiles yet, so they stay nearest.",
+   "screen": {
+    "resolution": "640x360",
+    "smooth_scale": true
+   },
+   "retro_wobble": {
+    "jitter": 0.0,
+    "affine": 0.0
+   },
+   "dither": {
+    "enabled": false
+   },
+   "color_depth": {
+    "enabled": false
+   },
+   "shadows": {
+    "enabled": true,
+    "filter": "soft_low",
+    "mode": "parallel_2_splits",
+    "max_distance_m": 20.0,
+    "bias": 0.05,
+    "normal_bias": 1.0,
+    "blur": 1.0,
+    "fighters_cast": true,
+    "fx_cast": false
+   },
+   "glow": {
+    "enabled": true,
+    "intensity": 0.9,
+    "strength": 1.0,
+    "bloom": 0.05,
+    "hdr_threshold": 0.8,
+    "hdr_scale": 2.0,
+    "blend": "screen",
+    "levels": [
+     0.0,
+     0.0,
+     1.0,
+     1.0,
+     0.7,
+     0.0,
+     0.0
+    ],
+    "neon_pick": {
+     "weapons": 0.9,
+     "characters": 0.25,
+     "enemies": 0.3
+    }
+   },
+   "texture_filter": {
+    "_note": "smooth = linear with mipmaps; nearest = crisp pixels. Groups: characters (Red, NPCs), enemies, weapons, placeholders (the old blockouts), city_tiles (Ross's pixel-art floor and wall tiles; default nearest until he answers), default.",
+    "characters": "smooth",
+    "enemies": "smooth",
+    "weapons": "smooth",
+    "placeholders": "nearest",
+    "city_tiles": "nearest",
+    "default": "smooth"
+   },
+   "shader": {
+    "smooth": "res://shaders/ps2_lit.gdshader",
+    "nearest": "res://shaders/ps2_lit_crisp.gdshader"
    }
   }
  }

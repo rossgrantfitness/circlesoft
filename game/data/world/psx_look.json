@@ -3,7 +3,8 @@
     {"id": "384x216", "width": 384, "height": 216},
     {"id": "320x240", "width": 320, "height": 240},
     {"id": "426x240", "width": 426, "height": 240},
-    {"id": "480x270", "width": 480, "height": 270}
+    {"id": "480x270", "width": 480, "height": 270},
+    {"id": "640x360", "width": 640, "height": 360}
   ],
   "default_resolution": "384x216",
   "integer_scaling": true,

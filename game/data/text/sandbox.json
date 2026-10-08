@@ -1,0 +1,182 @@
+{
+  "_about": "Every word in the combat sandbox UI (scripts/ui/sandbox/). {n}, {value}, {path} and similar words in braces are filled in by the code. Names such as Lamp Flare and the Noise rank names are working names (Level 1): change them here, no code needed. The knob hints below are a fallback: a knob's own \"hint\" in data/combat/feel.json wins.",
+  "hud": {
+    "hp": "HP",
+    "noise": "Noise",
+    "lights_on": "LIGHTS ON",
+    "lights_off": "Lights",
+    "lights_ready": "Lights (ready)",
+    "flare": "Lamp Flare",
+    "rank_none": "-",
+    "camera_orbit": "Camera: Free",
+    "camera_diorama": "Camera: Diorama",
+    "hint_keys": "Esc: Pause    F12: Feel knobs",
+    "hint_pad": "Start: Pause    Back: Feel knobs",
+    "seconds": "{n}s"
+  },
+  "popups": {
+    "parry": {
+      "nice": "Guard!",
+      "rad": "Parry!",
+      "totally_rad": "Perfect Parry!",
+      "miss": "Missed"
+    },
+    "lamp_flare": "Lamp Flare!",
+    "stagger": {
+      "parry": "Staggered!",
+      "poise": "Poise Break!"
+    }
+  },
+  "pause": {
+    "title": "Paused",
+    "resume": "Resume",
+    "reset": "Reset arena",
+    "controls": "Controls",
+    "quit": "Quit",
+    "hints": {
+      "resume": "Back to the fight.",
+      "reset": "Put Red, the enemies and your Noise back at the start.",
+      "controls": "See every button, and change them.",
+      "quit": "Close the game."
+    }
+  },
+  "controls_card": {
+    "title": "Controls",
+    "keyboard": "Keyboard / Mouse",
+    "controller": "Controller",
+    "change_hint": "Confirm: change buttons    Cancel: back",
+    "view_hint": "Cancel: back",
+    "lock_note": "Lock on: press to lock, press again to let go. Flick the camera to switch targets.",
+    "rows": [
+      {"action": "move", "label": "Move", "key": "W A S D / Arrows", "pad": "Left stick / D-pad", "fixed": true},
+      {"action": "camera", "label": "Camera", "key": "Mouse", "pad": "Right stick", "fixed": true},
+      {"action": "jump", "label": "Jump", "key": "Space", "pad": "A / Cross"},
+      {"action": "light", "label": "Light attack", "key": "J / Left mouse", "pad": "X / Square"},
+      {"action": "heavy", "label": "Heavy attack", "key": "K / Right mouse", "pad": "Y / Triangle"},
+      {"action": "dash", "label": "Dash", "key": "Left Shift", "pad": "B / Circle"},
+      {"action": "parry", "label": "Parry", "key": "L", "pad": "LB / L1"},
+      {"action": "lock_on", "label": "Lock on", "key": "Tab / Middle mouse", "pad": "RB / R1"},
+      {"action": "camera_toggle", "label": "Camera style", "key": "V", "pad": "R3"},
+      {"action": "feel_panel", "label": "Feel knobs", "key": "F12", "pad": "Back / Share"},
+      {"action": "start", "label": "Pause", "key": "Esc", "pad": "Start", "fixed": true}
+    ],
+    "pad_names": [
+      "A / Cross", "B / Circle", "X / Square", "Y / Triangle", "Back / Share", "Guide", "Start",
+      "L3", "R3", "LB / L1", "RB / R1", "D-Up", "D-Down", "D-Left", "D-Right", "Share"
+    ],
+    "mouse_names": {"1": "Left mouse", "2": "Right mouse", "3": "Middle mouse"}
+  },
+  "feel": {
+    "title": "Feel Knobs",
+    "paused": "Game paused",
+    "unsaved": "Unsaved changes",
+    "saved": "All saved",
+    "on": "On",
+    "off": "Off",
+    "default_line": "Studio default: {value}",
+    "range_line": "Range: {min} to {max}",
+    "choice_line": "Studio default: {value}",
+    "changed_mark": "changed",
+    "move_hint": "Up/Down picks a knob. Left/Right changes it. Hold to go faster. Cancel closes.",
+    "buttons": {
+      "save": "Save",
+      "reset": "Reset",
+      "revert": "Revert",
+      "open_folder": "Open folder"
+    },
+    "button_hints": {
+      "save": "Write your numbers to a file you can send back. Also keeps a dated copy.",
+      "reset": "Put every knob back to the studio's starting numbers. Not saved until you Save.",
+      "revert": "Undo everything since your last Save.",
+      "open_folder": "Open the folder where the saved files live."
+    },
+    "messages": {
+      "saved": "Saved! File: {path}",
+      "saved_copied": "Saved! (path copied) File: {path}",
+      "save_failed": "Could not save. Is the disk full or locked?",
+      "reset_done": "Every knob is back to the studio number.",
+      "revert_done": "Back to your last save.",
+      "revert_nothing": "Nothing to undo since the last save.",
+      "folder_opened": "Opened: {path}",
+      "folder_failed": "Could not open the folder. It is here: {path}"
+    },
+    "groups": {
+      "movement": "Movement",
+      "camera": "Camera",
+      "combat": "Combat",
+      "flare": "Lamp Flare",
+      "fx": "Effects",
+      "sandbox": "Arena"
+    },
+    "units": {
+      "m": "m",
+      "mps": "m/s",
+      "ms": "ms",
+      "s": "s",
+      "x": "x",
+      "deg": "deg",
+      "pct": "%"
+    },
+    "knob_hints": {
+      "run_speed_mps": "How fast Red runs with the stick pushed all the way.",
+      "jump_height_m": "How high a full jump goes.",
+      "gravity_scale": "How hard gravity pulls. Lower floats more, higher drops faster.",
+      "dash_distance_m": "How far one dash carries Red.",
+      "dash_time_ms": "How long a dash takes. Shorter feels snappier.",
+      "dash_iframes_ms": "How long at the start of a dash Red can't be hit.",
+      "air_dash_count": "How many dashes Red gets in the air per jump.",
+      "cam_distance_m": "How far behind Red the camera sits.",
+      "cam_sensitivity": "How fast the mouse and right stick turn the camera.",
+      "hit_stop_scale": "How long the game freezes on a hit. 0 turns the freeze off.",
+      "juggle_float": "How long enemies hang in the air between hits.",
+      "launch_height_scale": "How high the launcher throws an enemy.",
+      "input_buffer_ms": "How early you can press the next button and still have it count.",
+      "parry_window_scale": "Makes the parry timing window bigger or smaller.",
+      "enemy_damage_scale": "How hard enemies hit you. 0 means they can't hurt you.",
+      "flare_duration_s": "How long the Lamp Flare slow-motion lasts.",
+      "flare_cooldown_s": "How long you wait before another Lamp Flare can start.",
+      "flare_enemy_speed": "How fast enemies move in a flare. 0.25 is quarter speed.",
+      "perfect_dodge_window_ms": "How close to the hit a dash must be to count as a perfect dodge.",
+      "flare_glare_radius_m": "How far the flare reaches. Enemies inside it slow down.",
+      "shake_scale": "How hard the camera shakes on hits. 0 turns it off.",
+      "trails_on": "Show the glowing sword trails.",
+      "enemies_attack": "Turn this off to practice on enemies that don't hit back.",
+      "show_hitboxes": "Draw the attack and hurt shapes so you can see them.",
+      "launcher_input": "Which button press sends an enemy flying up.",
+      "lights_on_trigger": "How Lights On starts when your Noise is full.",
+      "flare_on_parry": "Which parries set off a Lamp Flare."
+    },
+    "choice_labels": {
+      "launcher_input": {
+        "hold_heavy": "Hold Heavy",
+        "back_heavy": "Back + Heavy",
+        "string_end": "End of a Light string"
+      },
+      "lights_on_trigger": {
+        "auto": "Automatic",
+        "chord": "Light + Heavy together"
+      },
+      "flare_on_parry": {
+        "rad_and_up": "Rad and Perfect",
+        "perfect_only": "Perfect only",
+        "off": "Never"
+      }
+    },
+    "choice_hints": {
+      "launcher_input": {
+        "hold_heavy": "Press Heavy and keep holding it: it turns into the launcher.",
+        "back_heavy": "Pull the stick away from the enemy and press Heavy.",
+        "string_end": "Press Heavy right after the second Light."
+      },
+      "lights_on_trigger": {
+        "auto": "Lights On starts by itself the moment Noise is full.",
+        "chord": "When Noise is full, press Light and Heavy together to start it."
+      },
+      "flare_on_parry": {
+        "rad_and_up": "Rad and Totally Rad parries start a flare.",
+        "perfect_only": "Only a Totally Rad parry starts a flare.",
+        "off": "Parries never start a flare. Only dodges do."
+      }
+    }
+  }
+}

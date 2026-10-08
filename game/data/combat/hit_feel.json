@@ -1,0 +1,37 @@
+{
+ "_about": "Hit and juggle feel numbers (docs/pivot/combat_api.md 4.2). Starting guesses; the feel knobs scale the big ones live.",
+ "version": 1,
+ "gravity_mps2": 26.0,
+ "knockback_min_weight": 0.25,
+ "juggle": {
+  "lift_falloff": 0.8,
+  "min_lift_mps": 3.0,
+  "air_hit_lift_mps": 4.2,
+  "max_hits": 10,
+  "float_ms": 380,
+  "float_gravity_scale": 0.22,
+  "float_ramp_ms": 220
+ },
+ "launcher_hold_ms": 170,
+ "string_end_move": "light_2",
+ "follow_jump": {"height_m": 2.4},
+ "threat_margin_m": 0.35,
+ "guard": {"hitstun_scale": 0.4, "knockback_scale": 0.5},
+ "armored": {"hit_stop_scale": 0.5},
+ "stagger_ms": 1100,
+ "parry": {
+  "recoil_ms": 700,
+  "stagger_ms": 1500,
+  "parried_hit_stop_ms": 90,
+  "perfect_hit_stop_ms": 140,
+  "perfect_style": "perfect_parry"
+ },
+ "reaction": {
+  "knockdown_ms": 900,
+  "getup_ms": 600,
+  "slam_down_mps": 18.0,
+  "death_ms": 700,
+  "poise_regen_delay_ms": 1500,
+  "poise_regen_per_s": 15.0
+ }
+}

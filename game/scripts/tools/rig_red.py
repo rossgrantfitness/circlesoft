@@ -1,5 +1,5 @@
 """Rigs Ross's Red (game/art/final/characters/red/red_ross_v1.glb, never edited) into the game-ready
-game/art/final/characters/red/red_ross_rigged.glb: origin at the feet, facing Godot +Z, height kept (0.95 m),
+game/art/final/characters/red/red_ross_v1_rigged.glb: origin at the feet, facing Godot +Z, height kept (0.95 m),
 textures cut to 512 px (all three PBR maps kept), a 29-bone humanoid skeleton with automatic weights plus
 hand fixes, and the first set of cheap animation clips (red_clips.py).
 
@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from rigkit import *  # noqa: E402,F401,F403
 
 SRC = os.path.join(GAME_DIR, "art", "final", "characters", "red", "red_ross_v1.glb")
-OUT = os.path.join(GAME_DIR, "art", "final", "characters", "red", "red_ross_rigged.glb")
+OUT = os.path.join(GAME_DIR, "art", "final", "characters", "red", "red_ross_v1_rigged.glb")
 MAX_TEX = 512
 
 # ---- the skeleton, in final model space (feet z = 0, centre line x = y = 0, faces -Y; her left is +X) ----
@@ -35,7 +35,8 @@ bone("tail", "hips", (0, 0.08, 0.44), (0, 0.20, 0.44))
 for side, sx in (("l", 1.0), ("r", -1.0)):
     def m(p):
         return (p[0] * sx, p[1], p[2])
-    bone("ear_" + side, "head", m((0.12, 0.07, 0.796)), m((0.185, 0.16, 0.556)))
+    bone("ear_" + side, "head", m((0.12, 0.07, 0.796)), m((0.1525, 0.115, 0.676)))
+    bone("ear_%s_2" % side, "ear_" + side, m((0.1525, 0.115, 0.676)), m((0.185, 0.16, 0.556)))
     bone("shoulder_" + side, "chest", m((0.03, 0.0, 0.62)), m((0.15, 0.0, 0.60)))
     bone("upper_arm_" + side, "shoulder_" + side, m((0.15, 0.0, 0.60)), m((0.245, 0.0, 0.521)))
     bone("forearm_" + side, "upper_arm_" + side, m((0.245, 0.0, 0.521)), m((0.30, 0.0, 0.431)))
@@ -46,10 +47,13 @@ for side, sx in (("l", 1.0), ("r", -1.0)):
 # sockets: +Y = where a held thing's long axis points (up and 35 degrees forward), the held thing's flat side faces outward
 bone("weapon_socket", "hand_r", (-0.315, -0.01, 0.391), (-0.315, -0.01 - 0.057, 0.391 + 0.082))
 bone("prop_socket", "hand_l", (0.315, -0.01, 0.391), (0.315, -0.01 - 0.057, 0.391 + 0.082))
-bone("back_socket", "chest", (0.0, 0.085, 0.60), (0.04, 0.115, 0.69))
-SOCKET_ROLL_Z = {"weapon_socket": (-1, 0, 0), "prop_socket": (1, 0, 0), "back_socket": (0, 1, 0)}
+bone("back", "chest", (0.0, 0.085, 0.60), (0.04, 0.115, 0.69))          # a sheathed sword rides here later
+bone("head_gear", "head", (0.0, 0.0, 0.86), (0.0, 0.0, 0.95))          # caps and helmets later
+bone("lamp_socket", "chest", (0.0, -0.09, 0.57), (0.0, -0.13, 0.57))    # where the Lamp Flare and Lights On glow start
+SOCKET_ROLL_Z = {"weapon_socket": (-1, 0, 0), "prop_socket": (1, 0, 0), "back": (0, 1, 0)}
 
 EAR = {"ear_l": 1.0, "ear_r": -1.0}
+EAR2 = {"ear_l": "ear_l_2", "ear_r": "ear_r_2"}
 
 
 def prepare_mesh():
@@ -126,46 +130,6 @@ def arm_fix(p, w):
     return w
 
 
-def weld_and_smooth(me, table, passes=2, factor=0.5, skip=None):
-    """Corners that sit at the same spot share one set of weights (so seams cannot tear), then the weights are relaxed
-    toward their neighbours a little (so a shoulder bends instead of creasing). Vertices in `skip` keep their weights."""
-    key = lambda co: (round(co.x * 5000), round(co.y * 5000), round(co.z * 5000))
-    keys = [key(v.co) for v in me.vertices]
-    groups = {}
-    for i, k in enumerate(keys):
-        groups.setdefault(k, []).append(i)
-    merged = {}
-    for k, idx in groups.items():
-        acc = {}
-        for i in idx:
-            for b, x in table[i].items():
-                acc[b] = acc.get(b, 0.0) + x / len(idx)
-        merged[k] = acc
-    nbrs = {k: set() for k in groups}
-    for e in me.edges:
-        a, b = keys[e.vertices[0]], keys[e.vertices[1]]
-        if a != b:
-            nbrs[a].add(b)
-            nbrs[b].add(a)
-    frozen = set(keys[i] for i in (skip or ()))
-    for _ in range(passes):
-        nxt = {}
-        for k, w in merged.items():
-            if k in frozen or not nbrs[k]:
-                nxt[k] = w
-                continue
-            avg = {}
-            for n in nbrs[k]:
-                for b, x in merged[n].items():
-                    avg[b] = avg.get(b, 0.0) + x / len(nbrs[k])
-            out = {}
-            for b in set(w) | set(avg):
-                out[b] = (1.0 - factor) * w.get(b, 0.0) + factor * avg.get(b, 0.0)
-            nxt[k] = out
-        merged = nxt
-    return [dict(merged[k]) for k in keys]
-
-
 def fix_weights(obj, arm):
     """Automatic weights, then the hand fixes: boots follow the feet, the tail follows the tail, belt pouches follow the
     hips, ears hang from the head and swing on the ear bones, arms never pull the jacket (torso verts lose arm weight);
@@ -179,7 +143,7 @@ def fix_weights(obj, arm):
         sizes[p] = sizes.get(p, 0) + 1
     main = max(sizes, key=sizes.get)
     seg = {n: bone_axis(arm, n) for n in names}
-    ear_seg = {n: seg[n] for n in EAR}
+    ear_seg = {n: (seg[n][0], seg[EAR2[n]][1]) for n in EAR}
     table = weld_and_smooth(me, table, passes=0)             # weld seams first
     out = []
     loose = []
@@ -202,14 +166,16 @@ def fix_weights(obj, arm):
         ear = "ear_" + side
         t, d = seg_param(p, ear_seg[ear][0], ear_seg[ear][1])
         if d < 0.075 and p.y > 0.06 + 0.055 * smoothstep(0.78, 0.66, p.z) and abs(p.x) > 0.075 and p.z > 0.52:    # an ear flap: behind the face, outside the head
-            k = smoothstep(0.25, 0.75, t) * smoothstep(0.80, 0.68, p.z)      # the cap and the ear's root stay on the head
-            out.append({"head": 1.0 - k, ear: k})
+            g = smoothstep(0.80, 0.68, p.z)                                  # the cap and the ear's root stay on the head
+            k1 = smoothstep(0.20, 0.50, t) * g
+            k2 = smoothstep(0.45, 0.85, t)
+            out.append({"head": 1.0 - k1, ear: k1 * (1.0 - k2), EAR2[ear]: k1 * k2})
             loose.append(i)                                                  # keep these exactly as set
             continue
         out.append(arm_fix(p, w) if not RAW else w)
     if "--list-ear" in sys.argv:
         for i, v in enumerate(me.vertices):
-            if v.co.x < 0 and v.co.z < 0.66 and out[i].get("ear_r", 0) > 0.05:
+            if v.co.x < 0 and v.co.z < 0.66 and out[i].get("ear_r_2", 0) > 0.05:
                 print("EAR", i, tuple(round(c, 3) for c in v.co), round(out[i]["ear_r"], 2))
     out = weld_and_smooth(me, out, passes=4, factor=0.5, skip=loose)
     write_weights(obj, out)
@@ -241,6 +207,11 @@ def main():
     if debug:
         dbg_render(obj, arm, debug)
         return
+    if "--sheet" in argv:
+        i = argv.index("--sheet")
+        names = argv[i + 2].split(",") if len(argv) > i + 2 and not argv[i + 2].startswith("--") else None
+        sheet(obj, arm, argv[i + 1], names)
+        return
     if "--pose-test" in argv:
         pose_test(obj, arm, argv[argv.index("--pose-test") + 1])
         return
@@ -249,6 +220,8 @@ def main():
         table = red_clips.build(arm)
         for row in table:
             print("clip %-9s %2d frames (%.2f s)  %d keys%s" % (row[0], row[1], row[1] / FPS, row[2], "  loop" if row[3] else ""))
+    if "--no-clips" not in argv:
+        write_clip_keys(os.path.join(GAME_DIR, "data", "combat", "red_clip_keys.json"), red_clips.CLIPS, "Red", red_clips.NOTES)
     obj.name = "red_ross"
     arm.name = "red_ross_armature"
     export_glb(OUT, [obj, arm], animations=("--no-clips" not in argv))
@@ -265,7 +238,7 @@ def dbg_render(obj, arm, prefix):
         render_to(prefix + "_%s.png" % tag)
 
 
-from rigkit import _emission_material  # noqa: E402
+from rigkit import _emission_material, _update  # noqa: E402
 
 TEST_POSES = [
     ("rest", {}),
@@ -275,6 +248,62 @@ TEST_POSES = [
     ("twist", {"spine": (0, 0, 35), "chest": (0, 0, 20), "head": (0, 0, -30), "upper_arm_r": (-120, 0, 0), "shoulder_r": (-30, 0, 0), "forearm_r": (-60, 0, 0),
                "ear_l": (30, 0, 0), "ear_r": (30, 0, 0)}),
 ]
+
+
+def attach_preview_sword(arm, sword="sword_katana_cyan.glb"):
+    objs = import_glb(os.path.join(GAME_DIR, "art", "final", "weapons", sword))
+    sw = [o for o in objs if o.type == "MESH"][0]
+    for o in objs:
+        if o is not sw and o.parent is None:
+            o.parent = None
+    sw.parent = arm
+    sw.parent_type = "BONE"
+    sw.parent_bone = "weapon_socket"
+    bl = arm.data.bones["weapon_socket"].length
+    sw.matrix_parent_inverse = Matrix.Translation((0, -bl, 0))
+    sw.location = (0, 0, 0)
+    sw.rotation_mode = "XYZ"
+    sw.rotation_euler = (-math.pi / 2, 0, 0)       # glTF sword frame (blade +Y) -> the bone's frame (Y along the bone)
+    return sw
+
+
+def sheet(obj, arm, prefix, names):
+    """Contact sheet of each clip's key poses (side and three-quarter views, sword in hand) for review."""
+    import red_clips
+    from PIL import Image, ImageDraw
+    sw = attach_preview_sword(arm)
+    show_materials_unlit([obj, sw])
+    cam = setup_render(330, 420, 1.9)
+    rig = Rig(arm)
+    sc = bpy.context.scene
+    apply_pose(rig, red_clips.CLIPS["idle"]["keys"][0][1])
+    _update()
+    pbs = arm.pose.bones["weapon_socket"]
+    m3 = arm.data.bones["weapon_socket"].matrix_local.to_3x3()
+    print("DBG bone axes X", tuple(round(c, 2) for c in m3.col[0]), "Y", tuple(round(c, 2) for c in m3.col[1]), "Z", tuple(round(c, 2) for c in m3.col[2]))
+    print("DBG socket head", tuple(round(c, 3) for c in pbs.head), "tail", tuple(round(c, 3) for c in pbs.tail))
+    zs = sorted(sw.data.vertices, key=lambda v: v.co.z)
+    print("DBG sword local lowest/highest", tuple(round(c, 3) for c in zs[0].co), tuple(round(c, 3) for c in zs[-1].co))
+    for tag, vv in (("low", zs[0]), ("high", zs[-1])):
+        print("DBG world", tag, tuple(round(c, 3) for c in (sw.matrix_world @ vv.co)))
+    for name in (names or list(red_clips.CLIPS)):
+        keys = red_clips.CLIPS[name]["keys"]
+        cols = []
+        for frame, pose in keys:
+            apply_pose(rig, pose)
+            _update()
+            col = Image.new("RGB", (330, 840), (220, 220, 220))
+            for row, az in enumerate((90, 35)):
+                aim_ortho(cam, az, (0, 0, 0.5))
+                render_to(prefix + "_tmp.png")
+                col.paste(Image.open(prefix + "_tmp.png").convert("RGB"), (0, 420 * row))
+            ImageDraw.Draw(col).text((6, 6), "%s f%d" % (name, frame), fill=(0, 0, 0))
+            cols.append(col)
+        img = Image.new("RGB", (330 * len(cols), 840))
+        for i, c in enumerate(cols):
+            img.paste(c, (330 * i, 0))
+        img.save("%s_%s.png" % (prefix, name))
+        print("sheet", name)
 
 
 def stretch_report(obj, arm, rig, pose, label):

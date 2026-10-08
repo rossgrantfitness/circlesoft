@@ -1,0 +1,1099 @@
+{
+ "_about": "Move data (docs/pivot/combat_api.md section 3). Times are ms of the owner's combat time; positions are metres in the owner's space (+Z forward, +Y up, origin at the feet). Every number here is a starting guess that Ross tunes by playing.",
+ "version": 1,
+ "sets": {
+  "red": {
+   "entries": {
+    "ground": {
+     "light": "light_1",
+     "heavy": "heavy",
+     "launch": "launcher",
+     "parry": "parry"
+    },
+    "air": {
+     "light": "air_1",
+     "launch": "air_1"
+    }
+   },
+   "moves": {
+    "light_1": {
+     "name": "Light 1",
+     "state": "ground",
+     "startup_ms": 90,
+     "active_ms": 60,
+     "recovery_ms": 230,
+     "cancels": {
+      "chain": [
+       130,
+       380
+      ],
+      "dash": 150,
+      "jump": 150,
+      "parry": 150
+     },
+     "links": {
+      "light": "light_2",
+      "heavy": "heavy",
+      "launch": "launcher"
+     },
+     "launcher": false,
+     "motion": {
+      "forward_m": 0.6,
+      "from_ms": 0,
+      "to_ms": 120
+     },
+     "magnet": {
+      "range_m": 3.5,
+      "cone_deg": 70
+     },
+     "hit": {
+      "damage": 8,
+      "hitstun_ms": 320,
+      "knockback_m": 0.5,
+      "launch_mps": 0.0,
+      "knockdown": false,
+      "hit_stop_ms": 50,
+      "poise_damage": 8,
+      "style_points": 10,
+      "shake": "light",
+      "spark": "slash",
+      "sfx": "combat_hit_light"
+     },
+     "hitboxes": [
+      {
+       "from_ms": 90,
+       "to_ms": 120,
+       "shape": "capsule",
+       "radius": 0.45,
+       "height": 1.4,
+       "offset": [
+        0.35,
+        0.55,
+        0.8
+       ],
+       "rot_deg": [
+        0,
+        0,
+        70
+       ]
+      },
+      {
+       "from_ms": 120,
+       "to_ms": 150,
+       "shape": "capsule",
+       "radius": 0.45,
+       "height": 1.4,
+       "offset": [
+        -0.3,
+        0.55,
+        0.9
+       ],
+       "rot_deg": [
+        0,
+        0,
+        110
+       ]
+      }
+     ],
+     "swing": {
+      "sfx": "combat_swing_light",
+      "trail": true
+     },
+     "anim": {
+      "clip": "light_1",
+      "keys": [
+       {
+        "at_ms": 0,
+        "clip_s": 0.0
+       },
+       {
+        "at_ms": 90,
+        "clip_s": 0.1333
+       },
+       {
+        "at_ms": 150,
+        "clip_s": 0.2667
+       },
+       {
+        "at_ms": 380,
+        "clip_s": 0.4667
+       }
+      ],
+      "fallback": "swing_r"
+     }
+    },
+    "light_2": {
+     "name": "Light 2",
+     "state": "ground",
+     "startup_ms": 80,
+     "active_ms": 70,
+     "recovery_ms": 240,
+     "cancels": {
+      "chain": [
+       130,
+       390
+      ],
+      "dash": 150,
+      "jump": 150,
+      "parry": 150
+     },
+     "links": {
+      "light": "light_3",
+      "heavy": "heavy",
+      "launch": "launcher"
+     },
+     "launcher": false,
+     "motion": {
+      "forward_m": 0.6,
+      "from_ms": 0,
+      "to_ms": 110
+     },
+     "magnet": {
+      "range_m": 3.5,
+      "cone_deg": 70
+     },
+     "hit": {
+      "damage": 8,
+      "hitstun_ms": 320,
+      "knockback_m": 0.5,
+      "launch_mps": 0.0,
+      "knockdown": false,
+      "hit_stop_ms": 50,
+      "poise_damage": 8,
+      "style_points": 10,
+      "shake": "light",
+      "spark": "slash",
+      "sfx": "combat_hit_light"
+     },
+     "hitboxes": [
+      {
+       "from_ms": 80,
+       "to_ms": 115,
+       "shape": "capsule",
+       "radius": 0.45,
+       "height": 1.4,
+       "offset": [
+        -0.35,
+        0.55,
+        0.8
+       ],
+       "rot_deg": [
+        0,
+        0,
+        110
+       ]
+      },
+      {
+       "from_ms": 115,
+       "to_ms": 150,
+       "shape": "capsule",
+       "radius": 0.45,
+       "height": 1.4,
+       "offset": [
+        0.3,
+        0.55,
+        0.9
+       ],
+       "rot_deg": [
+        0,
+        0,
+        70
+       ]
+      }
+     ],
+     "swing": {
+      "sfx": "combat_swing_light",
+      "trail": true
+     },
+     "anim": {
+      "clip": "light_2",
+      "keys": [
+       {
+        "at_ms": 0,
+        "clip_s": 0.0
+       },
+       {
+        "at_ms": 80,
+        "clip_s": 0.1333
+       },
+       {
+        "at_ms": 150,
+        "clip_s": 0.2667
+       },
+       {
+        "at_ms": 390,
+        "clip_s": 0.4667
+       }
+      ],
+      "fallback": "swing_l"
+     }
+    },
+    "light_3": {
+     "name": "Light 3",
+     "state": "ground",
+     "startup_ms": 110,
+     "active_ms": 90,
+     "recovery_ms": 330,
+     "cancels": {
+      "chain": [
+       190,
+       480
+      ],
+      "dash": 220,
+      "jump": 220,
+      "parry": 220
+     },
+     "links": {
+      "heavy": "heavy",
+      "launch": "launcher"
+     },
+     "launcher": false,
+     "motion": {
+      "forward_m": 0.9,
+      "from_ms": 40,
+      "to_ms": 170
+     },
+     "magnet": {
+      "range_m": 3.5,
+      "cone_deg": 70
+     },
+     "hit": {
+      "damage": 12,
+      "hitstun_ms": 420,
+      "knockback_m": 1.0,
+      "launch_mps": 0.0,
+      "knockdown": false,
+      "hit_stop_ms": 80,
+      "poise_damage": 14,
+      "style_points": 14,
+      "shake": "medium",
+      "spark": "slash_big",
+      "sfx": "combat_hit_heavy"
+     },
+     "hitboxes": [
+      {
+       "from_ms": 110,
+       "to_ms": 150,
+       "shape": "capsule",
+       "radius": 0.5,
+       "height": 1.2,
+       "offset": [
+        0.0,
+        0.55,
+        0.9
+       ],
+       "rot_deg": [
+        90,
+        0,
+        0
+       ]
+      },
+      {
+       "from_ms": 150,
+       "to_ms": 200,
+       "shape": "capsule",
+       "radius": 0.55,
+       "height": 1.2,
+       "offset": [
+        0.0,
+        0.55,
+        1.25
+       ],
+       "rot_deg": [
+        90,
+        0,
+        0
+       ]
+      }
+     ],
+     "swing": {
+      "sfx": "combat_swing_heavy",
+      "trail": true
+     },
+     "anim": {
+      "clip": "light_3",
+      "keys": [
+       {
+        "at_ms": 0,
+        "clip_s": 0.0
+       },
+       {
+        "at_ms": 110,
+        "clip_s": 0.1333
+       },
+       {
+        "at_ms": 200,
+        "clip_s": 0.2667
+       },
+       {
+        "at_ms": 530,
+        "clip_s": 0.5333
+       }
+      ],
+      "fallback": "thrust"
+     }
+    },
+    "heavy": {
+     "name": "Heavy",
+     "state": "ground",
+     "startup_ms": 200,
+     "active_ms": 90,
+     "recovery_ms": 370,
+     "cancels": {
+      "chain": [
+       300,
+       640
+      ],
+      "dash": 330,
+      "jump": 330,
+      "parry": 330
+     },
+     "links": {
+      "light": "light_1"
+     },
+     "launcher": false,
+     "motion": {
+      "forward_m": 0.8,
+      "from_ms": 120,
+      "to_ms": 240
+     },
+     "magnet": {
+      "range_m": 3.5,
+      "cone_deg": 70
+     },
+     "hit": {
+      "damage": 22,
+      "hitstun_ms": 480,
+      "knockback_m": 1.6,
+      "launch_mps": 0.0,
+      "knockdown": false,
+      "hit_stop_ms": 90,
+      "poise_damage": 30,
+      "style_points": 20,
+      "shake": "heavy",
+      "spark": "slash_big",
+      "sfx": "combat_hit_heavy"
+     },
+     "hitboxes": [
+      {
+       "from_ms": 200,
+       "to_ms": 240,
+       "shape": "capsule",
+       "radius": 0.6,
+       "height": 1.6,
+       "offset": [
+        0.0,
+        0.55,
+        0.85
+       ],
+       "rot_deg": [
+        0,
+        0,
+        90
+       ]
+      },
+      {
+       "from_ms": 240,
+       "to_ms": 290,
+       "shape": "capsule",
+       "radius": 0.65,
+       "height": 1.6,
+       "offset": [
+        0.0,
+        0.55,
+        1.0
+       ],
+       "rot_deg": [
+        0,
+        0,
+        90
+       ]
+      }
+     ],
+     "swing": {
+      "sfx": "combat_swing_heavy",
+      "trail": true
+     },
+     "anim": {
+      "clip": "heavy",
+      "keys": [
+       {
+        "at_ms": 0,
+        "clip_s": 0.0
+       },
+       {
+        "at_ms": 100,
+        "clip_s": 0.2
+       },
+       {
+        "at_ms": 200,
+        "clip_s": 0.3333
+       },
+       {
+        "at_ms": 290,
+        "clip_s": 0.5333
+       },
+       {
+        "at_ms": 660,
+        "clip_s": 0.7333
+       }
+      ],
+      "fallback": "overhead"
+     }
+    },
+    "launcher": {
+     "name": "Launcher",
+     "state": "ground",
+     "startup_ms": 160,
+     "active_ms": 100,
+     "recovery_ms": 380,
+     "cancels": {
+      "dash": 360,
+      "jump": 180,
+      "parry": 360
+     },
+     "links": {},
+     "launcher": true,
+     "motion": {
+      "forward_m": 0.6,
+      "from_ms": 60,
+      "to_ms": 180
+     },
+     "magnet": {
+      "range_m": 3.5,
+      "cone_deg": 70
+     },
+     "hit": {
+      "damage": 12,
+      "hitstun_ms": 600,
+      "knockback_m": 0.2,
+      "launch_mps": 11.0,
+      "knockdown": false,
+      "hit_stop_ms": 80,
+      "poise_damage": 20,
+      "style_points": 15,
+      "shake": "heavy",
+      "spark": "slash_up",
+      "sfx": "combat_hit_launch"
+     },
+     "hitboxes": [
+      {
+       "from_ms": 160,
+       "to_ms": 200,
+       "shape": "capsule",
+       "radius": 0.5,
+       "height": 1.8,
+       "offset": [
+        0.0,
+        0.7,
+        0.8
+       ],
+       "rot_deg": [
+        0,
+        0,
+        0
+       ]
+      },
+      {
+       "from_ms": 200,
+       "to_ms": 260,
+       "shape": "capsule",
+       "radius": 0.55,
+       "height": 2.0,
+       "offset": [
+        0.0,
+        0.9,
+        0.9
+       ],
+       "rot_deg": [
+        0,
+        0,
+        0
+       ]
+      }
+     ],
+     "swing": {
+      "sfx": "combat_swing_heavy",
+      "trail": true
+     },
+     "anim": {
+      "clip": "launcher",
+      "keys": [
+       {
+        "at_ms": 0,
+        "clip_s": 0.0
+       },
+       {
+        "at_ms": 160,
+        "clip_s": 0.2
+       },
+       {
+        "at_ms": 260,
+        "clip_s": 0.3333
+       },
+       {
+        "at_ms": 640,
+        "clip_s": 0.6
+       }
+      ],
+      "fallback": "uppercut"
+     }
+    },
+    "air_1": {
+     "name": "Air 1",
+     "state": "air",
+     "startup_ms": 70,
+     "active_ms": 60,
+     "recovery_ms": 190,
+     "cancels": {
+      "chain": [
+       110,
+       320
+      ],
+      "dash": 130,
+      "parry": 190
+     },
+     "links": {
+      "light": "air_2",
+      "launch": "air_2"
+     },
+     "launcher": false,
+     "motion": {
+      "forward_m": 0.3,
+      "from_ms": 0,
+      "to_ms": 100,
+      "up_mps": 1.5,
+      "hang_ms": 300
+     },
+     "magnet": {
+      "range_m": 3.5,
+      "cone_deg": 70
+     },
+     "hit": {
+      "damage": 7,
+      "hitstun_ms": 400,
+      "knockback_m": 0.2,
+      "launch_mps": 0.0,
+      "knockdown": false,
+      "hit_stop_ms": 45,
+      "poise_damage": 8,
+      "style_points": 12,
+      "shake": "light",
+      "spark": "slash",
+      "sfx": "combat_hit_air"
+     },
+     "hitboxes": [
+      {
+       "from_ms": 70,
+       "to_ms": 100,
+       "shape": "capsule",
+       "radius": 0.5,
+       "height": 1.4,
+       "offset": [
+        0.3,
+        0.55,
+        0.8
+       ],
+       "rot_deg": [
+        0,
+        0,
+        70
+       ]
+      },
+      {
+       "from_ms": 100,
+       "to_ms": 130,
+       "shape": "capsule",
+       "radius": 0.5,
+       "height": 1.4,
+       "offset": [
+        -0.3,
+        0.55,
+        0.9
+       ],
+       "rot_deg": [
+        0,
+        0,
+        110
+       ]
+      }
+     ],
+     "swing": {
+      "sfx": "combat_swing_light",
+      "trail": true
+     },
+     "anim": {
+      "clip": "air_1",
+      "keys": [
+       {
+        "at_ms": 0,
+        "clip_s": 0.0
+       },
+       {
+        "at_ms": 70,
+        "clip_s": 0.1333
+       },
+       {
+        "at_ms": 130,
+        "clip_s": 0.2667
+       },
+       {
+        "at_ms": 320,
+        "clip_s": 0.4
+       }
+      ],
+      "fallback": "air_swing"
+     }
+    },
+    "air_2": {
+     "name": "Air 2",
+     "state": "air",
+     "startup_ms": 70,
+     "active_ms": 60,
+     "recovery_ms": 190,
+     "cancels": {
+      "chain": [
+       110,
+       320
+      ],
+      "dash": 130,
+      "parry": 190
+     },
+     "links": {
+      "light": "air_3",
+      "launch": "air_3"
+     },
+     "launcher": false,
+     "motion": {
+      "forward_m": 0.3,
+      "from_ms": 0,
+      "to_ms": 100,
+      "up_mps": 1.0,
+      "hang_ms": 300
+     },
+     "magnet": {
+      "range_m": 3.5,
+      "cone_deg": 70
+     },
+     "hit": {
+      "damage": 7,
+      "hitstun_ms": 400,
+      "knockback_m": 0.2,
+      "launch_mps": 0.0,
+      "knockdown": false,
+      "hit_stop_ms": 45,
+      "poise_damage": 8,
+      "style_points": 12,
+      "shake": "light",
+      "spark": "slash",
+      "sfx": "combat_hit_air"
+     },
+     "hitboxes": [
+      {
+       "from_ms": 70,
+       "to_ms": 100,
+       "shape": "capsule",
+       "radius": 0.5,
+       "height": 1.4,
+       "offset": [
+        -0.3,
+        0.55,
+        0.8
+       ],
+       "rot_deg": [
+        0,
+        0,
+        110
+       ]
+      },
+      {
+       "from_ms": 100,
+       "to_ms": 130,
+       "shape": "capsule",
+       "radius": 0.5,
+       "height": 1.4,
+       "offset": [
+        0.3,
+        0.55,
+        0.9
+       ],
+       "rot_deg": [
+        0,
+        0,
+        70
+       ]
+      }
+     ],
+     "swing": {
+      "sfx": "combat_swing_light",
+      "trail": true
+     },
+     "anim": {
+      "clip": "air_2",
+      "keys": [
+       {
+        "at_ms": 0,
+        "clip_s": 0.0
+       },
+       {
+        "at_ms": 70,
+        "clip_s": 0.1333
+       },
+       {
+        "at_ms": 130,
+        "clip_s": 0.2667
+       },
+       {
+        "at_ms": 320,
+        "clip_s": 0.4
+       }
+      ],
+      "fallback": "air_swing_l"
+     }
+    },
+    "air_3": {
+     "name": "Air 3",
+     "state": "air",
+     "startup_ms": 100,
+     "active_ms": 80,
+     "recovery_ms": 260,
+     "cancels": {
+      "dash": 200,
+      "parry": 260
+     },
+     "links": {},
+     "launcher": false,
+     "motion": {
+      "forward_m": 0.3,
+      "from_ms": 0,
+      "to_ms": 120,
+      "up_mps": 0.0,
+      "hang_ms": 180
+     },
+     "magnet": {
+      "range_m": 3.5,
+      "cone_deg": 70
+     },
+     "hit": {
+      "damage": 10,
+      "hitstun_ms": 500,
+      "knockback_m": 0.4,
+      "launch_mps": 0.0,
+      "knockdown": true,
+      "hit_stop_ms": 70,
+      "poise_damage": 12,
+      "style_points": 15,
+      "shake": "medium",
+      "spark": "slash_big",
+      "sfx": "combat_hit_heavy"
+     },
+     "hitboxes": [
+      {
+       "from_ms": 100,
+       "to_ms": 140,
+       "shape": "capsule",
+       "radius": 0.55,
+       "height": 1.6,
+       "offset": [
+        0.0,
+        0.45,
+        0.9
+       ],
+       "rot_deg": [
+        0,
+        0,
+        90
+       ]
+      },
+      {
+       "from_ms": 140,
+       "to_ms": 180,
+       "shape": "capsule",
+       "radius": 0.6,
+       "height": 1.6,
+       "offset": [
+        0.0,
+        0.3,
+        0.9
+       ],
+       "rot_deg": [
+        0,
+        0,
+        90
+       ]
+      }
+     ],
+     "swing": {
+      "sfx": "combat_swing_heavy",
+      "trail": true
+     },
+     "anim": {
+      "clip": "air_3",
+      "keys": [
+       {
+        "at_ms": 0,
+        "clip_s": 0.0
+       },
+       {
+        "at_ms": 100,
+        "clip_s": 0.1333
+       },
+       {
+        "at_ms": 180,
+        "clip_s": 0.2667
+       },
+       {
+        "at_ms": 440,
+        "clip_s": 0.5333
+       }
+      ],
+      "fallback": "spin"
+     }
+    },
+    "parry": {
+     "name": "Parry",
+     "state": "ground",
+     "startup_ms": 30,
+     "active_ms": 170,
+     "recovery_ms": 280,
+     "cancels": {
+      "dash": 260
+     },
+     "links": {},
+     "launcher": false,
+     "hit": {},
+     "hitboxes": [],
+     "swing": {
+      "trail": false
+     },
+     "anim": {
+      "clip": "parry",
+      "keys": [
+       {
+        "at_ms": 0,
+        "clip_s": 0.0
+       },
+       {
+        "at_ms": 30,
+        "clip_s": 0.1333
+       },
+       {
+        "at_ms": 480,
+        "clip_s": 0.3333
+       }
+      ],
+      "fallback": "brace"
+     }
+    }
+   }
+  },
+  "grunt": {
+   "entries": {},
+   "moves": {
+    "swipe": {
+     "name": "Swipe",
+     "state": "ground",
+     "startup_ms": 560,
+     "active_ms": 120,
+     "recovery_ms": 560,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "motion": {
+      "forward_m": 0.5,
+      "from_ms": 460,
+      "to_ms": 600
+     },
+     "hit": {
+      "damage": 10,
+      "hitstun_ms": 350,
+      "knockback_m": 1.2,
+      "launch_mps": 0.0,
+      "knockdown": false,
+      "hit_stop_ms": 60,
+      "poise_damage": 10,
+      "style_points": 0,
+      "shake": "medium",
+      "spark": "slash",
+      "sfx": "combat_hit_light"
+     },
+     "hitboxes": [
+      {
+       "from_ms": 560,
+       "to_ms": 620,
+       "shape": "capsule",
+       "radius": 0.5,
+       "height": 1.6,
+       "offset": [
+        0.4,
+        0.55,
+        0.9
+       ],
+       "rot_deg": [
+        0,
+        0,
+        80
+       ]
+      },
+      {
+       "from_ms": 620,
+       "to_ms": 680,
+       "shape": "capsule",
+       "radius": 0.5,
+       "height": 1.6,
+       "offset": [
+        -0.4,
+        0.55,
+        1.0
+       ],
+       "rot_deg": [
+        0,
+        0,
+        100
+       ]
+      }
+     ],
+     "swing": {
+      "sfx": "combat_swing_light",
+      "trail": false
+     },
+     "anim": {
+      "clip": "attack_windup",
+      "keys": [
+       {
+        "at_ms": 0,
+        "clip": "attack_windup",
+        "clip_s": 0.0
+       },
+       {
+        "at_ms": 140,
+        "clip": "attack_windup",
+        "clip_s": 0.1333
+       },
+       {
+        "at_ms": 300,
+        "clip": "attack_windup",
+        "clip_s": 0.2667
+       },
+       {
+        "at_ms": 440,
+        "clip": "attack_windup",
+        "clip_s": 0.4
+       },
+       {
+        "at_ms": 560,
+        "clip": "attack_swing",
+        "clip_s": 0.0667
+       },
+       {
+        "at_ms": 620,
+        "clip": "attack_swing",
+        "clip_s": 0.2
+       },
+       {
+        "at_ms": 700,
+        "clip": "attack_swing",
+        "clip_s": 0.4
+       }
+      ],
+      "fallback": "swing_r"
+     },
+     "telegraph_ms": 0,
+     "impact_ms": 560,
+     "parryable": true,
+     "dodge_flare": true,
+     "track_ms": 380
+    }
+   }
+  },
+  "brute": {
+   "entries": {},
+   "moves": {
+    "slam": {
+     "name": "Slam",
+     "state": "ground",
+     "startup_ms": 900,
+     "active_ms": 150,
+     "recovery_ms": 850,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "motion": {
+      "forward_m": 0.6,
+      "from_ms": 700,
+      "to_ms": 900
+     },
+     "hit": {
+      "damage": 28,
+      "hitstun_ms": 700,
+      "knockback_m": 2.4,
+      "launch_mps": 0.0,
+      "knockdown": true,
+      "hit_stop_ms": 110,
+      "poise_damage": 40,
+      "style_points": 0,
+      "shake": "heavy",
+      "spark": "slash_big",
+      "sfx": "combat_brute_slam"
+     },
+     "hitboxes": [
+      {
+       "from_ms": 900,
+       "to_ms": 1000,
+       "shape": "sphere",
+       "radius": 1.6,
+       "offset": [
+        0.0,
+        0.3,
+        1.4
+       ],
+       "rot_deg": [
+        0,
+        0,
+        0
+       ]
+      },
+      {
+       "from_ms": 1000,
+       "to_ms": 1050,
+       "shape": "box",
+       "size": [
+        3.8,
+        1.0,
+        3.8
+       ],
+       "offset": [
+        0.0,
+        0.5,
+        1.5
+       ],
+       "rot_deg": [
+        0,
+        0,
+        0
+       ]
+      }
+     ],
+     "swing": {
+      "sfx": "combat_swing_heavy",
+      "trail": false
+     },
+     "anim": {
+      "clip": "slam",
+      "keys": [],
+      "fallback": "overhead"
+     },
+     "telegraph_ms": 0,
+     "impact_ms": 900,
+     "parryable": true,
+     "dodge_flare": true,
+     "armor": {
+      "from_ms": 0,
+      "to_ms": 1050
+     },
+     "track_ms": 600
+    }
+   }
+  }
+ }
+}

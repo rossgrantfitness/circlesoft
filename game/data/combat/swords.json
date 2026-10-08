@@ -1,0 +1,135 @@
+{
+ "version": 1,
+ "_note": "Ross's six swords (docs/pivot/combat_api.md 4.7). Every file has its origin at the middle of the grip and the blade along +Y, so offset/rot_deg/scale are the identity: the sword drops onto Red's weapon_socket. trail.base_m and tip_m are metres along the blade from the grip; colour is the sword trail's. Names are Level 1 (numbers and names only).",
+ "default": "katana_cyan",
+ "rack": [
+  "katana_cyan",
+  "heavy_duty",
+  "hook_cyan",
+  "glass_core",
+  "machete",
+  "twin_orange"
+ ],
+ "swords": {
+  "katana_cyan": {
+   "name": "Cyan katana",
+   "model": "res://art/final/weapons/sword_katana_cyan.glb",
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "rot_deg": [
+    0,
+    0,
+    0
+   ],
+   "scale": 1.0,
+   "trail": {
+    "color": "#4fd8ff",
+    "base_m": 0.11,
+    "tip_m": 0.72
+   }
+  },
+  "heavy_duty": {
+   "name": "Heavy Duty cleaver",
+   "model": "res://art/final/weapons/sword_heavy_duty.glb",
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "rot_deg": [
+    0,
+    0,
+    0
+   ],
+   "scale": 1.0,
+   "trail": {
+    "color": "#ff9a3c",
+    "base_m": 0.1,
+    "tip_m": 0.7
+   }
+  },
+  "hook_cyan": {
+   "name": "Cyan hook-blade",
+   "model": "res://art/final/weapons/sword_hook_cyan.glb",
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "rot_deg": [
+    0,
+    0,
+    0
+   ],
+   "scale": 1.0,
+   "trail": {
+    "color": "#5fffe0",
+    "base_m": 0.09,
+    "tip_m": 0.65
+   }
+  },
+  "glass_core": {
+   "name": "Glass-core sword",
+   "model": "res://art/final/weapons/sword_glass_core.glb",
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "rot_deg": [
+    0,
+    0,
+    0
+   ],
+   "scale": 1.0,
+   "trail": {
+    "color": "#8fe8ff",
+    "base_m": 0.1,
+    "tip_m": 0.62
+   }
+  },
+  "machete": {
+   "name": "Dark machete",
+   "model": "res://art/final/weapons/sword_machete.glb",
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "rot_deg": [
+    0,
+    0,
+    0
+   ],
+   "scale": 1.0,
+   "trail": {
+    "color": "#ff8a3c",
+    "base_m": 0.11,
+    "tip_m": 0.57
+   }
+  },
+  "twin_orange": {
+   "name": "Orange twin-prong blade",
+   "model": "res://art/final/weapons/sword_twin_orange.glb",
+   "offset": [
+    0,
+    0,
+    0
+   ],
+   "rot_deg": [
+    0,
+    0,
+    0
+   ],
+   "scale": 1.0,
+   "trail": {
+    "color": "#ff7a1a",
+    "base_m": 0.03,
+    "tip_m": 0.48
+   }
+  }
+ }
+}
