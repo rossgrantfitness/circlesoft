@@ -26,6 +26,8 @@ const BODY_FONT: String = "PixelifySans-VariableFont_wght.ttf"
 const BODY_WEIGHT: int = 500
 const BODY_SIZE: int = 16
 const BODY_SPACING: int = 0
+## Extra pixels between words (the leaning Pixelify's own space looks too narrow).
+const WORD_GAP: int = 3
 const TITLE_SIZE: int = 20
 const DIGITS_FONT: String = "Jersey15-Regular.ttf"
 const DIGITS_SIZE: int = 16
@@ -129,6 +131,7 @@ func _font(file: String, spacing: int, weight: int) -> FontVariation:
 	var variation: FontVariation = FontVariation.new()
 	variation.base_font = load(FONT_DIR + file) as Font
 	variation.spacing_glyph = spacing
+	variation.spacing_space = WORD_GAP if file != LABEL_FONT else 0
 	if weight > 0:
 		variation.variation_opentype = {TextServerManager.get_primary_interface().name_to_tag("wght"): float(weight)}
 	return variation
