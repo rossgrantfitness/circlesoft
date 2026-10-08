@@ -2,6 +2,10 @@
 
 > A running record of what the studio is doing, newest at the top. Updated as work happens so Ross can follow along.
 
+## 2026-10-08
+
+- **Ross picked tone A: the world goes grim, the heroes stay loud** (animal cast stays, less cute). Creative Director doing the tone pass on the story bible and design doc; Technical Artist building a grim look test (Harrow square, a battle, a leaner scuffed Red). Both go to Ross before the change is rolled out everywhere.
+
 ## 2026-10-07
 
 - **Dynamic battle camera built from Ross's storyboard (1449 tests; playthrough 28/28)** and sent to Ross as a new build. The grimdark tone decision is still open with Ross.
