@@ -2,21 +2,24 @@
 
 > Owner: Creative Director (proposes) · Ross (approves). Nothing here is final until it appears in docs/decisions.md.
 
+> **For Ross (tone pass, 2026-10-08, waiting on you):** Only the tone words changed: the Core pitch and elevator pitch now say "grim frontier, loud crew" instead of "loud, goofy" and drop "chibi"; Pillar 2 swaps "we DON'T go grimdark" for a DO / DON'T pair that puts the grime in the world and keeps the heart in the heroes; Pillar 3 says "animal characters" instead of "cute chibi critters". Every system, number and section below is untouched. Changed lines are tagged "TONE PASS 2026-10-08, pending Ross". The full tone guide is docs/tone_guide.md.
+
 ## Core pitch
-> ✅ APPROVED by Ross, 2026-10-06 (Relay swapped for timed hits per Ross)
+> ✅ APPROVED by Ross, 2026-10-06 (Relay swapped for timed hits per Ross). **TONE PASS 2026-10-08, pending Ross:** tone words in the last sentence, "chibi" dropped, one clause on the world added.
 
-LIGHTS LEFT ON is a classic 90s JRPG hero's journey. Ten years ago Red's mom flew into the starless dark to answer a distress call. Now Red, a silent scrappy pup in Mom's three-sizes-too-big jacket, goes after her with a loud chibi animal crew: a gentle bear, a panicky ferret genius, a by-the-book bunny and a show-off raccoon. In about 10 hours you climb from on foot to big robot to giant robot to giant spaceship to fighting a god. Battles are classic turn-based JRPG fights with timed hits: press the button at the right moment to hit harder, or to block when you're hit. Beat the Admiral's lieutenants and they end up on your side. And the call? It isn't what it seems. A low-poly PSX look in the spirit of Mega Man Legends, Tail Concerto, Metal Gear Solid and Final Fantasy VII: loud, goofy and big-hearted.
+LIGHTS LEFT ON is a classic 90s JRPG hero's journey. Ten years ago Red's mom flew into the starless dark to answer a distress call. Now the Hegemony has the frontier by the throat (checkpoints, curfews, quotas, the masts being jammed one by one), and Red, a silent scrappy pup in Mom's three-sizes-too-big jacket, goes after her anyway with a loud animal crew: a gentle bear, a panicky ferret genius, a by-the-book bunny and a show-off raccoon. In about 10 hours you climb from on foot to big robot to giant robot to giant spaceship to fighting a god. Battles are classic turn-based JRPG fights with timed hits: press the button at the right moment to hit harder, or to block when you're hit. Beat the Admiral's lieutenants and they end up on your side. And the call? It isn't what it seems. A low-poly PSX look in the spirit of Mega Man Legends, Tail Concerto, Metal Gear Solid and Final Fantasy VII: a greasy, grim, oppressed frontier, and a crew too loud and big-hearted to give up on it.
 
-**Elevator pitch:** A silent pup and her loud chibi animal crew chase her missing mom's distress call from on foot to giant robots to a giant spaceship, all the way up to punching out a god.
+**Elevator pitch** *(TONE PASS 2026-10-08, pending Ross)***:** On a frontier ground down by an empire, a silent pup and her loud animal crew chase her missing mom's distress call from on foot to giant robots to a giant spaceship, all the way up to punching out a god.
 
 ## Pillars
-> ✅ APPROVED by Ross, 2026-10-06 (Relay swapped for timed hits per Ross)
+> ✅ APPROVED by Ross, 2026-10-06 (Relay swapped for timed hits per Ross). **TONE PASS 2026-10-08, pending Ross:** Pillar 2's body and its DO / DON'T lines; three words in Pillar 3. Pillar names unchanged.
 
 1. **Always Bigger.** When two ideas are close, pick the one that makes the climb feel bigger (bigger machines, bigger bosses, bigger crowds) and makes every win feel like a knockout.
    *This means we DON'T* end a big fight on a quiet fizzle, stall at one scale for too long, or cut robots and spaceships to save time; cut something else first.
-2. **Loud Crew, Big Heart.** Default to the louder, goofier, more swaggering option, let the crew do the talking for silent Red, and save the sincere moments for when they're earned, shown and never explained.
-   *This means we DON'T* go grimdark or self-serious, say the theme out loud, or make jokes or game mechanics out of the characters being animals.
-3. **Classic, Not Clever.** Build the 90s JRPG players already love (familiar menus, readable turn-based fights, cute chibi critters Ross can actually model and animate) and spend our one big hook, timed hits, where it counts.
+2. **Loud Crew, Big Heart.** The world is grim; the crew is the light in it. Put the grime, the oppression and the tiredness in the world, and default to the louder, more defiant, more swaggering option for the crew. Let the crew do the talking for silent Red, and save the sincere moments for when they're earned, shown and never explained.
+   *This means we DO* put grime, rust, hunger and real oppression in the world (checkpoints, curfews, propaganda, quotas, jamming, confiscations) and let most people in it be close to giving up; let the humor come out dry from the bleakness; and make the heroes the light: every time they act, the world gets a little louder.
+   *This means we DON'T* linger on suffering or make cruelty the show (no torture-porn); let nihilism win (the bleakness is something the heroes beat, never the last word); make mean-spirited jokes that punch down at the people being ground down; lose the heroes' heart or make them cynical; say the theme out loud; or make jokes or game mechanics out of the characters being animals.
+3. **Classic, Not Clever.** Build the 90s JRPG players already love (familiar menus, readable turn-based fights, animal characters Ross can actually model and animate) and spend our one big hook, timed hits, where it counts.
    *This means we DON'T* add high-concept gimmicks, turn the themes into systems (no death or rebirth mechanics), or pick anything that's hard to build just because it's clever.
 
 ## Exploration

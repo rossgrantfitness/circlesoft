@@ -4,6 +4,7 @@
 
 ## 2026-10-08
 
+- **Tone pass drafted for Ross (Creative Director), not final.** Story bible: new Tone line, World & history and Factions made grim (checkpoints, Quiet Hours curfew, propaganda, quotas, jamming, confiscations; tired townsfolk), Kasp's memos made chilling-funny, Vane's arc opening; twist, beats, names and ladder untouched; "Kept on purpose" list of old gags that stay. Design doc: Core pitch tone words and the Pillar 2 DO / DON'T. New docs/tone_guide.md for the Writer and artists, with three calls for Ross at the bottom (humor dial, lamps on Lamp Square, battle rating lettering).
 - **Ross picked tone A: the world goes grim, the heroes stay loud** (animal cast stays, less cute). Creative Director doing the tone pass on the story bible and design doc; Technical Artist building a grim look test (Harrow square, a battle, a leaner scuffed Red). Both go to Ross before the change is rolled out everywhere.
 
 ## 2026-10-07
