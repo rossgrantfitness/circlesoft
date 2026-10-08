@@ -881,7 +881,7 @@ func _draw_rows() -> void:
 		var value_right: float = float(_layout["value_right"])
 		if FeelFormat.is_slider(knob):
 			_draw_slider(knob, i, float(value), focused)
-			SandboxStyle.text_right(_overlay, "body", value_right, baseline, FeelFormat.value_text(knob, value), value_color, 66.0)
+			SandboxStyle.text_right(_overlay, "digits", value_right, baseline, FeelFormat.value_text(knob, value), value_color, 66.0)
 		else:
 			var text: String = FeelFormat.value_text(knob, value)
 			if FeelFormat.kind_of(knob) == FeelFormat.KIND_BOOL:
@@ -967,4 +967,4 @@ func _draw_buttons() -> void:
 			SandboxStyle.cursor(_overlay, Vector2(rect.position.x + 1.0, rect.position.y + rect.size.y / 2.0))
 	var dirty: bool = is_dirty()
 	var status: String = SandboxUiData.text("feel.unsaved" if dirty else "feel.saved")
-	SandboxStyle.label(_overlay, Vector2(_left() + _width() - SandboxStyle.text_width("label", status.to_upper()) - 2.0, float(_layout["button_y"]) + 10.0), status, SandboxStyle.color("pip") if dirty else SandboxStyle.color("label_dim"))
+	SandboxStyle.label(_overlay, Vector2(_left() + _width() - SandboxStyle.text_width("label", status.to_upper()) - 2.0, float(_layout["info_label_y"])), status, SandboxStyle.color("pip") if dirty else SandboxStyle.color("label_dim"))

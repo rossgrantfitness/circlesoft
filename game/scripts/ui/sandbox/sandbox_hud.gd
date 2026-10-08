@@ -631,7 +631,9 @@ func _draw_hp() -> void:
 		top = top.lerp(Color.WHITE, 0.35)
 	var text_at: Vector2 = SandboxUiData.vec("hud.hp_text_pos")
 	var tint: Color = SandboxStyle.color("warn") if low else SandboxStyle.color("text")
-	SandboxStyle.text(_meters, "body", text_at, "%s %d/%d" % [SandboxUiData.text("hud.hp"), _hp, _hp_max], tint)
+	var word: String = SandboxUiData.text("hud.hp") + " "
+	SandboxStyle.text(_meters, "body", text_at, word, tint)
+	SandboxStyle.text(_meters, "digits", text_at + Vector2(SandboxStyle.text_width("body", word), 0.0), "%d/%d" % [_hp, _hp_max], tint)
 	SandboxStyle.thin_bar(_meters, bar, frac, top, bottom, _hp_chip / float(_hp_max))
 
 
@@ -659,7 +661,7 @@ func _draw_noise() -> void:
 	SandboxStyle.thin_bar(_meters, inner, _noise_shown, top, bottom)
 	SandboxStyle.label(_meters, SandboxUiData.vec("hud.noise_label_pos"), SandboxUiData.text("hud.noise"), SandboxStyle.color("label"))
 	var points_at: Vector2 = SandboxUiData.vec("hud.noise_points_right")
-	SandboxStyle.text_right(_meters, "body", points_at.x, points_at.y, str(roundi(_noise_points)), SandboxStyle.color("noise_top"), 80.0)
+	SandboxStyle.text_right(_meters, "digits", points_at.x, points_at.y, str(roundi(_noise_points)), SandboxStyle.color("noise_top"), 80.0)
 	var rank_at: Vector2 = SandboxUiData.vec("hud.noise_rank_right")
 	var rank_text: String = _rank_name if not _rank_name.is_empty() else SandboxUiData.text("hud.rank_none")
 	var rank_color: Color = SandboxPopups.rank_color(_rank_id) if not _rank_name.is_empty() else SandboxStyle.color("text_dim")

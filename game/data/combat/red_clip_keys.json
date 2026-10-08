@@ -1,254 +1,36 @@
 {
- "_about": "Key poses of Red's clips (15 fps, stepped; written by scripts/tools/rig_*.py). Use these seconds as clip_s in moves.json anim.keys.",
- "fps": 15,
+ "_about": "Key poses of Red's clips: where the strike lands (contact_s) and the poses the move data snaps to. 30 fps for Quaternius clips (retarget_ual.py), 15 fps stepped for the TA's hand-posed stand-ins. Use these seconds as clip_s in moves.json anim.keys.",
+ "fps": 30,
  "clips": {
   "idle": {
-   "length_s": 1.6,
+   "length_s": 1.6667,
    "loop": true,
+   "source": "UAL1:Sword_Idle",
    "keys": [
     {
      "frame": 0,
      "clip_s": 0.0
     },
     {
-     "frame": 8,
-     "clip_s": 0.5333
-    },
-    {
-     "frame": 16,
-     "clip_s": 1.0667
+     "frame": 50,
+     "clip_s": 1.6667
     }
-   ],
-   "note": "breathing; sword up, left fist guard"
-  },
-  "walk": {
-   "length_s": 0.8,
-   "loop": true,
-   "keys": [
-    {
-     "frame": 0,
-     "clip_s": 0.0
-    },
-    {
-     "frame": 3,
-     "clip_s": 0.2
-    },
-    {
-     "frame": 6,
-     "clip_s": 0.4
-    },
-    {
-     "frame": 9,
-     "clip_s": 0.6
-    }
-   ],
-   "note": "0.8 s loop"
+   ]
   },
   "run": {
-   "length_s": 0.5333,
+   "length_s": 0.6667,
    "loop": true,
+   "source": "UAL1:Sprint_Loop",
    "keys": [
     {
      "frame": 0,
      "clip_s": 0.0
     },
     {
-     "frame": 2,
-     "clip_s": 0.1333
-    },
-    {
-     "frame": 4,
-     "clip_s": 0.2667
-    },
-    {
-     "frame": 6,
-     "clip_s": 0.4
+     "frame": 20,
+     "clip_s": 0.6667
     }
-   ],
-   "note": "0.53 s loop; footfalls at frames 0 and 4"
-  },
-  "jump_up": {
-   "length_s": 0.4,
-   "loop": false,
-   "keys": [
-    {
-     "frame": 0,
-     "clip_s": 0.0
-    },
-    {
-     "frame": 2,
-     "clip_s": 0.1333
-    },
-    {
-     "frame": 4,
-     "clip_s": 0.2667
-    }
-   ],
-   "note": "one-shot, holds the last pose"
-  },
-  "fall": {
-   "length_s": 0.5333,
-   "loop": true,
-   "keys": [
-    {
-     "frame": 0,
-     "clip_s": 0.0
-    },
-    {
-     "frame": 4,
-     "clip_s": 0.2667
-    }
-   ],
-   "note": "0.53 s loop"
-  },
-  "land": {
-   "length_s": 0.3333,
-   "loop": false,
-   "keys": [
-    {
-     "frame": 0,
-     "clip_s": 0.0
-    },
-    {
-     "frame": 2,
-     "clip_s": 0.1333
-    },
-    {
-     "frame": 4,
-     "clip_s": 0.2667
-    }
-   ],
-   "note": "one-shot, ends close to idle"
-  },
-  "dash": {
-   "length_s": 0.4,
-   "loop": false,
-   "keys": [
-    {
-     "frame": 0,
-     "clip_s": 0.0
-    },
-    {
-     "frame": 1,
-     "clip_s": 0.0667
-    },
-    {
-     "frame": 4,
-     "clip_s": 0.2667
-    }
-   ],
-   "note": "holds the lunge; the game can end it any time"
-  },
-  "air_dash": {
-   "length_s": 0.4,
-   "loop": false,
-   "keys": [
-    {
-     "frame": 0,
-     "clip_s": 0.0
-    },
-    {
-     "frame": 1,
-     "clip_s": 0.0667
-    }
-   ],
-   "note": "airborne dash, superman lean"
-  },
-  "light_1": {
-   "length_s": 0.5333,
-   "loop": false,
-   "keys": [
-    {
-     "frame": 0,
-     "clip_s": 0.0
-    },
-    {
-     "frame": 2,
-     "clip_s": 0.1333
-    },
-    {
-     "frame": 4,
-     "clip_s": 0.2667
-    },
-    {
-     "frame": 7,
-     "clip_s": 0.4667
-    }
-   ],
-   "note": "wind-up f0, strike f2, follow f4, recover f7"
-  },
-  "light_2": {
-   "length_s": 0.5333,
-   "loop": false,
-   "keys": [
-    {
-     "frame": 0,
-     "clip_s": 0.0
-    },
-    {
-     "frame": 2,
-     "clip_s": 0.1333
-    },
-    {
-     "frame": 4,
-     "clip_s": 0.2667
-    },
-    {
-     "frame": 7,
-     "clip_s": 0.4667
-    }
-   ],
-   "note": "wind-up f0, strike f2, follow f4, recover f7"
-  },
-  "light_3": {
-   "length_s": 0.6,
-   "loop": false,
-   "keys": [
-    {
-     "frame": 0,
-     "clip_s": 0.0
-    },
-    {
-     "frame": 2,
-     "clip_s": 0.1333
-    },
-    {
-     "frame": 4,
-     "clip_s": 0.2667
-    },
-    {
-     "frame": 8,
-     "clip_s": 0.5333
-    }
-   ],
-   "note": "wind-up f0, thrust f2 (held to f4), recover f8"
-  },
-  "heavy": {
-   "length_s": 0.8,
-   "loop": false,
-   "keys": [
-    {
-     "frame": 0,
-     "clip_s": 0.0
-    },
-    {
-     "frame": 3,
-     "clip_s": 0.2
-    },
-    {
-     "frame": 5,
-     "clip_s": 0.3333
-    },
-    {
-     "frame": 8,
-     "clip_s": 0.5333
-    },
-    {
-     "frame": 11,
-     "clip_s": 0.7333
-    }
-   ],
-   "note": "crouch f0, raise f3, slam f5, hold f8, recover f11"
+   ]
   },
   "launcher": {
    "length_s": 0.6667,
@@ -271,183 +53,9 @@
      "clip_s": 0.6
     }
    ],
-   "note": "crouch f0, rising strike f3, follow f5, recover f9"
-  },
-  "air_1": {
-   "length_s": 0.4667,
-   "loop": false,
-   "keys": [
-    {
-     "frame": 0,
-     "clip_s": 0.0
-    },
-    {
-     "frame": 2,
-     "clip_s": 0.1333
-    },
-    {
-     "frame": 4,
-     "clip_s": 0.2667
-    },
-    {
-     "frame": 6,
-     "clip_s": 0.4
-    }
-   ],
-   "note": "airborne forehand; strike f2"
-  },
-  "air_2": {
-   "length_s": 0.4667,
-   "loop": false,
-   "keys": [
-    {
-     "frame": 0,
-     "clip_s": 0.0
-    },
-    {
-     "frame": 2,
-     "clip_s": 0.1333
-    },
-    {
-     "frame": 4,
-     "clip_s": 0.2667
-    },
-    {
-     "frame": 6,
-     "clip_s": 0.4
-    }
-   ],
-   "note": "airborne backhand; strike f2"
-  },
-  "air_3": {
-   "length_s": 0.6,
-   "loop": false,
-   "keys": [
-    {
-     "frame": 0,
-     "clip_s": 0.0
-    },
-    {
-     "frame": 2,
-     "clip_s": 0.1333
-    },
-    {
-     "frame": 4,
-     "clip_s": 0.2667
-    },
-    {
-     "frame": 8,
-     "clip_s": 0.5333
-    }
-   ],
-   "note": "spin f0-f4 (the code adds the full yaw turn), slam f4"
-  },
-  "parry": {
-   "length_s": 0.4,
-   "loop": false,
-   "keys": [
-    {
-     "frame": 0,
-     "clip_s": 0.0
-    },
-    {
-     "frame": 2,
-     "clip_s": 0.1333
-    },
-    {
-     "frame": 5,
-     "clip_s": 0.3333
-    }
-   ],
-   "note": "brace f0, block f2 (held)"
-  },
-  "parry_success": {
-   "length_s": 0.4,
-   "loop": false,
-   "keys": [
-    {
-     "frame": 0,
-     "clip_s": 0.0
-    },
-    {
-     "frame": 2,
-     "clip_s": 0.1333
-    },
-    {
-     "frame": 5,
-     "clip_s": 0.3333
-    }
-   ],
-   "note": "the flick after a clean parry"
-  },
-  "hurt": {
-   "length_s": 0.4,
-   "loop": false,
-   "keys": [
-    {
-     "frame": 0,
-     "clip_s": 0.0
-    },
-    {
-     "frame": 2,
-     "clip_s": 0.1333
-    },
-    {
-     "frame": 4,
-     "clip_s": 0.2667
-    }
-   ],
-   "note": "flinch back f0, recover f4; plays once"
-  },
-  "knockdown": {
-   "length_s": 0.8,
-   "loop": false,
-   "keys": [
-    {
-     "frame": 0,
-     "clip_s": 0.0
-    },
-    {
-     "frame": 3,
-     "clip_s": 0.2
-    },
-    {
-     "frame": 6,
-     "clip_s": 0.4
-    },
-    {
-     "frame": 8,
-     "clip_s": 0.5333
-    }
-   ],
-   "note": "blown back f0, falling f3, hits the floor f6, lies still (holds)"
-  },
-  "getup": {
-   "length_s": 0.8,
-   "loop": false,
-   "keys": [
-    {
-     "frame": 0,
-     "clip_s": 0.0
-    },
-    {
-     "frame": 3,
-     "clip_s": 0.2
-    },
-    {
-     "frame": 6,
-     "clip_s": 0.4
-    },
-    {
-     "frame": 9,
-     "clip_s": 0.6
-    },
-    {
-     "frame": 11,
-     "clip_s": 0.7333
-    }
-   ],
-   "note": "up and ready"
+   "note": "crouch f0, rising strike f3, follow f5, recover f9",
+   "source": "stand-in (hand-posed by the Technical Artist; no free clip fits)",
+   "fps": 15
   }
  }
 }

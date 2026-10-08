@@ -66,8 +66,10 @@ func step(dt: float) -> Vector3:
 			continue
 		alive.append(layer)
 		var amp: float = _envelope(layer)
-		var phase: float = float(layer["time"]) * float(layer["hz"]) * TAU + float(layer["seed"])
-		offset += Vector3(sin(phase) + 0.5 * sin(phase * WAVE_X2 + 1.3), cos(phase * WAVE_Y + 0.4) + 0.5 * sin(phase * WAVE_Y2), 0.0) * amp * 0.6
+		var phase: float = float(layer["time"]) * float(layer["hz"]) * TAU
+		# starts from zero (no jolt), then two incommensurate sines per axis; each layer has its own slight phase twist
+		var twist: float = 1.0 + 0.07 * sin(float(layer["seed"]))
+		offset += Vector3(sin(phase * twist) + 0.5 * sin(phase * WAVE_X2), sin(phase * WAVE_Y) + 0.5 * sin(phase * WAVE_Y2), 0.0) * amp * 0.6
 	_layers = alive
 	return offset
 

@@ -14,23 +14,31 @@ extends SceneTree
 const OUT: String = "res://art/placeholder/ui/sandbox_theme.tres"
 const TYPE: String = "SandboxUi"
 const FONT_DIR: String = "res://art/final/ui/fonts/"
-## The default body font. Candidates (docs/screenshots/ui_font_options.png): Jersey15-Regular.ttf,
-## DotGothic16-Regular.ttf, VT323-Regular.ttf, PixelifySans-VariableFont_wght.ttf (all SIL OFL 1.1).
-const BODY_FONT: String = "Jersey15-Regular.ttf"
+## The default body font. Ross (2026-10-08): "like Final Fantasy Tactics Advance: white font with a black
+## drop shadow, a little stylized and offset, still video gamey". Candidates are in
+## docs/screenshots/ui_font_options_ffta.png (all SIL OFL 1.1): PixelifySans-VariableFont_wght.ttf (default:
+## the most character), Handjet-Variable.ttf (loses its i-dots at menu sizes), Jersey15-Regular.ttf (clean;
+## used here for numerals because Pixelify's 5, 2 and 8 read alike), Micro5-Regular.ttf, JacquardaBastarda9-Regular.ttf.
+## Round one (Vagrant Story reference): docs/screenshots/ui_font_options.png.
+const BODY_FONT: String = "PixelifySans-VariableFont_wght.ttf"
+const BODY_WEIGHT: int = 500
 const BODY_SIZE: int = 16
-const BODY_SPACING: int = 1
+const BODY_SPACING: int = 0
 const TITLE_SIZE: int = 20
+const DIGITS_FONT: String = "Jersey15-Regular.ttf"
+const DIGITS_SIZE: int = 16
+const DIGITS_SPACING: int = 1
 const LABEL_FONT: String = "Silkscreen-Regular.ttf"
 const LABEL_SIZE: int = 8
 const LABEL_SPACING: int = 1
 
 const COLORS: Dictionary = {
-	"text": "#E4E6EE",
+	"text": "#FFFFFF",
 	"text_light": "#FFFFFF",
 	"text_dim": "#7C84A0",
-	"text_selected": "#C8E85A",
+	"text_selected": "#FFFFFF",
 	"text_on_header": "#E8FFF6",
-	"shadow": "#05040C",
+	"shadow": "#000000",
 	"label": "#6FD6EE",
 	"label_dim": "#7C8AB0",
 	"bar_top": "#1C2658",
@@ -90,15 +98,15 @@ const CONSTANTS: Dictionary = {
 
 func _initialize() -> void:
 	var theme: Theme = Theme.new()
-	theme.set_default_font(_font(BODY_FONT, BODY_SPACING))
+	theme.set_default_font(_font(BODY_FONT, BODY_SPACING, BODY_WEIGHT))
 	theme.set_default_font_size(BODY_SIZE)
-	theme.set_font("body", TYPE, _font(BODY_FONT, BODY_SPACING))
+	theme.set_font("body", TYPE, _font(BODY_FONT, BODY_SPACING, BODY_WEIGHT))
 	theme.set_font_size("body", TYPE, BODY_SIZE)
-	theme.set_font("title", TYPE, _font(BODY_FONT, BODY_SPACING))
+	theme.set_font("title", TYPE, _font(BODY_FONT, BODY_SPACING, BODY_WEIGHT))
 	theme.set_font_size("title", TYPE, TITLE_SIZE)
-	theme.set_font("digits", TYPE, _font(BODY_FONT, BODY_SPACING))
-	theme.set_font_size("digits", TYPE, TITLE_SIZE)
-	theme.set_font("label", TYPE, _font(LABEL_FONT, LABEL_SPACING))
+	theme.set_font("digits", TYPE, _font(DIGITS_FONT, DIGITS_SPACING, 0))
+	theme.set_font_size("digits", TYPE, DIGITS_SIZE)
+	theme.set_font("label", TYPE, _font(LABEL_FONT, LABEL_SPACING, 0))
 	theme.set_font_size("label", TYPE, LABEL_SIZE)
 	for name: String in COLORS:
 		theme.set_color(name, TYPE, Color.html(str(COLORS[name])))
@@ -109,8 +117,10 @@ func _initialize() -> void:
 	quit(0 if err == OK else 1)
 
 
-func _font(file: String, spacing: int) -> FontVariation:
+func _font(file: String, spacing: int, weight: int) -> FontVariation:
 	var variation: FontVariation = FontVariation.new()
 	variation.base_font = load(FONT_DIR + file) as Font
 	variation.spacing_glyph = spacing
+	if weight > 0:
+		variation.variation_opentype = {TextServerManager.get_primary_interface().name_to_tag("wght"): float(weight)}
 	return variation

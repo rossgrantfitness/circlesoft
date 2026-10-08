@@ -310,10 +310,10 @@ def rebuild_and_save(path, doc, blob, new_animations, keep_animation_names, gene
     for clip in new_animations:
         t_acc = add_acc(clip["times"], "SCALAR")
         samplers, channels = [], []
-        for node, path, vals in clip["channels"]:
-            o_acc = add_acc(vals, "VEC4" if path == "rotation" else "VEC3")
+        for node, kind, vals in clip["channels"]:
+            o_acc = add_acc(vals, "VEC4" if kind == "rotation" else "VEC3")
             samplers.append({"input": t_acc, "interpolation": "LINEAR", "output": o_acc})
-            channels.append({"sampler": len(samplers) - 1, "target": {"node": node, "path": path}})
+            channels.append({"sampler": len(samplers) - 1, "target": {"node": node, "path": kind}})
         anims.append({"name": clip["name"], "samplers": samplers, "channels": channels})
 
     doc["accessors"], doc["bufferViews"] = new_acc, new_views
