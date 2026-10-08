@@ -291,6 +291,102 @@
      "clip_s": 1.5333
     }
    ]
+  },
+  "air_1": {
+   "length_s": 0.4667,
+   "loop": false,
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 2,
+     "clip_s": 0.1333
+    },
+    {
+     "frame": 4,
+     "clip_s": 0.2667
+    },
+    {
+     "frame": 6,
+     "clip_s": 0.4
+    }
+   ],
+   "note": "airborne forehand; strike f2",
+   "source": "stand-in (hand-posed by the Technical Artist; no free clip fits)",
+   "fps": 15
+  },
+  "air_2": {
+   "length_s": 0.4667,
+   "loop": false,
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 2,
+     "clip_s": 0.1333
+    },
+    {
+     "frame": 4,
+     "clip_s": 0.2667
+    },
+    {
+     "frame": 6,
+     "clip_s": 0.4
+    }
+   ],
+   "note": "airborne backhand; strike f2",
+   "source": "stand-in (hand-posed by the Technical Artist; no free clip fits)",
+   "fps": 15
+  },
+  "air_3": {
+   "length_s": 0.6,
+   "loop": false,
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 2,
+     "clip_s": 0.1333
+    },
+    {
+     "frame": 4,
+     "clip_s": 0.2667
+    },
+    {
+     "frame": 8,
+     "clip_s": 0.5333
+    }
+   ],
+   "note": "spin f0-f4 (the code adds the full yaw turn), slam f4",
+   "source": "stand-in (hand-posed by the Technical Artist; no free clip fits)",
+   "fps": 15
+  },
+  "parry_success": {
+   "length_s": 0.4,
+   "loop": false,
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 2,
+     "clip_s": 0.1333
+    },
+    {
+     "frame": 5,
+     "clip_s": 0.3333
+    }
+   ],
+   "note": "the flick after a clean parry",
+   "source": "stand-in (hand-posed by the Technical Artist; no free clip fits)",
+   "fps": 15
   }
  }
 }

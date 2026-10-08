@@ -294,7 +294,7 @@
   },
   "stagger": {
    "length_s": 2.6667,
-   "loop": false,
+   "loop": true,
    "source": "UAL1:Hit_Chest",
    "keys": [
     {

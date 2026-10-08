@@ -271,8 +271,8 @@ func test_loops_close_on_their_first_pose() -> void:
 				if animation.track_get_type(track) != Animation.TYPE_ROTATION_3D:
 					continue
 				var count: int = animation.track_get_key_count(track)
-				var first: Quaternion = animation.rotation_track_get_key_value(track, 0) if count > 0 else Quaternion.IDENTITY
-				var last: Quaternion = animation.rotation_track_get_key_value(track, count - 1) if count > 0 else Quaternion.IDENTITY
+				var first: Quaternion = animation.track_get_key_value(track, 0) as Quaternion if count > 0 else Quaternion.IDENTITY
+				var last: Quaternion = animation.track_get_key_value(track, count - 1) as Quaternion if count > 0 else Quaternion.IDENTITY
 				assert_gt(absf(first.dot(last)), 0.9995, "%s: %s closes its loop (track %d)" % [rig, spec["name"], track])
 
 
@@ -311,20 +311,48 @@ func test_the_blade_points_where_the_source_grip_points() -> void:
 		assert_gt(blade.y, 0.0, "%s: and up" % rig)
 
 
+func _lowest_sole(skeleton: Skeleton3D, soles: Array) -> float:
+	# soles: [bone, rest-frame offset from the bone's joint] pairs; the offsets turn with the foot
+	var lowest: float = INF
+	for pair: Array in soles:
+		var bone: int = skeleton.find_bone(str(pair[0]))
+		var local: Vector3 = skeleton.get_bone_global_rest(bone).basis.inverse() * (pair[1] as Vector3)
+		var pose: Transform3D = skeleton.get_bone_global_pose(bone)
+		lowest = minf(lowest, (pose.origin + pose.basis * local).y)
+	return lowest
+
+
 func test_feet_stay_on_the_floor_in_standing_and_moving_clips() -> void:
-	# ground lock: the lowest sole point is put on the floor (scaled), so the ankles keep their rest height
+	# ground lock (retarget_ual.py): the lowest sole point is put on the floor, scaled by the leg length, so a planted
+	# foot stays planted and nothing sinks. The sole points are the ones in the settings (heel and toe of each foot).
 	for rig: String in ["red", "wolf"]:
 		var settings: Dictionary = _json(str(RIGS[rig]["settings"]))
+		var soles: Array = []
+		for point: Dictionary in (settings["ground"] as Dictionary)["target_points"]:
+			if float(point.get("lift", 0.0)) == 0.0:
+				var offset: Array = point["offset"]
+				soles.append([point["bone"], Vector3(float(offset[0]), float(offset[1]), float(offset[2]))])
+		assert_eq(soles.size(), 4, rig + ": heel and toe of both feet")
 		var model: Node3D = _model(_output(settings))
 		var player: AnimationPlayer = _player(model)
 		var skeleton: Skeleton3D = _skeleton(model)
-		var rest_ankle: float = skeleton.get_bone_global_rest(skeleton.find_bone("foot_l")).origin.y
-		for clip: String in ["idle", "walk", "run", "retreat"] if rig == "wolf" else ["idle", "walk", "run"]:
+		var standing: Array[String] = ["idle", "walk"]
+		var moving: Array[String] = ["run"]
+		if rig == "wolf":
+			standing.append_array(["strafe_l", "strafe_r", "stalk"])
+			moving.append_array(["retreat", "flee"])
+		for clip: String in standing:
 			var length: float = player.get_animation(clip).length
 			for step: int in 12:
 				_set_pose(player, skeleton, clip, length * float(step) / 12.0)
-				var lowest: float = minf(_bone_origin(skeleton, "foot_l").y, _bone_origin(skeleton, "foot_r").y)
-				assert_almost_eq(lowest, rest_ankle, 0.03, "%s: %s frame %d: one foot is planted (ankle %.3f, rest %.3f)" % [rig, clip, step, lowest, rest_ankle])
+				assert_almost_eq(_lowest_sole(skeleton, soles), 0.0, 0.012, "%s: %s frame %d: a foot is on the floor" % [rig, clip, step])
+		for clip: String in moving:
+			var length: float = player.get_animation(clip).length
+			for step: int in 12:
+				_set_pose(player, skeleton, clip, length * float(step) / 12.0)
+				var low: float = _lowest_sole(skeleton, soles)
+				assert_ge(low, -0.012, "%s: %s frame %d: nothing sinks into the floor" % [rig, clip, step])
+				assert_le(low, 0.07, "%s: %s frame %d: the flight phase of a sprint stays low" % [rig, clip, step])
 
 
 func test_the_wolfs_extra_clips_named_in_the_enemy_data_all_exist() -> void:

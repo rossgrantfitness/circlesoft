@@ -341,5 +341,16 @@
    "source": "UAL1:Death01"
   }
  ],
- "keep_standins": []
+ "keep_standins": [],
+ "importer_loops": [
+  "idle",
+  "walk",
+  "run",
+  "fall",
+  "battle_ready",
+  "climb",
+  "launched",
+  "stagger"
+ ],
+ "_importer_loops_about": "Clip names that scripts/tools/psx_post_import.gd (LOOPING_CLIPS) loops whatever the file says; the key data lists them as loops."
 }

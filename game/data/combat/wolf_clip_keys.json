@@ -352,7 +352,7 @@
   },
   "stagger": {
    "length_s": 2.5667,
-   "loop": false,
+   "loop": true,
    "source": "UAL1:Hit_Chest",
    "keys": [
     {
@@ -368,7 +368,7 @@
   },
   "launched": {
    "length_s": 2.9333,
-   "loop": false,
+   "loop": true,
    "source": "UAL2:Hit_Knockback",
    "keys": [
     {

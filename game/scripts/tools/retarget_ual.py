@@ -416,7 +416,7 @@ def main():
         # Godot's importer turns a trailing "_loop" into a looping clip and strips the suffix, so loop flags live in the file
         new_anims.append({"name": name + "_loop" if spec.get("loop") else name, "times": times, "channels": channels})
         length = float(times[-1])
-        entry = {"length_s": round(length, 4), "loop": bool(spec.get("loop")), "source": spec.get("source") or " + ".join(p["source"] for p in spec["parts"])}
+        entry = {"length_s": round(length, 4), "loop": bool(spec.get("loop")) or name in cfg.get("importer_loops", []), "source": spec.get("source") or " + ".join(p["source"] for p in spec["parts"])}
         contact = rt.contact_out_time(spec)
         entry["keys"] = _keys_for(spec, length, rt.fps, contact)
         if contact is not None:
