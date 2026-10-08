@@ -22,6 +22,7 @@
    "length_s": 1.3333,
    "loop": true,
    "source": "UAL1:Walk_Loop",
+   "stride_mps": 0.38,
    "keys": [
     {
      "frame": 0,
@@ -37,6 +38,7 @@
    "length_s": 0.6667,
    "loop": true,
    "source": "UAL1:Sprint_Loop",
+   "stride_mps": 2.52,
    "keys": [
     {
      "frame": 0,

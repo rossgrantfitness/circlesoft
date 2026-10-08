@@ -101,6 +101,8 @@ var _move_clip_scale: float = 1.0
 var _visual: Node3D = null
 var _model: Node3D = null
 var _animation_player: AnimationPlayer = null
+var _strides: Dictionary = {}
+var _strides_loaded: bool = false
 var _current_clip: StringName = &""
 var _model_path: String = ""
 var _warned_clips: Dictionary[StringName, bool] = {}
@@ -1069,10 +1071,33 @@ func _start_move_clip(anim: Dictionary, total_ms: float) -> void:
 func _anim_speed_factor() -> float:
 	if _state == State.ATTACK or _state == State.PARRY:
 		return _move_clip_scale
-	if _current_clip == &"run":
-		var ref: float = float((_data.get("anim", {}) as Dictionary).get("run_speed_scale_ref_mps", 6.0))
-		return clampf(Vector2(velocity.x, velocity.z).length() / ref, 0.6, 1.6)
+	if _current_clip == &"run" or _current_clip == &"walk":
+		# Foot-slide fix: play the loop at ground speed / the clip's stride (clip_keys.json stride_mps), inside the data's limits.
+		var anim: Dictionary = _data.get("anim", {}) as Dictionary
+		var limits: Vector2 = Vector2(float(anim.get("playback_scale_min", LocomotionSpeed.DEFAULT_MIN)),
+				float(anim.get("playback_scale_max", LocomotionSpeed.DEFAULT_MAX)))
+		return LocomotionSpeed.playback_scale(Vector2(velocity.x, velocity.z).length(), _stride_of(_current_clip), limits)
 	return 1.0
+
+
+## A locomotion clip's natural ground speed from the model's clip-key file (player_action.json anim.clip_keys); 0.0 if unknown.
+func _stride_of(clip: StringName) -> float:
+	if not _strides_loaded:
+		_strides_loaded = true
+		var path: String = str((_data.get("anim", {}) as Dictionary).get("clip_keys", ""))
+		if path != "":
+			_strides = LocomotionSpeed.load_strides(path)
+	return LocomotionSpeed.stride_for(_strides, clip)
+
+
+## Walk at a slow stick, run otherwise (a little hysteresis so the clip does not flicker at the border).
+func _locomotion_clip(ground_speed: float) -> StringName:
+	var anim: Dictionary = _data.get("anim", {}) as Dictionary
+	var border: float = float(anim.get("walk_below_mps", 0.0))
+	if border <= 0.0 or not _has_clip(&"walk"):
+		return &"run"
+	var walking: bool = _current_clip == &"walk"
+	return &"walk" if ground_speed < (border + 0.2 if walking else border) else &"run"
 
 
 func _seek_pose(clip: StringName, clip_s: float) -> void:
@@ -1093,7 +1118,7 @@ func _update_animation(dt: float) -> void:
 			if airborne:
 				_play_clip(&"jump_up" if _vy > 0.0 else &"fall")
 			elif moving:
-				_play_clip(&"run")
+				_play_clip(_locomotion_clip(Vector2(velocity.x, velocity.z).length()))
 			else:
 				_play_clip(&"idle")
 		_:

@@ -427,9 +427,11 @@ def main():
         line = "%-16s %5.2fs %3d frames" % (name, length, len(times))
         if "loop_error_deg" in res:
             line += "  loop err %.1f deg" % res["loop_error_deg"]
+        if spec.get("loop") and spec["name"] in LOCOMOTION_CLIPS:
+            # the ground speed the clip strides at; the game scales the playback by speed / stride_mps (scripts/combat/locomotion_speed.gd)
+            entry["stride_mps"] = round(rt.natural_speed(res), 2)
+            line += "  natural speed %.2f m/s" % entry["stride_mps"]
         if args.report:
-            if spec.get("loop") and spec["name"] in ("walk", "run", "strafe", "strafe_l", "strafe_r", "retreat", "flee", "stalk"):
-                line += "  natural speed %.2f m/s" % rt.natural_speed(res)
             q = rt.quality(res, spec)
             line += "  head-clip %2d/%d (%.0f mm)  torso-clip %2d (%.0f mm)" % (q["head"], q["frames"], q["head_pen_max"] * 1000, q["torso"], q["torso_pen_max"] * 1000)
         print(line)
@@ -470,6 +472,7 @@ def main():
 
 
 IMPORT_SCRIPT = "res://scripts/tools/ual_post_import.gd"
+LOCOMOTION_CLIPS = ("walk", "run", "strafe", "strafe_l", "strafe_r", "retreat", "flee", "stalk")
 
 
 def write_import_settings(glb_path, template_glb_path, fps):
