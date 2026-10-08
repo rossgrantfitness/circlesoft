@@ -139,7 +139,7 @@ class Retargeter:
         self.t_floor_err = max(abs(self.t.rest_world_p[f][1] + o[1]) for f, o, lift in self.t_soles if lift == 0.0)
 
     # ------------------------------------------------------------ one frame
-    def frame(self, src_sk, src_clip, t, ground="lock"):
+    def frame(self, src_sk, src_clip, t, ground="lock", yaw=None):
         """The target's mapped bones at source time t: ({bone idx: local rotation matrix}, hips local translation, source info)."""
         lr, lp = src_clip.pose(src_sk, t)
         wr, wp = src_sk.fk(lr, lp)
@@ -149,6 +149,8 @@ class Retargeter:
             d = wr[f] @ src_sk.rest_world_r[f].T
             s_low = min(s_low, wp[f][1] + (d @ off)[1] - lift)
         pelvis_delta = wp[self.s_pelvis] - src_sk.rest_world_p[self.s_pelvis]
+        if yaw:
+            pelvis_delta = axis_angle((0, 1, 0), yaw["deg"]) @ pelvis_delta
 
         world = {}
         local = {}
@@ -159,6 +161,8 @@ class Retargeter:
             if i in self.mapped:
                 _, s, c = self.pairs[self.mapped[i]]
                 w = (wr[s] @ src_sk.rest_world_r[s].T) @ c
+                if yaw and self.t.name[i] in yaw["weights"]:
+                    w = axis_angle((0, 1, 0), yaw["deg"] * yaw["weights"][self.t.name[i]]) @ w
                 wr_t[i] = w
                 local[i] = (wr_t[p].T @ w) if p is not None else w
             else:
@@ -200,6 +204,19 @@ class Retargeter:
             out.append((sk, clip, a, b, float(p.get("speed", 1.0))))
         return out
 
+    def _yaw(self, spec):
+        """A lower-body twist for side-steps: the hips and legs are turned `deg` about the vertical axis (spine and chest
+        take part of it), so a forward walk becomes a sideways one. No new motion is invented."""
+        y = spec.get("yaw")
+        if not y:
+            return None
+        weights = {"hips": 1.0, "spine": 0.5, "chest": 0.2}
+        for side in ("l", "r"):
+            for b in ("thigh", "shin", "foot"):
+                weights["%s_%s" % (b, side)] = 1.0
+        weights.update(y.get("weights", {}))
+        return {"deg": float(y["deg"]), "weights": weights}
+
     def bake(self, spec):
         """Samples a clip definition at self.fps. Returns dict(times, rot {bone: (n,4)}, hips (n,3), frames=list of info)."""
         times, rots, hips, info = [], {b: [] for b in self.mapped}, [], []
@@ -211,13 +228,34 @@ class Retargeter:
                 if times and k == 0:
                     continue                                   # the joint between two parts is one frame
                 ts = a + (b - a) * (k / max(count, 1))
-                local, ht, inf = self.frame(sk, clip, ts, spec.get("ground", "lock"))
+                local, ht, inf = self.frame(sk, clip, ts, spec.get("ground", "lock"), self._yaw(spec))
                 times.append(t_out + (k / self.fps))
                 for bone in self.mapped:
                     rots[bone].append(mat_to_quat(local[bone]))
                 hips.append(ht)
                 info.append(inf)
             t_out += count / self.fps
+        if spec.get("pingpong"):     # forward then back: a loop that closes exactly, from a one-shot reaction
+            n0 = len(times)
+            step = 1.0 / self.fps
+            for k in range(n0 - 2, 0, -1):
+                times.append(times[-1] + step)
+                for bone in self.mapped:
+                    rots[bone].append(rots[bone][k])
+                hips.append(hips[k])
+                info.append(info[k])
+            times.append(times[-1] + step)
+            for bone in self.mapped:
+                rots[bone].append(rots[bone][0])
+            hips.append(hips[0])
+            info.append(info[0])
+        if spec.get("hold_end_s"):   # keep the last pose for a while (a clip the importer loops anyway, or one that must be held)
+            for _ in range(int(round(float(spec["hold_end_s"]) * self.fps))):
+                times.append(times[-1] + 1.0 / self.fps)
+                for bone in self.mapped:
+                    rots[bone].append(rots[bone][-1])
+                hips.append(hips[-1])
+                info.append(info[-1])
         out_rot = {}
         for bone, qs in rots.items():
             qs = np.array(qs)
@@ -321,7 +359,7 @@ class Retargeter:
         speeds = []
         for a, b in zip(track[:-1], track[1:]):
             if a[0] == b[0] and a[1][1] < 0.02 and b[1][1] < 0.02:
-                speeds.append(abs(b[1][2] - a[1][2]) * self.fps)
+                speeds.append(float(np.hypot(b[1][0] - a[1][0], b[1][2] - a[1][2])) * self.fps)
         return float(np.mean(speeds)) if speeds else 0.0
 
 
@@ -375,7 +413,8 @@ def main():
         for bone, qs in res["rot"].items():
             channels.append((bone, "rotation", qs))
         channels.append((rt.t_hips, "translation", res["hips"]))
-        new_anims.append({"name": name, "times": times, "channels": channels})
+        # Godot's importer turns a trailing "_loop" into a looping clip and strips the suffix, so loop flags live in the file
+        new_anims.append({"name": name + "_loop" if spec.get("loop") else name, "times": times, "channels": channels})
         length = float(times[-1])
         entry = {"length_s": round(length, 4), "loop": bool(spec.get("loop")), "source": spec.get("source") or " + ".join(p["source"] for p in spec["parts"])}
         contact = rt.contact_out_time(spec)

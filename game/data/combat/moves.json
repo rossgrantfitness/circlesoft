@@ -1002,6 +1002,330 @@
      "impact_ms": 560,
      "parryable": true,
      "dodge_flare": true
+    },
+    "dodge": {
+     "name": "Dodge",
+     "state": "ground",
+     "kind": "reaction",
+     "startup_ms": 60,
+     "active_ms": 220,
+     "recovery_ms": 300,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {},
+     "hitboxes": [],
+     "anim": {
+      "clip": "dodge_side",
+      "clip_back": "dodge_back",
+      "keys": [],
+      "fallback": "dash_lean"
+     },
+     "iframes": {
+      "from_ms": 60,
+      "to_ms": 280
+     },
+     "motion": {
+      "travel_m": 2.4,
+      "from_ms": 60,
+      "to_ms": 280,
+      "direction": "set_by_brain"
+     },
+     "tell": {
+      "flash": "edge_cyan",
+      "from_ms": 0,
+      "to_ms": 60
+     },
+     "punish": {
+      "from_ms": 280,
+      "to_ms": 580
+     },
+     "sfx": "combat_dash"
+    },
+    "getup_roll": {
+     "name": "Get-up roll",
+     "state": "ground",
+     "kind": "reaction",
+     "startup_ms": 0,
+     "active_ms": 320,
+     "recovery_ms": 200,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {},
+     "hitboxes": [],
+     "anim": {
+      "clip": "dodge_back",
+      "keys": [],
+      "fallback": "dash_lean"
+     },
+     "iframes": {
+      "from_ms": 0,
+      "to_ms": 320
+     },
+     "motion": {
+      "travel_m": 1.8,
+      "from_ms": 0,
+      "to_ms": 320,
+      "direction": "away_from_player"
+     },
+     "sfx": "combat_dash"
+    },
+    "block_start": {
+     "name": "Guard up",
+     "state": "ground",
+     "kind": "reaction",
+     "startup_ms": 80,
+     "active_ms": 40,
+     "recovery_ms": 0,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {},
+     "hitboxes": [],
+     "anim": {
+      "clip": "block_start",
+      "keys": [],
+      "fallback": "brace"
+     },
+     "guard": {
+      "from_ms": 80,
+      "to_ms": 120
+     }
+    },
+    "block_hold": {
+     "name": "Guard hold",
+     "state": "ground",
+     "kind": "reaction",
+     "startup_ms": 0,
+     "active_ms": 450,
+     "recovery_ms": 160,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {},
+     "hitboxes": [],
+     "anim": {
+      "clip": "block_hold",
+      "keys": [],
+      "fallback": "brace"
+     },
+     "loop": true,
+     "hold_max_ms": 550,
+     "guard": {
+      "from_ms": 0,
+      "to_ms": 450
+     },
+     "punish": {
+      "from_ms": 450,
+      "to_ms": 610
+     }
+    },
+    "block_break": {
+     "name": "Guard break",
+     "state": "ground",
+     "kind": "reaction",
+     "startup_ms": 120,
+     "active_ms": 0,
+     "recovery_ms": 980,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {},
+     "hitboxes": [],
+     "anim": {
+      "clip": "block_break",
+      "keys": [],
+      "fallback": "recoil"
+     },
+     "stagger": true,
+     "punish": {
+      "from_ms": 0,
+      "to_ms": 1100
+     },
+     "sfx": "combat_hit_heavy",
+     "spark": "heavy",
+     "shake": "medium"
+    },
+    "strafe": {
+     "name": "Strafe",
+     "state": "ground",
+     "kind": "locomotion",
+     "loop": true,
+     "startup_ms": 0,
+     "active_ms": 800,
+     "recovery_ms": 0,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {},
+     "hitboxes": [],
+     "speed_mps": 1.5,
+     "anim": {
+      "clip": "strafe",
+      "keys": [],
+      "fallback": "run_lean"
+     }
+    },
+    "retreat": {
+     "name": "Retreat",
+     "state": "ground",
+     "kind": "locomotion",
+     "loop": true,
+     "startup_ms": 0,
+     "active_ms": 800,
+     "recovery_ms": 0,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {},
+     "hitboxes": [],
+     "speed_mps": 3.4,
+     "anim": {
+      "clip": "retreat",
+      "keys": [],
+      "fallback": "run_lean"
+     },
+     "reverse": true
+    },
+    "flee": {
+     "name": "Flee",
+     "state": "ground",
+     "kind": "locomotion",
+     "loop": true,
+     "startup_ms": 0,
+     "active_ms": 800,
+     "recovery_ms": 0,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {},
+     "hitboxes": [],
+     "speed_mps": 4.6,
+     "anim": {
+      "clip": "flee",
+      "keys": [],
+      "fallback": "run_lean"
+     }
+    },
+    "swipe_flank": {
+     "name": "Swipe from behind",
+     "state": "ground",
+     "startup_ms": 710,
+     "active_ms": 120,
+     "recovery_ms": 560,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "motion": {
+      "forward_m": 0.5,
+      "from_ms": 610,
+      "to_ms": 750
+     },
+     "hit": {
+      "damage": 10,
+      "hitstun_ms": 350,
+      "knockback_m": 1.2,
+      "launch_mps": 0.0,
+      "knockdown": false,
+      "hit_stop_ms": 60,
+      "poise_damage": 10,
+      "style_points": 0,
+      "shake": "medium",
+      "spark": "slash",
+      "sfx": "combat_hit_light"
+     },
+     "hitboxes": [
+      {
+       "from_ms": 710,
+       "to_ms": 770,
+       "shape": "capsule",
+       "radius": 0.5,
+       "height": 1.6,
+       "offset": [
+        0.4,
+        0.55,
+        0.9
+       ],
+       "rot_deg": [
+        0,
+        0,
+        80
+       ]
+      },
+      {
+       "from_ms": 770,
+       "to_ms": 830,
+       "shape": "capsule",
+       "radius": 0.5,
+       "height": 1.6,
+       "offset": [
+        -0.4,
+        0.55,
+        1.0
+       ],
+       "rot_deg": [
+        0,
+        0,
+        100
+       ]
+      }
+     ],
+     "swing": {
+      "sfx": "combat_swing_light",
+      "trail": false
+     },
+     "anim": {
+      "clip": "attack_windup",
+      "keys": [
+       {
+        "at_ms": 0,
+        "clip": "attack_windup",
+        "clip_s": 0.0
+       },
+       {
+        "at_ms": 140,
+        "clip": "attack_windup",
+        "clip_s": 0.1333
+       },
+       {
+        "at_ms": 300,
+        "clip": "attack_windup",
+        "clip_s": 0.2667
+       },
+       {
+        "at_ms": 440,
+        "clip": "attack_windup",
+        "clip_s": 0.3333
+       },
+       {
+        "at_ms": 590,
+        "clip": "attack_windup",
+        "clip_s": 0.4
+       },
+       {
+        "at_ms": 710,
+        "clip": "attack_swing",
+        "clip_s": 0.0667
+       },
+       {
+        "at_ms": 770,
+        "clip": "attack_swing",
+        "clip_s": 0.2
+       },
+       {
+        "at_ms": 850,
+        "clip": "attack_swing",
+        "clip_s": 0.4
+       }
+      ],
+      "fallback": "swing_r"
+     },
+     "telegraph_ms": 0,
+     "impact_ms": 710,
+     "parryable": true,
+     "dodge_flare": true,
+     "note": "Used by a flanking Grunt standing in Red's rear arc. 150 ms longer wind-up than swipe so a hit from out of sight is still parryable."
     }
    }
   },
@@ -1090,6 +1414,149 @@
       "from_ms": 0,
       "to_ms": 1050
      }
+    },
+    "block_start": {
+     "name": "Guard up",
+     "state": "ground",
+     "kind": "reaction",
+     "startup_ms": 140,
+     "active_ms": 60,
+     "recovery_ms": 0,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {},
+     "hitboxes": [],
+     "anim": {
+      "clip": "block_start",
+      "keys": [],
+      "fallback": "brace"
+     },
+     "guard": {
+      "from_ms": 140,
+      "to_ms": 200
+     }
+    },
+    "block_hold": {
+     "name": "Guard hold",
+     "state": "ground",
+     "kind": "reaction",
+     "startup_ms": 0,
+     "active_ms": 600,
+     "recovery_ms": 220,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {},
+     "hitboxes": [],
+     "anim": {
+      "clip": "block_hold",
+      "keys": [],
+      "fallback": "brace"
+     },
+     "loop": true,
+     "hold_max_ms": 1200,
+     "guard": {
+      "from_ms": 0,
+      "to_ms": 600
+     },
+     "punish": {
+      "from_ms": 600,
+      "to_ms": 820
+     }
+    },
+    "block_break": {
+     "name": "Guard break",
+     "state": "ground",
+     "kind": "reaction",
+     "startup_ms": 160,
+     "active_ms": 0,
+     "recovery_ms": 1140,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {},
+     "hitboxes": [],
+     "anim": {
+      "clip": "block_break",
+      "keys": [],
+      "fallback": "recoil"
+     },
+     "stagger": true,
+     "punish": {
+      "from_ms": 0,
+      "to_ms": 1300
+     },
+     "sfx": "combat_hit_heavy",
+     "spark": "heavy",
+     "shake": "heavy"
+    },
+    "strafe": {
+     "name": "Strafe",
+     "state": "ground",
+     "kind": "locomotion",
+     "loop": true,
+     "startup_ms": 0,
+     "active_ms": 800,
+     "recovery_ms": 0,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {},
+     "hitboxes": [],
+     "speed_mps": 0.8,
+     "anim": {
+      "clip": "strafe",
+      "keys": [],
+      "fallback": "run_lean"
+     }
+    },
+    "retreat": {
+     "name": "Retreat",
+     "state": "ground",
+     "kind": "locomotion",
+     "loop": true,
+     "startup_ms": 0,
+     "active_ms": 800,
+     "recovery_ms": 0,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {},
+     "hitboxes": [],
+     "speed_mps": 1.6,
+     "anim": {
+      "clip": "retreat",
+      "keys": [],
+      "fallback": "run_lean"
+     },
+     "reverse": true
+    },
+    "enrage": {
+     "name": "Enrage roar",
+     "state": "ground",
+     "kind": "reaction",
+     "startup_ms": 100,
+     "active_ms": 800,
+     "recovery_ms": 300,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {},
+     "hitboxes": [],
+     "anim": {
+      "clip": "enrage",
+      "keys": [],
+      "fallback": "overhead"
+     },
+     "armor": {
+      "from_ms": 0,
+      "to_ms": 900
+     },
+     "parryable": false,
+     "dodge_flare": false,
+     "note": "A roar, not an attack: no hitbox, no damage. Super armor through the roar; a poise break interrupts it. The speed-up applies when the roar ends.",
+     "sfx": "combat_brute_slam"
     }
    }
   }

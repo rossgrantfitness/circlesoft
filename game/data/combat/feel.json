@@ -257,6 +257,125 @@
    ]
   },
   {
+   "id": "enemy_aggression",
+   "group": "enemies",
+   "label": "Enemy aggression",
+   "type": "float",
+   "value": 1.0,
+   "min": 0.25,
+   "max": 2.0,
+   "step": 0.05,
+   "unit": "x",
+   "hint": "How often enemies attack. Higher means shorter pauses between attacks."
+  },
+  {
+   "id": "enemy_max_attackers",
+   "group": "enemies",
+   "label": "Enemies attacking at once",
+   "type": "int",
+   "value": 2,
+   "min": 1,
+   "max": 4,
+   "step": 1,
+   "hint": "How many enemies may attack at the same moment. More is harder."
+  },
+  {
+   "id": "enemy_reaction_scale",
+   "group": "enemies",
+   "label": "Enemy reaction time",
+   "type": "float",
+   "value": 1.0,
+   "min": 0.5,
+   "max": 2.0,
+   "step": 0.05,
+   "unit": "x",
+   "hint": "How slowly enemies notice your swings before dodging or blocking. Higher is slower."
+  },
+  {
+   "id": "enemy_windup_scale",
+   "group": "enemies",
+   "label": "Attack wind-up length",
+   "type": "float",
+   "value": 1.0,
+   "min": 0.8,
+   "max": 2.0,
+   "step": 0.05,
+   "unit": "x",
+   "hint": "Longer wind-ups are easier to parry. Never shorter than the safe minimum."
+  },
+  {
+   "id": "enemy_dodge_scale",
+   "group": "enemies",
+   "label": "Enemy dodging",
+   "type": "float",
+   "value": 1.0,
+   "min": 0.0,
+   "max": 2.0,
+   "step": 0.05,
+   "unit": "x",
+   "hint": "How often agile enemies sidestep your attacks. 0 turns dodging off."
+  },
+  {
+   "id": "enemy_block_scale",
+   "group": "enemies",
+   "label": "Enemy blocking",
+   "type": "float",
+   "value": 1.0,
+   "min": 0.0,
+   "max": 2.0,
+   "step": 0.05,
+   "unit": "x",
+   "hint": "How often heavy enemies raise their guard. 0 turns blocking off."
+  },
+  {
+   "id": "enemy_spacing_scale",
+   "group": "enemies",
+   "label": "Enemy spacing",
+   "type": "float",
+   "value": 1.0,
+   "min": 0.6,
+   "max": 1.6,
+   "step": 0.05,
+   "unit": "x",
+   "hint": "How far enemies hold back while circling you. Lower packs them in close."
+  },
+  {
+   "id": "enemy_hp_scale",
+   "group": "enemies",
+   "label": "Enemy health",
+   "type": "float",
+   "value": 1.0,
+   "min": 0.5,
+   "max": 3.0,
+   "step": 0.1,
+   "unit": "x",
+   "hint": "Multiplies every enemy's health."
+  },
+  {
+   "id": "enemy_flee_on",
+   "group": "enemies",
+   "label": "Wounded enemies flee",
+   "type": "bool",
+   "value": true,
+   "hint": "Low-health Cyberwolves may run away. Off makes them fight to the end."
+  },
+  {
+   "id": "enemy_flank_on",
+   "group": "enemies",
+   "label": "Wounded enemies flank",
+   "type": "bool",
+   "value": true,
+   "hint": "Low-health Cyberwolves may circle round to your back."
+  },
+  {
+   "id": "enemy_enrage_on",
+   "group": "enemies",
+   "label": "Brute enrage",
+   "type": "bool",
+   "value": true,
+   "hint": "The Brute flies into a rage at low health: faster, hits more often, guards less."
+  },
+  {
    "id": "shake_scale",
    "group": "fx",
    "label": "Screen shake",

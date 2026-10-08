@@ -37,6 +37,221 @@
     {"move": "swipe", "weight": 1.0, "track_ms": 380, "when": {"max_dist_m": 2.1, "player_airborne": false}},
     {"move": "swipe", "weight": 0.5, "track_ms": 380, "when": {"max_dist_m": 2.1, "player_airborne": true}}
    ],
+   "behaviour": {
+    "role": "agile: dodges, hit-and-runs, flanks, flees",
+    "clips": {
+     "idle": {
+      "clip": "idle",
+      "source": "Idle_Loop"
+     },
+     "notice": {
+      "clip": "notice",
+      "source": "Sword_Idle"
+     },
+     "walk": {
+      "clip": "walk",
+      "source": "Walk_Loop"
+     },
+     "strafe": {
+      "clip": "walk",
+      "source": "Walk_Loop",
+      "note": "same clip, body turned to face Red"
+     },
+     "approach": {
+      "clip": "run",
+      "source": "Jog_Fwd_Loop"
+     },
+     "retreat": {
+      "clip": "retreat",
+      "source": "Jog_Fwd_Loop",
+      "reverse": true
+     },
+     "flank": {
+      "clip": "stalk",
+      "source": "Crouch_Fwd_Loop",
+      "speed_scale": 1.4
+     },
+     "flee": {
+      "clip": "flee",
+      "source": "Sprint_Loop"
+     },
+     "dodge_side": {
+      "clip": "dodge_side",
+      "source": "Sword_Dash"
+     },
+     "dodge_back": {
+      "clip": "dodge_back",
+      "source": "Roll"
+     },
+     "block_start": {
+      "clip": "block_start",
+      "source": "Sword_Block",
+      "use": "first 0.3 s"
+     },
+     "block_hold": {
+      "clip": "block_hold",
+      "source": "Idle_Shield_Loop"
+     },
+     "block_impact": {
+      "clip": "block_impact",
+      "source": "Shield_OneShot",
+      "note": "small shudder when a hit is blocked"
+     },
+     "block_break": {
+      "clip": "block_break",
+      "source": "Idle_Shield_Break"
+     },
+     "flinch_a": {
+      "clip": "hurt",
+      "source": "Hit_Chest"
+     },
+     "flinch_b": {
+      "clip": "hurt_head",
+      "source": "Hit_Head"
+     },
+     "stagger": {
+      "clip": "stagger",
+      "source": "Hit_Chest",
+      "speed_scale": 0.6,
+      "note": "slowed, held at the end pose"
+     },
+     "launched": {
+      "clip": "launched",
+      "source": "Hit_Knockback",
+      "use": "first 0.4 s then hold the airborne pose"
+     },
+     "knockdown": {
+      "clip": "knockdown",
+      "source": "Hit_Knockback",
+      "use": "landing half"
+     },
+     "getup": {
+      "clip": "getup",
+      "source": "LayToIdle"
+     },
+     "death": {
+      "clip": "death",
+      "source": "Death01"
+     }
+    },
+    "defend": {
+     "reaction_ms": [
+      150,
+      230
+     ],
+     "threat_range_m": 3.2,
+     "read_weight": {
+      "light": 0.6,
+      "heavy": 1.0,
+      "launcher": 0.8,
+      "air": 0.4
+     },
+     "dodge_chance": 0.3,
+     "block_chance": 0.08,
+     "dodge_cooldown_ms": 2500,
+     "block_cooldown_ms": 1800,
+     "fatigue_per_defence": 0.4,
+     "fatigue_decay_s": 4.0,
+     "no_defence_in_flare": true,
+     "combo_escape": {
+      "after_hits": 3,
+      "window_ms": 2500,
+      "chance": 0.5,
+      "move": "dodge"
+     },
+     "dodge": {
+      "side_pct": 70,
+      "back_pct": 30,
+      "back_if_closer_m": 1.6,
+      "counter_chance": 0.25,
+      "counter_move": "swipe"
+     }
+    },
+    "guard": {
+     "arc_deg": 150,
+     "meter": 24,
+     "meter_regen_per_s": 12,
+     "regen_delay_ms": 800,
+     "chip_damage_scale": 0.25,
+     "min_chip_damage": 1,
+     "knockback_scale": 0.35,
+     "hit_stop_scale": 0.5,
+     "break_poise": 20,
+     "break_by_launcher": true,
+     "max_in_row": 2,
+     "counter_chance": 0.0
+    },
+    "reposition": {
+     "ring_m": [
+      3.2,
+      5.0
+     ],
+     "separation_m": 1.6,
+     "slot_spread_deg": 70,
+     "crowd_count": 2,
+     "crowd_radius_m": 2.6,
+     "back_off_extra_m": 1.2,
+     "back_off_red_combo_len": 2,
+     "retreat_after_attack_chance": 0.5,
+     "retreat_m": 2.0,
+     "keep_away_chance": 0.35,
+     "keep_away_cooldown_ms": 3000
+    },
+    "low_health": {
+     "mode": "flee_or_flank",
+     "threshold_frac": 0.4,
+     "flee_chance_alone": 0.7,
+     "flee_chance_pack": 0.3,
+     "pack_radius_m": 8.0,
+     "flee": {
+      "speed_mps": 4.6,
+      "until_dist_m": 9.0,
+      "max_ms": 3500,
+      "max_per_life": 2,
+      "bold_after_ms": 6000,
+      "cornered_after_ms": 600,
+      "cornered_move": "swipe",
+      "hit_while_fleeing": "knockdown",
+      "release_token": true
+     },
+     "flank": {
+      "arc_deg": [
+       135,
+       225
+      ],
+      "radius_m": 3.6,
+      "speed_mult": 1.3,
+      "hold_ms": 600,
+      "max_ms": 3500,
+      "move": "swipe_flank",
+      "token_priority_ms": 1500,
+      "max_flankers": 1
+     }
+    },
+    "alert": {
+     "radius_m": 9.0,
+     "ally_notice_ms": 150,
+     "on_ally_hit": true,
+     "on_ally_death": true,
+     "ally_down_morale_hit": 0.08,
+     "morale_window_s": 6.0,
+     "morale_max_bonus": 0.16
+    },
+    "reactions": {
+     "flinch_max_hitstun_ms": 400,
+     "turn_to_red_ms": 120,
+     "stagger_ms": 1100,
+     "getup_roll_chance": 0.25,
+     "getup_invuln_ms": 250,
+     "retaliate_chance": 0.15,
+     "retaliate_cooldown_ms": 3500,
+     "retaliate_range_m": 2.1,
+     "flinch_anims": [
+      "flinch_a",
+      "flinch_b"
+     ]
+    }
+   },
    "look": "grunt",
    "telegraph_color": "#ff4a3a",
    "death_color": "#222222"
@@ -75,6 +290,187 @@
     {"move": "slam", "weight": 1.0, "track_ms": 600, "when": {"max_dist_m": 3.2, "player_airborne": false}},
     {"move": "slam", "weight": 0.6, "track_ms": 600, "when": {"max_dist_m": 3.2, "player_airborne": true}}
    ],
+   "behaviour": {
+    "role": "heavy: blocks, stands his ground, never flees, enrages",
+    "clips": {
+     "idle": {
+      "clip": "idle",
+      "source": "Zombie_Idle_Loop"
+     },
+     "notice": {
+      "clip": "notice",
+      "source": "Zombie_Scratch",
+      "use": "first 0.5 s"
+     },
+     "walk": {
+      "clip": "walk",
+      "source": "Zombie_Walk_Fwd_Loop"
+     },
+     "strafe": {
+      "clip": "walk",
+      "source": "Zombie_Walk_Fwd_Loop",
+      "speed_scale": 0.8
+     },
+     "approach": {
+      "clip": "run",
+      "source": "Zombie_Walk_Fwd_Loop",
+      "speed_scale": 1.3
+     },
+     "retreat": {
+      "clip": "retreat",
+      "source": "Zombie_Walk_Fwd_Loop",
+      "reverse": true,
+      "speed_scale": 0.9
+     },
+     "block_start": {
+      "clip": "block_start",
+      "source": "Sword_Block",
+      "use": "first 0.3 s"
+     },
+     "block_hold": {
+      "clip": "block_hold",
+      "source": "Idle_Shield_Loop"
+     },
+     "block_impact": {
+      "clip": "block_impact",
+      "source": "Shield_OneShot"
+     },
+     "block_break": {
+      "clip": "block_break",
+      "source": "Idle_Shield_Break"
+     },
+     "slam_windup": {
+      "clip": "slam",
+      "source": "Sword_Heavy_Combo",
+      "use": "first swing, held at its top"
+     },
+     "enrage": {
+      "clip": "enrage",
+      "source": "Zombie_Scratch",
+      "note": "arms thrashing, reads as a roar"
+     },
+     "flinch_a": {
+      "clip": "hurt",
+      "source": "Hit_Chest",
+      "note": "only after a poise break; armored hits play no flinch"
+     },
+     "stagger": {
+      "clip": "stagger",
+      "source": "Hit_Chest",
+      "speed_scale": 0.5
+     },
+     "knockdown": {
+      "clip": "knockdown",
+      "source": "Hit_Knockback"
+     },
+     "getup": {
+      "clip": "getup",
+      "source": "LayToIdle",
+      "speed_scale": 0.8
+     },
+     "death": {
+      "clip": "death",
+      "source": "Death01",
+      "speed_scale": 0.8
+     }
+    },
+    "defend": {
+     "reaction_ms": [
+      220,
+      320
+     ],
+     "threat_range_m": 3.6,
+     "read_weight": {
+      "light": 1.0,
+      "heavy": 0.5,
+      "launcher": 0.4,
+      "air": 0.6
+     },
+     "dodge_chance": 0.0,
+     "block_chance": 0.45,
+     "dodge_cooldown_ms": 0,
+     "block_cooldown_ms": 1500,
+     "fatigue_per_defence": 0.35,
+     "fatigue_decay_s": 5.0,
+     "no_defence_in_flare": true,
+     "combo_escape": {
+      "after_hits": 99,
+      "window_ms": 0,
+      "chance": 0.0,
+      "move": "block_start"
+     }
+    },
+    "guard": {
+     "arc_deg": 140,
+     "meter": 60,
+     "meter_regen_per_s": 18,
+     "regen_delay_ms": 1000,
+     "chip_damage_scale": 0.15,
+     "min_chip_damage": 1,
+     "knockback_scale": 0.15,
+     "hit_stop_scale": 0.5,
+     "break_poise": 30,
+     "break_by_launcher": true,
+     "max_in_row": 3,
+     "counter_chance": 0.45
+    },
+    "reposition": {
+     "ring_m": [
+      4.5,
+      6.5
+     ],
+     "separation_m": 2.4,
+     "slot_spread_deg": 90,
+     "crowd_count": 3,
+     "crowd_radius_m": 3.0,
+     "back_off_extra_m": 0.0,
+     "back_off_red_combo_len": 99,
+     "retreat_after_attack_chance": 0.0,
+     "retreat_m": 1.0,
+     "keep_away_chance": 0.0,
+     "keep_away_cooldown_ms": 0
+    },
+    "low_health": {
+     "mode": "enrage",
+     "threshold_frac": 0.35,
+     "never_flee": true,
+     "enrage": {
+      "move": "enrage",
+      "once": true,
+      "speed_mult": 1.25,
+      "attack_interval_mult": 0.65,
+      "block_chance_mult": 0.4,
+      "damage_mult": 1.15,
+      "chain_slam_chance": 0.5,
+      "chain_recover_ms": 350,
+      "no_poise_regen": true,
+      "color": "#ff3a1a"
+     }
+    },
+    "alert": {
+     "radius_m": 10.0,
+     "ally_notice_ms": 350,
+     "on_ally_hit": true,
+     "on_ally_death": true,
+     "ally_down_morale_hit": 0.0,
+     "morale_window_s": 6.0,
+     "morale_max_bonus": 0.0
+    },
+    "reactions": {
+     "flinch_max_hitstun_ms": 400,
+     "turn_to_red_ms": 250,
+     "stagger_ms": 1300,
+     "getup_roll_chance": 0.0,
+     "getup_invuln_ms": 300,
+     "armored_flinch": false,
+     "retaliate_chance": 0.35,
+     "retaliate_cooldown_ms": 3500,
+     "retaliate_range_m": 2.6,
+     "flinch_anims": [
+      "flinch_a"
+     ]
+    }
+   },
    "look": "brute",
    "telegraph_color": "#ffb02e",
    "death_color": "#222222"
