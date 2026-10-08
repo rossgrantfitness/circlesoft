@@ -229,5 +229,5 @@ func test_picker_mouse_click_on_a_row_picks_it() -> void:
 func test_every_encounter_has_a_friendly_name_and_a_known_tier() -> void:
 	for entry: Dictionary in _encounters():
 		assert_true(entry.has("name") and str(entry["name"]).length() > 0, str(entry["id"]))
-		assert_has(["tutorial", "regular", "tough"], str(entry.get("tier", "")), str(entry["id"]))
+		assert_has(["tutorial", "regular", "tough", "boss"], str(entry.get("tier", "")), str(entry["id"]))
 		assert_true(BattleUiData.ui("tiers", {}).has(str(entry["tier"])), "a tag color for %s" % entry["tier"])
