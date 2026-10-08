@@ -46,12 +46,12 @@ func _initialize() -> void:
 			tile.erase("seamless_copy_size" + suffix)
 			var seam: Dictionary = (tile["seam"] as Dictionary)[variant_name]
 			if bool(seam["x_ok"]) and bool(seam["y_ok"]):
-				_set(tile, suffix, false, "already_seamless", Vector2i.ZERO)
+				_record(tile, suffix, false, "already_seamless", Vector2i.ZERO)
 				_remove(out_path)
 				_count(counts, variant_name, "already_seamless")
 				continue
 			if rejected.has(variant_name):
-				_set(tile, suffix, false, "rejected", Vector2i.ZERO)
+				_record(tile, suffix, false, "rejected", Vector2i.ZERO)
 				_remove(out_path)
 				_count(counts, variant_name, "rejected")
 				continue
@@ -59,21 +59,21 @@ func _initialize() -> void:
 			original.convert(Image.FORMAT_RGBA8)
 			var result: Dictionary = _fix(original, not bool(seam["x_ok"]), not bool(seam["y_ok"]))
 			if not bool(result["ok"]):
-				_set(tile, suffix, false, "failed_measure", Vector2i.ZERO)
+				_record(tile, suffix, false, "failed_measure", Vector2i.ZERO)
 				_remove(out_path)
 				_count(counts, variant_name, "failed_measure")
 				continue
 			var image: Image = result["image"]
 			image.save_png(out_path)
 			made += 1
-			_set(tile, suffix, true, String(result["method"]), image.get_size())
+			_record(tile, suffix, true, String(result["method"]), image.get_size())
 			_count(counts, variant_name, String(result["method"]))
 	CityAtlasIo.write_atlas(atlas)
 	print("made %d seamless copies; by variant and method: %s" % [made, counts])
 	quit(0)
 
 
-func _set(tile: Dictionary, suffix: String, copy: bool, method: String, size: Vector2i) -> void:
+func _record(tile: Dictionary, suffix: String, copy: bool, method: String, size: Vector2i) -> void:
 	tile["seamless_copy" + suffix] = copy
 	tile["seam_method" + suffix] = method
 	if copy:
