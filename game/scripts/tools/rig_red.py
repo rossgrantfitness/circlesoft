@@ -94,6 +94,7 @@ def part_ids(me):
     return [find(key(v.co)) for v in me.vertices]
 
 
+SHOULDER_JOINT = {"l": Vector((0.15, 0.0, 0.60)), "r": Vector((-0.15, 0.0, 0.60))}
 RAW = "--raw" in sys.argv
 
 
@@ -103,7 +104,7 @@ def arm_fix(p, w):
     arm_bones = [b for b in w if b.startswith(("upper_arm", "forearm", "hand"))]
     if not arm_bones:
         return w
-    inside = 1.0 - smoothstep(0.115, 0.165, abs(p.x))        # 1 in the torso, 0 out in the sleeve
+    inside = 1.0 - smoothstep(0.09, 0.21, abs(p.x))        # 1 in the torso, 0 out in the sleeve
     moved = 0.0
     for b in arm_bones:
         share = w[b] * inside
@@ -112,6 +113,16 @@ def arm_fix(p, w):
     if moved > 0.0:
         low = "spine" if p.z < 0.54 else "chest"
         w[low] = w.get(low, 0.0) + moved
+    # the shoulder cap follows the collarbone for part of a big arm raise, so it rolls instead of spiking
+    side = "l" if p.x > 0 else "r"
+    d = (p - SHOULDER_JOINT[side]).length
+    near = 1.0 - smoothstep(0.03, 0.11, d)
+    if near > 0.0:
+        take = 0.55 * near * sum(x for b, x in w.items() if b.startswith("upper_arm"))
+        for b in list(w):
+            if b.startswith("upper_arm"):
+                w[b] *= 1.0 - 0.55 * near
+        w["shoulder_" + side] = w.get("shoulder_" + side, 0.0) + take
     return w
 
 
@@ -190,13 +201,17 @@ def fix_weights(obj, arm):
         side = "l" if p.x > 0 else "r"
         ear = "ear_" + side
         t, d = seg_param(p, ear_seg[ear][0], ear_seg[ear][1])
-        if d < 0.075 and p.y > 0.05 and abs(p.x) > 0.095 and p.z > 0.52:    # an ear flap: behind the face, outside the head
+        if d < 0.075 and p.y > 0.06 + 0.055 * smoothstep(0.78, 0.66, p.z) and abs(p.x) > 0.075 and p.z > 0.52:    # an ear flap: behind the face, outside the head
             k = smoothstep(0.25, 0.75, t) * smoothstep(0.80, 0.68, p.z)      # the cap and the ear's root stay on the head
             out.append({"head": 1.0 - k, ear: k})
             loose.append(i)                                                  # keep these exactly as set
             continue
         out.append(arm_fix(p, w) if not RAW else w)
-    out = weld_and_smooth(me, out, passes=2, factor=0.5, skip=loose)
+    if "--list-ear" in sys.argv:
+        for i, v in enumerate(me.vertices):
+            if v.co.x < 0 and v.co.z < 0.66 and out[i].get("ear_r", 0) > 0.05:
+                print("EAR", i, tuple(round(c, 3) for c in v.co), round(out[i]["ear_r"], 2))
+    out = weld_and_smooth(me, out, passes=4, factor=0.5, skip=loose)
     write_weights(obj, out)
 
 
@@ -257,12 +272,33 @@ TEST_POSES = [
     ("arms_up", {"upper_arm_l": (0, -75, 0), "upper_arm_r": (0, 75, 0), "forearm_l": (-40, 0, 0), "forearm_r": (-40, 0, 0)}),
     ("arms_fwd_bend", {"upper_arm_l": (-90, 0, 0), "upper_arm_r": (-90, 0, 0), "spine": (25, 0, 0), "head": (-10, 0, 0),
                        "ear_l": (0, 0, -35), "ear_r": (0, 0, 35), "thigh_l": (-45, 0, 0), "shin_l": (60, 0, 0)}),
-    ("twist", {"spine": (0, 0, 35), "chest": (0, 0, 20), "head": (0, 0, -30), "upper_arm_r": (-120, 0, 0), "forearm_r": (-60, 0, 0),
+    ("twist", {"spine": (0, 0, 35), "chest": (0, 0, 20), "head": (0, 0, -30), "upper_arm_r": (-120, 0, 0), "shoulder_r": (-30, 0, 0), "forearm_r": (-60, 0, 0),
                "ear_l": (30, 0, 0), "ear_r": (30, 0, 0)}),
 ]
 
 
+def stretch_report(obj, arm, rig, pose, label):
+    """Prints the vertices whose edges stretch the most in a pose (a spike finder)."""
+    apply_pose(rig, pose)
+    bpy.context.view_layer.update()
+    dg = bpy.context.evaluated_depsgraph_get()
+    ev = obj.evaluated_get(dg)
+    me = ev.to_mesh()
+    rest = obj.data
+    worst = []
+    for e in rest.edges:
+        a, b = e.vertices
+        l0 = (rest.vertices[a].co - rest.vertices[b].co).length
+        l1 = (me.vertices[a].co - me.vertices[b].co).length
+        if l0 > 1e-5:
+            worst.append((l1 / l0, a, b))
+    worst.sort(reverse=True)
+    print("stretch", label, [("%.1f" % r, tuple(round(c, 2) for c in rest.vertices[a].co)) for r, a, b in worst[:4]])
+    ev.to_mesh_clear()
+
+
 def pose_test(obj, arm, prefix):
+    stretch_report(obj, arm, Rig(arm), TEST_POSES[3][1], "twist")
     show_materials_unlit([obj])
     cam = setup_render(1600, 800, 1.6)
     rig = Rig(arm)
