@@ -37,7 +37,7 @@ import_script/path="res://scripts/tools/psx_post_import.gd"
 materials/extract=0
 materials/extract_format=0
 materials/extract_path=""
-_subresources={"animations": {"idle": {"optimizer/enabled": false, "settings/loop_mode": 1}, "walk": {"optimizer/enabled": false, "settings/loop_mode": 1}, "run": {"optimizer/enabled": false, "settings/loop_mode": 1}, "jump_up": {"optimizer/enabled": false, "settings/loop_mode": 0}, "fall": {"optimizer/enabled": false, "settings/loop_mode": 1}, "land": {"optimizer/enabled": false, "settings/loop_mode": 0}, "dash": {"optimizer/enabled": false, "settings/loop_mode": 0}, "light_1": {"optimizer/enabled": false, "settings/loop_mode": 0}, "light_2": {"optimizer/enabled": false, "settings/loop_mode": 0}, "light_3": {"optimizer/enabled": false, "settings/loop_mode": 0}, "heavy": {"optimizer/enabled": false, "settings/loop_mode": 0}, "launcher": {"optimizer/enabled": false, "settings/loop_mode": 0}, "parry": {"optimizer/enabled": false, "settings/loop_mode": 0}, "hurt": {"optimizer/enabled": false, "settings/loop_mode": 0}, "knockdown": {"optimizer/enabled": false, "settings/loop_mode": 0}, "getup": {"optimizer/enabled": false, "settings/loop_mode": 0}, "air_1": {"optimizer/enabled": false, "settings/loop_mode": 0}, "air_2": {"optimizer/enabled": false, "settings/loop_mode": 0}, "air_3": {"optimizer/enabled": false, "settings/loop_mode": 0}, "parry_success": {"optimizer/enabled": false, "settings/loop_mode": 0}}}
+_subresources={
 "animations": {
 "air_1": {
 "optimizer/enabled": false,
@@ -8273,7 +8273,7 @@ _subresources={"animations": {"idle": {"optimizer/enabled": false, "settings/loo
 "save_to_file/fallback_path": "",
 "save_to_file/keep_custom_tracks": "",
 "save_to_file/path": "",
-"settings/loop_mode": 0,
+"settings/loop_mode": 1,
 "slice_1/end_frame": 0,
 "slice_1/loop_mode": 0,
 "slice_1/name": "",
@@ -16501,7 +16501,7 @@ _subresources={"animations": {"idle": {"optimizer/enabled": false, "settings/loo
 "save_to_file/fallback_path": "",
 "save_to_file/keep_custom_tracks": "",
 "save_to_file/path": "",
-"settings/loop_mode": 0,
+"settings/loop_mode": 1,
 "slice_1/end_frame": 0,
 "slice_1/loop_mode": 0,
 "slice_1/name": "",
@@ -37071,7 +37071,7 @@ _subresources={"animations": {"idle": {"optimizer/enabled": false, "settings/loo
 "save_to_file/fallback_path": "",
 "save_to_file/keep_custom_tracks": "",
 "save_to_file/path": "",
-"settings/loop_mode": 0,
+"settings/loop_mode": 1,
 "slice_1/end_frame": 0,
 "slice_1/loop_mode": 0,
 "slice_1/name": "",
@@ -39128,7 +39128,7 @@ _subresources={"animations": {"idle": {"optimizer/enabled": false, "settings/loo
 "save_to_file/fallback_path": "",
 "save_to_file/keep_custom_tracks": "",
 "save_to_file/path": "",
-"settings/loop_mode": 0,
+"settings/loop_mode": 1,
 "slice_1/end_frame": 0,
 "slice_1/loop_mode": 0,
 "slice_1/name": "",
