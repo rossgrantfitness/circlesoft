@@ -2,7 +2,7 @@
   "version": 1,
   "_note": "Red in the combat sandbox (docs/pivot/combat_api.md 4.2 and 5). Times in ms or s as the key says, distances in metres. The numbers that Ross tunes live as feel knobs (data/combat/feel.json); 'knob_defaults' is only what Red uses if no knob panel is there.",
   "models": [
-    {"path": "res://art/final/characters/red/red_ross_v1_rigged.glb", "origin": "feet"},
+    {"path": "res://art/final/characters/red/red_ross_v1_rigged_ual.glb", "origin": "feet"},
     {"path": "res://art/final/characters/red/red_ross_v1.glb", "origin": "middle", "height_m": 0.95}
   ],
   "model_scale": 1.0,

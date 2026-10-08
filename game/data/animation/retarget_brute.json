@@ -288,9 +288,9 @@
    "name": "slam",
    "source": "UAL2:Sword_Heavy_Combo",
    "from_s": 2.1,
-   "to_s": 3.7,
+   "to_s": 3.2,
    "contact_src_s": 2.62,
-   "note": "overhead raise then slam, then recovery"
+   "note": "overhead raise then slam, then a short recovery. moves.json has no keys for it, so the game stretches the clip to the move: contact is at 0.47 of the clip = 900 of 1900 ms (the clip is sliced for exactly that)"
   },
   {
    "name": "enrage",

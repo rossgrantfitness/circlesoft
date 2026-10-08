@@ -5,7 +5,7 @@
  "enemies": {
   "grunt": {
    "name": "Cyberwolf Sentinel",
-   "model": "res://art/final/enemies/cyberwolf_sentinel_rigged.glb",
+   "model": "res://art/final/enemies/cyberwolf_sentinel_rigged_ual.glb",
    "fallback_model": "res://art/final/enemies/cyberwolf_sentinel_ross_v1.glb",
    "blockout": {"shape": "capsule", "color": "#5d6f8c", "face_color": "#e8d36a"},
    "height_m": 1.19,
@@ -258,7 +258,7 @@
   },
   "brute": {
    "name": "Brute",
-   "model": "res://art/placeholder/enemies/sandbox_brute/enm_sandbox_brute.glb",
+   "model": "res://art/placeholder/enemies/sandbox_brute/enm_sandbox_brute_ual.glb",
    "fallback_model": "",
    "blockout": {"shape": "box", "color": "#7a4f3a", "face_color": "#e8a23a"},
    "height_m": 1.95,

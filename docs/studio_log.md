@@ -4,6 +4,7 @@
 
 ## 2026-10-08
 
+- **Combat FX done (Technical Artist, CS-14):** sword trails that follow each sword's colour, hit sparks, a closing ring on every enemy wind-up (the colour says parry or dodge), the Lamp Flare (lamp burst, shock ring, a cooler world), Lights On glow on Red, dash streaks, smooth camera shake and all the combat sounds. Also retuned the PS2 look to Ross's note (no fake hardware limits): a light long-range haze, a 500 m draw distance, far walls keep their textures, stable soft shadows out to 60 m. Screenshots: docs/screenshots/sandbox_fx.png and sandbox_arena_ps2.png.
 - **Ross picked the font: slanted Pixelify Sans, Jersey 15 second.** UI Programmer is making it the default (white, black drop shadow, slanted Jersey numerals for clarity).
 - **Ross: look, not limits.** Early-game style stays; hardware-limit imitation goes (long draw distance, light fog only, modern conveniences). CLAUDE.md updated; the Technical Artist is reworking grim_ps2's fog and draw distance to match.
 - **Font redirected by Ross to a Final Fantasy Tactics Advance feel** (white letters, black drop shadow, a little stylized, still gamey). UI Programmer is making a new sheet of free look-alike-in-spirit fonts; menus keep the Vagrant Story bars.

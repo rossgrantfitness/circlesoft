@@ -198,7 +198,7 @@
    "contact_frame": 3
   },
   "slam": {
-   "length_s": 1.6,
+   "length_s": 1.1,
    "loop": false,
    "source": "UAL2:Sword_Heavy_Combo",
    "keys": [
@@ -211,13 +211,13 @@
      "clip_s": 0.52
     },
     {
-     "frame": 48,
-     "clip_s": 1.6
+     "frame": 33,
+     "clip_s": 1.1
     }
    ],
    "contact_s": 0.52,
    "contact_frame": 16,
-   "note": "overhead raise then slam, then recovery"
+   "note": "overhead raise then slam, then a short recovery. moves.json has no keys for it, so the game stretches the clip to the move: contact is at 0.47 of the clip = 900 of 1900 ms (the clip is sliced for exactly that)"
   },
   "enrage": {
    "length_s": 1.8,

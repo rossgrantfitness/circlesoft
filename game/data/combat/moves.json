@@ -104,19 +104,19 @@
       "keys": [
        {
         "at_ms": 0,
-        "clip_s": 0.0
+        "clip_s": 0.16
        },
        {
         "at_ms": 90,
-        "clip_s": 0.1333
+        "clip_s": 0.25
        },
        {
         "at_ms": 150,
-        "clip_s": 0.2667
+        "clip_s": 0.31
        },
        {
         "at_ms": 380,
-        "clip_s": 0.4667
+        "clip_s": 0.54
        }
       ],
       "fallback": "swing_r"
@@ -210,19 +210,19 @@
       "keys": [
        {
         "at_ms": 0,
-        "clip_s": 0.0
+        "clip_s": 0.17
        },
        {
         "at_ms": 80,
-        "clip_s": 0.1333
+        "clip_s": 0.25
        },
        {
         "at_ms": 150,
-        "clip_s": 0.2667
+        "clip_s": 0.32
        },
        {
         "at_ms": 390,
-        "clip_s": 0.4667
+        "clip_s": 0.56
        }
       ],
       "fallback": "swing_l"
@@ -315,19 +315,19 @@
       "keys": [
        {
         "at_ms": 0,
-        "clip_s": 0.0
+        "clip_s": 0.09
        },
        {
         "at_ms": 110,
-        "clip_s": 0.1333
+        "clip_s": 0.2
        },
        {
         "at_ms": 200,
-        "clip_s": 0.2667
+        "clip_s": 0.29
        },
        {
         "at_ms": 530,
-        "clip_s": 0.5333
+        "clip_s": 0.62
        }
       ],
       "fallback": "thrust"
@@ -419,23 +419,19 @@
       "keys": [
        {
         "at_ms": 0,
-        "clip_s": 0.0
-       },
-       {
-        "at_ms": 100,
-        "clip_s": 0.2
+        "clip_s": 0.32
        },
        {
         "at_ms": 200,
-        "clip_s": 0.3333
+        "clip_s": 0.52
        },
        {
         "at_ms": 290,
-        "clip_s": 0.5333
+        "clip_s": 0.61
        },
        {
         "at_ms": 660,
-        "clip_s": 0.7333
+        "clip_s": 0.98
        }
       ],
       "fallback": "overhead"
@@ -521,19 +517,19 @@
       "keys": [
        {
         "at_ms": 0,
-        "clip_s": 0.0
+        "clip_s": 0.09
        },
        {
         "at_ms": 160,
-        "clip_s": 0.2
+        "clip_s": 0.25
        },
        {
         "at_ms": 260,
-        "clip_s": 0.3333
+        "clip_s": 0.35
        },
        {
         "at_ms": 640,
-        "clip_s": 0.6
+        "clip_s": 0.73
        }
       ],
       "fallback": "uppercut"
@@ -871,15 +867,19 @@
       "keys": [
        {
         "at_ms": 0,
-        "clip_s": 0.0
+        "clip_s": 0.17
        },
        {
         "at_ms": 30,
-        "clip_s": 0.1333
+        "clip_s": 0.2
+       },
+       {
+        "at_ms": 200,
+        "clip_s": 0.37
        },
        {
         "at_ms": 480,
-        "clip_s": 0.3333
+        "clip_s": 0.65
        }
       ],
       "fallback": "brace"
@@ -966,34 +966,24 @@
         "clip_s": 0.0
        },
        {
-        "at_ms": 140,
-        "clip": "attack_windup",
-        "clip_s": 0.1333
-       },
-       {
-        "at_ms": 300,
-        "clip": "attack_windup",
-        "clip_s": 0.2667
-       },
-       {
-        "at_ms": 440,
-        "clip": "attack_windup",
-        "clip_s": 0.4
+        "at_ms": 460,
+        "clip": "attack_swing",
+        "clip_s": 0.0
        },
        {
         "at_ms": 560,
         "clip": "attack_swing",
-        "clip_s": 0.0667
+        "clip_s": 0.1
        },
        {
-        "at_ms": 620,
+        "at_ms": 680,
         "clip": "attack_swing",
-        "clip_s": 0.2
+        "clip_s": 0.22
        },
        {
-        "at_ms": 700,
+        "at_ms": 1240,
         "clip": "attack_swing",
-        "clip_s": 0.4
+        "clip_s": 0.78
        }
       ],
       "fallback": "swing_r"
@@ -1284,39 +1274,24 @@
         "clip_s": 0.0
        },
        {
-        "at_ms": 140,
-        "clip": "attack_windup",
-        "clip_s": 0.1333
-       },
-       {
-        "at_ms": 300,
-        "clip": "attack_windup",
-        "clip_s": 0.2667
-       },
-       {
-        "at_ms": 440,
-        "clip": "attack_windup",
-        "clip_s": 0.3333
-       },
-       {
-        "at_ms": 590,
-        "clip": "attack_windup",
-        "clip_s": 0.4
+        "at_ms": 610,
+        "clip": "attack_swing",
+        "clip_s": 0.0
        },
        {
         "at_ms": 710,
         "clip": "attack_swing",
-        "clip_s": 0.0667
+        "clip_s": 0.1
        },
        {
-        "at_ms": 770,
+        "at_ms": 830,
         "clip": "attack_swing",
-        "clip_s": 0.2
+        "clip_s": 0.22
        },
        {
-        "at_ms": 850,
+        "at_ms": 1390,
         "clip": "attack_swing",
-        "clip_s": 0.4
+        "clip_s": 0.78
        }
       ],
       "fallback": "swing_r"
