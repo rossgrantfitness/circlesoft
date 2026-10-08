@@ -1,9 +1,10 @@
 class_name SandboxPause
 extends Control
-## The sandbox pause menu: Resume, Reset arena, Controls, Quit. Opens with Esc / pad Start (the HUD
-## asks), pauses the arena through SandboxPauseGate, and frees the mouse. "Controls" opens the
-## ControlsCard; Confirm on the card opens the existing Config screen on its Controls page, where the
-## buttons can be changed (overrides save to user://config.json as always).
+## The sandbox pause menu: Resume, Reset arena, Controls, Quit, as a header bar over a stack of
+## slightly offset bars (SandboxStyle). Opens with Esc / pad Start (the HUD asks), pauses the arena
+## through SandboxPauseGate, and frees the mouse. "Controls" opens the ControlsCard; Confirm on the
+## card opens the existing Config screen on its Controls page, where buttons can be changed
+## (overrides save to user://config.json as always).
 ##
 ## It does not reset or quit anything itself: it says so (`reset_requested`, `quit_requested`) and the
 ## HUD, which knows the sandbox, does it. Words: data/text/sandbox.json "pause". Layout: sandbox_ui.json "pause".
@@ -19,8 +20,6 @@ const ITEM_IDS: Array[String] = ["resume", "reset", "controls", "quit"]
 var audio: UiAudio = UiAudio.new():
 	set(value):
 		audio = value
-		if _list != null:
-			_list.audio = value
 		if _card != null:
 			_card.audio = value
 ## Off: the menu does not run itself; tests call tick(delta).
@@ -33,13 +32,12 @@ var animations_enabled: bool = true
 var config: Node = null
 
 var _layout: Dictionary = {}
-var _palette: Dictionary[String, Color] = {}
 var _open: bool = false
 var _open_clock: float = 0.0
+var _reveal: float = 1.0
+var _index: int = 0
 var _input_map: MenuInput = MenuInput.new()
 var _dim: ColorRect = null
-var _window: UiWindow = null
-var _list: MenuList = null
 var _overlay: Control = null
 var _card: ControlsCard = null
 var _config: ConfigScreen = null
@@ -51,35 +49,12 @@ func _ready() -> void:
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	size = Vector2(UiStage.STAGE_SIZE)
 	_layout = SandboxUiData.ui("pause", {})
-	for key: String in DataDB.get_value(SandboxUiData.THEME_ID, "palette", {}):
-		_palette[key] = SandboxUiData.palette(key)
-	var rect: Rect2 = SandboxUiData.rect("pause.window")
 	_dim = ColorRect.new()
 	_dim.name = "Dim"
 	_dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_dim.color = Color(_palette["ink"], float(_layout.get("dim_alpha", 0.5)))
+	_dim.color = Color(SandboxStyle.color("dim"), float(_layout.get("dim_alpha", 0.5)))
 	_dim.size = size
 	add_child(_dim)
-	_window = UiWindow.new()
-	_window.name = "Window"
-	_window.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_window.position = rect.position
-	_window.size = rect.size
-	add_child(_window)
-	_list = MenuList.new()
-	_list.name = "List"
-	_list.audio = audio
-	_list.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_list.position = rect.position
-	_list.size = rect.size
-	_list.visible_rows = ITEM_IDS.size()
-	_list.row_height = int(_layout.get("row_h", 16))
-	_list.first_row_y = int(_layout.get("first_row_y", 30))
-	_list.text_x = int(_layout.get("text_x", 28))
-	_list.cursor_x = int(_layout.get("cursor_x", 10))
-	_list.activated.connect(_on_activated)
-	_list.cursor_moved.connect(func(_i: int) -> void: _overlay.queue_redraw())
-	add_child(_list)
 	_overlay = Control.new()
 	_overlay.name = "Overlay"
 	_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -95,7 +70,6 @@ func _ready() -> void:
 	_card.closed.connect(_on_card_closed)
 	_card.remap_requested.connect(_open_remap)
 	add_child(_card)
-	_list.set_items(_items(), false)
 	visible = false
 	set_process(not manual_ticks)
 
@@ -103,13 +77,6 @@ func _ready() -> void:
 func _exit_tree() -> void:
 	if _open and pause_game:
 		SandboxPauseGate.release(get_tree(), self)
-
-
-func _items() -> Array[Dictionary]:
-	var items: Array[Dictionary] = []
-	for id: String in ITEM_IDS:
-		items.append({"id": id, "label": SandboxUiData.text("pause.%s" % id), "enabled": true})
-	return items
 
 
 # ---- open and close ----
@@ -120,9 +87,8 @@ func open_menu() -> void:
 	_open = true
 	visible = true
 	_open_clock = 0.0
-	_window.open_amount = 0.25 if animations_enabled else 1.0
-	_list.set_index(0, false)
-	_list.active = true
+	_reveal = 0.25 if animations_enabled else 1.0
+	_index = 0
 	if pause_game:
 		SandboxPauseGate.hold(get_tree(), self)
 	audio.sfx("confirm")
@@ -150,8 +116,12 @@ func is_open() -> bool:
 	return _open
 
 
-func get_list() -> MenuList:
-	return _list
+func get_cursor_index() -> int:
+	return _index
+
+
+func get_item_id(index: int) -> String:
+	return ITEM_IDS[index] if index >= 0 and index < ITEM_IDS.size() else ""
 
 
 func get_card() -> ControlsCard:
@@ -172,19 +142,28 @@ func _process(delta: float) -> void:
 
 
 func tick(delta: float) -> void:
-	if not _open or not animations_enabled or _window.open_amount >= 1.0:
+	if not _open or not animations_enabled or _reveal >= 1.0:
 		return
 	_open_clock += delta
 	var steps: int = int(_layout.get("open_steps", 4))
 	var step_s: float = SandboxUiData.ui_float("step_s", 0.0833)
-	_window.open_amount = minf(1.0, 0.25 + 0.75 * float(int(_open_clock / step_s) + 1) / float(steps))
+	_reveal = minf(1.0, 0.25 + 0.75 * float(int(_open_clock / step_s) + 1) / float(steps))
 	_overlay.queue_redraw()
 
 
 # ---- choices ----
 
-func _on_activated(index: int) -> void:
-	match _list.get_item_id(index):
+## Moves the cursor (wraps).
+func move(direction: int) -> void:
+	_index = posmod(_index + direction, ITEM_IDS.size())
+	audio.sfx("tick")
+	_overlay.queue_redraw()
+
+
+## Picks the row under the cursor.
+func activate() -> void:
+	audio.sfx("confirm")
+	match ITEM_IDS[_index]:
 		"resume":
 			resume()
 		"reset":
@@ -192,13 +171,12 @@ func _on_activated(index: int) -> void:
 			reset_requested.emit()
 		"controls":
 			_card.open_card()
-			_list.active = false
 		"quit":
 			quit_requested.emit()
+	_overlay.queue_redraw()
 
 
 func _on_card_closed() -> void:
-	_list.active = true
 	_overlay.queue_redraw()
 
 
@@ -207,8 +185,8 @@ func _open_remap() -> void:
 		_config = ConfigScreen.new()
 		_config.name = "ConfigScreen"
 		_config.config = config
-		_config.position = SandboxUiData.rect("controls_card.window").position
-		_config.size = SandboxUiData.rect("controls_card.window").size
+		_config.position = Vector2(16, 8)
+		_config.size = Vector2(352, 200)
 		_config.listen_input = listen_input
 		_config.manual_ticks = manual_ticks
 		_config.closed.connect(_on_config_closed)
@@ -236,11 +214,33 @@ func _input(event: InputEvent) -> void:
 func handle_event(event: InputEvent) -> bool:
 	if not _open or is_sub_page_open():
 		return false
-	if event is InputEventMouse:
-		if event is InputEventMouseButton and (event as InputEventMouseButton).pressed and (event as InputEventMouseButton).button_index == MOUSE_BUTTON_RIGHT:
+	if event is InputEventMouseMotion:
+		var hover: int = _row_at((event as InputEventMouseMotion).position)
+		if hover >= 0 and hover != _index:
+			_index = hover
+			audio.sfx("tick")
+			_overlay.queue_redraw()
+		return hover >= 0
+	if event is InputEventMouseButton and (event as InputEventMouseButton).pressed:
+		var click: InputEventMouseButton = event as InputEventMouseButton
+		if click.button_index == MOUSE_BUTTON_RIGHT:
 			resume()
 			return true
-		return _list.handle_mouse(event)
+		if click.button_index == MOUSE_BUTTON_LEFT:
+			var hit: int = _row_at(click.position)
+			if hit >= 0:
+				_index = hit
+				activate()
+				return true
+		if click.button_index == MOUSE_BUTTON_WHEEL_UP:
+			move(-1)
+			return true
+		if click.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			move(1)
+			return true
+		return false
+	if event is InputEventMouse:
+		return false
 	if SandboxPauseGate.is_start_press(event):
 		resume()
 		return true
@@ -250,10 +250,30 @@ func handle_event(event: InputEvent) -> bool:
 func handle_command(command: MenuInput.Cmd) -> bool:
 	if not _open or is_sub_page_open():
 		return false
-	if command == MenuInput.Cmd.CANCEL:
-		resume()
-		return true
-	return _list.handle_command(command)
+	match command:
+		MenuInput.Cmd.UP:
+			move(-1)
+		MenuInput.Cmd.DOWN:
+			move(1)
+		MenuInput.Cmd.CONFIRM:
+			activate()
+		MenuInput.Cmd.CANCEL:
+			resume()
+		_:
+			return false
+	return true
+
+
+func _row_rect(index: int) -> Rect2:
+	var offset: float = float(_layout.get("stack_offset", 3)) * float(index)
+	return Rect2(float(_layout["x"]) + offset, float(_layout["row_y"]) + float(index) * float(_layout["row_step"]), float(_layout["w"]) - offset, float(_layout["row_h"]))
+
+
+func _row_at(at: Vector2) -> int:
+	for i: int in ITEM_IDS.size():
+		if _row_rect(i).has_point(at):
+			return i
+	return -1
 
 
 # ---- drawing ----
@@ -261,10 +281,22 @@ func handle_command(command: MenuInput.Cmd) -> bool:
 func _draw_overlay() -> void:
 	if not _open or _layout.is_empty():
 		return
-	var rect: Rect2 = SandboxUiData.rect("pause.window")
-	UiText.draw(_overlay, "menu", Vector2(rect.position.x + 14.0, rect.position.y + float(_layout["title_y"])), SandboxUiData.text("pause.title"), _palette["lamp_amber"])
-	var id: String = _list.get_item_id(_list.get_cursor_index())
-	var hint: String = SandboxUiData.text("pause.hints.%s" % id)
-	var center_x: float = rect.position.x + rect.size.x / 2.0
-	if _list.active:
-		UiText.draw(_overlay, "tag", Vector2(center_x - 150.0, rect.end.y + 14.0), hint, _palette["slate_light"], HORIZONTAL_ALIGNMENT_CENTER, 300.0)
+	var header: Rect2 = Rect2(float(_layout["x"]), float(_layout["row_y"]) - float(_layout["header_h"]) - 5.0, float(_layout["w"]) * _reveal, float(_layout["header_h"]))
+	SandboxStyle.header_bar(_overlay, header)
+	if _reveal < 1.0:
+		return
+	SandboxStyle.text(_overlay, "body", Vector2(header.position.x + 8.0, header.position.y + 12.0), SandboxUiData.text("pause.title"), SandboxStyle.color("text_on_header"))
+	var browsing: bool = not is_sub_page_open()
+	for i: int in ITEM_IDS.size():
+		var rect: Rect2 = _row_rect(i)
+		var selected: bool = i == _index and browsing
+		SandboxStyle.list_bar(_overlay, rect, selected)
+		if selected:
+			SandboxStyle.cursor(_overlay, Vector2(rect.position.x + 3.0, rect.position.y + rect.size.y / 2.0))
+		SandboxStyle.text(_overlay, "body", Vector2(float(_layout["x"]) + float(_layout.get("text_x", 22)), rect.position.y + 11.0), SandboxUiData.text("pause.%s" % ITEM_IDS[i]), SandboxStyle.row_color(selected))
+	if browsing:
+		var info_y: float = float(_layout["info_y"])
+		var info_x: float = float(_layout.get("info_x", 16))
+		SandboxStyle.label(_overlay, Vector2(info_x + 2.0, info_y - 3.0), SandboxUiData.text("pause.info_label"))
+		SandboxStyle.list_bar(_overlay, Rect2(info_x, info_y, float(_layout.get("info_w", 352)), float(_layout["info_h"])))
+		SandboxStyle.text(_overlay, "label", Vector2(info_x + 6.0, info_y + 10.0), SandboxUiData.text("pause.hints.%s" % ITEM_IDS[_index]).to_upper(), SandboxStyle.color("text"))

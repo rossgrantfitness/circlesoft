@@ -38,7 +38,8 @@
       "reset": "Put Red, the enemies and your Noise back at the start.",
       "controls": "See every button, and change them.",
       "quit": "Close the game."
-    }
+    },
+    "info_label": "Information"
   },
   "controls_card": {
     "title": "Controls",

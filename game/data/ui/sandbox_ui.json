@@ -156,7 +156,9 @@
     "info_y": 154,
     "info_h": 16,
     "dim_alpha": 0.55,
-    "open_steps": 4
+    "open_steps": 4,
+    "info_x": 16,
+    "info_w": 352
   },
   "controls_card": {
     "x": 16,
