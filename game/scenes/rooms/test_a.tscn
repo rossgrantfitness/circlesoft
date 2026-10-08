@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3]
+[gd_scene load_steps=29 format=3]
 
 [ext_resource type="Script" path="res://scripts/field/field_room.gd" id="1_r"]
 [ext_resource type="PackedScene" path="res://scenes/actors/player.tscn" id="2_r"]
@@ -14,6 +14,7 @@
 [ext_resource type="PackedScene" path="res://scenes/props/pickup.tscn" id="12_r"]
 [ext_resource type="PackedScene" path="res://scenes/props/traversal_spot.tscn" id="13_r"]
 [ext_resource type="PackedScene" path="res://scenes/props/map_enemy.tscn" id="14_r"]
+[ext_resource type="Script" path="res://scripts/field/grim_dressing.gd" id="15_r"]
 
 [sub_resource type="Environment" id="Environment_1"]
 background_mode = 1
@@ -199,3 +200,7 @@ placement_id = "test_a_ledge_credits"
 [node name="Grunt" parent="." instance=ExtResource("14_r")]
 transform = Transform3D(0.0000, 0, 1.0000, 0, 1, 0, -1.0000, 0, 0.0000, 0.5, 0, 1.0)
 placement_id = "test_a_grunt"
+
+[node name="GrimDressing" type="Node3D" parent="."]
+script = ExtResource("15_r")
+dressing_id = "test_a"

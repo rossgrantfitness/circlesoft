@@ -147,13 +147,15 @@ def walls(r, n_segments=None, w_segments=None, front=True, south_gaps=None, east
 
 
 def finish(r, name):
+    grim_dressing(r, r.room_id)
     r.write(name)
 
 
 def grim_dressing(r, dressing_id):
-    """The grim look-test dressing (2026-10-08): one node that builds the props listed for this room in
-    data/world/look_dressing.json when the look profile asks for them, and grimes the room's materials.
-    Added last so it wakes after the room's own nodes. Classic leaves the room exactly as it was."""
+    """The grim dressing (look test 2026-10-08, default everywhere since Ross approved it): one node per room that
+    builds the props listed for it in data/world/look_dressing.json when the look profile asks for them, and
+    grimes the room's materials. Added last so it wakes after the room's own nodes. Classic (F11) leaves the room
+    exactly as it was."""
     script = r.ext_res("Script", "res://scripts/field/grim_dressing.gd")
     r.node("GrimDressing", "Node3D", extra='script = %s\ndressing_id = "%s"' % (script, dressing_id))
 
@@ -234,7 +236,6 @@ def square():
               ("from_gear", (16.0, 1.2), (0, 1)), ("from_checkpoint", (20.0, 1.5), (0, 1)), ("from_docks", (10.5, 10.8), (0, -1)),
               ("from_debug", (1.2, 9.5), (1, 0))])
     r.node("PlayerSpawn", "Marker3D", pos=(1.2, 0, 4.0), yaw_deg=90)
-    grim_dressing(r, "harrow_square")
     finish(r, "harrow/harrow_square.tscn")
 
 
@@ -316,7 +317,6 @@ def checkpoint():
     r.npc("FanC", "cp_fan_c", 9.4, 6.0, face=(0, -1))
     r.spawns([("from_square", (7.5, 7.8), (0, -1)), ("from_road", (10.0, 1.5), (0, 1))])
     r.node("PlayerSpawn", "Marker3D", pos=(7.5, 0, 7.8), yaw_deg=180)
-    grim_dressing(r, "harrow_checkpoint")
     finish(r, "harrow/harrow_checkpoint.tscn")
 
 

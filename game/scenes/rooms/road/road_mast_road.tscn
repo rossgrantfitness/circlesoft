@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3]
+[gd_scene load_steps=23 format=3]
 
 [ext_resource type="Script" path="res://scripts/field/field_room.gd" id="1_r"]
 [ext_resource type="PackedScene" path="res://scenes/actors/player.tscn" id="2_r"]
@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" path="res://art/placeholder/textures/wall_128.png" id="8_r"]
 [ext_resource type="Texture2D" path="res://art/placeholder/textures/checker_128.png" id="9_r"]
 [ext_resource type="PackedScene" path="res://scenes/props/door.tscn" id="10_r"]
+[ext_resource type="Script" path="res://scripts/field/grim_dressing.gd" id="11_r"]
 
 [sub_resource type="Environment" id="Environment_1"]
 background_mode = 1
@@ -151,3 +152,7 @@ transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 2.0, 0, 
 
 [node name="PlayerSpawn" type="Marker3D" parent="."]
 transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 2, 0, 1.5)
+
+[node name="GrimDressing" type="Node3D" parent="."]
+script = ExtResource("11_r")
+dressing_id = "road_mast_road"

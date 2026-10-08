@@ -1,4 +1,4 @@
-[gd_scene load_steps=36 format=3]
+[gd_scene load_steps=37 format=3]
 
 [ext_resource type="Script" path="res://scripts/field/field_room.gd" id="1_r"]
 [ext_resource type="PackedScene" path="res://scenes/actors/player.tscn" id="2_r"]
@@ -12,6 +12,7 @@
 [ext_resource type="PackedScene" path="res://scenes/props/scene_spot.tscn" id="10_r"]
 [ext_resource type="PackedScene" path="res://scenes/props/pickup.tscn" id="11_r"]
 [ext_resource type="PackedScene" path="res://scenes/props/door.tscn" id="12_r"]
+[ext_resource type="Script" path="res://scripts/field/grim_dressing.gd" id="13_r"]
 
 [sub_resource type="Environment" id="Environment_1"]
 background_mode = 1
@@ -250,3 +251,7 @@ transform = Transform3D(-1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, -1.0000, 2.0, 0
 
 [node name="PlayerSpawn" type="Marker3D" parent="."]
 transform = Transform3D(-1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, -1.0000, 2, 0, 4)
+
+[node name="GrimDressing" type="Node3D" parent="."]
+script = ExtResource("13_r")
+dressing_id = "harrow_dock_office"

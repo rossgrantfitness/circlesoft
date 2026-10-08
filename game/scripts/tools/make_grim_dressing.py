@@ -111,7 +111,7 @@ def build():
     rooms["road_mast_road"] = outdoor(0, 10, 0, 6, "ROAD", SODIUM, variant=2)
     rooms["test_room"] = outdoor(-5, 13, -4, 4, "TEST", TEAL, variant=0)
     rooms["test_a"] = outdoor(-6, 10, -4, 4, "YARD A", SODIUM, variant=1)
-    rooms["test_b"] = outdoor(-5, 11, -4, 4, "YARD B", TEAL, variant=2)
+    rooms["test_b"] = outdoor(-5, 9, -4, 4, "YARD B", TEAL, variant=2)
     data["rooms"] = rooms
     data["_about"] = ("What the grim look profile adds to each place (Technical Artist). 'rooms' keys are the dressing ids GrimDressing "
                       "nodes carry (a room's id, or 'battle'). Each item is one prop built by scripts/field/grim_props.gd: type, pos [x, y, z], "

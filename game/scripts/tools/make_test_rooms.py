@@ -162,6 +162,12 @@ def enemy(r, name, pid, pos, yaw):
     r.node(name, "", ".", pos, yaw_deg=yaw, instance=inst(r, "res://scenes/props/map_enemy.tscn"), extra='placement_id = "%s"' % pid)
 
 
+def grim_dressing(r):
+    """The grim look's dressing node (data/world/look_dressing.json, key = the room id). Added last."""
+    script = r.ext_res("Script", "res://scripts/field/grim_dressing.gd")
+    r.node("GrimDressing", "Node3D", extra='script = %s\ndressing_id = "%s"' % (script, r.room_id))
+
+
 def room_a():
     r = build("test_a", "TestYardA", -6, 10, -4, 4, None)
     plat_mat = r.material((0.45, 0.55, 0.75), (2, 1))
@@ -177,6 +183,7 @@ def room_a():
     traversal(r, "ClimbSpot", (3.5, 0, -1.0), 0, (0.0, 2.0, -1.5))
     pickup(r, "LedgePickup", "test_a_ledge_credits", (3.5, 2.0, -2.6))
     enemy(r, "Grunt", "test_a_grunt", (0.5, 0, 1.0), 90)
+    grim_dressing(r)
     return r
 
 
@@ -195,6 +202,7 @@ def room_b():
     pickup(r, "CoffeePickup", "test_b_coffee", (3.2, 0, 2.4))
     crate(r, "EmptyCrate", "test_b_empty_crate", (-4.0, 0, 2.6))
     enemy(r, "Guard", "test_b_guard", (4.6, 0, -0.8), 0)
+    grim_dressing(r)
     return r
 
 
