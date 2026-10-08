@@ -33,61 +33,60 @@
 ### Milestone 2: Battle system and battle simulator
 | ID | Task | Assigned to | Depends on | Ross sign-off | Notes |
 |---|---|---|---|---|---|
-| M2-1 | Slice battle data in game/data/: Red/Otis/Mox stats and growth tables (levels 1–6), 9 skills (signature + 2 each), 4 status effects, 4 enemy types, timing windows, XP curve | Battle Programmer | M1-1 | No (Level 1) | Creative Director checks names. Log small calls in docs/decisions.md. |
-| M2-2 | Battle core: turn order by Speed with the portrait-row data, Attack / Skills / Items / Defend / Run, HP, Juice, damage, Down for the Count, win/lose | Battle Programmer | M2-1 | No | |
-| M2-3 | Clutch engine: clock-based press judging for tap, hold-and-let-go and string; Nice / Rad / TOTALLY RAD; Blocked / Perfect Block / Payback; Auto-Timing, Wide Windows, timing offset; cue fires flash + ding + "!" from one moment | Battle Programmer | M2-2 | No | Missing never hurts. Placeholder ding tone until M6-5. |
-| M2-4 | Skills and status effects: Porch Light, Heave-Ho, Patent Pending + 2 basic skills each; Burnt Toast, Noise Ticket, Wobbly, Down for the Count | Battle Programmer | M2-3 | No | |
-| M2-5 | Enemy AI and tells for the 4 slice enemy types (same wind-up every time; grunts wave a white flag and leave when nearly beaten) | Battle Programmer | M2-4 | No | |
-| M2-6 | Rewards and progression: XP, credits, drops, level-ups, skill learned around level 4; bench-XP and catch-up rules built and tested | Battle Programmer | M2-2 | No | |
-| M2-7 | Battle UI: command list, targeting, turn-order row, HP/Juice bar, Clutch cue and rating pop-ups, menu slides away during moves, K.O. freeze, victory screen | UI Programmer | M2-3, M2-6 | No | Placeholder lettering until UI art. |
-| M2-8 | Battle stage: placeholder battle set and camera, the radio-static transition (longer boss version), screen shake on TOTALLY RAD | Technical Artist | M1-2, M2-2 | No | Battle backdrops reuse field sets later. |
-| M2-9 | Battle simulator: thousands of fights as perfect / good / miss / Auto-Timing player; report win rates and fight lengths against the Feel targets; first tuning pass | Battle Programmer | M2-5, M2-6 | No (Level 1) | Regular fight 1–3 min. Runs headless. |
-| M2-10 | Art in: import Ross's party models (Red, Otis, Mox) and the 3 weapon props; asset check | Technical Artist + Asset Checker | M1-5, Ross's delivery (art rows 1–6) | **Yes** | Ross checks his art in game. |
+| M2-10 | Art in: import Ross's party models (Red, Otis, Mox) and the 3 weapon props; asset check | Technical Artist + Asset Checker | M1-5, Ross's delivery (art rows 1–6) | **Yes** (Ross's art) | **Waiting on Ross.** M2-1 to M2-9 are Done. Reference for the party is now the grim look (taller, leaner, matte and scuffed) and the A-pose sheets (G-0). |
 
 ### Milestone 3: Harrow Landing
 | ID | Task | Assigned to | Depends on | Ross sign-off | Notes |
 |---|---|---|---|---|---|
-| M3-1 | One-page layout maps for Harrow Landing, the road and the Old Relay Tower (rooms, paths, enemy spots, puzzles, save lamps) | Creative Director | M0-1 | **Yes** | Ross also needs these to plan the environment sets. Keep pacing tight. |
-| M3-2 | Exploration core: one-button talk / examine / take / open with pop-up icons, crew follows Red, climb and hop spots, doors and locked doors, glinting pickups | Gameplay Programmer | M1-3 | No | |
-| M3-3 | Dialogue box system: portraits with mid-line expression changes, plain boxes for crowd NPCs, Red's face and gesture pop-ups, thumbs-up / head-shake yes-no, per-speaker text blips, fast-forward, text speed, auto-advance | UI Programmer | M1-1 | No | All text from game/data/. |
-| M3-4 | Build Harrow Landing with placeholders: streets and docks, 6 interiors, checkpoint, hidden items, NPCs whose lines change by story beat, job board with 1–2 side deliveries | Gameplay Programmer | M3-1, M3-2, M3-3 | No | Placeholder text until M6-2. |
-| M3-5 | Visible map enemies: patrols and chasing, touch to fight, first-turn rules, Run, blink after a fight, respawn on re-entry | Gameplay Programmer | M2-2, M3-2 | No | |
-| M3-6 | Gear and items: 7 weapons, 5 armor, 4 charms, 13 items, 6 key items; equip rules, weapons locked to owner, charms block status, 99 cap, Camp Stove only at save lamps, key items unsellable | Battle Programmer | M2-4 | No (Level 2, show after) | |
-| M3-7 | Field menu: Items, Skills, Equip, Status, Party, Config, Save; side panel with portraits, HP, Juice, credits, play time, place | UI Programmer | M2-6, M3-6 | No (Level 2, show after) | Lane Chart and Swap are Later. |
-| M3-8 | Shops: general store and gear shop; buy, sell at half, quantity, owned count, up/down arrows per fighter; stock in game/data/ | UI Programmer | M3-7 | No (Level 2, show after) | |
-| M3-9 | Save system: 3 slots + auto-save on area entry, versioned JSON, Continue loads newest, the lamp check (full, short, skippable), game over with Retry battle | Gameplay Programmer | M3-2, M2-6 | No (Level 2, show after) | Tests: save/load round trip, auto-save timing, Retry restores the fight's start, older saves load. |
-| M3-10 | Title screen (New Game with name entry, Continue, Config) and the Config screen (Auto-Timing, Wide Windows, timing offset with tap-along test, text speed, auto-advance, skip, volumes, remap, vibration) | UI Programmer | M3-7, M3-9 | No (Level 2, show after) | Placeholder title art until UI art. |
-| M3-11 | Art in: Harrow sets and interiors, townsfolk, portraits; asset check | Technical Artist + Asset Checker | M3-4, Ross's delivery (art rows 7–18) | **Yes** | |
+| M3-11 | Art in: Harrow sets and interiors, townsfolk, portraits; asset check | Technical Artist + Asset Checker | M3-4, G-5, Ross's delivery (art rows 7–18) | **Yes** (Ross's art) | **Waiting on Ross** (skipped for now per Ross, 2026-10-07). M3-1 to M3-10 are Done. Harrow's sets now follow the cyberpunk-slum re-dress (G-5) and docs/tone_guide.md. |
 
-### Milestone 4: The road and the Old Relay Tower
+### Next phase: the grim package and the train opening (approved 2026-10-08)
+> From docs/decisions.md 2026-10-08 and docs/structure_pass_2026-10-08.md. Grim look, edge light, tone D1 A / D2 B / D3 B, structure D1 A / D2 A / D3 A. UI windows and menus stay as they are. Slice is now about 33 minutes (about 28 skipping optional fights).
+
 | ID | Task | Assigned to | Depends on | Ross sign-off | Notes |
 |---|---|---|---|---|---|
-| M4-1 | Build the road and the tower (about 5 floors) with placeholders: Watch Zero's back way, 2 save lamps, the old Zero with the thermos before the boss | Gameplay Programmer | M3-1, M3-4 | No | Add the jump-to-floor cheat. |
-| M4-2 | Tower puzzles: Kasp's access-card doors (with count), power switch and cage lift, crate push, optional bell chest (tune order), treasure crates and chalk stashes | Gameplay Programmer | M4-1 | No | |
-| M4-3 | Fill game/data/ for the road and tower: enemy placements, crate contents, drops; check pacing with the simulator (about level 6 and about 1,500 credits by Kasp) | Battle Programmer | M4-1, M2-9 | No (Level 1/2) | Log tuning calls in docs/decisions.md. |
-| M4-4 | Art in: enemies, tower kit and road, props; asset check | Technical Artist + Asset Checker | M4-1, Ross's delivery (art rows 19–32) | **Yes** | |
+| G-1 | Make the tone pass and structure pass official: story bible (Act 1 beats 1 and 7, Act 2 beat 2), design doc (10-hour structure, slice paragraph and list), maps (new docs/maps/train.md for the 3 car rooms + the jump; docs/maps/road_and_tower.md recast as the Spillway, the Works gate and the jammer works; Harrow map's New Game start), style guide environment table | Creative Director | | No (approved 2026-10-08) | Same room ids, flags, encounters and approved map choices. Twist section stays Creative Director + Writer only. |
+| G-2 | Update docs/art_requests.md and docs/audio_requests.md: row 19 becomes the Spillway and the Works gate, the tower kit becomes the Works kit around the mast, new row 42 train-car kit (one car module re-dressed as flatcar, hopper, boxcar), row 37 rating lettering becomes spray-paint stencil, grim palette notes on character and set rows; audio: train and undercity ambience | Producer | G-1 | No | Slice art list goes from 41 to 42. |
+| G-3 | Edge-light readability pass: characters and enemies a bit brighter than the grim background, "not too bright", with an edge light (Look A); field and battle | Technical Artist | Grim look test (Done) | No (direction approved; show Ross screenshots in docs/screenshots/) | Clutch cues and ratings must still read at a glance. |
+| G-4 | Grim look everywhere: make the grim look profile the default in every room and the battle stage (classic stays switchable in the F1 overlay for comparison) | Technical Artist | G-3 | No | Applies the 2026-10-08 visual direction (desaturate, darken, grime). UI unchanged. |
+| G-5 | Harrow slum re-dress across all 9 rooms: taller stacked facades and cable nests above the walkable floor, neon over grime, propaganda; scenery only, no layout, door, shop or spawn changes | Technical Artist | G-4 | No | Placeholders in game/art/placeholder/ only. Same camera. |
+| G-6 | Half-dark windows (tone D2 B): about half of Lamp Square's windows dark; a few relight on the walk home after Kasp, driven by the post-Kasp story flag; which windows relight lives in game/data/ | Technical Artist | G-5 | No | Test with the debug cheat that sets the post-Kasp flag. Headless test for the relight. |
+| G-7 | Re-tone placeholder lines per docs/tone_guide.md (D1 A chilling-funny): story_scenes.json, harrow_town.json, battle and menu text; plus the structure changes (courier job becomes "claim your crate at Otis's dock", the dock-stairs lock reads "claim slip", one new dock line about the crate, train opening lines and Clutch tutorial prompts) | Writer | G-1 | No (placeholder text) | Ross signs off the final text in M6-2. Text Checker checks in M6-6. |
+| G-8 | Spray-paint stencil rating lettering (tone D3 B, still loud): Nice!, Rad!, TOTALLY RAD!, Blocked!, Perfect Block!, Payback!, K.O.!, "!" and boss "!!" | UI Programmer | | No (placeholder) | Placeholder until Ross's art row 37 (lands in M7-1). Same timing and pop-ups; only the lettering changes. |
+| G-9 | Train opening, rooms: 3 car rooms + the jump from one car module (flatcar, hopper, boxcar) with placeholders; walk, run, jump, crate hops, hiding behind ore; Red shoves the crate into the harbor and jumps for Harrow's freight platform, then runs home | Gameplay Programmer | G-1 (train map), G-4 | No | Target about 3.5–4 min. Add a jump-to-car cheat. |
+| G-10 | Train opening, inspectors: scanner-sweep enemy (a patrol with a vision cone, MGS1-style hunted feel, no timer), built on the roaming enemies from M3-5 | Gameplay Programmer | G-9 | No | What happens when spotted follows the train map. Behavior numbers in game/data/. |
+| G-11 | Train opening, flow: one must-win tutorial fight on the train (reuse `grunt_solo`) that teaches Clutch; **New Game starts on the train**; Red's home becomes stop 2 (first save); update the tests that assume New Game starts at home (Harrow walkthrough and story tests, the M3 end-to-end run) | Gameplay Programmer | G-9, G-10 | No | If playtests run long: make the train a pure chase with no fight (caught = restart the car). |
+| G-12 | Art in: train-car kit; asset check | Technical Artist + Asset Checker | G-9, Ross's delivery (art row 42) | **Yes** (Ross's art) | Also reused later for the dead ore line (Act 1, Later). |
+
+### Milestone 4: The Spillway and the jammer factory
+| ID | Task | Assigned to | Depends on | Ross sign-off | Notes |
+|---|---|---|---|---|---|
+| M4-1 | Build the Spillway (two scenes; keep the `road_mast_road` id, new display name), the Works gate (Watch Zero's sit-in, Kasp on the loudspeaker, the drain grate) and the jammer works around the ancient mast, one room per floor: T0 the Sump (save lamp, plaque and mural), T1 Cable Mill, T2 Bell Gallery, T3 Power Room, T4 Drone Line, T4b last landing (the old Zero with the thermos, second save lamp), T5 the roof; placeholders | Gameplay Programmer | G-1, G-4, M3-4 | No | Add the jump-to-floor cheat. Grim look and slum neon from the start. |
+| M4-2 | Works puzzles: Kasp's access-card doors (with count), power switch and freight lift (the approved cage-lift shortcut), crate push on the Cable Mill, optional bell chest in the Bell Gallery (tune order), treasure crates and chalk stashes (one on a sunken tram car in the Spillway) | Gameplay Programmer | M4-1 | No | |
+| M4-3 | Fill game/data/ for the Spillway and the works: enemy placements (one dodgeable Spillway patrol, the three must-win card fights, the Quota Ambush on the Drone Line), crate contents, drops; check pacing with the simulator including the train fight (about level 6 and about 1,500 credits by Kasp) | Battle Programmer | M4-1, M2-9 | No (Level 1/2) | Log tuning calls in docs/decisions.md. |
+| M4-4 | Art in: enemies, the Works kit around the mast, the Spillway and the Works gate, props; asset check | Technical Artist + Asset Checker | M4-1, Ross's delivery (art rows 19–32) | **Yes** (Ross's art) | Rows 19 and the tower kit are renamed in G-2. |
 
 ### Milestone 5: Kasp and the Hushmaster
 | ID | Task | Assigned to | Depends on | Ross sign-off | Notes |
 |---|---|---|---|---|---|
 | M5-1 | Kasp boss logic: Quiet Hours jam pulse (cues scramble, real window never moves), 8 legs breaking in 4 pairs weakening the pulse, topple, then Kasp on foot; boss "!!" telegraphs; simulator check for a 5–8 minute fight | Battle Programmer | M2-9 | No | Approved gimmick (story bible Villains + Technical Director's review). |
 | M5-2 | Boss staging with placeholders: Hushmaster rig blockout, leg-pair breaks, toppled state, camera push-ins, Kasp's title card, the long boss transition | Technical Artist | M5-1, M2-8 | No | |
-| M5-3 | Art in: Kasp and the Hushmaster; asset check | Technical Artist + Asset Checker | M5-2, Ross's delivery (art rows 33–34) | **Yes** | |
+| M5-3 | Art in: Kasp and the Hushmaster; asset check | Technical Artist + Asset Checker | M5-2, Ross's delivery (art rows 33–34) | **Yes** (Ross's art) | |
 
 ### Milestone 6: Story, cutscenes, dialogue, audio
 | ID | Task | Assigned to | Depends on | Ross sign-off | Notes |
 |---|---|---|---|---|---|
 | M6-1 | Script the slice's ~6 cutscenes, with the twist-clue check | Writer + Creative Director | M3-1 | **Yes** | Creative Director checks clues and the beacon part text. |
-| M6-2 | Field text: NPC lines per story beat, examine lines, party chime-ins, side-job text, item / gear / enemy / key item descriptions, menu text | Writer | M3-1 | **Yes** (dialogue) | Item descriptions are Level 2 (show after). |
+| M6-2 | Field text: NPC lines per story beat, examine lines, party chime-ins, side-job text, item / gear / enemy / key item descriptions, menu text | Writer | M3-1, G-7 | **Yes** (Ross signs off the dialogue) | Builds on the re-toned lines (G-7) and covers the train, the Spillway and the works. Item descriptions are Level 2 (show after). |
 | M6-3 | In-engine cutscene system: camera moves, close-ups, push-ins, freeze-frames, portrait dialogue, hold Start to skip; scripted from game/data/ | Gameplay Programmer | M3-3 | No | |
 | M6-4 | Build the ~6 cutscenes from the approved script | Gameplay Programmer | M6-1, M6-3 | No | Ross sees them in the M7-5 build. |
-| M6-5 | Audio: music direction brief for Ross (8 tracks and jingles), then the audio system (music loops, SFX hooks, per-speaker blips, volume settings) with placeholder tones for every row in docs/audio_requests.md | Audio Designer | M2-3, M3-3 | **Yes** (music direction) | Placeholder tones need no sign-off. The ding must land with the flash. |
+| M6-5 | Audio: music direction brief for Ross (8 tracks and jingles), then the audio system (music loops, SFX hooks, per-speaker blips, volume settings) with placeholder tones for every row in docs/audio_requests.md | Audio Designer | M2-3, M3-3 | **Yes** (music direction) | Placeholder tones need no sign-off. The ding must land with the flash. Includes the train and undercity ambience (G-2). |
 | M6-6 | Text check: typos, names and terms, text-box fit | Text Checker | M6-1, M6-2 | No | |
 
 ### Milestone 7: Polish, QA, playtest, builds for Windows and Mac
 | ID | Task | Assigned to | Depends on | Ross sign-off | Notes |
 |---|---|---|---|---|---|
-| M7-1 | Art in: UI art (icons, turn-order heads, rating lettering, pop-ups and gestures, Kasp's title card, title screen and logo, menu window and cursor); asset check | UI Programmer + Asset Checker | Ross's delivery (art rows 35–41) | **Yes** | |
+| M7-1 | Art in: UI art (icons, turn-order heads, rating lettering, pop-ups and gestures, Kasp's title card, title screen and logo, menu window and cursor); asset check | UI Programmer + Asset Checker | Ross's delivery (art rows 35–41) | **Yes** (Ross's art) | Rating lettering (row 37) is spray-paint stencil, replacing the G-8 placeholder. |
 | M7-2 | Full QA pass: all headless tests, title-to-window-lamp run with no dead ends, bug log | QA Tester | M6-4, M6-5 | No | Done = no crash or major bugs open. |
 | M7-3 | Playtest report: pacing (~30 min, no filler), difficulty, Feel targets, Clutch readability | Playtester | M6-4 | No | |
 | M7-4 | Fix pass on QA and playtest findings | Owners per bug (Gameplay / Battle / UI Programmer) | M7-2, M7-3 | No | New ideas go to Later, not into the fix pass. |
