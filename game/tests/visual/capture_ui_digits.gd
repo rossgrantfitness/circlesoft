@@ -7,11 +7,11 @@ extends SceneTree
 
 const OUT: String = "res://../docs/screenshots/ui_digits_strip.png"
 const DIR: String = "res://art/final/ui/fonts/"
-const SIZE: Vector2i = Vector2i(320, 240)
+const SIZE: Vector2i = Vector2i(320, 200)
 const ROWS: Array[Array] = [
-	["Jersey15-Regular.ttf", 15, 1], ["Jersey15-Regular.ttf", 16, 1], ["Jersey15-Regular.ttf", 20, 1], ["Jersey15-Regular.ttf", 30, 1],
-	["DotGothic16-Regular.ttf", 16, 1], ["DotGothic16-Regular.ttf", 20, 1], ["VT323-Regular.ttf", 20, 1],
-	["Micro5-Regular.ttf", 20, 1], ["Silkscreen-Regular.ttf", 8, 1], ["PixelifySans-VariableFont_wght.ttf", 16, 1],
+	["Jersey15-Regular.ttf", 20, 1], ["Jersey15-Regular.ttf", 30, 1],
+	["DotGothic16-Regular.ttf", 16, 1], ["VT323-Regular.ttf", 16, 1], ["VT323-Regular.ttf", 18, 1], ["VT323-Regular.ttf", 20, 1], ["VT323-Regular.ttf", 22, 1], ["VT323-Regular.ttf", 24, 1], ["VT323-Regular.ttf", 32, 1],
+	["Micro5-Regular.ttf", 20, 1],
 ]
 
 

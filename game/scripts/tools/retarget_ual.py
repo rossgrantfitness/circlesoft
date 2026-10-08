@@ -402,6 +402,7 @@ def main():
     print("target %s, %d bones mapped, floor error %.4f m" % (cfg["target"], len(rt.mapped), rt.t_floor_err))
 
     new_anims = []
+    loops = {}
     keys_doc = {}
     for spec in cfg["clips"]:
         name = spec["name"]
@@ -413,8 +414,8 @@ def main():
         for bone, qs in res["rot"].items():
             channels.append((bone, "rotation", qs))
         channels.append((rt.t_hips, "translation", res["hips"]))
-        # Godot's importer turns a trailing "_loop" into a looping clip and strips the suffix, so loop flags live in the file
-        new_anims.append({"name": name + "_loop" if spec.get("loop") else name, "times": times, "channels": channels})
+        new_anims.append({"name": name, "times": times, "channels": channels})
+        loops[name] = bool(spec.get("loop"))
         length = float(times[-1])
         entry = {"length_s": round(length, 4), "loop": bool(spec.get("loop")) or name in cfg.get("importer_loops", []), "source": spec.get("source") or " + ".join(p["source"] for p in spec["parts"])}
         contact = rt.contact_out_time(spec)
@@ -446,6 +447,10 @@ def main():
     rebuild_and_save(out_path, rt.t_doc, rt.t_blob, new_anims, keep,
                      generator_note="Animations: Quaternius Universal Animation Library 1+2 (CC0) retargeted by scripts/tools/retarget_ual.py")
     print("wrote", os.path.relpath(out_path, ROOT), "%.0f KB" % (os.path.getsize(out_path) / 1024.0))
+    for k in keep:
+        loops[k] = False
+    write_import_settings(out_path, os.path.join(GAME_DIR, cfg["target"]), loops, int(rt.fps))
+    print("wrote the .import (animation optimizer off, import fps %d)" % rt.fps)
     # ---- key data (merge the kept stand-ins' entries from the old file)
     kd_path = os.path.join(GAME_DIR, cfg["clip_keys"])
     old = {}
@@ -466,6 +471,37 @@ def main():
         json.dump(doc, f, indent=1)
         f.write("\n")
     print("wrote", os.path.relpath(kd_path, ROOT))
+
+
+def write_import_settings(glb_path, template_glb_path, loops, fps):
+    """Godot's scene importer thins animation keys by default (optimizer/enabled, errors of a few centimetres), which
+    wrecks small, fast clips once the project's importer makes every track stepped. Every clip of the output file gets
+    `optimizer/enabled = false` and its loop mode in the file's .import, and the import fps is set to the bake fps (the rigs' own .import files
+    resample to 15 fps, which halves a 30 fps clip and loses the 3-frame strike of a sword swing). Creates the .import from the
+    rig's own when it does not exist yet (Godot fills in the uid and paths on the next import)."""
+    imp = glb_path + ".import"
+    if os.path.exists(imp):
+        text = open(imp).read()
+    else:
+        with open(template_glb_path + ".import") as f:
+            text = f.read()
+        text = "\n".join(l for l in text.split("\n") if not l.startswith(("uid=", "path=", "dest_files=", "source_file=")))
+    sub = {"animations": {name: {"optimizer/enabled": False, "settings/loop_mode": 1 if loop else 0} for name, loop in loops.items()}}
+    value = json.dumps(sub, separators=(", ", ": "))
+    lines = []
+    done = False
+    for line in text.split("\n"):
+        if line.startswith("animation/fps="):
+            lines.append("animation/fps=%d" % fps)
+        elif line.startswith("_subresources="):
+            lines.append("_subresources=" + value)
+            done = True
+        else:
+            lines.append(line)
+    if not done:
+        lines.append("_subresources=" + value)
+    with open(imp, "w") as f:
+        f.write("\n".join(lines))
 
 
 def _keys_for(spec, length, fps, contact):

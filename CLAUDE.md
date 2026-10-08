@@ -47,7 +47,7 @@ Then wait. After Ross approves, the Producer logs it in docs/decisions.md with t
 - Every gameplay system gets automated tests in game/tests/ that can run headless.
 
 ## Scope discipline
-- Game direction (Ross, 2026-10-08): **LIGHTS ON**, a single-character action RPG (Mega Man Legends-style town/dungeon loop, fast character-action combat, visible customizable gear), with the Lights Left On cast and world. The turn-based version is shelved, not deleted.
+- Game direction (Ross, 2026-10-08): a third-person action RPG about **a cyberpunk hacker bunny girl with a sword**, with cute towns and people. Untitled for now: the working title "LIGHTS ON" and the whole "Lights On" mechanic/theme are cut (Ross, 2026-10-08), though the sandbox keeps the old code until Ross says to remove it. The gameplay loop is still being worked out (Mega Man Legends-style town/dungeon loop was the plan; roguelike ideas are under discussion); a solid action game comes first. Fast character-action combat and visible customizable gear stay. The turn-based version is shelved, not deleted.
 - Current milestone: **COMBAT SANDBOX** (a playable feel prototype Ross downloads and judges by hand). Next: the action VERTICAL SLICE (one town, one dungeon, one boss, Red as the single playable hero, full combat system), scoped after Ross plays the sandbox.
 - Anything beyond the current milestone goes in a "Later" list on the task board, not into the build.
 

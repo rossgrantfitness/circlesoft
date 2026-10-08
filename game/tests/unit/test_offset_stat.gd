@@ -63,3 +63,14 @@ func test_the_fallback_switch_swaps_every_font_role_to_jersey_and_goes_upright()
 	assert_eq(SandboxStyle.font("label"), theme.get_font(&"label", SandboxStyle.TYPE), "the label font never changes")
 	theme.set_constant(&"use_fallback_font", SandboxStyle.TYPE, 0)
 	theme.set_constant(&"slant_pct", SandboxStyle.TYPE, 0)
+
+
+func test_numerals_never_use_a_face_whose_counters_fill_with_the_shadow() -> void:
+	# Jersey 15 at HUD sizes turns 6, 8 and 9 into blobs that read like "+" (docs/screenshots/ui_digits_strip.png).
+	for role: String in ["digits", "stat_big", "stat_small"]:
+		var font: FontVariation = SandboxStyle.theme().get_font(StringName(role), SandboxStyle.TYPE) as FontVariation
+		assert_not_null(font, role)
+		assert_false(font.base_font.resource_path.contains("Jersey"), "%s is not Jersey" % role)
+	for role: String in ["digits_fallback", "stat_big_fallback", "stat_small_fallback"]:
+		var fallback: FontVariation = SandboxStyle.theme().get_font(StringName(role), SandboxStyle.TYPE) as FontVariation
+		assert_false(fallback.base_font.resource_path.contains("Jersey"), "%s is not Jersey either" % role)

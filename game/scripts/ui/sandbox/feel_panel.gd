@@ -901,7 +901,7 @@ func _draw_rows() -> void:
 		var value_right: float = float(_layout["value_right"])
 		if FeelFormat.is_slider(knob):
 			_draw_slider(knob, i, float(value), focused)
-			SandboxStyle.text_right(_overlay, "digits", value_right, baseline, FeelFormat.value_text(knob, value), value_color, 66.0)
+			SandboxStyle.text_right(_overlay, "digits", value_right, baseline, FeelFormat.value_text(knob, value), value_color, 84.0)
 		else:
 			var text: String = FeelFormat.value_text(knob, value)
 			if FeelFormat.kind_of(knob) == FeelFormat.KIND_BOOL:

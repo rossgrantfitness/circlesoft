@@ -101,15 +101,23 @@
     "offset": [
      0,
      -0.104,
-     -0.02
+     -0.045
     ]
    },
    {
-    "bone": "foot_l",
+    "bone": "ball_l",
     "offset": [
      0,
-     -0.104,
-     0.2
+     -0.015,
+     0.0
+    ]
+   },
+   {
+    "bone": "ball_l",
+    "offset": [
+     0,
+     -0.015,
+     0.079
     ]
    },
    {
@@ -117,15 +125,23 @@
     "offset": [
      0,
      -0.104,
-     -0.02
+     -0.045
     ]
    },
    {
-    "bone": "foot_r",
+    "bone": "ball_r",
     "offset": [
      0,
-     -0.104,
-     0.2
+     -0.015,
+     0.0
+    ]
+   },
+   {
+    "bone": "ball_r",
+    "offset": [
+     0,
+     -0.015,
+     0.079
     ]
    },
    {
@@ -173,7 +189,8 @@
     ],
     "lift": 0.04
    }
-  ]
+  ],
+  "_about": "Contact points for the ground lock: [bone, offset in the rest world frame, lift]. Soles have lift 0, body points a radius. The source's ball bone is used for the toe so a sprint's toe-off does not sink through the floor."
  },
  "bones": [
   {

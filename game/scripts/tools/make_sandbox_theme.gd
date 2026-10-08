@@ -18,9 +18,9 @@ const FONT_DIR: String = "res://art/final/ui/fonts/"
 ## drop shadow, a little stylized and offset, still video gamey". Candidates are in
 ## docs/screenshots/ui_font_options_ffta.png (all SIL OFL 1.1): PixelifySans-VariableFont_wght.ttf (default:
 ## the most character), Handjet-Variable.ttf (loses its i-dots at menu sizes), Jersey15-Regular.ttf (clean;
-## used here for numerals because Pixelify's 5, 2 and 8 read alike), Micro5-Regular.ttf, JacquardaBastarda9-Regular.ttf.
-## Ross picked (2026-10-08) "Pixelify + slant": body in Pixelify Sans leaning by slant_pct, numerals in Jersey 15
-## with the same lean; second place Jersey 15 alone (use_fallback_font = 1, no slant). slant_pct is the lean
+## fallback text face), Micro5-Regular.ttf, JacquardaBastarda9-Regular.ttf.
+## Ross picked (2026-10-08) "Pixelify + slant": body in Pixelify Sans leaning by slant_pct, numerals in VT323
+## with the same lean; second place Jersey 15 (numerals stay VT323) alone (use_fallback_font = 1, no slant). slant_pct is the lean
 ## switch: 0 = upright (the default until Ross says whether he wants the lean), 22 = the sample he liked.
 ## Round one (Vagrant Story reference): docs/screenshots/ui_font_options.png.
 const BODY_FONT: String = "PixelifySans-VariableFont_wght.ttf"
@@ -30,14 +30,17 @@ const BODY_SPACING: int = 0
 ## Extra pixels between words (the leaning Pixelify's own space looks too narrow).
 const WORD_GAP: int = 3
 const TITLE_SIZE: int = 20
-const DIGITS_FONT: String = "Jersey15-Regular.ttf"
-const DIGITS_SIZE: int = 16
-const DIGITS_SPACING: int = 1
+## Numerals: VT323 at 18 to 24 px (see docs/screenshots/ui_digits_strip.png). Jersey 15 at 15 to 20 px fills the
+## counters of 6, 8 and 9 with the drop shadow so they read like "+"; VT323 and DotGothic16 stay clear.
+const DIGITS_FONT: String = "VT323-Regular.ttf"
+const FALLBACK_FONT: String = "Jersey15-Regular.ttf"
+const DIGITS_SIZE: int = 20
+const DIGITS_SPACING: int = 0
 ## The staggered "OffsetStat" readout (Hp 78 /120): small label raised, big current value on the baseline,
 ## smaller slash + max dropped lower. Sizes here, offsets in the constants stat_label_raise, stat_slash_drop, stat_gap.
 const STAT_LABEL_SIZE: int = 12
-const STAT_BIG_SIZE: int = 20
-const STAT_SMALL_SIZE: int = 14
+const STAT_BIG_SIZE: int = 24
+const STAT_SMALL_SIZE: int = 20
 const LABEL_FONT: String = "Silkscreen-Regular.ttf"
 const LABEL_SIZE: int = 8
 const LABEL_SPACING: int = 1
@@ -128,9 +131,10 @@ func _initialize() -> void:
 	theme.set_font("stat_small", TYPE, _font(DIGITS_FONT, DIGITS_SPACING, 0))
 	theme.set_font_size("stat_small", TYPE, STAT_SMALL_SIZE)
 	# Ross's second choice (Jersey 15 for everything, upright): set the constant use_fallback_font to 1.
-	var fallback_sizes: Dictionary = {"body": DIGITS_SIZE, "title": DIGITS_SIZE + 4, "digits": DIGITS_SIZE, "stat_label": STAT_LABEL_SIZE, "stat_big": STAT_BIG_SIZE, "stat_small": STAT_SMALL_SIZE}
+	var fallback_sizes: Dictionary = {"body": 16, "title": 20, "digits": DIGITS_SIZE, "stat_label": STAT_LABEL_SIZE, "stat_big": STAT_BIG_SIZE, "stat_small": STAT_SMALL_SIZE}
 	for role: String in fallback_sizes:
-		theme.set_font("%s_fallback" % role, TYPE, _font(DIGITS_FONT, DIGITS_SPACING, 0))
+		var numeral: bool = role in ["digits", "stat_big", "stat_small"]
+		theme.set_font("%s_fallback" % role, TYPE, _font(DIGITS_FONT if numeral else FALLBACK_FONT, DIGITS_SPACING if numeral else 1, 0))
 		theme.set_font_size("%s_fallback" % role, TYPE, int(fallback_sizes[role]))
 	theme.set_font("label", TYPE, _font(LABEL_FONT, LABEL_SPACING, 0))
 	theme.set_font_size("label", TYPE, LABEL_SIZE)
