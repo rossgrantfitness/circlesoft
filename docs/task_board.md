@@ -101,6 +101,7 @@
 ## In Progress
 | Task | Assigned to | Started | Notes |
 |---|---|---|---|
+| G-0 A-pose reference sheets for Ross: the current characters in an A-pose on a white background, so he can create art assets | Technical Artist | 2026-10-08 | Ross's request with the grim package approval. Feeds M2-10 (party, art rows 1–6) and his other character rows. |
 | Red style prototypes A–E (static 3D, PSX turntables, in-game scale shots, contact sheet) per docs/red_style_prototypes.md | Technical Artist ×2 | 2026-10-06 | Ross's art-style gate; animation paused until he picks. |
 | Style guide (full draft): visual pillars, palette, proportions, PSX rendering rules, UI windows, fonts | Technical Artist (with Creative Director) | 2026-10-06 | References: Mega Man Legends, Tail Concerto, MGS1, FF7. Goes to Ross as M0-1. Must be approved before Ross's final art. |
 | Technical plan (docs/tech_plan.md) | Technical Director | 2026-10-06 | Feeds M1-1 (project skeleton) and all programming tasks. |
@@ -109,6 +110,27 @@
 ## Done
 | Task | Done by | Finished | Notes |
 |---|---|---|---|
+| Grim look test: switchable look profile (classic / grim), grim Harrow square, checkpoint and battle stage, cyberpunk-slum dressing, leaner scuffed grim Red, matte scuffed Otis, Mox and grunts | Technical Artist | 2026-10-08 | Ross approved the setting 2026-10-08 with one change: brighter characters and enemies with an edge light (G-3). Shots: docs/screenshots/grim_*.png. |
+| Dynamic battle camera from Ross's 12-panel storyboard (unplanned Ross request): intro shots, boss low-angle intro, idle drift, action shots, Clutch lock, Config "Battle Camera: Dynamic / Calm" | Technical Artist | 2026-10-07 | 1449 tests; playthrough 28/28. Studio calls in docs/decisions.md 2026-10-07. |
+| M3-10 Title screen (New Game with name entry, Continue, Config) and the full Config screen | UI Programmer | 2026-10-07 | In v0.3.0. |
+| M3-9 Save system: 3 slots + auto-save, save lamps, Continue, game over with Retry | Gameplay Programmer | 2026-10-07 | In v0.3.0. |
+| M3-8 Shops: general store and gear shop | UI Programmer | 2026-10-07 | In v0.3.0. |
+| M3-7 Field menu | UI Programmer | 2026-10-07 | In v0.3.0. |
+| M3-6 Gear and items (7 weapons, 5 armor, 4 charms, 13 items, 6 key items) | Battle Programmer | 2026-10-07 | Enemy HP retuned x1.3; calls in docs/decisions.md. |
+| M3-5 Visible map enemies (patrols, chasing, first-strike rules) | Gameplay Programmer | 2026-10-07 | In v0.3.0. |
+| M3-4 Harrow Landing graybox: 9 rooms, ~25 townsfolk, both shops, job board + 2 side deliveries, 5 hidden items, dock fight, story scenes | Gameplay Programmer | 2026-10-07 | 1421 tests; delivered to Ross as v0.3.0. Kept as built; slum re-dress in G-5. |
+| M3-3 Dialogue system polish | UI Programmer | 2026-10-07 | In v0.3.0. |
+| M3-2 Exploration core (crew follows Red, doors and locked doors, pickups, climb and hop, SceneRouter) | Gameplay Programmer | 2026-10-07 | In v0.3.0. |
+| M3-1 Layout maps for Harrow Landing, the road and the Old Relay Tower | Creative Director | 2026-10-07 | Ross approved all six picks. Road and tower recast as the Spillway and the jammer works in G-1 (same choices). |
+| M2-9 Battle simulator and first tuning pass | Battle Programmer | 2026-10-06 | Results in docs/battle_sim_report.md. |
+| M2-8 Battle stage, enemy blockouts, radio-static transition, TOTALLY RAD shake | Technical Artist | 2026-10-06 | In v0.2.0. |
+| M2-7 Battle HUD and victory / game over screens | UI Programmer | 2026-10-06 | In v0.2.0. |
+| M2-6 Rewards and progression | Battle Programmer | 2026-10-06 | In v0.2.0. |
+| M2-5 Enemy AI and tells (4 enemy types) | Battle Programmer | 2026-10-06 | In v0.2.0. |
+| M2-4 Skills and status effects | Battle Programmer | 2026-10-06 | In v0.2.0. |
+| M2-3 Clutch engine | Battle Programmer | 2026-10-06 | In v0.2.0. |
+| M2-2 Battle core | Battle Programmer | 2026-10-06 | In v0.2.0. |
+| M2-1 Slice battle data | Battle Programmer | 2026-10-06 | 889 tests at v0.2.0 delivery. |
 | M1-1 Project skeleton (tech plan steps 1-3): project settings, autoload stubs, DataDB, headless test runner | Gameplay Programmer | 2026-10-06 | 28 headless tests pass (`godot --headless --path game -s res://tests/run_all.gd`). Awaiting Technical Director review and the studio-floor commit. |
 | Slice task board, art requests (41 assets) and audio requests drawn up | Producer | 2026-10-06 | Includes the weapon-model art requests (Red sword, Otis hammer, Mox wrench-mace); Vela's and Ruo's weapons are Later. |
 | Studio setup (Phases 0–4) | Studio floor | 2026-10-05 | Waiting on Ross to merge pull request #1. |
@@ -133,7 +155,8 @@
 _Ideas beyond the vertical slice. Not to be built until Ross approves the slice._
 - EarthBound-fast instant wins against much weaker grunts (approved 2026-10-06).
 - Swap/bench, Vela and Ruo's signature moves; Tangled, Butterfingers, Fired Up; robot/titan/ship/god-scale fights; other bosses' gimmicks (from the Battle system section).
-- Act 1 from the lockdown on (beats 5–11), then Acts 2 and 3.
+- Act 1 from the lockdown on (beats 5–11), then Acts 2 and 3. Act 1 now runs across ten settings (docs/structure_pass_2026-10-08.md); the dead ore line reuses the slice's train-car kit.
+- Act 2 places **Pit Nine** (company mining moon) and **Breaker's Ring** (junk-ring city), working names, approved 2026-10-08. They replace the two re-dressed moons and are built from kits already planned (the slum kit, the Works kit, the Navy hull kit), so no new biome kits; their titan stages use the strip pit and the hull ring for walls and height.
 - Vela and Ruo in the party, picking your three, levels past 6 and the rest of each skill list, Act 3 guest missions.
 - Machine stations, the shared Hull bar, size boost, machine versions of skills, and all machine upgrades.
 - The lane chart, travel between moons, the *Low Profile*; the Biscuit stomp, titan stages and the *Supper's On* home base.

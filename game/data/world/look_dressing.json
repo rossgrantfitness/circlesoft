@@ -1,5 +1,5 @@
 {
- "_about": "What the grim look profile adds to each place (Technical Artist). 'rooms' keys are the dressing ids GrimDressing nodes carry (a room's id, or 'battle'). Each item is one prop built by scripts/field/grim_props.gd: type, pos [x,y,z], yaw (degrees), and that type's own numbers (see the builder). Positions are room coordinates (x east along the north wall, z south toward the camera, y up). Props are visual only: no collision. key_light is the harsh extra light the profile adds.",
+ "_about": "What the grim look profile adds to each place (Technical Artist). 'rooms' keys are the dressing ids GrimDressing nodes carry (a room's id, or 'battle'). Each item is one prop built by scripts/field/grim_props.gd: type, pos [x, y, z], yaw (degrees), and that type's own numbers (see the builder). Positions are room coordinates (x east along the north wall, z south toward the camera, y up). Props are visual only: no collision. key_light is the harsh extra light the profile adds. harrow_square, harrow_checkpoint and battle are hand-placed; the other rooms are written by scripts/tools/make_grim_dressing.py (re-running it keeps those three as they are).",
  "rooms": {
   "harrow_square": {
    "key_light": {
@@ -1529,6 +1529,2824 @@
       11.0
      ],
      "amount": 130
+    }
+   ]
+  },
+  "harrow_home": {
+   "key_light": {
+    "color": "#d4e4e0",
+    "energy": 0.8,
+    "dir_deg": [
+     -48.0,
+     36.0
+    ]
+   },
+   "items": [
+    {
+     "type": "poster",
+     "pos": [
+      1.54,
+      1.7,
+      0.08
+     ],
+     "variant": 0,
+     "size": [
+      0.7,
+      1.05
+     ]
+    },
+    {
+     "type": "poster",
+     "pos": [
+      5.74,
+      1.6,
+      0.08
+     ],
+     "variant": 1,
+     "size": [
+      0.62,
+      0.93
+     ]
+    },
+    {
+     "type": "poster",
+     "pos": [
+      0.08,
+      1.7,
+      3.6
+     ],
+     "yaw": 90,
+     "variant": 2,
+     "size": [
+      0.7,
+      1.05
+     ]
+    },
+    {
+     "type": "neon",
+     "pos": [
+      3.85,
+      2.45,
+      0.14
+     ],
+     "text": "HOME",
+     "color": "#5fe0c8",
+     "height": 0.34,
+     "pattern": "1111h111011",
+     "phase": 0,
+     "light_energy": 1.0,
+     "light_range": 3.0
+    },
+    {
+     "type": "screen",
+     "pos": [
+      0.08,
+      2.0,
+      1.6
+     ],
+     "yaw": 90,
+     "width": 0.95,
+     "text": "CURFEW 22",
+     "kind": "slogan",
+     "light_energy": 0.7
+    },
+    {
+     "type": "loudspeaker",
+     "pos": [
+      2.66,
+      2.75,
+      0.3
+     ]
+    },
+    {
+     "type": "hang_lamp",
+     "pos": [
+      3.5,
+      2.9,
+      2.25
+     ],
+     "drop": 0.45,
+     "color": "#ff9a3c",
+     "energy": 1.6,
+     "range": 4.0
+    },
+    {
+     "type": "cable",
+     "from": [
+      0.2,
+      2.8,
+      0.3
+     ],
+     "to": [
+      3.5,
+      2.85,
+      2.25
+     ],
+     "sag": 0.25,
+     "strands": 2,
+     "segments": 5
+    },
+    {
+     "type": "cable",
+     "from": [
+      3.5,
+      2.85,
+      2.25
+     ],
+     "to": [
+      6.7,
+      2.8,
+      0.3
+     ],
+     "sag": 0.3,
+     "strands": 2,
+     "segments": 5
+    },
+    {
+     "type": "pipe",
+     "from": [
+      0.2,
+      2.7,
+      0.2
+     ],
+     "to": [
+      6.8,
+      2.7,
+      0.2
+     ],
+     "radius": 0.07
+    },
+    {
+     "type": "pipe",
+     "from": [
+      0.3,
+      0.0,
+      0.2
+     ],
+     "to": [
+      0.3,
+      2.7,
+      0.2
+     ],
+     "radius": 0.06
+    },
+    {
+     "type": "steam",
+     "pos": [
+      5.74,
+      0,
+      1.4
+     ],
+     "rise": 0.9
+    },
+    {
+     "type": "puddle",
+     "pos": [
+      4.06,
+      0,
+      3.5
+     ],
+     "size": [
+      1.2,
+      0.8
+     ]
+    },
+    {
+     "type": "stripes",
+     "pos": [
+      3.5,
+      0.03,
+      0.3
+     ],
+     "size": [
+      3.8500000000000005,
+      0.03,
+      0.18
+     ]
+    },
+    {
+     "type": "smear",
+     "pos": [
+      3.85,
+      0,
+      1.0
+     ],
+     "size": [
+      0.6,
+      1.1
+     ],
+     "color": "#5fe0c8"
+    }
+   ]
+  },
+  "harrow_courier": {
+   "key_light": {
+    "color": "#d4e4e0",
+    "energy": 0.8,
+    "dir_deg": [
+     -48.0,
+     36.0
+    ]
+   },
+   "items": [
+    {
+     "type": "poster",
+     "pos": [
+      1.76,
+      1.7,
+      0.08
+     ],
+     "variant": 1,
+     "size": [
+      0.7,
+      1.05
+     ]
+    },
+    {
+     "type": "poster",
+     "pos": [
+      6.56,
+      1.6,
+      0.08
+     ],
+     "variant": 2,
+     "size": [
+      0.62,
+      0.93
+     ]
+    },
+    {
+     "type": "poster",
+     "pos": [
+      0.08,
+      1.7,
+      4.32
+     ],
+     "yaw": 90,
+     "variant": 0,
+     "size": [
+      0.7,
+      1.05
+     ]
+    },
+    {
+     "type": "neon",
+     "pos": [
+      4.4,
+      2.45,
+      0.14
+     ],
+     "text": "PARCEL",
+     "color": "#ff9a3c",
+     "height": 0.34,
+     "pattern": "11h11111",
+     "phase": 1,
+     "light_energy": 1.0,
+     "light_range": 3.0
+    },
+    {
+     "type": "screen",
+     "pos": [
+      0.08,
+      2.0,
+      1.92
+     ],
+     "yaw": 90,
+     "width": 0.95,
+     "text": "ALL CLEAR",
+     "kind": "alert",
+     "light_energy": 0.7
+    },
+    {
+     "type": "loudspeaker",
+     "pos": [
+      3.04,
+      2.75,
+      0.3
+     ]
+    },
+    {
+     "type": "hang_lamp",
+     "pos": [
+      4.0,
+      2.9,
+      2.7
+     ],
+     "drop": 0.45,
+     "color": "#ff9a3c",
+     "energy": 1.6,
+     "range": 4.0
+    },
+    {
+     "type": "cable",
+     "from": [
+      0.2,
+      2.8,
+      0.3
+     ],
+     "to": [
+      4.0,
+      2.85,
+      2.7
+     ],
+     "sag": 0.25,
+     "strands": 2,
+     "segments": 5
+    },
+    {
+     "type": "cable",
+     "from": [
+      4.0,
+      2.85,
+      2.7
+     ],
+     "to": [
+      7.7,
+      2.8,
+      0.3
+     ],
+     "sag": 0.3,
+     "strands": 2,
+     "segments": 5
+    },
+    {
+     "type": "pipe",
+     "from": [
+      0.2,
+      2.7,
+      0.2
+     ],
+     "to": [
+      7.8,
+      2.7,
+      0.2
+     ],
+     "radius": 0.07
+    },
+    {
+     "type": "pipe",
+     "from": [
+      0.3,
+      0.0,
+      0.2
+     ],
+     "to": [
+      0.3,
+      2.7,
+      0.2
+     ],
+     "radius": 0.06
+    },
+    {
+     "type": "steam",
+     "pos": [
+      6.56,
+      0,
+      1.68
+     ],
+     "rise": 0.9
+    },
+    {
+     "type": "puddle",
+     "pos": [
+      4.64,
+      0,
+      4.2
+     ],
+     "size": [
+      1.2,
+      0.8
+     ]
+    },
+    {
+     "type": "stripes",
+     "pos": [
+      4.0,
+      0.03,
+      0.3
+     ],
+     "size": [
+      4.4,
+      0.03,
+      0.18
+     ]
+    },
+    {
+     "type": "smear",
+     "pos": [
+      4.4,
+      0,
+      1.0
+     ],
+     "size": [
+      0.6,
+      1.1
+     ],
+     "color": "#ff9a3c"
+    }
+   ]
+  },
+  "harrow_store": {
+   "key_light": {
+    "color": "#d4e4e0",
+    "energy": 0.8,
+    "dir_deg": [
+     -48.0,
+     36.0
+    ]
+   },
+   "items": [
+    {
+     "type": "poster",
+     "pos": [
+      1.54,
+      1.7,
+      0.08
+     ],
+     "variant": 2,
+     "size": [
+      0.7,
+      1.05
+     ]
+    },
+    {
+     "type": "poster",
+     "pos": [
+      5.74,
+      1.6,
+      0.08
+     ],
+     "variant": 0,
+     "size": [
+      0.62,
+      0.93
+     ]
+    },
+    {
+     "type": "poster",
+     "pos": [
+      0.08,
+      1.7,
+      3.6
+     ],
+     "yaw": 90,
+     "variant": 1,
+     "size": [
+      0.7,
+      1.05
+     ]
+    },
+    {
+     "type": "neon",
+     "pos": [
+      3.85,
+      2.45,
+      0.14
+     ],
+     "text": "GOODS",
+     "color": "#ff9a3c",
+     "height": 0.34,
+     "pattern": "1111h111011",
+     "phase": 2,
+     "light_energy": 1.0,
+     "light_range": 3.0
+    },
+    {
+     "type": "screen",
+     "pos": [
+      0.08,
+      2.0,
+      1.6
+     ],
+     "yaw": 90,
+     "width": 0.95,
+     "text": "ALL CLEAR",
+     "kind": "slogan",
+     "light_energy": 0.7
+    },
+    {
+     "type": "loudspeaker",
+     "pos": [
+      2.66,
+      2.75,
+      0.3
+     ]
+    },
+    {
+     "type": "hang_lamp",
+     "pos": [
+      3.5,
+      2.9,
+      2.25
+     ],
+     "drop": 0.45,
+     "color": "#ff9a3c",
+     "energy": 1.6,
+     "range": 4.0
+    },
+    {
+     "type": "cable",
+     "from": [
+      0.2,
+      2.8,
+      0.3
+     ],
+     "to": [
+      3.5,
+      2.85,
+      2.25
+     ],
+     "sag": 0.25,
+     "strands": 2,
+     "segments": 5
+    },
+    {
+     "type": "cable",
+     "from": [
+      3.5,
+      2.85,
+      2.25
+     ],
+     "to": [
+      6.7,
+      2.8,
+      0.3
+     ],
+     "sag": 0.3,
+     "strands": 2,
+     "segments": 5
+    },
+    {
+     "type": "pipe",
+     "from": [
+      0.2,
+      2.7,
+      0.2
+     ],
+     "to": [
+      6.8,
+      2.7,
+      0.2
+     ],
+     "radius": 0.07
+    },
+    {
+     "type": "pipe",
+     "from": [
+      0.3,
+      0.0,
+      0.2
+     ],
+     "to": [
+      0.3,
+      2.7,
+      0.2
+     ],
+     "radius": 0.06
+    },
+    {
+     "type": "steam",
+     "pos": [
+      5.74,
+      0,
+      1.4
+     ],
+     "rise": 0.9
+    },
+    {
+     "type": "puddle",
+     "pos": [
+      4.06,
+      0,
+      3.5
+     ],
+     "size": [
+      1.2,
+      0.8
+     ]
+    },
+    {
+     "type": "stripes",
+     "pos": [
+      3.5,
+      0.03,
+      0.3
+     ],
+     "size": [
+      3.8500000000000005,
+      0.03,
+      0.18
+     ]
+    },
+    {
+     "type": "smear",
+     "pos": [
+      3.85,
+      0,
+      1.0
+     ],
+     "size": [
+      0.6,
+      1.1
+     ],
+     "color": "#ff9a3c"
+    }
+   ]
+  },
+  "harrow_gear": {
+   "key_light": {
+    "color": "#d4e4e0",
+    "energy": 0.8,
+    "dir_deg": [
+     -48.0,
+     36.0
+    ]
+   },
+   "items": [
+    {
+     "type": "poster",
+     "pos": [
+      1.54,
+      1.7,
+      0.08
+     ],
+     "variant": 1,
+     "size": [
+      0.7,
+      1.05
+     ]
+    },
+    {
+     "type": "poster",
+     "pos": [
+      5.74,
+      1.6,
+      0.08
+     ],
+     "variant": 2,
+     "size": [
+      0.62,
+      0.93
+     ]
+    },
+    {
+     "type": "poster",
+     "pos": [
+      0.08,
+      1.7,
+      3.6
+     ],
+     "yaw": 90,
+     "variant": 0,
+     "size": [
+      0.7,
+      1.05
+     ]
+    },
+    {
+     "type": "neon",
+     "pos": [
+      3.85,
+      2.45,
+      0.14
+     ],
+     "text": "WELD",
+     "color": "#5fe0c8",
+     "height": 0.34,
+     "pattern": "11h11111",
+     "phase": 1,
+     "light_energy": 1.0,
+     "light_range": 3.0
+    },
+    {
+     "type": "screen",
+     "pos": [
+      0.08,
+      2.0,
+      1.6
+     ],
+     "yaw": 90,
+     "width": 0.95,
+     "text": "CURFEW 22",
+     "kind": "alert",
+     "light_energy": 0.7
+    },
+    {
+     "type": "loudspeaker",
+     "pos": [
+      2.66,
+      2.75,
+      0.3
+     ]
+    },
+    {
+     "type": "hang_lamp",
+     "pos": [
+      3.5,
+      2.9,
+      2.25
+     ],
+     "drop": 0.45,
+     "color": "#ff9a3c",
+     "energy": 1.6,
+     "range": 4.0
+    },
+    {
+     "type": "cable",
+     "from": [
+      0.2,
+      2.8,
+      0.3
+     ],
+     "to": [
+      3.5,
+      2.85,
+      2.25
+     ],
+     "sag": 0.25,
+     "strands": 2,
+     "segments": 5
+    },
+    {
+     "type": "cable",
+     "from": [
+      3.5,
+      2.85,
+      2.25
+     ],
+     "to": [
+      6.7,
+      2.8,
+      0.3
+     ],
+     "sag": 0.3,
+     "strands": 2,
+     "segments": 5
+    },
+    {
+     "type": "pipe",
+     "from": [
+      0.2,
+      2.7,
+      0.2
+     ],
+     "to": [
+      6.8,
+      2.7,
+      0.2
+     ],
+     "radius": 0.07
+    },
+    {
+     "type": "pipe",
+     "from": [
+      0.3,
+      0.0,
+      0.2
+     ],
+     "to": [
+      0.3,
+      2.7,
+      0.2
+     ],
+     "radius": 0.06
+    },
+    {
+     "type": "steam",
+     "pos": [
+      5.74,
+      0,
+      1.4
+     ],
+     "rise": 0.9
+    },
+    {
+     "type": "puddle",
+     "pos": [
+      4.06,
+      0,
+      3.5
+     ],
+     "size": [
+      1.2,
+      0.8
+     ]
+    },
+    {
+     "type": "stripes",
+     "pos": [
+      3.5,
+      0.03,
+      0.3
+     ],
+     "size": [
+      3.8500000000000005,
+      0.03,
+      0.18
+     ]
+    },
+    {
+     "type": "smear",
+     "pos": [
+      3.85,
+      0,
+      1.0
+     ],
+     "size": [
+      0.6,
+      1.1
+     ],
+     "color": "#5fe0c8"
+    }
+   ]
+  },
+  "harrow_dock_office": {
+   "key_light": {
+    "color": "#d4e4e0",
+    "energy": 0.8,
+    "dir_deg": [
+     -48.0,
+     36.0
+    ]
+   },
+   "items": [
+    {
+     "type": "poster",
+     "pos": [
+      1.54,
+      1.7,
+      0.08
+     ],
+     "variant": 0,
+     "size": [
+      0.7,
+      1.05
+     ]
+    },
+    {
+     "type": "poster",
+     "pos": [
+      5.74,
+      1.6,
+      0.08
+     ],
+     "variant": 1,
+     "size": [
+      0.62,
+      0.93
+     ]
+    },
+    {
+     "type": "poster",
+     "pos": [
+      0.08,
+      1.7,
+      3.6
+     ],
+     "yaw": 90,
+     "variant": 2,
+     "size": [
+      0.7,
+      1.05
+     ]
+    },
+    {
+     "type": "neon",
+     "pos": [
+      3.85,
+      2.45,
+      0.14
+     ],
+     "text": "CLAIMS",
+     "color": "#5fe0c8",
+     "height": 0.34,
+     "pattern": "1111h111011",
+     "phase": 0,
+     "light_energy": 1.0,
+     "light_range": 3.0
+    },
+    {
+     "type": "screen",
+     "pos": [
+      0.08,
+      2.0,
+      1.6
+     ],
+     "yaw": 90,
+     "width": 0.95,
+     "text": "ALL CLEAR",
+     "kind": "slogan",
+     "light_energy": 0.7
+    },
+    {
+     "type": "loudspeaker",
+     "pos": [
+      2.66,
+      2.75,
+      0.3
+     ]
+    },
+    {
+     "type": "hang_lamp",
+     "pos": [
+      3.5,
+      2.9,
+      2.25
+     ],
+     "drop": 0.45,
+     "color": "#ff9a3c",
+     "energy": 1.6,
+     "range": 4.0
+    },
+    {
+     "type": "cable",
+     "from": [
+      0.2,
+      2.8,
+      0.3
+     ],
+     "to": [
+      3.5,
+      2.85,
+      2.25
+     ],
+     "sag": 0.25,
+     "strands": 2,
+     "segments": 5
+    },
+    {
+     "type": "cable",
+     "from": [
+      3.5,
+      2.85,
+      2.25
+     ],
+     "to": [
+      6.7,
+      2.8,
+      0.3
+     ],
+     "sag": 0.3,
+     "strands": 2,
+     "segments": 5
+    },
+    {
+     "type": "pipe",
+     "from": [
+      0.2,
+      2.7,
+      0.2
+     ],
+     "to": [
+      6.8,
+      2.7,
+      0.2
+     ],
+     "radius": 0.07
+    },
+    {
+     "type": "pipe",
+     "from": [
+      0.3,
+      0.0,
+      0.2
+     ],
+     "to": [
+      0.3,
+      2.7,
+      0.2
+     ],
+     "radius": 0.06
+    },
+    {
+     "type": "steam",
+     "pos": [
+      5.74,
+      0,
+      1.4
+     ],
+     "rise": 0.9
+    },
+    {
+     "type": "puddle",
+     "pos": [
+      4.06,
+      0,
+      3.5
+     ],
+     "size": [
+      1.2,
+      0.8
+     ]
+    },
+    {
+     "type": "stripes",
+     "pos": [
+      3.5,
+      0.03,
+      0.3
+     ],
+     "size": [
+      3.8500000000000005,
+      0.03,
+      0.18
+     ]
+    },
+    {
+     "type": "smear",
+     "pos": [
+      3.85,
+      0,
+      1.0
+     ],
+     "size": [
+      0.6,
+      1.1
+     ],
+     "color": "#5fe0c8"
+    }
+   ]
+  },
+  "harrow_bar": {
+   "key_light": {
+    "color": "#d4e4e0",
+    "energy": 0.8,
+    "dir_deg": [
+     -48.0,
+     36.0
+    ]
+   },
+   "items": [
+    {
+     "type": "poster",
+     "pos": [
+      1.98,
+      1.7,
+      0.08
+     ],
+     "variant": 1,
+     "size": [
+      0.7,
+      1.05
+     ]
+    },
+    {
+     "type": "poster",
+     "pos": [
+      7.38,
+      1.6,
+      0.08
+     ],
+     "variant": 2,
+     "size": [
+      0.62,
+      0.93
+     ]
+    },
+    {
+     "type": "poster",
+     "pos": [
+      0.08,
+      1.7,
+      4.32
+     ],
+     "yaw": 90,
+     "variant": 0,
+     "size": [
+      0.7,
+      1.05
+     ]
+    },
+    {
+     "type": "neon",
+     "pos": [
+      4.95,
+      2.45,
+      0.14
+     ],
+     "text": "BAR",
+     "color": "#ff3e9a",
+     "height": 0.34,
+     "pattern": "11h11111",
+     "phase": 1,
+     "light_energy": 1.0,
+     "light_range": 3.0
+    },
+    {
+     "type": "screen",
+     "pos": [
+      0.08,
+      2.0,
+      1.92
+     ],
+     "yaw": 90,
+     "width": 0.95,
+     "text": "CURFEW 22",
+     "kind": "alert",
+     "light_energy": 0.7
+    },
+    {
+     "type": "loudspeaker",
+     "pos": [
+      3.42,
+      2.75,
+      0.3
+     ]
+    },
+    {
+     "type": "hang_lamp",
+     "pos": [
+      4.5,
+      2.9,
+      2.7
+     ],
+     "drop": 0.45,
+     "color": "#ff9a3c",
+     "energy": 1.6,
+     "range": 4.0
+    },
+    {
+     "type": "cable",
+     "from": [
+      0.2,
+      2.8,
+      0.3
+     ],
+     "to": [
+      4.5,
+      2.85,
+      2.7
+     ],
+     "sag": 0.25,
+     "strands": 2,
+     "segments": 5
+    },
+    {
+     "type": "cable",
+     "from": [
+      4.5,
+      2.85,
+      2.7
+     ],
+     "to": [
+      8.7,
+      2.8,
+      0.3
+     ],
+     "sag": 0.3,
+     "strands": 2,
+     "segments": 5
+    },
+    {
+     "type": "pipe",
+     "from": [
+      0.2,
+      2.7,
+      0.2
+     ],
+     "to": [
+      8.8,
+      2.7,
+      0.2
+     ],
+     "radius": 0.07
+    },
+    {
+     "type": "pipe",
+     "from": [
+      0.3,
+      0.0,
+      0.2
+     ],
+     "to": [
+      0.3,
+      2.7,
+      0.2
+     ],
+     "radius": 0.06
+    },
+    {
+     "type": "steam",
+     "pos": [
+      7.38,
+      0,
+      1.68
+     ],
+     "rise": 0.9
+    },
+    {
+     "type": "puddle",
+     "pos": [
+      5.22,
+      0,
+      4.2
+     ],
+     "size": [
+      1.2,
+      0.8
+     ]
+    },
+    {
+     "type": "stripes",
+     "pos": [
+      4.5,
+      0.03,
+      0.3
+     ],
+     "size": [
+      4.95,
+      0.03,
+      0.18
+     ]
+    },
+    {
+     "type": "smear",
+     "pos": [
+      4.95,
+      0,
+      1.0
+     ],
+     "size": [
+      0.6,
+      1.1
+     ],
+     "color": "#ff3e9a"
+    }
+   ]
+  },
+  "harrow_docks": {
+   "key_light": {
+    "color": "#d4e4e0",
+    "energy": 0.8,
+    "dir_deg": [
+     -48.0,
+     36.0
+    ]
+   },
+   "items": [
+    {
+     "type": "poster",
+     "pos": [
+      5.28,
+      1.7,
+      0.08
+     ],
+     "variant": 1,
+     "size": [
+      0.7,
+      1.05
+     ]
+    },
+    {
+     "type": "poster",
+     "pos": [
+      19.68,
+      1.6,
+      0.08
+     ],
+     "variant": 2,
+     "size": [
+      0.62,
+      0.93
+     ]
+    },
+    {
+     "type": "poster",
+     "pos": [
+      0.08,
+      1.7,
+      6.48
+     ],
+     "yaw": 90,
+     "variant": 0,
+     "size": [
+      0.7,
+      1.05
+     ]
+    },
+    {
+     "type": "screen",
+     "pos": [
+      0.08,
+      2.0,
+      2.88
+     ],
+     "yaw": 90,
+     "width": 0.95,
+     "text": "ALL CLEAR",
+     "kind": "alert",
+     "light_energy": 0.7
+    },
+    {
+     "type": "loudspeaker",
+     "pos": [
+      9.12,
+      4.75,
+      0.3
+     ]
+    },
+    {
+     "type": "hang_lamp",
+     "pos": [
+      12.0,
+      4.9,
+      4.05
+     ],
+     "drop": 0.45,
+     "color": "#ff9a3c",
+     "energy": 1.6,
+     "range": 4.0
+    },
+    {
+     "type": "cable",
+     "from": [
+      0.2,
+      4.8,
+      0.3
+     ],
+     "to": [
+      12.0,
+      4.85,
+      4.05
+     ],
+     "sag": 0.25,
+     "strands": 2,
+     "segments": 5
+    },
+    {
+     "type": "cable",
+     "from": [
+      12.0,
+      4.85,
+      4.05
+     ],
+     "to": [
+      23.7,
+      4.8,
+      0.3
+     ],
+     "sag": 0.3,
+     "strands": 2,
+     "segments": 5
+    },
+    {
+     "type": "pipe",
+     "from": [
+      0.2,
+      4.7,
+      0.2
+     ],
+     "to": [
+      23.8,
+      4.7,
+      0.2
+     ],
+     "radius": 0.07
+    },
+    {
+     "type": "pipe",
+     "from": [
+      0.3,
+      0.0,
+      0.2
+     ],
+     "to": [
+      0.3,
+      4.7,
+      0.2
+     ],
+     "radius": 0.06
+    },
+    {
+     "type": "steam",
+     "pos": [
+      19.68,
+      0,
+      2.52
+     ],
+     "rise": 0.9
+    },
+    {
+     "type": "puddle",
+     "pos": [
+      13.92,
+      0,
+      6.3
+     ],
+     "size": [
+      1.2,
+      0.8
+     ]
+    },
+    {
+     "type": "stripes",
+     "pos": [
+      12.0,
+      0.03,
+      0.3
+     ],
+     "size": [
+      13.200000000000001,
+      0.03,
+      0.18
+     ]
+    },
+    {
+     "type": "smear",
+     "pos": [
+      13.2,
+      0,
+      1.0
+     ],
+     "size": [
+      0.6,
+      1.1
+     ],
+     "color": "#5fe0c8"
+    },
+    {
+     "type": "floodlight",
+     "pos": [
+      19.2,
+      0,
+      4.5
+     ],
+     "aim_deg": -25.0,
+     "height": 3.0
+    },
+    {
+     "type": "fence",
+     "from": [
+      23.7,
+      0,
+      0.8
+     ],
+     "to": [
+      23.7,
+      0,
+      8.6
+     ],
+     "height": 1.5
+    },
+    {
+     "type": "barbed",
+     "from": [
+      0.1,
+      5.25,
+      0.2
+     ],
+     "to": [
+      24,
+      5.25,
+      0.2
+     ]
+    },
+    {
+     "type": "neon",
+     "pos": [
+      5.0,
+      3.4,
+      0.18
+     ],
+     "text": "CLAIMS",
+     "color": "#5fe0c8",
+     "height": 0.45,
+     "pattern": "1111h1111011",
+     "phase": 2
+    },
+    {
+     "type": "neon",
+     "pos": [
+      19.0,
+      3.4,
+      0.18
+     ],
+     "text": "BAR",
+     "color": "#ff3e9a",
+     "height": 0.5,
+     "pattern": "1110111011h1",
+     "phase": 6
+    },
+    {
+     "type": "screen",
+     "pos": [
+      15.8,
+      3.0,
+      0.12
+     ],
+     "width": 1.4,
+     "text": "ALL CLEAR"
+    },
+    {
+     "type": "poster",
+     "pos": [
+      8.0,
+      2.0,
+      0.08
+     ],
+     "variant": 0
+    },
+    {
+     "type": "poster",
+     "pos": [
+      14.6,
+      2.0,
+      0.08
+     ],
+     "variant": 1,
+     "size": [
+      0.8,
+      1.2
+     ]
+    },
+    {
+     "type": "floodlight",
+     "pos": [
+      9.0,
+      0,
+      3.6
+     ],
+     "aim_deg": -25.0,
+     "height": 3.4
+    },
+    {
+     "type": "floodlight",
+     "pos": [
+      16.5,
+      0,
+      3.4
+     ],
+     "aim_deg": 25.0,
+     "height": 3.4
+    },
+    {
+     "type": "fence",
+     "from": [
+      15.0,
+      0,
+      8.7
+     ],
+     "to": [
+      19.0,
+      0,
+      8.7
+     ],
+     "height": 1.1,
+     "barbed": false
+    },
+    {
+     "type": "stripes",
+     "pos": [
+      12.0,
+      0.03,
+      8.6
+     ],
+     "size": [
+      18.0,
+      0.03,
+      0.35
+     ]
+    },
+    {
+     "type": "puddle",
+     "pos": [
+      7.0,
+      0,
+      5.4
+     ],
+     "size": [
+      2.2,
+      1.4
+     ]
+    },
+    {
+     "type": "puddle",
+     "pos": [
+      16.0,
+      0,
+      6.0
+     ],
+     "size": [
+      1.8,
+      1.2
+     ]
+    },
+    {
+     "type": "puddle",
+     "pos": [
+      11.0,
+      0,
+      7.4
+     ],
+     "size": [
+      1.6,
+      1.0
+     ]
+    },
+    {
+     "type": "smear",
+     "pos": [
+      5.0,
+      0,
+      1.6
+     ],
+     "size": [
+      1.0,
+      2.0
+     ],
+     "color": "#5fe0c8"
+    },
+    {
+     "type": "smear",
+     "pos": [
+      19.0,
+      0,
+      1.6
+     ],
+     "size": [
+      0.9,
+      1.8
+     ],
+     "color": "#ff3e9a"
+    },
+    {
+     "type": "steam",
+     "pos": [
+      10.0,
+      0,
+      3.0
+     ]
+    },
+    {
+     "type": "steam",
+     "pos": [
+      21.0,
+      0,
+      4.6
+     ]
+    },
+    {
+     "type": "shack",
+     "pos": [
+      22.5,
+      0,
+      6.5
+     ],
+     "size": [
+      1.5,
+      1.7,
+      1.2
+     ],
+     "lights": [
+      "#ffb347"
+     ],
+     "seed": 44
+    },
+    {
+     "type": "skyline",
+     "pos": [
+      12.0,
+      0,
+      -2.6
+     ],
+     "length": 28.0,
+     "count": 9,
+     "seed": 19,
+     "base_y": 3.5,
+     "max_height": 6.0
+    },
+    {
+     "type": "rain",
+     "pos": [
+      0,
+      0,
+      0
+     ],
+     "origin": [
+      0,
+      0
+     ],
+     "size": [
+      24.0,
+      9.0
+     ],
+     "amount": 130
+    }
+   ]
+  },
+  "road_mast_road": {
+   "key_light": {
+    "color": "#d4e4e0",
+    "energy": 0.8,
+    "dir_deg": [
+     -48.0,
+     36.0
+    ]
+   },
+   "items": [
+    {
+     "type": "poster",
+     "pos": [
+      2.2,
+      1.7,
+      0.08
+     ],
+     "variant": 2,
+     "size": [
+      0.7,
+      1.05
+     ]
+    },
+    {
+     "type": "poster",
+     "pos": [
+      8.2,
+      1.6,
+      0.08
+     ],
+     "variant": 0,
+     "size": [
+      0.62,
+      0.93
+     ]
+    },
+    {
+     "type": "poster",
+     "pos": [
+      0.08,
+      1.7,
+      4.32
+     ],
+     "yaw": 90,
+     "variant": 1,
+     "size": [
+      0.7,
+      1.05
+     ]
+    },
+    {
+     "type": "neon",
+     "pos": [
+      5.5,
+      2.45,
+      0.14
+     ],
+     "text": "ROAD",
+     "color": "#ff9a3c",
+     "height": 0.34,
+     "pattern": "1111h111011",
+     "phase": 2,
+     "light_energy": 1.0,
+     "light_range": 3.0
+    },
+    {
+     "type": "screen",
+     "pos": [
+      0.08,
+      2.0,
+      1.92
+     ],
+     "yaw": 90,
+     "width": 0.95,
+     "text": "ALL CLEAR",
+     "kind": "slogan",
+     "light_energy": 0.7
+    },
+    {
+     "type": "loudspeaker",
+     "pos": [
+      3.8,
+      2.75,
+      0.3
+     ]
+    },
+    {
+     "type": "hang_lamp",
+     "pos": [
+      5.0,
+      2.9,
+      2.7
+     ],
+     "drop": 0.45,
+     "color": "#ff9a3c",
+     "energy": 1.6,
+     "range": 4.0
+    },
+    {
+     "type": "cable",
+     "from": [
+      0.2,
+      2.8,
+      0.3
+     ],
+     "to": [
+      5.0,
+      2.85,
+      2.7
+     ],
+     "sag": 0.25,
+     "strands": 2,
+     "segments": 5
+    },
+    {
+     "type": "cable",
+     "from": [
+      5.0,
+      2.85,
+      2.7
+     ],
+     "to": [
+      9.7,
+      2.8,
+      0.3
+     ],
+     "sag": 0.3,
+     "strands": 2,
+     "segments": 5
+    },
+    {
+     "type": "pipe",
+     "from": [
+      0.2,
+      2.7,
+      0.2
+     ],
+     "to": [
+      9.8,
+      2.7,
+      0.2
+     ],
+     "radius": 0.07
+    },
+    {
+     "type": "pipe",
+     "from": [
+      0.3,
+      0.0,
+      0.2
+     ],
+     "to": [
+      0.3,
+      2.7,
+      0.2
+     ],
+     "radius": 0.06
+    },
+    {
+     "type": "steam",
+     "pos": [
+      8.2,
+      0,
+      1.68
+     ],
+     "rise": 0.9
+    },
+    {
+     "type": "puddle",
+     "pos": [
+      5.8,
+      0,
+      4.2
+     ],
+     "size": [
+      1.2,
+      0.8
+     ]
+    },
+    {
+     "type": "stripes",
+     "pos": [
+      5.0,
+      0.03,
+      0.3
+     ],
+     "size": [
+      5.5,
+      0.03,
+      0.18
+     ]
+    },
+    {
+     "type": "smear",
+     "pos": [
+      5.5,
+      0,
+      1.0
+     ],
+     "size": [
+      0.6,
+      1.1
+     ],
+     "color": "#ff9a3c"
+    },
+    {
+     "type": "floodlight",
+     "pos": [
+      8.0,
+      0,
+      3.0
+     ],
+     "aim_deg": -25.0,
+     "height": 3.0
+    },
+    {
+     "type": "fence",
+     "from": [
+      9.7,
+      0,
+      0.8
+     ],
+     "to": [
+      9.7,
+      0,
+      5.6
+     ],
+     "height": 1.5
+    },
+    {
+     "type": "barbed",
+     "from": [
+      0.1,
+      3.25,
+      0.2
+     ],
+     "to": [
+      10,
+      3.25,
+      0.2
+     ]
+    },
+    {
+     "type": "shack",
+     "pos": [
+      1.0,
+      0,
+      5.0
+     ],
+     "size": [
+      1.4,
+      1.5,
+      1.1
+     ],
+     "lights": [
+      "#ffb347",
+      "#5fe0c8"
+     ],
+     "seed": 42
+    },
+    {
+     "type": "rain",
+     "pos": [
+      0,
+      0,
+      0
+     ],
+     "origin": [
+      0,
+      0
+     ],
+     "size": [
+      10,
+      6
+     ],
+     "amount": 110
+    }
+   ]
+  },
+  "test_room": {
+   "key_light": {
+    "color": "#d4e4e0",
+    "energy": 0.8,
+    "dir_deg": [
+     -48.0,
+     36.0
+    ]
+   },
+   "items": [
+    {
+     "type": "poster",
+     "pos": [
+      -1.04,
+      1.7,
+      -3.92
+     ],
+     "variant": 0,
+     "size": [
+      0.7,
+      1.05
+     ]
+    },
+    {
+     "type": "poster",
+     "pos": [
+      9.76,
+      1.6,
+      -3.92
+     ],
+     "variant": 1,
+     "size": [
+      0.62,
+      0.93
+     ]
+    },
+    {
+     "type": "poster",
+     "pos": [
+      -4.92,
+      1.7,
+      1.76
+     ],
+     "yaw": 90,
+     "variant": 2,
+     "size": [
+      0.7,
+      1.05
+     ]
+    },
+    {
+     "type": "neon",
+     "pos": [
+      4.9,
+      2.45,
+      -3.86
+     ],
+     "text": "TEST",
+     "color": "#5fe0c8",
+     "height": 0.34,
+     "pattern": "1111h111011",
+     "phase": 0,
+     "light_energy": 1.0,
+     "light_range": 3.0
+    },
+    {
+     "type": "screen",
+     "pos": [
+      -4.92,
+      2.0,
+      -1.44
+     ],
+     "yaw": 90,
+     "width": 0.95,
+     "text": "ALL CLEAR",
+     "kind": "slogan",
+     "light_energy": 0.7
+    },
+    {
+     "type": "loudspeaker",
+     "pos": [
+      1.84,
+      2.75,
+      -3.7
+     ]
+    },
+    {
+     "type": "hang_lamp",
+     "pos": [
+      4.0,
+      2.9,
+      -0.4
+     ],
+     "drop": 0.45,
+     "color": "#ff9a3c",
+     "energy": 1.6,
+     "range": 4.0
+    },
+    {
+     "type": "cable",
+     "from": [
+      -4.8,
+      2.8,
+      -3.7
+     ],
+     "to": [
+      4.0,
+      2.85,
+      -0.4
+     ],
+     "sag": 0.25,
+     "strands": 2,
+     "segments": 5
+    },
+    {
+     "type": "cable",
+     "from": [
+      4.0,
+      2.85,
+      -0.4
+     ],
+     "to": [
+      12.7,
+      2.8,
+      -3.7
+     ],
+     "sag": 0.3,
+     "strands": 2,
+     "segments": 5
+    },
+    {
+     "type": "pipe",
+     "from": [
+      -4.8,
+      2.7,
+      -3.8
+     ],
+     "to": [
+      12.8,
+      2.7,
+      -3.8
+     ],
+     "radius": 0.07
+    },
+    {
+     "type": "pipe",
+     "from": [
+      -4.7,
+      0.0,
+      -3.8
+     ],
+     "to": [
+      -4.7,
+      2.7,
+      -3.8
+     ],
+     "radius": 0.06
+    },
+    {
+     "type": "steam",
+     "pos": [
+      9.76,
+      0,
+      -1.76
+     ],
+     "rise": 0.9
+    },
+    {
+     "type": "puddle",
+     "pos": [
+      5.44,
+      0,
+      1.6
+     ],
+     "size": [
+      1.2,
+      0.8
+     ]
+    },
+    {
+     "type": "stripes",
+     "pos": [
+      4.0,
+      0.03,
+      -3.7
+     ],
+     "size": [
+      9.9,
+      0.03,
+      0.18
+     ]
+    },
+    {
+     "type": "smear",
+     "pos": [
+      4.9,
+      0,
+      -3.0
+     ],
+     "size": [
+      0.6,
+      1.1
+     ],
+     "color": "#5fe0c8"
+    },
+    {
+     "type": "floodlight",
+     "pos": [
+      9.4,
+      0,
+      0.0
+     ],
+     "aim_deg": -25.0,
+     "height": 3.0
+    },
+    {
+     "type": "fence",
+     "from": [
+      12.7,
+      0,
+      -3.2
+     ],
+     "to": [
+      12.7,
+      0,
+      3.6
+     ],
+     "height": 1.5
+    },
+    {
+     "type": "barbed",
+     "from": [
+      -4.9,
+      3.25,
+      -3.8
+     ],
+     "to": [
+      13,
+      3.25,
+      -3.8
+     ]
+    },
+    {
+     "type": "shack",
+     "pos": [
+      -4.0,
+      0,
+      3.0
+     ],
+     "size": [
+      1.4,
+      1.5,
+      1.1
+     ],
+     "lights": [
+      "#ffb347",
+      "#5fe0c8"
+     ],
+     "seed": 40
+    },
+    {
+     "type": "rain",
+     "pos": [
+      0,
+      0,
+      0
+     ],
+     "origin": [
+      -5,
+      -4
+     ],
+     "size": [
+      18,
+      8
+     ],
+     "amount": 110
+    }
+   ]
+  },
+  "test_a": {
+   "key_light": {
+    "color": "#d4e4e0",
+    "energy": 0.8,
+    "dir_deg": [
+     -48.0,
+     36.0
+    ]
+   },
+   "items": [
+    {
+     "type": "poster",
+     "pos": [
+      -2.48,
+      1.7,
+      -3.92
+     ],
+     "variant": 1,
+     "size": [
+      0.7,
+      1.05
+     ]
+    },
+    {
+     "type": "poster",
+     "pos": [
+      7.12,
+      1.6,
+      -3.92
+     ],
+     "variant": 2,
+     "size": [
+      0.62,
+      0.93
+     ]
+    },
+    {
+     "type": "poster",
+     "pos": [
+      -5.92,
+      1.7,
+      1.76
+     ],
+     "yaw": 90,
+     "variant": 0,
+     "size": [
+      0.7,
+      1.05
+     ]
+    },
+    {
+     "type": "neon",
+     "pos": [
+      2.8,
+      2.45,
+      -3.86
+     ],
+     "text": "YARD A",
+     "color": "#ff9a3c",
+     "height": 0.34,
+     "pattern": "11h11111",
+     "phase": 1,
+     "light_energy": 1.0,
+     "light_range": 3.0
+    },
+    {
+     "type": "screen",
+     "pos": [
+      -5.92,
+      2.0,
+      -1.44
+     ],
+     "yaw": 90,
+     "width": 0.95,
+     "text": "ALL CLEAR",
+     "kind": "alert",
+     "light_energy": 0.7
+    },
+    {
+     "type": "loudspeaker",
+     "pos": [
+      0.08,
+      2.75,
+      -3.7
+     ]
+    },
+    {
+     "type": "hang_lamp",
+     "pos": [
+      2.0,
+      2.9,
+      -0.4
+     ],
+     "drop": 0.45,
+     "color": "#ff9a3c",
+     "energy": 1.6,
+     "range": 4.0
+    },
+    {
+     "type": "cable",
+     "from": [
+      -5.8,
+      2.8,
+      -3.7
+     ],
+     "to": [
+      2.0,
+      2.85,
+      -0.4
+     ],
+     "sag": 0.25,
+     "strands": 2,
+     "segments": 5
+    },
+    {
+     "type": "cable",
+     "from": [
+      2.0,
+      2.85,
+      -0.4
+     ],
+     "to": [
+      9.7,
+      2.8,
+      -3.7
+     ],
+     "sag": 0.3,
+     "strands": 2,
+     "segments": 5
+    },
+    {
+     "type": "pipe",
+     "from": [
+      -5.8,
+      2.7,
+      -3.8
+     ],
+     "to": [
+      9.8,
+      2.7,
+      -3.8
+     ],
+     "radius": 0.07
+    },
+    {
+     "type": "pipe",
+     "from": [
+      -5.7,
+      0.0,
+      -3.8
+     ],
+     "to": [
+      -5.7,
+      2.7,
+      -3.8
+     ],
+     "radius": 0.06
+    },
+    {
+     "type": "steam",
+     "pos": [
+      7.12,
+      0,
+      -1.76
+     ],
+     "rise": 0.9
+    },
+    {
+     "type": "puddle",
+     "pos": [
+      3.28,
+      0,
+      1.6
+     ],
+     "size": [
+      1.2,
+      0.8
+     ]
+    },
+    {
+     "type": "stripes",
+     "pos": [
+      2.0,
+      0.03,
+      -3.7
+     ],
+     "size": [
+      8.8,
+      0.03,
+      0.18
+     ]
+    },
+    {
+     "type": "smear",
+     "pos": [
+      2.8,
+      0,
+      -3.0
+     ],
+     "size": [
+      0.6,
+      1.1
+     ],
+     "color": "#ff9a3c"
+    },
+    {
+     "type": "floodlight",
+     "pos": [
+      6.8,
+      0,
+      0.0
+     ],
+     "aim_deg": -25.0,
+     "height": 3.0
+    },
+    {
+     "type": "fence",
+     "from": [
+      9.7,
+      0,
+      -3.2
+     ],
+     "to": [
+      9.7,
+      0,
+      3.6
+     ],
+     "height": 1.5
+    },
+    {
+     "type": "barbed",
+     "from": [
+      -5.9,
+      3.25,
+      -3.8
+     ],
+     "to": [
+      10,
+      3.25,
+      -3.8
+     ]
+    },
+    {
+     "type": "shack",
+     "pos": [
+      -5.0,
+      0,
+      3.0
+     ],
+     "size": [
+      1.4,
+      1.5,
+      1.1
+     ],
+     "lights": [
+      "#ffb347",
+      "#5fe0c8"
+     ],
+     "seed": 41
+    },
+    {
+     "type": "rain",
+     "pos": [
+      0,
+      0,
+      0
+     ],
+     "origin": [
+      -6,
+      -4
+     ],
+     "size": [
+      16,
+      8
+     ],
+     "amount": 110
+    }
+   ]
+  },
+  "test_b": {
+   "key_light": {
+    "color": "#d4e4e0",
+    "energy": 0.8,
+    "dir_deg": [
+     -48.0,
+     36.0
+    ]
+   },
+   "items": [
+    {
+     "type": "poster",
+     "pos": [
+      -1.48,
+      1.7,
+      -3.92
+     ],
+     "variant": 2,
+     "size": [
+      0.7,
+      1.05
+     ]
+    },
+    {
+     "type": "poster",
+     "pos": [
+      8.12,
+      1.6,
+      -3.92
+     ],
+     "variant": 0,
+     "size": [
+      0.62,
+      0.93
+     ]
+    },
+    {
+     "type": "poster",
+     "pos": [
+      -4.92,
+      1.7,
+      1.76
+     ],
+     "yaw": 90,
+     "variant": 1,
+     "size": [
+      0.7,
+      1.05
+     ]
+    },
+    {
+     "type": "neon",
+     "pos": [
+      3.8,
+      2.45,
+      -3.86
+     ],
+     "text": "YARD B",
+     "color": "#5fe0c8",
+     "height": 0.34,
+     "pattern": "1111h111011",
+     "phase": 2,
+     "light_energy": 1.0,
+     "light_range": 3.0
+    },
+    {
+     "type": "screen",
+     "pos": [
+      -4.92,
+      2.0,
+      -1.44
+     ],
+     "yaw": 90,
+     "width": 0.95,
+     "text": "ALL CLEAR",
+     "kind": "slogan",
+     "light_energy": 0.7
+    },
+    {
+     "type": "loudspeaker",
+     "pos": [
+      1.08,
+      2.75,
+      -3.7
+     ]
+    },
+    {
+     "type": "hang_lamp",
+     "pos": [
+      3.0,
+      2.9,
+      -0.4
+     ],
+     "drop": 0.45,
+     "color": "#ff9a3c",
+     "energy": 1.6,
+     "range": 4.0
+    },
+    {
+     "type": "cable",
+     "from": [
+      -4.8,
+      2.8,
+      -3.7
+     ],
+     "to": [
+      3.0,
+      2.85,
+      -0.4
+     ],
+     "sag": 0.25,
+     "strands": 2,
+     "segments": 5
+    },
+    {
+     "type": "cable",
+     "from": [
+      3.0,
+      2.85,
+      -0.4
+     ],
+     "to": [
+      10.7,
+      2.8,
+      -3.7
+     ],
+     "sag": 0.3,
+     "strands": 2,
+     "segments": 5
+    },
+    {
+     "type": "pipe",
+     "from": [
+      -4.8,
+      2.7,
+      -3.8
+     ],
+     "to": [
+      10.8,
+      2.7,
+      -3.8
+     ],
+     "radius": 0.07
+    },
+    {
+     "type": "pipe",
+     "from": [
+      -4.7,
+      0.0,
+      -3.8
+     ],
+     "to": [
+      -4.7,
+      2.7,
+      -3.8
+     ],
+     "radius": 0.06
+    },
+    {
+     "type": "steam",
+     "pos": [
+      8.12,
+      0,
+      -1.76
+     ],
+     "rise": 0.9
+    },
+    {
+     "type": "puddle",
+     "pos": [
+      4.28,
+      0,
+      1.6
+     ],
+     "size": [
+      1.2,
+      0.8
+     ]
+    },
+    {
+     "type": "stripes",
+     "pos": [
+      3.0,
+      0.03,
+      -3.7
+     ],
+     "size": [
+      8.8,
+      0.03,
+      0.18
+     ]
+    },
+    {
+     "type": "smear",
+     "pos": [
+      3.8,
+      0,
+      -3.0
+     ],
+     "size": [
+      0.6,
+      1.1
+     ],
+     "color": "#5fe0c8"
+    },
+    {
+     "type": "floodlight",
+     "pos": [
+      7.8,
+      0,
+      0.0
+     ],
+     "aim_deg": -25.0,
+     "height": 3.0
+    },
+    {
+     "type": "fence",
+     "from": [
+      10.7,
+      0,
+      -3.2
+     ],
+     "to": [
+      10.7,
+      0,
+      3.6
+     ],
+     "height": 1.5
+    },
+    {
+     "type": "barbed",
+     "from": [
+      -4.9,
+      3.25,
+      -3.8
+     ],
+     "to": [
+      11,
+      3.25,
+      -3.8
+     ]
+    },
+    {
+     "type": "shack",
+     "pos": [
+      -4.0,
+      0,
+      3.0
+     ],
+     "size": [
+      1.4,
+      1.5,
+      1.1
+     ],
+     "lights": [
+      "#ffb347",
+      "#5fe0c8"
+     ],
+     "seed": 42
+    },
+    {
+     "type": "rain",
+     "pos": [
+      0,
+      0,
+      0
+     ],
+     "origin": [
+      -5,
+      -4
+     ],
+     "size": [
+      16,
+      8
+     ],
+     "amount": 110
     }
    ]
   }
