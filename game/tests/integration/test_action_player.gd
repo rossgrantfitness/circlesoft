@@ -683,3 +683,41 @@ func test_hit_stop_from_a_landed_hit_freezes_her_clock_for_a_moment() -> void:
 		last = now
 	assert_true(froze, "her clock stood still for at least one frame (the hit-stop)")
 	assert_lt(enemy.hp, enemy.hp_max)
+
+
+func _playback_scale() -> float:
+	return _player.get_animation_player().speed_scale
+
+
+func test_the_run_clip_plays_at_ground_speed_over_its_stride() -> void:
+	await _arena()
+	if _player.get_animation_player() == null or not _player.get_animation_player().has_animation(&"run"):
+		return
+	var stride: float = LocomotionSpeed.stride_for(LocomotionSpeed.load_strides("res://data/combat/red_clip_keys.json"), &"run")
+	_player.set_move_input(Vector2(0, -1))
+	_step(60)
+	assert_eq(_player.current_clip(), &"run")
+	assert_almost_eq(_playback_scale(), 2.0, 0.001, "full speed is capped at the top of the clamp")
+	_player.set_move_input(Vector2(0, -0.5))
+	_step(60)
+	var speed: float = Vector2(_player.velocity.x, _player.velocity.z).length()
+	assert_almost_eq(_playback_scale(), clampf(speed / stride, 0.6, 2.0), 0.01, "the scale follows the actual ground speed")
+	assert_lt(_playback_scale(), 2.0)
+
+
+func test_a_slow_stick_walks_and_attacks_are_not_rescaled() -> void:
+	await _arena()
+	if _player.get_animation_player() == null or not _player.get_animation_player().has_animation(&"walk"):
+		return
+	_player.set_move_input(Vector2(0, -0.12))
+	_step(60)
+	assert_eq(_player.current_clip(), &"walk")
+	var walk_stride: float = LocomotionSpeed.stride_for(LocomotionSpeed.load_strides("res://data/combat/red_clip_keys.json"), &"walk")
+	var speed: float = Vector2(_player.velocity.x, _player.velocity.z).length()
+	assert_almost_eq(_playback_scale(), clampf(speed / walk_stride, 0.6, 2.0), 0.01)
+	_player.set_move_input(Vector2.ZERO)
+	_step(20)
+	_player.press(&"light")
+	_step(3)
+	assert_eq(_player.get_state(), ActionPlayer.State.ATTACK)
+	assert_ne(_player.current_clip(), &"run")
