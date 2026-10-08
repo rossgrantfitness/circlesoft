@@ -59,6 +59,7 @@ func _initialize() -> void:
 			original.convert(Image.FORMAT_RGBA8)
 			var result: Dictionary = _fix(original, not bool(seam["x_ok"]), not bool(seam["y_ok"]))
 			if not bool(result["ok"]):
+				print("measure failed: ", variant_name, " ", id, " x ", result["x"], " y ", result["y"], " ", result["method"])
 				_record(tile, suffix, false, "failed_measure", Vector2i.ZERO)
 				_remove(out_path)
 				_count(counts, variant_name, "failed_measure")
@@ -105,12 +106,14 @@ func _fix(original: Image, fix_x: bool, fix_y: bool) -> Dictionary:
 		else:
 			image = _offset_dither(image, horizontal, not horizontal)
 			methods.append("offset_dither_" + ("x" if horizontal else "y"))
-	var ok: bool = bool(_axis(image, true)["ok"]) and bool(_axis(image, false)["ok"])
+	var ax: Dictionary = _axis(image, true)
+	var ay: Dictionary = _axis(image, false)
+	var ok: bool = bool(ax["ok"]) and bool(ay["ok"])
 	var name: String = "+".join(methods)
 	# tidy names: both axes by the same method read as one name
 	if methods.size() == 2 and methods[0].trim_suffix("_x") == methods[1].trim_suffix("_y"):
 		name = methods[0].trim_suffix("_x")
-	return {"image": image, "ok": ok, "method": name}
+	return {"image": image, "ok": ok, "method": name, "x": ax, "y": ay}
 
 
 ## Looks for a crop of 1 to MAX_CROP_PX rows or columns (split any way between the two sides) with matching edges.
@@ -137,37 +140,58 @@ func _crop_rect(image: Image, horizontal: bool, from_start: int, from_end: int) 
 	return Rect2i(0, from_start, image.get_width(), image.get_height() - from_start - from_end)
 
 
-## Rolls the tile by half its size on the chosen axes, then patches the seam band from the original.
+## Rolls the tile so its new edge falls on the quietest column (or row) pair between a quarter and three
+## quarters of the way across, then patches the old seam, now inside the tile, from the untouched original.
 func _offset_dither(image: Image, along_x: bool, along_y: bool) -> Image:
+	var cut_x: int = _quietest_cut(image, true) if along_x else 0
+	var cut_y: int = _quietest_cut(image, false) if along_y else 0
 	var best: Image = null
 	var best_score: float = INF
 	for band: int in BAND_WIDTHS:
-		var candidate: Image = _offset_dither_band(image, along_x, along_y, band)
+		var candidate: Image = _offset_dither_band(image, along_x, along_y, band, cut_x, cut_y)
 		var score: float = 0.0
 		if along_x:
-			score = maxf(score, _centre_ratio(candidate, true))
+			score = maxf(score, _centre_ratio(candidate, true, image.get_width() - cut_x))
 		if along_y:
-			score = maxf(score, _centre_ratio(candidate, false))
+			score = maxf(score, _centre_ratio(candidate, false, image.get_height() - cut_y))
 		if score < best_score - 0.05:
 			best_score = score
 			best = candidate
 	return best
 
 
-func _offset_dither_band(image: Image, along_x: bool, along_y: bool, band: int) -> Image:
+## The column (or row) index k in the middle half of the tile where pixel line k-1 and line k differ least.
+func _quietest_cut(image: Image, horizontal: bool) -> int:
+	var length: int = image.get_width() if horizontal else image.get_height()
+	var count: int = image.get_height() if horizontal else image.get_width()
+	var along: Vector2i = Vector2i(0, 1) if horizontal else Vector2i(1, 0)
+	var across: Vector2i = Vector2i(1, 0) if horizontal else Vector2i(0, 1)
+	var best_k: int = length / 2
+	var best_diff: float = INF
+	for k: int in range(length / 4, length * 3 / 4 + 1):
+		var diff: float = _line_diff(image, across * (k - 1), across * k, along, count)
+		if diff < best_diff:
+			best_diff = diff
+			best_k = k
+	return best_k
+
+
+func _offset_dither_band(image: Image, along_x: bool, along_y: bool, band: int, cut_x: int, cut_y: int) -> Image:
 	var w: int = image.get_width()
 	var h: int = image.get_height()
 	var half: float = float(band) * 0.5
+	var seam_x: float = float(w - cut_x)
+	var seam_y: float = float(h - cut_y)
 	var out: Image = Image.create(w, h, false, Image.FORMAT_RGBA8)
 	for y: int in h:
 		for x: int in w:
-			var rolled: Color = image.get_pixel((x + w / 2) % w if along_x else x, (y + h / 2) % h if along_y else y)
+			var rolled: Color = image.get_pixel((x + cut_x) % w if along_x else x, (y + cut_y) % h if along_y else y)
 			# chance of taking the untouched original pixel: 1 on the old seam line, 0 at the band edge
 			var chance: float = 0.0
 			if along_x:
-				chance = maxf(chance, 1.0 - absf(float(x) + 0.5 - float(w) * 0.5) / half)
+				chance = maxf(chance, 1.0 - absf(float(x) + 0.5 - seam_x) / half)
 			if along_y:
-				chance = maxf(chance, 1.0 - absf(float(y) + 0.5 - float(h) * 0.5) / half)
+				chance = maxf(chance, 1.0 - absf(float(y) + 0.5 - seam_y) / half)
 			if chance > 0.0 and _random(x, y, band) < chance:
 				out.set_pixel(x, y, image.get_pixel(x, y))
 			else:
@@ -209,15 +233,15 @@ func _axis(image: Image, horizontal: bool) -> Dictionary:
 	return {"wrap": wrap, "ratio": ratio, "ok": ratio <= EDGE_RATIO_MAX and wrap <= EDGE_ABS_MAX}
 
 
-## How hard the middle line of the tile still jumps compared with ordinary neighbour columns.
-func _centre_ratio(image: Image, horizontal: bool) -> float:
+## How hard the line at the old seam position of the tile still jumps compared with ordinary neighbour columns.
+func _centre_ratio(image: Image, horizontal: bool, seam: int) -> float:
 	var w: int = image.get_width()
 	var h: int = image.get_height()
 	var length: int = w if horizontal else h
 	var count: int = h if horizontal else w
 	var along: Vector2i = Vector2i(0, 1) if horizontal else Vector2i(1, 0)
 	var across: Vector2i = Vector2i(1, 0) if horizontal else Vector2i(0, 1)
-	var mid: int = length / 2
+	var mid: int = clampi(seam, 1, length - 1)
 	var jump: float = _line_diff(image, across * (mid - 1), across * mid, along, count)
 	var neighbour: float = 0.0
 	for i: int in length - 1:

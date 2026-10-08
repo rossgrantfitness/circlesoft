@@ -114,7 +114,7 @@ func tick(delta: float) -> void:
 		return
 	_state_ms += dt * 1000.0
 	_stun_ms = maxf(_stun_ms - dt * 1000.0, 0.0)
-	_get_hit_box().tick(dt)
+	get_hitbox().tick(dt)
 	tick_poise(dt)
 	var now_ms: float = clock.now_ms()
 	match body_state:
@@ -128,10 +128,6 @@ func tick(delta: float) -> void:
 			_tick_down(dt)
 	_update_visual(dt)
 	slide_scaled(dt / delta if delta > 0.0 else 1.0)
-
-
-func _get_hit_box() -> Hitbox:
-	return get_hitbox()
 
 
 func _target() -> CombatActor:
@@ -296,7 +292,7 @@ func respawn() -> void:
 	brain = EnemyBrain.create(data, rng_seed if rng_seed != 0 else hash(String(actor_id)))
 	runner.interrupt()
 	get_hitbox().clear()
-	get_hurtbox().monitorable = true
+	get_hurtbox().collision_layer = CombatLayers.bit(CombatLayers.hurtbox_layer(team))
 	collision_layer = CombatLayers.bit(CombatLayers.body_layer(team))
 	if model_root != null:
 		model_root.visible = true
@@ -363,7 +359,7 @@ func _on_death(_result: Dictionary) -> void:
 	_cut_attack()
 	_set_state(ST_DEAD)
 	_dead_real_s = 0.0
-	get_hurtbox().monitorable = false
+	get_hurtbox().collision_layer = 0
 	collision_layer = 0
 	var director: CombatDirector = find_director()
 	if director != null and director.tokens != null:

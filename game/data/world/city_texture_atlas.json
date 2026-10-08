@@ -17,7 +17,13 @@
 			"text": [],
 			"notes": "Rust-streaked riveted steel plate, tall (128x256). Pale rust runs down from the top, a rivet seam sits at y=128.",
 			"busted_notes": "Bullet holes, black soot drips, bright orange rust bleeding along the bottom half.",
-			"seam": {"clean": {"x_ok": false, "y_ok": false, "x_ratio": 2.9, "y_ratio": 3, "x_wrap": 14.6, "y_wrap": 12.1}, "busted": {"x_ok": false, "y_ok": false, "x_ratio": 2.9, "y_ratio": 4.2, "x_wrap": 18.5, "y_wrap": 20.9}}
+			"seam": {"clean": {"x_ok": false, "y_ok": false, "x_ratio": 2.9, "y_ratio": 3, "x_wrap": 14.6, "y_wrap": 12.1}, "busted": {"x_ok": false, "y_ok": false, "x_ratio": 2.9, "y_ratio": 4.2, "x_wrap": 18.5, "y_wrap": 20.9}},
+			"seamless_copy": true,
+			"seam_method": "offset_dither_x+shift_crop_y",
+			"seamless_copy_size": [128, 253],
+			"seamless_copy_busted": true,
+			"seam_method_busted": "offset_dither",
+			"seamless_copy_size_busted": [128, 256]
 		},
 		{
 			"id": "rust_riveted_plates_tall",
@@ -31,7 +37,13 @@
 			"text": [],
 			"notes": "Brown rust plates with rivet rows and panel seams, tall (128x256).",
 			"busted_notes": "Orange rust edges, black oil drips down the right column, bullet holes.",
-			"seam": {"clean": {"x_ok": false, "y_ok": false, "x_ratio": 3.4, "y_ratio": 7.6, "x_wrap": 12.1, "y_wrap": 18.3}, "busted": {"x_ok": false, "y_ok": false, "x_ratio": 2.1, "y_ratio": 4.9, "x_wrap": 12, "y_wrap": 16.1}}
+			"seam": {"clean": {"x_ok": false, "y_ok": false, "x_ratio": 3.4, "y_ratio": 7.6, "x_wrap": 12.1, "y_wrap": 18.3}, "busted": {"x_ok": false, "y_ok": false, "x_ratio": 2.1, "y_ratio": 4.9, "x_wrap": 12, "y_wrap": 16.1}},
+			"seamless_copy": true,
+			"seam_method": "offset_dither",
+			"seamless_copy_size": [128, 256],
+			"seamless_copy_busted": true,
+			"seam_method_busted": "shift_crop_x+offset_dither_y",
+			"seamless_copy_size_busted": [126, 256]
 		},
 		{
 			"id": "rust_panel_strips_riveted",
@@ -45,7 +57,12 @@
 			"text": [],
 			"notes": "Rusty wall panel, four vertical strips with rivets.",
 			"busted_notes": "Almost the same as clean, slightly darker and more rust spotting.",
-			"seam": {"clean": {"x_ok": true, "y_ok": true, "x_ratio": 1.4, "y_ratio": 1.8, "x_wrap": 8.1, "y_wrap": 5.4}, "busted": {"x_ok": true, "y_ok": false, "x_ratio": 1.6, "y_ratio": 2.3, "x_wrap": 9.1, "y_wrap": 6.3}}
+			"seam": {"clean": {"x_ok": true, "y_ok": true, "x_ratio": 1.4, "y_ratio": 1.8, "x_wrap": 8.1, "y_wrap": 5.4}, "busted": {"x_ok": true, "y_ok": false, "x_ratio": 1.6, "y_ratio": 2.3, "x_wrap": 9.1, "y_wrap": 6.3}},
+			"seamless_copy": false,
+			"seam_method": "already_seamless",
+			"seamless_copy_busted": true,
+			"seam_method_busted": "offset_dither_y",
+			"seamless_copy_size_busted": [128, 128]
 		},
 		{
 			"id": "steel_plate_riveted_grey",
@@ -60,7 +77,12 @@
 			"text_busted": ["purple and blue tag: illegible (looks like 'Sdp' or 'Soho')"],
 			"notes": "Grey-brown steel plate with a rivet frame and a dark bevel border (reads as a bolted panel).",
 			"busted_notes": "Purple-blue graffiti tag over the plate, drips.",
-			"seam": {"clean": {"x_ok": true, "y_ok": false, "x_ratio": 1.3, "y_ratio": 3.2, "x_wrap": 6.7, "y_wrap": 13}, "busted": {"x_ok": true, "y_ok": true, "x_ratio": 0.9, "y_ratio": 2, "x_wrap": 6.6, "y_wrap": 12}}
+			"seam": {"clean": {"x_ok": true, "y_ok": false, "x_ratio": 1.3, "y_ratio": 3.2, "x_wrap": 6.7, "y_wrap": 13}, "busted": {"x_ok": true, "y_ok": true, "x_ratio": 0.9, "y_ratio": 2, "x_wrap": 6.6, "y_wrap": 12}},
+			"seamless_copy": true,
+			"seam_method": "shift_crop_y",
+			"seamless_copy_size": [128, 126],
+			"seamless_copy_busted": false,
+			"seam_method_busted": "already_seamless"
 		},
 		{
 			"id": "rust_grate_window",
@@ -74,7 +96,12 @@
 			"text": [],
 			"notes": "Rusty frame with a window grate, black behind the bars.",
 			"busted_notes": "Grate looks broken and sooty.",
-			"seam": {"clean": {"x_ok": true, "y_ok": false, "x_ratio": 1.9, "y_ratio": 8.2, "x_wrap": 10.9, "y_wrap": 38.8}, "busted": {"x_ok": true, "y_ok": false, "x_ratio": 1.9, "y_ratio": 7.5, "x_wrap": 11.9, "y_wrap": 35.5}}
+			"seam": {"clean": {"x_ok": true, "y_ok": false, "x_ratio": 1.9, "y_ratio": 8.2, "x_wrap": 10.9, "y_wrap": 38.8}, "busted": {"x_ok": true, "y_ok": false, "x_ratio": 1.9, "y_ratio": 7.5, "x_wrap": 11.9, "y_wrap": 35.5}},
+			"seamless_copy": false,
+			"seam_method": "rejected",
+			"seamless_copy_busted": false,
+			"seam_method_busted": "rejected",
+			"seam_fix_rejected": {"clean": "the roll leaves a doubled row of cross bars across the middle of the grate", "busted": "the roll leaves a doubled row of cross bars across the middle of the grate"}
 		},
 		{
 			"id": "rust_vent_louvers_wide",
@@ -88,7 +115,13 @@
 			"text": [],
 			"notes": "Two-bay louvered vent in a rusty frame.",
 			"busted_notes": "Black soot and oil drips run over the vent.",
-			"seam": {"clean": {"x_ok": false, "y_ok": true, "x_ratio": 2.6, "y_ratio": 1.1, "x_wrap": 11.6, "y_wrap": 16.6}, "busted": {"x_ok": false, "y_ok": true, "x_ratio": 2.6, "y_ratio": 1.2, "x_wrap": 17.4, "y_wrap": 13.8}}
+			"seam": {"clean": {"x_ok": false, "y_ok": true, "x_ratio": 2.6, "y_ratio": 1.1, "x_wrap": 11.6, "y_wrap": 16.6}, "busted": {"x_ok": false, "y_ok": true, "x_ratio": 2.6, "y_ratio": 1.2, "x_wrap": 17.4, "y_wrap": 13.8}},
+			"seamless_copy": true,
+			"seam_method": "shift_crop_x",
+			"seamless_copy_size": [125, 128],
+			"seamless_copy_busted": true,
+			"seam_method_busted": "shift_crop_x",
+			"seamless_copy_size_busted": [126, 128]
 		},
 		{
 			"id": "teal_octagon_reactor_panel",
@@ -115,7 +148,11 @@
 			"variants": ["clean", "busted"],
 			"text": [],
 			"notes": "Dark teal circuit board with a chip, red corner screws and a connector plug.",
-			"seam": {"clean": {"x_ok": true, "y_ok": true, "x_ratio": 0.7, "y_ratio": 0.5, "x_wrap": 8.6, "y_wrap": 7.7}, "busted": {"x_ok": true, "y_ok": true, "x_ratio": 0.7, "y_ratio": 0.7, "x_wrap": 8.7, "y_wrap": 9.6}}
+			"seam": {"clean": {"x_ok": true, "y_ok": true, "x_ratio": 0.7, "y_ratio": 0.5, "x_wrap": 8.6, "y_wrap": 7.7}, "busted": {"x_ok": true, "y_ok": true, "x_ratio": 0.7, "y_ratio": 0.7, "x_wrap": 8.7, "y_wrap": 9.6}},
+			"seamless_copy": false,
+			"seam_method": "already_seamless",
+			"seamless_copy_busted": false,
+			"seam_method_busted": "already_seamless"
 		},
 		{
 			"id": "pipes_on_black_vertical",
@@ -168,7 +205,13 @@
 			"variants": ["clean", "busted"],
 			"text": [],
 			"notes": "Bright teal circuit traces on black, with a small resistor block and a pipe bundle at left.",
-			"seam": {"clean": {"x_ok": true, "y_ok": false, "x_ratio": 0.9, "y_ratio": 3.7, "x_wrap": 15.4, "y_wrap": 38.3}, "busted": {"x_ok": true, "y_ok": false, "x_ratio": 0.9, "y_ratio": 3.7, "x_wrap": 14.8, "y_wrap": 36.9}}
+			"seam": {"clean": {"x_ok": true, "y_ok": false, "x_ratio": 0.9, "y_ratio": 3.7, "x_wrap": 15.4, "y_wrap": 38.3}, "busted": {"x_ok": true, "y_ok": false, "x_ratio": 0.9, "y_ratio": 3.7, "x_wrap": 14.8, "y_wrap": 36.9}},
+			"seamless_copy": true,
+			"seam_method": "offset_dither_y",
+			"seamless_copy_size": [128, 128],
+			"seamless_copy_busted": true,
+			"seam_method_busted": "offset_dither_y",
+			"seamless_copy_size_busted": [128, 128]
 		},
 		{
 			"id": "wall_screen_blue_wide",
@@ -283,7 +326,13 @@
 			"text": [],
 			"notes": "Plain grey concrete with a studded bevel trim down the left edge and one small square nub.",
 			"busted_notes": "Big blast crater with radiating cracks in the middle; the left trim is gone.",
-			"seam": {"clean": {"x_ok": false, "y_ok": false, "x_ratio": 15.4, "y_ratio": 3.5, "x_wrap": 34, "y_wrap": 5.2}, "busted": {"x_ok": false, "y_ok": true, "x_ratio": 6.6, "y_ratio": 1.2, "x_wrap": 31.7, "y_wrap": 5}}
+			"seam": {"clean": {"x_ok": false, "y_ok": false, "x_ratio": 15.4, "y_ratio": 3.5, "x_wrap": 34, "y_wrap": 5.2}, "busted": {"x_ok": false, "y_ok": true, "x_ratio": 6.6, "y_ratio": 1.2, "x_wrap": 31.7, "y_wrap": 5}},
+			"seamless_copy": true,
+			"seam_method": "offset_dither",
+			"seamless_copy_size": [128, 128],
+			"seamless_copy_busted": true,
+			"seam_method_busted": "offset_dither_x",
+			"seamless_copy_size_busted": [128, 128]
 		},
 		{
 			"id": "floor_concrete_cracked_dark",
@@ -296,7 +345,13 @@
 			"variants": ["clean", "busted"],
 			"text": [],
 			"notes": "Dark worn concrete slabs (2x2 slabs), stained and chipped.",
-			"seam": {"clean": {"x_ok": false, "y_ok": false, "x_ratio": 2.2, "y_ratio": 2.6, "x_wrap": 7.6, "y_wrap": 8.7}, "busted": {"x_ok": false, "y_ok": true, "x_ratio": 2.7, "y_ratio": 1.9, "x_wrap": 9.3, "y_wrap": 6.8}}
+			"seam": {"clean": {"x_ok": false, "y_ok": false, "x_ratio": 2.2, "y_ratio": 2.6, "x_wrap": 7.6, "y_wrap": 8.7}, "busted": {"x_ok": false, "y_ok": true, "x_ratio": 2.7, "y_ratio": 1.9, "x_wrap": 9.3, "y_wrap": 6.8}},
+			"seamless_copy": true,
+			"seam_method": "offset_dither_x+shift_crop_y",
+			"seamless_copy_size": [128, 127],
+			"seamless_copy_busted": true,
+			"seam_method_busted": "offset_dither_x",
+			"seamless_copy_size_busted": [128, 128]
 		},
 		{
 			"id": "floor_concrete_hazard_stripe_a",
@@ -310,7 +365,13 @@
 			"text": [],
 			"notes": "Concrete with a yellow-black hazard stripe band across the lower half; trim along top and left.",
 			"busted_notes": "Black oil drips from the top edge over the stripes.",
-			"seam": {"clean": {"x_ok": false, "y_ok": true, "x_ratio": 5.3, "y_ratio": 1.1, "x_wrap": 35.7, "y_wrap": 9.1}, "busted": {"x_ok": false, "y_ok": true, "x_ratio": 4.1, "y_ratio": 1.6, "x_wrap": 34.9, "y_wrap": 12.7}}
+			"seam": {"clean": {"x_ok": false, "y_ok": true, "x_ratio": 5.3, "y_ratio": 1.1, "x_wrap": 35.7, "y_wrap": 9.1}, "busted": {"x_ok": false, "y_ok": true, "x_ratio": 4.1, "y_ratio": 1.6, "x_wrap": 34.9, "y_wrap": 12.7}},
+			"seamless_copy": true,
+			"seam_method": "offset_dither_x",
+			"seamless_copy_size": [128, 128],
+			"seamless_copy_busted": true,
+			"seam_method_busted": "offset_dither_x",
+			"seamless_copy_size_busted": [128, 128]
 		},
 		{
 			"id": "floor_concrete_hazard_stripe_b",
@@ -324,7 +385,13 @@
 			"text": [],
 			"notes": "Concrete with a hazard stripe along the bottom left and a trim corner.",
 			"busted_notes": "Crater and bullet holes near the top left.",
-			"seam": {"clean": {"x_ok": false, "y_ok": false, "x_ratio": 3.9, "y_ratio": 2.8, "x_wrap": 18, "y_wrap": 15}, "busted": {"x_ok": false, "y_ok": false, "x_ratio": 3.3, "y_ratio": 2.4, "x_wrap": 18.5, "y_wrap": 15.1}}
+			"seam": {"clean": {"x_ok": false, "y_ok": false, "x_ratio": 3.9, "y_ratio": 2.8, "x_wrap": 18, "y_wrap": 15}, "busted": {"x_ok": false, "y_ok": false, "x_ratio": 3.3, "y_ratio": 2.4, "x_wrap": 18.5, "y_wrap": 15.1}},
+			"seamless_copy": true,
+			"seam_method": "offset_dither_x+shift_crop_y",
+			"seamless_copy_size": [128, 125],
+			"seamless_copy_busted": true,
+			"seam_method_busted": "offset_dither_x+shift_crop_y",
+			"seamless_copy_size_busted": [128, 125]
 		},
 		{
 			"id": "floor_hazard_corner_yellow_dark",
@@ -338,7 +405,12 @@
 			"text": [],
 			"notes": "Dark worn concrete with an L-shaped yellow hazard stripe corner.",
 			"busted_notes": "More bullet damage, worn paint.",
-			"seam": {"clean": {"x_ok": false, "y_ok": false, "x_ratio": 4.9, "y_ratio": 4.8, "x_wrap": 39.4, "y_wrap": 34.9}, "busted": {"x_ok": false, "y_ok": false, "x_ratio": 3.5, "y_ratio": 4.2, "x_wrap": 35.4, "y_wrap": 36.3}}
+			"seam": {"clean": {"x_ok": false, "y_ok": false, "x_ratio": 4.9, "y_ratio": 4.8, "x_wrap": 39.4, "y_wrap": 34.9}, "busted": {"x_ok": false, "y_ok": false, "x_ratio": 3.5, "y_ratio": 4.2, "x_wrap": 35.4, "y_wrap": 36.3}},
+			"seamless_copy": false,
+			"seam_method": "rejected",
+			"seamless_copy_busted": false,
+			"seam_method_busted": "rejected",
+			"seam_fix_rejected": {"clean": "corner piece: rolling cuts the hazard-stripe L into ragged fragments", "busted": "corner piece: rolling cuts the hazard-stripe L into ragged fragments"}
 		},
 		{
 			"id": "pipes_dark_purple_teal",
@@ -379,7 +451,12 @@
 			"text_busted": ["red circled-A (anarchy symbol) spray-painted on the green block"],
 			"notes": "Concrete with a teal hazard corner, ending in a flat bright green block at the bottom. Narrow (64x128).",
 			"busted_notes": "Red circled-A graffiti on the green block, damage near the top.",
-			"seam": {"clean": {"x_ok": false, "y_ok": false, "x_ratio": 3, "y_ratio": 11.8, "x_wrap": 13.1, "y_wrap": 55.3}, "busted": {"x_ok": false, "y_ok": false, "x_ratio": 2.1, "y_ratio": 9.2, "x_wrap": 12.6, "y_wrap": 52.2}}
+			"seam": {"clean": {"x_ok": false, "y_ok": false, "x_ratio": 3, "y_ratio": 11.8, "x_wrap": 13.1, "y_wrap": 55.3}, "busted": {"x_ok": false, "y_ok": false, "x_ratio": 2.1, "y_ratio": 9.2, "x_wrap": 12.6, "y_wrap": 52.2}},
+			"seamless_copy": false,
+			"seam_method": "rejected",
+			"seamless_copy_busted": false,
+			"seam_method_busted": "rejected",
+			"seam_fix_rejected": {"clean": "corner piece: rolling cuts the hazard-stripe L into ragged fragments", "busted": "corner piece: rolling cuts the hazard-stripe L into ragged fragments"}
 		},
 		{
 			"id": "floor_hazard_stripe_yellow_band",
@@ -420,7 +497,11 @@
 			"text_busted": ["green spray scrawl over the vent, illegible"],
 			"notes": "Square louvered vent in a beige-rust frame, rusty.",
 			"busted_notes": "Green spray scrawl over the vent.",
-			"seam": {"clean": {"x_ok": true, "y_ok": true, "x_ratio": 0.7, "y_ratio": 0.6, "x_wrap": 4.3, "y_wrap": 10}, "busted": {"x_ok": true, "y_ok": true, "x_ratio": 0.8, "y_ratio": 0.5, "x_wrap": 6.9, "y_wrap": 8.8}}
+			"seam": {"clean": {"x_ok": true, "y_ok": true, "x_ratio": 0.7, "y_ratio": 0.6, "x_wrap": 4.3, "y_wrap": 10}, "busted": {"x_ok": true, "y_ok": true, "x_ratio": 0.8, "y_ratio": 0.5, "x_wrap": 6.9, "y_wrap": 8.8}},
+			"seamless_copy": false,
+			"seam_method": "already_seamless",
+			"seamless_copy_busted": false,
+			"seam_method_busted": "already_seamless"
 		},
 		{
 			"id": "vent_louvers_cool_square",
@@ -434,7 +515,11 @@
 			"text": [],
 			"notes": "Square louvered vent in a pale blue-grey frame, cleaner than its neighbour.",
 			"busted_notes": "Large black blast hole through the vent.",
-			"seam": {"clean": {"x_ok": true, "y_ok": true, "x_ratio": 1.4, "y_ratio": 1.1, "x_wrap": 9.2, "y_wrap": 18.8}, "busted": {"x_ok": true, "y_ok": true, "x_ratio": 1.1, "y_ratio": 1.2, "x_wrap": 8.3, "y_wrap": 17.2}}
+			"seam": {"clean": {"x_ok": true, "y_ok": true, "x_ratio": 1.4, "y_ratio": 1.1, "x_wrap": 9.2, "y_wrap": 18.8}, "busted": {"x_ok": true, "y_ok": true, "x_ratio": 1.1, "y_ratio": 1.2, "x_wrap": 8.3, "y_wrap": 17.2}},
+			"seamless_copy": false,
+			"seam_method": "already_seamless",
+			"seamless_copy_busted": false,
+			"seam_method_busted": "already_seamless"
 		},
 		{
 			"id": "pipe_green_glow_corner",
@@ -461,7 +546,13 @@
 			"text": [],
 			"notes": "Plain grey concrete with a studded bevel trim along the top and left, one small square nub.",
 			"busted_notes": "Deep slash and claw marks across the middle, the trim is chewed.",
-			"seam": {"clean": {"x_ok": false, "y_ok": false, "x_ratio": 11.5, "y_ratio": 8.8, "x_wrap": 27.5, "y_wrap": 23.7}, "busted": {"x_ok": false, "y_ok": false, "x_ratio": 4.5, "y_ratio": 3.7, "x_wrap": 27.5, "y_wrap": 21.6}}
+			"seam": {"clean": {"x_ok": false, "y_ok": false, "x_ratio": 11.5, "y_ratio": 8.8, "x_wrap": 27.5, "y_wrap": 23.7}, "busted": {"x_ok": false, "y_ok": false, "x_ratio": 4.5, "y_ratio": 3.7, "x_wrap": 27.5, "y_wrap": 21.6}},
+			"seamless_copy": true,
+			"seam_method": "offset_dither",
+			"seamless_copy_size": [128, 128],
+			"seamless_copy_busted": true,
+			"seam_method_busted": "offset_dither_x+shift_crop_y",
+			"seamless_copy_size_busted": [128, 126]
 		},
 		{
 			"id": "floor_plate_diamond_cross_a",
@@ -475,7 +566,12 @@
 			"text": [],
 			"notes": "Grey plate with a diamond and red cross-triangle inlay, corner brackets.",
 			"busted_notes": "Rust and oil drips over the plate.",
-			"seam": {"clean": {"x_ok": true, "y_ok": true, "x_ratio": 0.9, "y_ratio": 1.4, "x_wrap": 4.5, "y_wrap": 6.8}, "busted": {"x_ok": true, "y_ok": false, "x_ratio": 0.7, "y_ratio": 4, "x_wrap": 4.7, "y_wrap": 18.7}}
+			"seam": {"clean": {"x_ok": true, "y_ok": true, "x_ratio": 0.9, "y_ratio": 1.4, "x_wrap": 4.5, "y_wrap": 6.8}, "busted": {"x_ok": true, "y_ok": false, "x_ratio": 0.7, "y_ratio": 4, "x_wrap": 4.7, "y_wrap": 18.7}},
+			"seamless_copy": false,
+			"seam_method": "already_seamless",
+			"seamless_copy_busted": true,
+			"seam_method_busted": "offset_dither_y",
+			"seamless_copy_size_busted": [128, 128]
 		},
 		{
 			"id": "floor_hazard_corner_green",
@@ -488,7 +584,12 @@
 			"variants": ["clean", "busted"],
 			"text": [],
 			"notes": "Concrete with an L-shaped green-black hazard stripe corner; stray green at the bottom edge.",
-			"seam": {"clean": {"x_ok": false, "y_ok": false, "x_ratio": 5.9, "y_ratio": 4.3, "x_wrap": 32.3, "y_wrap": 24.5}, "busted": {"x_ok": false, "y_ok": false, "x_ratio": 4.8, "y_ratio": 4.8, "x_wrap": 33, "y_wrap": 28.1}}
+			"seam": {"clean": {"x_ok": false, "y_ok": false, "x_ratio": 5.9, "y_ratio": 4.3, "x_wrap": 32.3, "y_wrap": 24.5}, "busted": {"x_ok": false, "y_ok": false, "x_ratio": 4.8, "y_ratio": 4.8, "x_wrap": 33, "y_wrap": 28.1}},
+			"seamless_copy": false,
+			"seam_method": "rejected",
+			"seamless_copy_busted": false,
+			"seam_method_busted": "rejected",
+			"seam_fix_rejected": {"clean": "corner piece: rolling cuts the hazard-stripe L into ragged fragments", "busted": "corner piece: rolling cuts the hazard-stripe L into ragged fragments"}
 		},
 		{
 			"id": "vault_hatch_round",
@@ -527,7 +628,13 @@
 			"variants": ["clean", "busted"],
 			"text": [],
 			"notes": "Grey plate with a diamond and red cross-triangle inlay, corner brackets (same design as the other diamond plates).",
-			"seam": {"clean": {"x_ok": true, "y_ok": false, "x_ratio": 0.9, "y_ratio": 2.3, "x_wrap": 4.1, "y_wrap": 10.6}, "busted": {"x_ok": true, "y_ok": false, "x_ratio": 0.9, "y_ratio": 2.3, "x_wrap": 5.8, "y_wrap": 12.3}}
+			"seam": {"clean": {"x_ok": true, "y_ok": false, "x_ratio": 0.9, "y_ratio": 2.3, "x_wrap": 4.1, "y_wrap": 10.6}, "busted": {"x_ok": true, "y_ok": false, "x_ratio": 0.9, "y_ratio": 2.3, "x_wrap": 5.8, "y_wrap": 12.3}},
+			"seamless_copy": true,
+			"seam_method": "shift_crop_y",
+			"seamless_copy_size": [128, 125],
+			"seamless_copy_busted": true,
+			"seam_method_busted": "shift_crop_y",
+			"seamless_copy_size_busted": [128, 126]
 		},
 		{
 			"id": "floor_hazard_corner_grey_teal",
@@ -542,7 +649,12 @@
 			"text_busted": ["blue wireframe-style tag, illegible"],
 			"notes": "Concrete with a grey-teal hazard corner, muted.",
 			"busted_notes": "Blue wireframe-style graffiti tag.",
-			"seam": {"clean": {"x_ok": false, "y_ok": false, "x_ratio": 9.6, "y_ratio": 3.7, "x_wrap": 32.3, "y_wrap": 13.6}, "busted": {"x_ok": false, "y_ok": false, "x_ratio": 4.2, "y_ratio": 2.9, "x_wrap": 29.8, "y_wrap": 17.5}}
+			"seam": {"clean": {"x_ok": false, "y_ok": false, "x_ratio": 9.6, "y_ratio": 3.7, "x_wrap": 32.3, "y_wrap": 13.6}, "busted": {"x_ok": false, "y_ok": false, "x_ratio": 4.2, "y_ratio": 2.9, "x_wrap": 29.8, "y_wrap": 17.5}},
+			"seamless_copy": false,
+			"seam_method": "rejected",
+			"seamless_copy_busted": false,
+			"seam_method_busted": "rejected",
+			"seam_fix_rejected": {"clean": "corner piece: rolling cuts the hazard-stripe L into ragged fragments", "busted": "corner piece: rolling cuts the hazard-stripe L into ragged fragments"}
 		},
 		{
 			"id": "floor_hazard_corner_teal_small",
@@ -581,7 +693,13 @@
 			"variants": ["clean", "busted"],
 			"text": [],
 			"notes": "Small diamond-inlay plate, 64x64.",
-			"seam": {"clean": {"x_ok": false, "y_ok": false, "x_ratio": 5.4, "y_ratio": 2.4, "x_wrap": 25.6, "y_wrap": 10.9}, "busted": {"x_ok": false, "y_ok": false, "x_ratio": 6.3, "y_ratio": 2.8, "x_wrap": 24.5, "y_wrap": 11.7}}
+			"seam": {"clean": {"x_ok": false, "y_ok": false, "x_ratio": 5.4, "y_ratio": 2.4, "x_wrap": 25.6, "y_wrap": 10.9}, "busted": {"x_ok": false, "y_ok": false, "x_ratio": 6.3, "y_ratio": 2.8, "x_wrap": 24.5, "y_wrap": 11.7}},
+			"seamless_copy": true,
+			"seam_method": "shift_crop",
+			"seamless_copy_size": [61, 63],
+			"seamless_copy_busted": true,
+			"seam_method_busted": "offset_dither",
+			"seamless_copy_size_busted": [64, 64]
 		},
 		{
 			"id": "floor_plate_diamond_small_b",
@@ -594,7 +712,13 @@
 			"variants": ["clean", "busted"],
 			"text": [],
 			"notes": "Small diamond-inlay plate, 64x64.",
-			"seam": {"clean": {"x_ok": false, "y_ok": true, "x_ratio": 4.7, "y_ratio": 1.2, "x_wrap": 22, "y_wrap": 5.8}, "busted": {"x_ok": false, "y_ok": true, "x_ratio": 6.1, "y_ratio": 1.2, "x_wrap": 22.6, "y_wrap": 4.7}}
+			"seam": {"clean": {"x_ok": false, "y_ok": true, "x_ratio": 4.7, "y_ratio": 1.2, "x_wrap": 22, "y_wrap": 5.8}, "busted": {"x_ok": false, "y_ok": true, "x_ratio": 6.1, "y_ratio": 1.2, "x_wrap": 22.6, "y_wrap": 4.7}},
+			"seamless_copy": true,
+			"seam_method": "shift_crop_x",
+			"seamless_copy_size": [61, 64],
+			"seamless_copy_busted": true,
+			"seam_method_busted": "offset_dither_x",
+			"seamless_copy_size_busted": [64, 64]
 		},
 		{
 			"id": "pipes_teal_orange_junction",
@@ -622,7 +746,11 @@
 			"text_busted": ["pale blue circled-A (anarchy symbol), large"],
 			"notes": "Dark red mesh or scale floor with a bordered frame.",
 			"busted_notes": "Large pale blue anarchy circled-A tag.",
-			"seam": {"clean": {"x_ok": true, "y_ok": true, "x_ratio": 1.5, "y_ratio": 1.1, "x_wrap": 8.1, "y_wrap": 7.1}, "busted": {"x_ok": true, "y_ok": true, "x_ratio": 1.2, "y_ratio": 0.9, "x_wrap": 7.8, "y_wrap": 5.8}}
+			"seam": {"clean": {"x_ok": true, "y_ok": true, "x_ratio": 1.5, "y_ratio": 1.1, "x_wrap": 8.1, "y_wrap": 7.1}, "busted": {"x_ok": true, "y_ok": true, "x_ratio": 1.2, "y_ratio": 0.9, "x_wrap": 7.8, "y_wrap": 5.8}},
+			"seamless_copy": false,
+			"seam_method": "already_seamless",
+			"seamless_copy_busted": false,
+			"seam_method_busted": "already_seamless"
 		},
 		{
 			"id": "floor_mesh_red_b",
@@ -637,7 +765,11 @@
 			"text_busted": ["pale blue tag, illegible, tangled lines"],
 			"notes": "Dark red mesh or scale floor with a bordered frame.",
 			"busted_notes": "Tangled blue-white tag.",
-			"seam": {"clean": {"x_ok": true, "y_ok": true, "x_ratio": 1.3, "y_ratio": 0.9, "x_wrap": 7, "y_wrap": 5.7}, "busted": {"x_ok": true, "y_ok": true, "x_ratio": 1.1, "y_ratio": 1.2, "x_wrap": 7.3, "y_wrap": 7.5}}
+			"seam": {"clean": {"x_ok": true, "y_ok": true, "x_ratio": 1.3, "y_ratio": 0.9, "x_wrap": 7, "y_wrap": 5.7}, "busted": {"x_ok": true, "y_ok": true, "x_ratio": 1.1, "y_ratio": 1.2, "x_wrap": 7.3, "y_wrap": 7.5}},
+			"seamless_copy": false,
+			"seam_method": "already_seamless",
+			"seamless_copy_busted": false,
+			"seam_method_busted": "already_seamless"
 		},
 		{
 			"id": "door_dark_garbled_glyphs",
@@ -706,7 +838,12 @@
 			"text": [],
 			"notes": "Rusty tan plates, four quadrants split by seams with a rivet cluster in the middle.",
 			"busted_notes": "Several bullet holes through the plates.",
-			"seam": {"clean": {"x_ok": false, "y_ok": true, "x_ratio": 3, "y_ratio": 1.7, "x_wrap": 14, "y_wrap": 7.2}, "busted": {"x_ok": true, "y_ok": true, "x_ratio": 1.8, "y_ratio": 1.6, "x_wrap": 14.3, "y_wrap": 10.1}}
+			"seam": {"clean": {"x_ok": false, "y_ok": true, "x_ratio": 3, "y_ratio": 1.7, "x_wrap": 14, "y_wrap": 7.2}, "busted": {"x_ok": true, "y_ok": true, "x_ratio": 1.8, "y_ratio": 1.6, "x_wrap": 14.3, "y_wrap": 10.1}},
+			"seamless_copy": true,
+			"seam_method": "shift_crop_x",
+			"seamless_copy_size": [125, 128],
+			"seamless_copy_busted": false,
+			"seam_method_busted": "already_seamless"
 		},
 		{
 			"id": "floor_concrete_panel_bevel",
@@ -720,7 +857,12 @@
 			"text": [],
 			"notes": "Dark concrete panel with a studded bevel border on all four sides.",
 			"busted_notes": "Black drips from the top and a diagonal crack across.",
-			"seam": {"clean": {"x_ok": true, "y_ok": false, "x_ratio": 2, "y_ratio": 3.4, "x_wrap": 7.3, "y_wrap": 12.5}, "busted": {"x_ok": false, "y_ok": false, "x_ratio": 2.2, "y_ratio": 3, "x_wrap": 12.6, "y_wrap": 12.8}}
+			"seam": {"clean": {"x_ok": true, "y_ok": false, "x_ratio": 2, "y_ratio": 3.4, "x_wrap": 7.3, "y_wrap": 12.5}, "busted": {"x_ok": false, "y_ok": false, "x_ratio": 2.2, "y_ratio": 3, "x_wrap": 12.6, "y_wrap": 12.8}},
+			"seamless_copy": false,
+			"seam_method": "rejected",
+			"seamless_copy_busted": false,
+			"seam_method_busted": "rejected",
+			"seam_fix_rejected": {"clean": "bordered panel: the roll doubles the border bars; the original already repeats as a clean panel grid", "busted": "bordered panel: the roll doubles the border bars; the original already repeats as a clean panel grid"}
 		},
 		{
 			"id": "vent_dark_small_a",
@@ -733,7 +875,13 @@
 			"variants": ["clean", "busted"],
 			"text": [],
 			"notes": "Dark louvered vent, 64x64.",
-			"seam": {"clean": {"x_ok": false, "y_ok": true, "x_ratio": 4.8, "y_ratio": 0.5, "x_wrap": 17.7, "y_wrap": 9.5}, "busted": {"x_ok": false, "y_ok": true, "x_ratio": 3.1, "y_ratio": 1.1, "x_wrap": 14.4, "y_wrap": 18.5}}
+			"seam": {"clean": {"x_ok": false, "y_ok": true, "x_ratio": 4.8, "y_ratio": 0.5, "x_wrap": 17.7, "y_wrap": 9.5}, "busted": {"x_ok": false, "y_ok": true, "x_ratio": 3.1, "y_ratio": 1.1, "x_wrap": 14.4, "y_wrap": 18.5}},
+			"seamless_copy": true,
+			"seam_method": "offset_dither_x",
+			"seamless_copy_size": [64, 64],
+			"seamless_copy_busted": true,
+			"seam_method_busted": "shift_crop_x",
+			"seamless_copy_size_busted": [61, 64]
 		},
 		{
 			"id": "cable_plug_panel_small",
@@ -772,7 +920,12 @@
 			"variants": ["clean", "busted"],
 			"text": [],
 			"notes": "Dark louvered vent, 64x64.",
-			"seam": {"clean": {"x_ok": false, "y_ok": true, "x_ratio": 2.3, "y_ratio": 0.7, "x_wrap": 10.5, "y_wrap": 11.9}, "busted": {"x_ok": true, "y_ok": true, "x_ratio": 1.9, "y_ratio": 0.9, "x_wrap": 9.3, "y_wrap": 15}}
+			"seam": {"clean": {"x_ok": false, "y_ok": true, "x_ratio": 2.3, "y_ratio": 0.7, "x_wrap": 10.5, "y_wrap": 11.9}, "busted": {"x_ok": true, "y_ok": true, "x_ratio": 1.9, "y_ratio": 0.9, "x_wrap": 9.3, "y_wrap": 15}},
+			"seamless_copy": true,
+			"seam_method": "shift_crop_x",
+			"seamless_copy_size": [63, 64],
+			"seamless_copy_busted": false,
+			"seam_method_busted": "already_seamless"
 		},
 		{
 			"id": "control_panel_wires",
@@ -824,7 +977,12 @@
 			"variants": ["clean", "busted"],
 			"text": [],
 			"notes": "Teal and red circuit traces on black, with tiny unreadable markings.",
-			"seam": {"clean": {"x_ok": false, "y_ok": false, "x_ratio": 2.9, "y_ratio": 2.2, "x_wrap": 39.5, "y_wrap": 29.4}, "busted": {"x_ok": false, "y_ok": false, "x_ratio": 2.7, "y_ratio": 2.2, "x_wrap": 36.5, "y_wrap": 28.1}}
+			"seam": {"clean": {"x_ok": false, "y_ok": false, "x_ratio": 2.9, "y_ratio": 2.2, "x_wrap": 39.5, "y_wrap": 29.4}, "busted": {"x_ok": false, "y_ok": false, "x_ratio": 2.7, "y_ratio": 2.2, "x_wrap": 36.5, "y_wrap": 28.1}},
+			"seamless_copy": false,
+			"seam_method": "rejected",
+			"seamless_copy_busted": false,
+			"seam_method_busted": "rejected",
+			"seam_fix_rejected": {"clean": "busy circuit lines: the dithered band shows as dotted lines across the traces", "busted": "busy circuit lines: the dithered band shows as dotted lines across the traces"}
 		},
 		{
 			"id": "floor_diamond_plate_rust",
@@ -838,7 +996,11 @@
 			"text": [],
 			"notes": "Rusty diamond tread plate in a bolted frame.",
 			"busted_notes": "Smashed open: a big jagged hole showing dark cables underneath.",
-			"seam": {"clean": {"x_ok": true, "y_ok": true, "x_ratio": 1.3, "y_ratio": 1.4, "x_wrap": 10.8, "y_wrap": 11.5}, "busted": {"x_ok": true, "y_ok": true, "x_ratio": 1.7, "y_ratio": 1.1, "x_wrap": 14.4, "y_wrap": 10}}
+			"seam": {"clean": {"x_ok": true, "y_ok": true, "x_ratio": 1.3, "y_ratio": 1.4, "x_wrap": 10.8, "y_wrap": 11.5}, "busted": {"x_ok": true, "y_ok": true, "x_ratio": 1.7, "y_ratio": 1.1, "x_wrap": 14.4, "y_wrap": 10}},
+			"seamless_copy": false,
+			"seam_method": "already_seamless",
+			"seamless_copy_busted": false,
+			"seam_method_busted": "already_seamless"
 		},
 		{
 			"id": "pipe_corner_teal_red",
@@ -890,7 +1052,11 @@
 			"variants": ["clean", "busted"],
 			"text": [],
 			"notes": "Small teal service plate with rust and four screws, 64x64.",
-			"seam": {"clean": {"x_ok": true, "y_ok": true, "x_ratio": 1.8, "y_ratio": 1.5, "x_wrap": 9.6, "y_wrap": 7.4}, "busted": {"x_ok": true, "y_ok": true, "x_ratio": 1.5, "y_ratio": 1.2, "x_wrap": 15.4, "y_wrap": 10}}
+			"seam": {"clean": {"x_ok": true, "y_ok": true, "x_ratio": 1.8, "y_ratio": 1.5, "x_wrap": 9.6, "y_wrap": 7.4}, "busted": {"x_ok": true, "y_ok": true, "x_ratio": 1.5, "y_ratio": 1.2, "x_wrap": 15.4, "y_wrap": 10}},
+			"seamless_copy": false,
+			"seam_method": "already_seamless",
+			"seamless_copy_busted": false,
+			"seam_method_busted": "already_seamless"
 		},
 		{
 			"id": "gauge_dial_round_dark",

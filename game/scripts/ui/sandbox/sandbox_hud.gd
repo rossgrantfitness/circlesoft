@@ -166,9 +166,13 @@ func bind(target: Object) -> void:
 		_link(_director, &"noise_rank_changed", _on_noise_rank_changed)
 		_link(_director, &"lights_on_changed", _on_lights_on_changed)
 		_seed_from_actors()
-		var knobs: Object = _director.get(&"feel") as Object
-		if knobs != null:
-			_panel.bind(knobs)
+	var knobs: Object = null
+	if _director != null:
+		knobs = _director.get(&"feel") as Object
+	if knobs == null:
+		knobs = _call(sandbox, &"get_feel") as Object
+	if knobs != null:
+		_panel.bind(knobs)
 	if _lock_on != null:
 		_link(_lock_on, &"target_changed", _on_target_changed)
 	if _camera != null:

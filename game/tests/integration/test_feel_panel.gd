@@ -8,17 +8,17 @@ const PANEL_SCENE: String = "res://scenes/ui/sandbox/feel_panel.tscn"
 const SCRATCH_DIR: String = "user://test_feel_panel"
 
 var _audio: FakeAudio = null
-var _knobs: FakeFeelKnobs = null
+var _knobs: FeelKnobs = null
 var _panel: FeelPanel = null
 var _opened_folders: Array[String] = []
 
 
 func _setup(pause: bool = false) -> void:
 	_audio = FakeAudio.new()
-	_knobs = FakeFeelKnobs.new()
-	_knobs.save_dir = ProjectSettings.globalize_path(SCRATCH_DIR)
+	_knobs = FeelKnobs.load_defaults()
 	_panel = (load(PANEL_SCENE) as PackedScene).instantiate() as FeelPanel
 	_panel.manual_ticks = true
+	_panel.save_dir = SCRATCH_DIR
 	_panel.pause_game = pause
 	_panel.animations_enabled = false
 	_panel.clipboard_enabled = false
@@ -212,7 +212,7 @@ func test_an_int_knob_stays_a_whole_number() -> void:
 	_setup()
 	_panel.focus_knob("input_buffer_ms")
 	_press([MenuInput.Cmd.RIGHT])
-	var value: Variant = _knobs.get("_values")["input_buffer_ms"]
+	var value: Variant = _knobs.knob("input_buffer_ms")["value"]
 	assert_eq(typeof(value), TYPE_INT, "ints are written as ints")
 	assert_eq(value, 160)
 
@@ -365,7 +365,7 @@ func test_save_writes_a_readable_file_and_shows_where() -> void:
 
 func test_save_failing_says_so_and_changes_nothing() -> void:
 	_setup()
-	_knobs.fail_save = true
+	_panel.save_dir = "/proc/no_such_folder/feel"
 	_panel.focus_knob("dash_distance_m")
 	_press([MenuInput.Cmd.RIGHT])
 	_panel.press_button("save")
@@ -429,13 +429,18 @@ func test_open_folder_before_any_save_uses_the_feel_folder() -> void:
 	assert_true(_opened_folders[0].ends_with("feel"), "the user feel folder")
 
 
+func _saved_files() -> int:
+	var dir: DirAccess = DirAccess.open(SCRATCH_DIR)
+	return dir.get_files().size() if dir != null else 0
+
+
 func test_a_button_works_from_the_pad() -> void:
 	_setup()
 	for i: int in _panel.get_rows().size():
 		_press([MenuInput.Cmd.DOWN])
 	assert_eq(_panel.get_zone(), FeelPanel.Zone.BUTTONS)
 	_press([MenuInput.Cmd.CONFIRM])
-	assert_eq(_knobs.save_count, 1, "the first button is Save")
+	assert_gt(_saved_files(), 0, "the first button is Save")
 
 
 # ---- mouse ----
@@ -477,7 +482,7 @@ func test_clicking_a_button_presses_it() -> void:
 	_setup()
 	var rects: Array[Rect2] = _panel._button_rects()
 	_click(_stage_point(rects[0].get_center()))
-	assert_eq(_knobs.save_count, 1)
+	assert_gt(_saved_files(), 0)
 
 
 func test_the_wheel_changes_the_value_under_the_pointer() -> void:

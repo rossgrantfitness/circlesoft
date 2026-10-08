@@ -1,86 +1,78 @@
 class_name FakeCombatSandbox
 extends RefCounted
-## A tiny stand-in for the CombatSandbox and its CombatDirector, LockOn and OrbitCamera, for the
-## sandbox HUD tests: it emits the contract's signals (docs/pivot/combat_api.md 4.6), answers
-## screen_pos_of, and records what the HUD asked it to do. Replace with the real classes when a test
-## wants the real thing.
+## The sandbox as the HUD tests see it: the REAL CombatDirector, CombatActor and FeelKnobs (nothing
+## else in the HUD tests is faked about the combat model), plus the three things the arena scene owns:
+## screen_pos_of, a reset, and the lock-on and camera signals (tiny stubs). Tests emit the director's
+## own signals to play a fight at the HUD. Free it with free_nodes() when the test ends.
 
-class Actor extends RefCounted:
-	var actor_id: StringName = &""
-	var team: StringName = &""
-	var hp: int = 0
-	var hp_max: int = 0
-
-class Director extends RefCounted:
-	signal actor_registered(actor_id: StringName, team: StringName)
-	signal actor_died(actor_id: StringName)
-	signal hp_changed(actor_id: StringName, hp: int, hp_max: int)
-	signal hit_landed(info: Dictionary)
-	signal parry_judged(info: Dictionary)
-	signal perfect_dodge(info: Dictionary)
-	signal flare_started(info: Dictionary)
-	signal flare_ended
-	signal stagger(info: Dictionary)
-	signal noise_changed(points: float, fill: float, rank_id: StringName, rank_name: String)
-	signal noise_rank_changed(rank_id: StringName, rank_name: String, went_up: bool)
-	signal lights_on_changed(active: bool, duration_s: float)
-	var feel: FakeFeelKnobs = null
-	var fighters: Array = []
-
-	func actors(_team: StringName = &"") -> Array:
-		return fighters
-
-class LockOn extends RefCounted:
+class StubLockOn extends RefCounted:
 	signal target_changed(target: Object)
 
-class Camera extends RefCounted:
+class StubCamera extends RefCounted:
 	signal mode_changed(mode: int)
 	var mode: int = 0
 
 	func get_mode() -> int:
 		return mode
 
-var director: Director = Director.new()
-var lock_on: LockOn = LockOn.new()
-var camera: Camera = Camera.new()
-var player: Actor = Actor.new()
+var director: CombatDirector = CombatDirector.new()
+var lock_on: StubLockOn = StubLockOn.new()
+var camera: StubCamera = StubCamera.new()
+var player: CombatActor = null
 var positions: Dictionary = {}
 var reset_calls: int = 0
+var _nodes: Array[Node] = []
 
 
 func _init() -> void:
-	director.feel = FakeFeelKnobs.new()
-	player.actor_id = &"red"
-	player.team = &"player"
-	player.hp = 120
-	player.hp_max = 120
-	director.fighters = [player]
+	director.feel = FeelKnobs.load_defaults()
+	director.sync_to_wall_clock = false
+	player = _make_actor(&"red", &"player", 120)
+	director.register(player)
+	_nodes.append(director)
 
 
-func add_enemy(id: StringName, at: Vector2, hp: int = 40) -> Actor:
-	var enemy: Actor = Actor.new()
-	enemy.actor_id = id
-	enemy.team = &"enemy"
-	enemy.hp = hp
-	enemy.hp_max = hp
-	director.fighters.append(enemy)
+func _make_actor(id: StringName, team: StringName, hp: int) -> CombatActor:
+	var actor: CombatActor = CombatActor.new()
+	actor.actor_id = id
+	actor.team = team
+	actor.hp = hp
+	actor.hp_max = hp
+	_nodes.append(actor)
+	return actor
+
+
+func add_enemy(id: StringName, at: Vector2, hp: int = 40) -> CombatActor:
+	var enemy: CombatActor = _make_actor(id, &"enemy", hp)
+	director.register(enemy)
 	positions[str(id)] = at
 	return enemy
 
 
-func get_director() -> Director:
+func free_nodes() -> void:
+	for node: Node in _nodes:
+		if is_instance_valid(node):
+			node.free()
+	_nodes.clear()
+
+
+func get_director() -> CombatDirector:
 	return director
 
 
-func get_lock_on() -> LockOn:
+func get_feel() -> FeelKnobs:
+	return director.feel
+
+
+func get_lock_on() -> StubLockOn:
 	return lock_on
 
 
-func get_camera() -> Camera:
+func get_camera() -> StubCamera:
 	return camera
 
 
-func get_player() -> Actor:
+func get_player() -> CombatActor:
 	return player
 
 

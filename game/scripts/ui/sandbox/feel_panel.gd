@@ -34,6 +34,8 @@ const MOUSE_DRAG_PAD: float = 4.0
 
 ## The knobs being edited (null until bind()).
 var knobs: Object = null
+## Where Save writes (passed to the knobs' save_user). Empty: the knobs' own folder, user://feel. Tests set it.
+var save_dir: String = ""
 var audio: UiAudio = UiAudio.new()
 ## Off: the panel does not run itself; tests call tick(delta).
 var manual_ticks: bool = false
@@ -106,8 +108,8 @@ func _exit_tree() -> void:
 # ---- binding ----
 
 ## Connects the panel to the knobs. `meta` is the knob list to show (default: knobs.knobs(), else the
-## list in data/combat/feel.json); `defaults` maps knob id -> studio default (default: the values in
-## data/combat/feel.json, else the values the knobs have right now).
+## list in data/combat/feel.json); `defaults` maps knob id -> studio default (default: the knob's own
+## "default", else its value in data/combat/feel.json, else the value the knobs have right now).
 func bind(knob_object: Object, meta: Array = [], defaults: Dictionary = {}) -> void:
 	knobs = knob_object
 	_meta.clear()
@@ -120,11 +122,12 @@ func bind(knob_object: Object, meta: Array = [], defaults: Dictionary = {}) -> v
 		if knob is Dictionary and not str((knob as Dictionary).get("id", "")).is_empty():
 			_meta.append(knob as Dictionary)
 	_groups = FeelFormat.groups_of(_meta)
-	_defaults = defaults.duplicate() if not defaults.is_empty() else _studio_defaults()
+	_defaults = defaults.duplicate()
+	var studio: Dictionary = _studio_defaults()
 	for knob: Dictionary in _meta:
 		var id: String = str(knob["id"])
 		if not _defaults.has(id):
-			_defaults[id] = knob.get("default", _read(knob))
+			_defaults[id] = knob.get("default", studio.get(id, _read(knob)))
 	_snapshot = _current_values()
 	_tab = clampi(_tab, 0, maxi(0, _groups.size() - 1))
 	_row = 0
@@ -557,7 +560,7 @@ func press_button(button_id: String) -> void:
 func save_now() -> void:
 	var path: String = ""
 	if knobs != null and knobs.has_method("save_user"):
-		path = str(knobs.call("save_user"))
+		path = str(knobs.call("save_user", save_dir)) if not save_dir.is_empty() else str(knobs.call("save_user"))
 	if path.is_empty():
 		_say(SandboxUiData.text("feel.messages.save_failed"), false)
 		audio.sfx("back")

@@ -35,9 +35,16 @@
       {"id": "jump", "actions": ["jump"]},
       {"id": "run", "actions": ["run"]},
       {"id": "menu", "actions": ["menu"]},
-      {"id": "clutch", "actions": ["clutch"]}
+      {"id": "clutch", "actions": ["clutch"]},
+      {"id": "light", "actions": ["light"]},
+      {"id": "heavy", "actions": ["heavy"]},
+      {"id": "dash", "actions": ["dash"]},
+      {"id": "parry", "actions": ["parry"]},
+      {"id": "lock_on", "actions": ["lock_on"]},
+      {"id": "camera_toggle", "actions": ["camera_toggle"]},
+      {"id": "feel_panel", "actions": ["feel_panel"]}
     ],
-    "swap_sets": [["confirm", "cancel"], ["interact", "jump", "run", "menu"]],
+    "swap_sets": [["confirm", "cancel"], ["interact", "jump", "run", "menu"], ["jump", "light", "heavy", "dash", "parry", "lock_on", "camera_toggle"]],
     "capture_timeout_s": 8.0,
     "key_col_w": 74,
     "pad_col_w": 62

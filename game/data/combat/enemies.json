@@ -46,7 +46,7 @@
    "model": "res://art/placeholder/enemies/sandbox_brute/enm_sandbox_brute.glb",
    "fallback_model": "",
    "blockout": {"shape": "box", "color": "#7a4f3a", "face_color": "#e8a23a"},
-   "height_m": 1.7,
+   "height_m": 1.95,
    "radius_m": 0.6,
    "hp": 220,
    "poise": 90,
