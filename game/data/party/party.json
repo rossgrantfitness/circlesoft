@@ -1,5 +1,11 @@
 {
   "_about": "Placeholder party and starting bag for the test room. HP and Juice are not here on purpose: GameState works them out once from the growth table (data/party/growth.csv) plus the starting gear (StatCalc.sync_maximums), so Status, Equip and battles agree. Real stats come from characters.json later (task M2). Each member's equipment is what they wear on a new game (copied from items/equipment.json starting_gear; Equipment falls back to that file when a member has none).",
+  "new_game": {
+    "_about": "What a real New Game (GameState.start_new_game) changes: Red walks alone, everyone starts at level 1, and the bag gets the delivery crate she is smuggling. Otis joins after the dock fight and Mox at the crate scene (GameState.join_party). reset() on its own still gives the full default_party, for tests and the debug rooms.",
+    "party": ["red"],
+    "level": 1,
+    "items": {"delivery_crate": 1}
+  },
   "default_party": [
     "red",
     "otis",

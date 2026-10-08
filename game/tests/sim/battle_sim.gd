@@ -10,6 +10,8 @@ extends RefCounted
 
 const PLAYERS: Array[String] = ["perfect", "good", "auto", "miss"]
 const PLAYER_AUTO: String = "auto"
+const ROUTE_FULL: String = "full"
+const ROUTE_MUST_WIN: String = "must_win"
 
 var data: BattleData
 var progression: Progression
@@ -53,9 +55,22 @@ func refit(member: Dictionary) -> void:
 
 # ---- one fight ----
 
+## Who fights an encounter in the simulator: its `suggested_party` (for example Red alone on the
+## train) or else the whole party.
+func party_for(encounter_id: String) -> Array[String]:
+	var out: Array[String] = []
+	var wanted: Array = data.encounter(encounter_id).get("suggested_party", [])
+	for id: Variant in wanted:
+		out.append(str(id))
+	if out.is_empty():
+		out.append_array(data.character_order)
+	return out
+
+
 ## Builds the setup for one simulated fight. `members` overrides the party (carry-over state).
+## `party_ids` picks who fights when `members` is empty (default: the encounter's suggested_party).
 func make_setup(encounter_id: String, player: String, seed: int, level: int, members: Array[Dictionary] = [],
-		bag: Dictionary = {}) -> BattleSetup:
+		bag: Dictionary = {}, party_ids: Array[String] = []) -> BattleSetup:
 	var setup: BattleSetup = BattleSetup.new()
 	var sim: Dictionary = data.feel.get("sim", {})
 	setup.data = data
@@ -69,7 +84,8 @@ func make_setup(encounter_id: String, player: String, seed: int, level: int, mem
 	setup.command_source = BattleSimPolicy.new(sim)
 	if members.is_empty():
 		var loadouts: Dictionary = gear_for_level(level)
-		for char_id: String in data.character_order:
+		var who: Array[String] = party_ids if not party_ids.is_empty() else party_for(encounter_id)
+		for char_id: String in who:
 			setup.party.append(progression.new_member(char_id, level, loadouts.get(char_id, {})))
 	else:
 		setup.party = members
@@ -83,8 +99,8 @@ func make_setup(encounter_id: String, player: String, seed: int, level: int, mem
 ## Runs one fight. Returns {result, rounds, seconds, timeline_ms, menu_ms, commands, hp_left_pct,
 ## xp, credits, drops, level_ups, party, bag}.
 func run_fight(encounter_id: String, player: String, seed: int, level: int, members: Array[Dictionary] = [],
-		bag: Dictionary = {}) -> Dictionary:
-	var setup: BattleSetup = make_setup(encounter_id, player, seed, level, members, bag)
+		bag: Dictionary = {}, party_ids: Array[String] = []) -> Dictionary:
+	var setup: BattleSetup = make_setup(encounter_id, player, seed, level, members, bag, party_ids)
 	var controller: BattleController = BattleController.create(setup)
 	await controller.start()
 	var outcome: Dictionary = controller.get_result()
@@ -199,42 +215,88 @@ static func check_clutch_matters(data: BattleData, all_stats: Array[Dictionary])
 
 # ---- walkthrough ----
 
-## Fights the walkthrough sequence in order with level-ups and loot carried over. The party is
-## fully healed between fights (a save lamp or Camp Stove) when rest_between is true, and the bag
-## is topped back up to the starting kit (shopping with the credits earned) when restock_between is true.
-## Returns {fights, wins, completed, level, credits, xp, items, party}.
-func walkthrough(player: String, seed: int, rest_between: bool = true, restock_between: bool = true) -> Dictionary:
-	var order: Array = (data.feel.get("walkthrough", {}) as Dictionary).get("order", data.encounter_order)
+## The steps of a route from feel_targets.walkthrough.routes: each {encounter, party: [ids],
+## optional: bool}. Route "full" fights everything; "must_win" skips the optional fights.
+func route_steps(route: String) -> Array[Dictionary]:
+	var walk: Dictionary = data.feel.get("walkthrough", {})
+	var out: Array[Dictionary] = []
+	for step_variant: Variant in walk.get("route", []):
+		var step: Dictionary = step_variant
+		if route == ROUTE_MUST_WIN and bool(step.get("optional", false)):
+			continue
+		out.append(step)
+	return out
+
+
+## Fights a route in order with level-ups and loot carried over. Fighters join when their first
+## step comes up, at the party's top level minus feel_targets.walkthrough.join_level_offset. The
+## party is fully healed between fights (a save lamp or Camp Stove) when rest_between is true, and
+## the bag is topped back up to the starting kit (shopping) when restock_between is true. Stops at
+## the first lost fight. Returns {fights, wins, completed, level, credits, xp, steps, party, lost_at}.
+func walkthrough(player: String, seed: int, rest_between: bool = true, restock_between: bool = true,
+		route: String = ROUTE_FULL) -> Dictionary:
+	var steps: Array[Dictionary] = route_steps(route)
+	var walk_rules: Dictionary = data.feel.get("walkthrough", {})
+	var join_offset: int = int(walk_rules.get("join_level_offset", 0))
 	var members: Array[Dictionary] = []
-	var start_gear: Dictionary = gear_for_level(1)
-	for char_id: String in data.character_order:
-		members.append(progression.new_member(char_id, 1, start_gear.get(char_id, {})))
-	var bag: Dictionary = ((data.feel.get("sim", {}) as Dictionary).get("start_bag", {}) as Dictionary).duplicate()
+	var start_bag: Dictionary = ((data.feel.get("sim", {}) as Dictionary).get("start_bag", {}) as Dictionary).duplicate()
+	var bag: Dictionary = start_bag.duplicate()
 	var credits: int = 0
 	var wins: int = 0
 	var fights: int = 0
-	for i: int in order.size():
-		var fight: Dictionary = await run_fight(str(order[i]), player, seed + i, 1, members, bag)
+	var lost_at: String = ""
+	for i: int in steps.size():
+		var step: Dictionary = steps[i]
+		var ids: Array[String] = []
+		for id: Variant in step.get("party", []):
+			ids.append(str(id))
+		var top_level: int = 1
+		for member: Dictionary in members:
+			top_level = maxi(top_level, int(member["level"]))
+		for id: String in ids:
+			if not _has_member(members, id):
+				var join_level: int = maxi(top_level - join_offset, 1) if not members.is_empty() else 1
+				members.append(progression.new_member(id, join_level, gear_for_level(join_level).get(id, {})))
+		var fighting: Array[Dictionary] = []
+		for id: String in ids:
+			fighting.append(_member_of(members, id))
+		var fight: Dictionary = await run_fight(str(step["encounter"]), player, seed + i, 1, fighting, bag)
 		fights += 1
 		if fight["result"] != BattleController.RESULT_WIN:
+			lost_at = str(step["encounter"])
 			break
 		wins += 1
 		credits += int(fight["credits"])
 		bag = fight["bag"]
 		if restock_between:
-			bag = ((data.feel.get("sim", {}) as Dictionary).get("start_bag", {}) as Dictionary).duplicate()
-		members = []
-		for member: Dictionary in fight["party"]:
-			var kept: Dictionary = member.duplicate()
+			bag = start_bag.duplicate()
+		for after: Dictionary in fight["party"]:
+			var index: int = _index_of(members, str(after["id"]))
+			members[index] = after.duplicate()
+		for kept: Dictionary in members:
 			refit(kept)
 			if rest_between:
 				kept["hp"] = kept["hp_max"]
 				kept["juice"] = kept["juice_max"]
-			members.append(kept)
 	var top: int = 1
 	var xp: int = 0
 	for member: Dictionary in members:
 		top = maxi(top, int(member["level"]))
 		xp = maxi(xp, int(member["xp"]))
-	return {"player": player, "fights": fights, "wins": wins, "completed": wins == order.size(), "level": top,
-		"credits": credits, "xp": xp, "party": members}
+	return {"player": player, "route": route, "fights": fights, "wins": wins, "completed": wins == steps.size(),
+		"level": top, "credits": credits, "xp": xp, "steps": steps.size(), "party": members, "lost_at": lost_at}
+
+
+func _has_member(members: Array[Dictionary], id: String) -> bool:
+	return _index_of(members, id) >= 0
+
+
+func _index_of(members: Array[Dictionary], id: String) -> int:
+	for i: int in members.size():
+		if str(members[i]["id"]) == id:
+			return i
+	return -1
+
+
+func _member_of(members: Array[Dictionary], id: String) -> Dictionary:
+	return members[_index_of(members, id)]

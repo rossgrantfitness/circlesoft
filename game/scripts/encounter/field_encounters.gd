@@ -87,5 +87,32 @@ func battle_finished(result: String) -> void:
 		if enemy.is_persistent():
 			WorldProgress.set_flag(enemy.defeat_flag, game_state)
 		enemy.defeat()
+		_defeat_group(enemy)
+		_give_win_reward(enemy.placement_id)
 	else:
 		enemy.on_battle_over()
+
+
+## Beating one enemy of a group beats them all (the Quota Ambush's three guards).
+func _defeat_group(winner: MapEnemy) -> void:
+	if winner.group_id.is_empty():
+		return
+	for other: MapEnemy in enemies():
+		if other != winner and other.group_id == winner.group_id:
+			if other.is_persistent():
+				WorldProgress.set_flag(other.defeat_flag, game_state)
+			other.defeat()
+
+
+## A placement's "win_reward" ({items: [{item, count}], credits}) is handed over after a win, on top of the
+## fight's own drops: the card grunts' Kasp Access Card. Red reads "Got X!" in the narrator box.
+func _give_win_reward(placement_id: String) -> void:
+	var reward: Dictionary = Placements.enemy(placement_id).get("win_reward", {})
+	if reward.is_empty():
+		return
+	var result: Dictionary = WorldProgress.grant(reward, game_state)
+	var lines: Array[String] = []
+	lines.assign(result["lines"])
+	var interactor: Variant = room.get("interactor") if room != null else null
+	if interactor is PlayerInteractor and not lines.is_empty():
+		(interactor as PlayerInteractor).show_messages(lines)

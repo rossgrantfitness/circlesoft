@@ -26,9 +26,6 @@ extends Node3D
 @export var spawns_name: String = "Spawns"
 ## The crew (the party minus Red) walks behind her. Off in the old test room, which has Otis and Mox standing in it.
 @export var party_follows: bool = true
-## Members only walk behind her once their join flag is set (data/world/exploration.json "follow.join_flags":
-## Otis after the dock fight, Mox later). Off in the graybox test rooms, which show the whole party.
-@export var crew_by_flags: bool = false
 
 const RESUME_BLOCK_FRAMES: int = 6
 
@@ -119,17 +116,12 @@ func spawn_names() -> Array[String]:
 
 
 func _setup_party() -> void:
+	# Whoever is in the party right now walks behind her (Red alone on the train, Otis after the dock
+	# fight, Mox after the crate scene): GameState.get_active_party().
 	var ids: Array[String] = []
 	var state: Node = get_node_or_null("/root/GameState")
 	if state != null:
-		ids.assign(state.call("get_party_ids"))
-	if crew_by_flags:
-		var join_flags: Dictionary = DataDB.get_dict(ExplorationTuning.TUNING_ID).get("follow", {}).get("join_flags", {})
-		var joined: Array[String] = []
-		for id: String in ids:
-			if not join_flags.has(id) or WorldProgress.has_flag(str(join_flags[id])):
-				joined.append(id)
-		ids = joined
+		ids.assign(state.call("get_active_party") if state.has_method("get_active_party") else state.call("get_party_ids"))
 	party = PartyFollow.new()
 	party.name = "PartyFollow"
 	add_child(party)

@@ -112,7 +112,7 @@ def start(room_id, title, w, d, yaw, cam_center, cam_size, wall_h, floor_tint, w
     bounds_script = r.ext_res("Script", "res://scripts/field/camera_bounds.gd")
     env = r.sub("Environment", "background_mode = 1\nbackground_color = Color(0.12156863, 0.14509805, 0.2509804, 1)\n"
                 "ambient_light_source = 2\nambient_light_color = Color(0.7, 0.7, 0.95, 1)")
-    r.nodes.append('[node name="%s" type="Node3D"]\nscript = %s\nplayer_scene = %s\nroom_id = "%s"\ncrew_by_flags = true\n' % (title, script_room, player, room_id))
+    r.nodes.append('[node name="%s" type="Node3D"]\nscript = %s\nplayer_scene = %s\nroom_id = "%s"\n' % (title, script_room, player, room_id))
     r.node("RoomLook", "Node", extra="script = %s\nfog_color = Color(0.12156863, 0.14509805, 0.2509804, 1)\nfog_near = 13.0\nfog_far = 22.0\n"
            "ambient_color = Color(0.7, 0.7, 0.95, 1)\nambient_energy = 1.0" % look)
     r.node("WorldEnvironment", "WorldEnvironment", extra="environment = %s" % env)

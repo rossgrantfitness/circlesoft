@@ -58,6 +58,13 @@ var walk_speed: float = 0.0
 var chase_speed: float = 0.0
 var sight_m: float = 0.0
 var give_up_s: float = 0.0
+## Optional per-placement overrides (placements.json "enemies"): how far and how wide it notices Red, and
+## how close she can be before it notices her from any side. Default: the numbers in map_enemies.json.
+## "sight_m": 0 makes it never notice her (a guard "on break": touch it to fight). "group" ties
+## enemies together: beating one beats them all (the Quota Ambush's three).
+var close_notice_m: float = 1.6
+var sight_cone_deg: float = 130.0
+var group_id: String = ""
 
 var _cfg: Dictionary = {}
 var _state: State = State.PATROL
@@ -102,9 +109,15 @@ func _ready() -> void:
 	chase_speed = float(field.get("chase_speed", 3.2))
 	sight_m = float(field.get("sight_m", 6.0))
 	give_up_s = float(field.get("give_up_s", 4.0))
+	sight_m = float(placement.get("sight_m", sight_m))
+	close_notice_m = float(placement.get("close_notice_m", _cfg.get("close_notice_m", 1.6)))
+	sight_cone_deg = float(placement.get("sight_cone_deg", _cfg.get("sight_cone_deg", 130.0)))
+	group_id = str(placement.get("group", ""))
 	_visual = get_node_or_null(NODE_VISUAL) as Node3D
 	var path: String = model_path if not model_path.is_empty() else str(enemy_def.get("model", ""))
 	_load_model(path)
+	if bool(placement.get("badge", false)):
+		_add_badge()
 	_clock = float(placement_id.hash() % 1000) * 0.01
 
 
@@ -274,10 +287,10 @@ func _check_touch(distance: float, height_diff: float) -> void:
 ## Whether the enemy notices Red from where it stands: within sight, in front of it (or very close),
 ## with nothing solid between.
 func _sees_target(distance: float, offset: Vector3) -> bool:
-	if distance > sight_m or absf(target.global_position.y - global_position.y) > 2.0:
+	if sight_m <= 0.0 or distance > sight_m or absf(target.global_position.y - global_position.y) > 2.0:
 		return false
-	if distance > float(_cfg.get("close_notice_m", 1.6)):
-		var half_cone: float = deg_to_rad(float(_cfg.get("sight_cone_deg", 130.0)) * 0.5)
+	if distance > close_notice_m:
+		var half_cone: float = deg_to_rad(sight_cone_deg * 0.5)
 		if _flat(get_facing()).normalized().dot(offset.normalized()) < cos(half_cone):
 			return false
 	return not _wall_between(target.global_position)
@@ -371,6 +384,16 @@ func _load_model(wanted: String) -> void:
 			clips.play(&"idle")
 		break
 	_stand_on_the_floor()
+
+
+## The card lanyard: a small bright yellow box on the chest, so players can spot who carries one
+## (placements.json "badge": true; placeholder until the art lands).
+func _add_badge() -> void:
+	if _visual == null:
+		return
+	var badge: MeshInstance3D = PropLook.box(Vector3(0.16, 0.2, 0.05), PropLook.glow(Color(1.0, 0.88, 0.2), 1.3), "CardBadge")
+	badge.position = Vector3(0.0, 0.62, 0.22)
+	_visual.add_child(badge)
 
 
 ## A model that sits below its origin is lifted onto the floor; one that hovers keeps its hover.

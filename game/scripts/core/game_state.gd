@@ -29,6 +29,8 @@ const EQUIPMENT_SLOTS: Array[String] = ["weapon", "armor", "charm"]
 const SAVE_DATA_ID: String = "world/save"
 const ROOMS_DATA_ID: String = "world/rooms"
 const KEY_NEW_GAME: String = "new_game"
+## party.json "new_game": {party: [ids], level: n, items: {id: count}} (see start_new_game).
+const KEY_PARTY_NEW_GAME: String = "new_game"
 const DEFAULT_HERO_NAME: String = "Red"
 const HERO_ID: String = "red"
 const PLAY_TIME_STEP_S: float = 0.001
@@ -39,6 +41,7 @@ var _party_ids: Array[String] = []
 var _default_party_ids: Array[String] = []
 var _members: Dictionary[String, Dictionary] = {}
 var _starting_items: Dictionary[String, int] = {}
+var _new_game_party: Dictionary = {}
 var _base_members: Dictionary[String, Dictionary] = {}
 var _credits: int = 0
 var _play_time_s: float = 0.0
@@ -80,6 +83,7 @@ func load_party(doc: Dictionary) -> void:
 	var starting: Dictionary = doc.get(KEY_STARTING_ITEMS, {})
 	for id: String in starting:
 		_starting_items[id] = int(starting[id])
+	_new_game_party = (doc.get(KEY_PARTY_NEW_GAME, {}) as Dictionary).duplicate(true)
 	_sync_starting_stats()
 
 
@@ -112,6 +116,35 @@ func reset() -> void:
 		_bag[id] = clampi(_starting_items[id], 0, MAX_STACK)
 	_party_ids = _default_party_ids.duplicate()
 	_apply_new_game_place()
+
+
+## A real New Game (the title's): reset(), then the story's start. Red walks alone (party.json
+## "new_game".party), every member starts at "new_game".level (Red's first fight is at level 1), and
+## the bag gets "new_game".items (the delivery crate she is smuggling). reset() on its own still
+## gives the whole roster, which is what most tests and the debug rooms want. Otis and Mox join
+## later through join_party().
+func start_new_game() -> void:
+	reset()
+	var level: int = int(_new_game_party.get("level", 0))
+	if level > 0:
+		var growth: Dictionary = BattleData.shared().growth
+		for id: String in _members:
+			if not growth.has(id):
+				continue
+			_members[id]["level"] = level
+			_members[id]["xp"] = 0
+			_members[id].erase("hp")
+			_members[id].erase("juice")
+			StatCalc.sync_maximums(id, {}, self)
+	var party: Array[String] = []
+	for id: Variant in _new_game_party.get("party", []):
+		if _members.has(str(id)):
+			party.append(str(id))
+	if not party.is_empty():
+		_party_ids = party
+	var items: Dictionary = _new_game_party.get("items", {})
+	for item_id: String in items:
+		add_item(item_id, int(items[item_id]))
 
 
 func _apply_new_game_place() -> void:
@@ -239,6 +272,33 @@ func set_party_order(ids: Array[String]) -> bool:
 			return false
 		seen[id] = true
 	_party_ids = ids.duplicate()
+	return true
+
+
+## Who is in the party right now, in order (Red first). Battles, the field menu and the walking crew
+## all read this. join_party / leave_party change it; set_party_order reorders it.
+func get_active_party() -> Array[String]:
+	return _party_ids.duplicate()
+
+
+func is_in_party(member_id: String) -> bool:
+	return _party_ids.has(member_id)
+
+
+## Adds a known member to the end of the party (Otis after the dock fight, Mox at the crate scene).
+## False (and nothing changes) for an unknown member or one already in.
+func join_party(member_id: String) -> bool:
+	if not _members.has(member_id) or _party_ids.has(member_id):
+		return false
+	_party_ids.append(member_id)
+	return true
+
+
+## Takes a member out of the party (their stats are kept for when they return). Red can never leave.
+func leave_party(member_id: String) -> bool:
+	if member_id == HERO_ID or not _party_ids.has(member_id):
+		return false
+	_party_ids.erase(member_id)
 	return true
 
 

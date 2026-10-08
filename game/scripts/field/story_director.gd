@@ -15,7 +15,12 @@ extends Node
 ##     set_flag {flag}   clear_flag {flag}   give_item {item, count}   take_item {item, count}
 ##     credits {amount}   beat {beat}
 ##     battle {encounter, first_turn}      asks Main for that fight and waits for how it ended
-##     join {member, at}                   adds a member to the walking line at an actor's spot
+##     join {member, at}                   the member joins the party (GameState.join_party) and the walking
+##                                         line, standing at an actor's spot
+##     wait_action {action, prompt}        shows a prompt (a line from data/text/train.json) and waits for that
+##                                         button (the train's one prompted Jump; it can't be missed, it waits)
+##     goto {room, spawn}                  changes room through the SceneRouter (the scene ends with it)
+##     heal_party                          full HP and Juice for everyone (the old Zero's thermos)
 ## Red is frozen while a scene plays (unless "freeze": false) and the crew stands still.
 ## Dialogue lines can carry their own set_flag / give_item actions too.
 
@@ -37,6 +42,10 @@ var instant: bool = false
 ## Off: the triggers are not checked (tests that start scenes by hand).
 var triggers_enabled: bool = true
 var current_scene: String = ""
+## Set by press_action(); the awaited button counts as pressed.
+var pressed_action: bool = false
+## True while a wait_action step is showing its prompt.
+var waiting_for_action: bool = false
 
 var _triggers: Array[String] = []
 var _running: bool = false
@@ -194,6 +203,14 @@ func _do(step: Dictionary) -> void:
 			await _battle(step)
 		"join":
 			_join(step)
+		"wait_action":
+			await _wait_action(step)
+		"goto":
+			_goto(step)
+		"heal_party":
+			var healer: Node = WorldProgress.game_state(game_state)
+			if healer != null:
+				healer.call("rest_party")
 		_:
 			push_warning("StoryDirector: unknown step '%s' in scene %s" % [step.get("do", ""), current_scene])
 
@@ -228,6 +245,9 @@ func _battle(step: Dictionary) -> void:
 
 
 func _join(step: Dictionary) -> void:
+	var gs: Node = WorldProgress.game_state(game_state)
+	if gs != null and gs.has_method("join_party"):
+		gs.call("join_party", str(step.get("member", "")))
 	if room.party == null:
 		return
 	var at_actor: Node3D = actor(str(step.get("at", "red")))
@@ -312,3 +332,30 @@ static func _list(value: Variant) -> Array[String]:
 	else:
 		items.append(str(value))
 	return items
+
+
+## Shows a prompt and waits until `action` is pressed. Nothing to miss: the prompt waits as long as it takes.
+func _wait_action(step: Dictionary) -> void:
+	var action: StringName = StringName(str(step.get("action", "jump")))
+	var prompt: Control = ActionPrompt.show_on_stage(get_tree(), str(step.get("prompt", "")))
+	pressed_action = false
+	waiting_for_action = true
+	while not _gone and is_inside_tree():
+		if pressed_action or Input.is_action_just_pressed(action):
+			break
+		await get_tree().physics_frame
+	waiting_for_action = false
+	pressed_action = false
+	if prompt != null and is_instance_valid(prompt):
+		prompt.queue_free()
+
+
+## Tests (and a touch screen later) press the awaited button this way.
+func press_action() -> void:
+	pressed_action = true
+
+
+func _goto(step: Dictionary) -> void:
+	var route: Node = router if router != null else get_node_or_null("/root/SceneRouter")
+	if route != null:
+		route.call("go_to", str(step.get("room", "")), str(step.get("spawn", "")))

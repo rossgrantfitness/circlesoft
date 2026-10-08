@@ -35,7 +35,15 @@ static func from_game_state(state: Node, p_encounter_id: String, config: Node = 
 	var setup: BattleSetup = BattleSetup.new()
 	setup.encounter_id = p_encounter_id
 	setup.first_turn = p_first_turn
-	for member: Dictionary in state.call("get_party"):
+	# The fighters are whoever is in the party right now (Red alone at the start; Otis joins after the dock
+	# fight, Mox at the crate scene), not the whole roster.
+	var roster: Array[Dictionary] = []
+	if state.has_method("get_active_party"):
+		for member_id: String in state.call("get_active_party"):
+			roster.append(state.call("get_member", member_id) as Dictionary)
+	else:
+		roster.assign(state.call("get_party"))
+	for member: Dictionary in roster:
 		var fighter: Dictionary = member.duplicate(true)
 		# Gear: the battle reads stats through StatCalc and charms through their status blocks
 		# (see BattleController._make_party_member), so hand it what each fighter wears.

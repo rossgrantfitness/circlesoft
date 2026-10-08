@@ -4,8 +4,10 @@ extends RoomProp
 ## icon); the SceneRouter fades and loads the other room at the named spawn. Where it leads, and
 ## what it needs, comes from data/world/placements.json ("doors"):
 ##   to_room, to_spawn      the target room and spawn marker (rooms.json)
-##   requires {item, consume, flag}   a key item and/or a story flag; consume takes the item once
-##   locked_message         what Red reads when it will not open (so a locked door says what it wants)
+##   requires {item, count, consume, flag}   a key item (how many: `count`, default 1; Kasp's cards are counted, not
+##                          used up) and/or a story flag; consume takes the item once
+##   locked_message         what Red reads when it will not open (so a locked door says what it wants);
+##                          {have} and {need} are filled in with the item count held and wanted
 ##   unlocked_message       shown the first time the key works
 ##   width                  a wider doorway than the default (stairs, arches)
 ##   style                  "panel" (a slab in a wall, the default), "mat" (a lit doormat on an open
@@ -84,7 +86,10 @@ func is_unlocked() -> bool:
 func locked_message() -> String:
 	var custom: String = str(door_data().get("locked_message", ""))
 	if not custom.is_empty():
-		return custom
+		var needs: Dictionary = requirements()
+		var item_id: String = str(needs.get("item", ""))
+		var have: int = int(state().call("item_count", item_id)) if not item_id.is_empty() else 0
+		return custom.replace("{have}", str(have)).replace("{need}", str(int(needs.get("count", 1))))
 	return Placements.text("locked_default")
 
 
@@ -136,7 +141,7 @@ func _router() -> Node:
 
 func _requirements_met(needs: Dictionary) -> bool:
 	var item_id: String = str(needs.get("item", ""))
-	if not item_id.is_empty() and not bool(state().call("has_item", item_id)):
+	if not item_id.is_empty() and int(state().call("item_count", item_id)) < maxi(int(needs.get("count", 1)), 1):
 		return false
 	return WorldProgress.has_flag(str(needs.get("flag", "")), game_state) or str(needs.get("flag", "")).is_empty()
 
