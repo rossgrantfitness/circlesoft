@@ -782,13 +782,29 @@ func _row_at(at: Vector2) -> int:
 
 func _tab_rects() -> Array[Rect2]:
 	var out: Array[Rect2] = []
-	var x: float = _left()
-	var pad: float = float(_layout.get("tab_pad_x", 6))
+	var gap: float = float(_layout.get("tab_gap", 2))
+	var widths: Array[float] = []
+	var text_total: float = 0.0
 	for group: String in _groups:
-		var w: float = SandboxStyle.text_width("label", FeelFormat.group_title(group).to_upper()) + pad * 2.0
+		var text_w: float = SandboxStyle.text_width("label", FeelFormat.group_title(group).to_upper())
+		widths.append(text_w)
+		text_total += text_w
+	# Padding shrinks when many groups would not fit the panel width.
+	var room: float = _width() - gap * float(maxi(0, _groups.size() - 1))
+	var pad: float = clampf((room - text_total) / maxf(1.0, float(_groups.size()) * 2.0), 1.0, float(_layout.get("tab_pad_x", 6)))
+	var x: float = _left()
+	for i: int in _groups.size():
+		var w: float = widths[i] + pad * 2.0
 		out.append(Rect2(x, float(_layout["tab_y"]), w, float(_layout["tab_h"])))
-		x += w + float(_layout.get("tab_gap", 2))
+		x += w + gap
 	return out
+
+
+func _tab_pad() -> float:
+	var rects: Array[Rect2] = _tab_rects()
+	if rects.is_empty():
+		return 0.0
+	return (rects[0].size.x - SandboxStyle.text_width("label", FeelFormat.group_title(_groups[0]).to_upper())) / 2.0
 
 
 func _tab_at(at: Vector2) -> int:
@@ -847,7 +863,7 @@ func _draw_tabs() -> void:
 		var rect: Rect2 = rects[i]
 		var active: bool = i == _tab
 		SandboxStyle.list_bar(_overlay, rect, active, not active)
-		var pad: float = float(_layout.get("tab_pad_x", 6))
+		var pad: float = (rect.size.x - SandboxStyle.text_width("label", FeelFormat.group_title(_groups[i]).to_upper())) / 2.0
 		SandboxStyle.text(_overlay, "label", Vector2(rect.position.x + pad, rect.position.y + 9.0), FeelFormat.group_title(_groups[i]).to_upper(), SandboxStyle.row_color(active))
 		if active and _zone == Zone.TABS:
 			SandboxStyle.cursor(_overlay, Vector2(rect.position.x - 1.0, rect.position.y + rect.size.y / 2.0))

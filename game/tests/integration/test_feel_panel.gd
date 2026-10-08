@@ -505,3 +505,11 @@ func test_right_click_closes() -> void:
 	event.position = _stage_point(Vector2(50, 50))
 	_panel.handle_mouse(event)
 	assert_false(_panel.is_open())
+
+
+func test_the_tabs_always_fit_inside_the_panel() -> void:
+	_setup()
+	var rects: Array[Rect2] = _panel._tab_rects()
+	assert_eq(rects.size(), _panel.get_knob_groups().size())
+	var right: float = float(SandboxUiData.ui("feel_panel.x", 16)) + float(SandboxUiData.ui("feel_panel.w", 352))
+	assert_le(rects.back().end.x, right + 0.5, "the last tab ends inside the panel")

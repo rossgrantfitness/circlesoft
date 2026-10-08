@@ -27,8 +27,16 @@ const SHOTS: Dictionary = {
 		"keys": "res://data/combat/wolf_clip_keys.json",
 		"sword": false,
 		"height": 1.19,
-		"poses": [["idle", "0.5"], ["run", "0.1"], ["attack_windup", "contact"], ["attack_swing", "contact"], ["block", "contact"],
-				["hurt", "contact"], ["dodge", "contact"], ["stagger", "0.3"], ["knockdown", "contact"], ["getup", "0.5"]],
+		"poses": [["idle", "0.5"], ["run", "0.1"], ["attack_windup", "contact"], ["attack_swing", "contact"], ["block_hold", "0.5"],
+				["hurt", "contact"], ["dodge_side", "0.3"], ["strafe_l", "0.2"], ["stagger", "0.3"], ["knockdown", "contact"]],
+	},
+	"brute": {
+		"model": "res://art/placeholder/enemies/sandbox_brute/enm_sandbox_brute_ual.glb",
+		"keys": "res://data/combat/brute_clip_keys.json",
+		"sword": false,
+		"height": 1.7,
+		"poses": [["idle", "0.5"], ["run", "0.3"], ["slam", "contact"], ["enrage", "0.6"], ["block_hold", "0.5"],
+				["hurt", "contact"], ["stagger", "0.3"], ["knockdown", "0.5"], ["getup", "0.7"], ["notice", "0.4"]],
 	},
 }
 const COLUMNS: int = 5
