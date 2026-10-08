@@ -1,5 +1,5 @@
 {
-  "_about": "The courier office's job board (JobBoard). Each job: board (which board), order, title, taken_flag / done_flag, description (shown before taking), take {text, give_items, set_flags}, taken_text (reminder), done_text. Placeholder text until the Writer's M6-2 pass. The main job is finished at the tower (M4); the two side deliveries finish in town: 'The dark window' when the lamp is lit on Lamp Square, 'Appeal in triplicate' when the form is dropped in the checkpoint's APPEALS slot (scenes dark_window_light and appeal_deliver in story_scenes.json).",
+  "_about": "The courier office's job board (JobBoard). Each job: board (which board), order, title, taken_flag / done_flag, description (shown before taking), take {text, give_items, set_flags}, taken_text (reminder), done_text. Placeholder text (re-toned 2026-10-08, grim world) until the Writer's M6-2 sign-off. The main job is claimed at Otis's dock with the Claim Slip and finished at the tower (M4); the two side deliveries finish in town: 'The dark window above the store' when the lamp is lit on Lamp Square, 'Appeal in triplicate' when the form is dropped in the checkpoint's APPEALS slot (scenes dark_window_light and appeal_deliver in story_scenes.json).",
   "text": {
     "menu": "JOB BOARD. Pick one.",
     "tag_available": "",
@@ -14,11 +14,11 @@
       "taken_flag": "job_main_taken",
       "done_flag": "job_main_done",
       "description": [
-        "MAIN JOB. One crate, from Otis's dock office to the Old Relay Tower.",
-        "Ordered by Watch Zero. Supplies for the sit-in. Thermoses, cushions. Do not ask."
+        "MAIN JOB. Claim the crate at Otis's dock office, then run it to the Old Relay Tower.",
+        "Ordered by Watch Zero. Thermoses, cushions, and sleeve bells. The bells are contraband. Do not ask."
       ],
       "take": {
-        "text": "Job taken. Courier Job Slip in hand. Otis's dock office is down the stairs.",
+        "text": "Job taken. Claim Slip in hand. Otis's dock office is down the stairs.",
         "give_items": [
           {
             "item": "courier_job_slip",
@@ -30,24 +30,24 @@
         ]
       },
       "taken_text": [
-        "Crate, one, from Otis's dock office to the Old Relay Tower. Why are you still reading?"
+        "Claim the crate at Otis's dock office, then run it to the Old Relay Tower. Why are you still reading?"
       ],
       "done_text": [
-        "Crate delivered. Stamped DONE."
+        "Crate delivered. Stamped DONE. Nobody saw anything."
       ]
     },
     "dark_window": {
       "board": "cr_board",
       "order": 2,
-      "title": "Side: The dark window",
+      "title": "Side: Window above the store",
       "taken_flag": "job_dark_window_taken",
       "done_flag": "job_dark_window_done",
       "description": [
-        "SIDE JOB. Lamp oil, one can, to the dark window on Lamp Square. Tonight.",
-        "Pay: a Lucky Bolt and 100 credits."
+        "SIDE JOB. Lamp oil, one can, to the dark window above the store on Lamp Square. Tonight.",
+        "Pay: a Lucky Bolt and 100 credits. Oil costs a meal these days. Don't spill it."
       ],
       "take": {
-        "text": "Oil can handed over. It's the one dark window on the square.",
+        "text": "Oil can handed over. Hold it like a week's rations. It is.",
         "give_items": [
           {
             "item": "side_job_parcel",
@@ -59,7 +59,7 @@
         ]
       },
       "taken_text": [
-        "Lamp oil to the dark window on Lamp Square. Hop the crates up to the little balcony."
+        "Lamp oil to the dark window above the store. Hop the crates up to the little balcony."
       ],
       "done_text": [
         "Window's lit. Stamped DONE. Pay's on the sill."

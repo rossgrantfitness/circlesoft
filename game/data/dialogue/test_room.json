@@ -3,7 +3,7 @@
 
     "otis_talk": [
       {"speaker": "otis", "text": "Red! There you are. Welcome to the\ntest room, friend."},
-      {"speaker": "otis", "text": "Sorry about the mat. It says WELCOME,\nbut it's upside down. Nobody told it."},
+      {"speaker": "otis", "text": "Sorry about the mat. It says WELCOME,\nbut it's upside down. Safer that way."},
       {"speaker": "red", "gesture": "question"},
       {"speaker": "otis", "text": "Mm-hm. That's the 'what is all this?'\nface. Fair question."},
       {"speaker": "otis", "text": "I can give you the grand tour. Or you\ncan poke things and see what happens.",
@@ -12,7 +12,7 @@
     ],
 
     "otis_talk_again": [
-      {"speaker": "otis", "text": "Back already? Good. I was just counting\nthe room."},
+      {"speaker": "otis", "text": "Back already? Good. I was just counting\nthe room. Everyone's here. I like that."},
       {"speaker": "otis", "text": "Sorry, I lost count at the crates.\nThey all look like crates."},
       {"speaker": "red", "gesture": "heart"},
       {"speaker": "otis", "text": "Aw. That one needs no translating.\nSorry, I got a little misty. Dust."}
@@ -28,8 +28,8 @@
     "long_briefing": [
       {"speaker": "otis", "text": "Right! The grand tour. Hold on to your\nhat. I'm holding on to mine."},
       {"speaker": "mox", "text": "DIBS on narrating! This is a TEST ROOM.\nFor testing! Like me!"},
-      {"speaker": "otis", "text": "Mox. How did you get in here?"},
-      {"speaker": "mox", "text": "Crate. Next question."},
+      {"speaker": "otis", "text": "Mox. Shh. How did you get in here?"},
+      {"speaker": "mox", "text": "Crate. Next question. LOUDLY."},
       {"speaker": "otis", "text": "Sorry, friend, I'll make it quick. Talk to\nfolks. Examine things. Grab what glints."},
       {"speaker": "red", "gesture": "exclaim"},
       {"speaker": "mox", "text": "She's saying 'Mox is a genius.' I can\ntell. It's all in the ears."},
@@ -58,7 +58,7 @@
 
     "mox_press": [
       {"speaker": "mox", "text": "Pressing it! Pressing it! ...Whoa."},
-      {"speaker": "mox", "text": "CONFETTI! It's confetti! That was\nsupposed to be a rocket!"},
+      {"speaker": "mox", "text": "CONFETTI! Ration-wrapper confetti! That\nwas supposed to be a rocket!"},
       {"speaker": "mox", "text": "But confetti is... part of the forty percent."},
       {"speaker": "red", "gesture": "thumbs_up"},
       {"speaker": "mox", "text": "She loves it! I knew she would. Obviously."}
@@ -72,7 +72,7 @@
     ],
 
     "zero_talk": [
-      {"speaker": "zero_old", "text": "Watch Zero, SOUND OFF! *DING-DING!*\nThat's me. I'm all of Watch Zero today."},
+      {"speaker": "zero_old", "text": "Watch Zero, SOUND OFF! *DING-DING!*\nThat's me. Fewer answer every year.\nI answer double."},
       {"speaker": "zero_old", "text": "You, kid! Stand still when I'm talking!"},
       {"speaker": "zero_old", "text": "The Signals Corps wrote me up for noise.\nIn a room built for testing noise! *DING!*"},
       {"speaker": "zero_old", "text": "I've out-shouted a sergeant. Twice.\nBefore breakfast. *DING!*"},
@@ -93,12 +93,12 @@
     ],
 
     "examine_pillar": [
-      {"speaker": "narrator", "text": "A stone pillar. It holds up nothing in\nparticular and is very proud of it."},
+      {"speaker": "narrator", "text": "A stone pillar. It holds up nothing in\nparticular. Someone stenciled a ring-and-bar\non it anyway."},
       {"speaker": "narrator", "text": "Scratched in at Mox height:\nMOX WUZ HERE."}
     ],
 
     "examine_lamp": [
-      {"speaker": "narrator", "text": "A brass lamp on a stand. Warm to the\ntouch. Slightly crooked."},
+      {"speaker": "narrator", "text": "A brass lamp on a stand. Warm to the touch,\nslightly crooked, and probably unpermitted."},
       {"speaker": "narrator", "text": "Red taps the glass twice before she\nnotices. Habit."}
     ],
 
@@ -119,7 +119,7 @@
 
     "examine_sign": [
       {"speaker": "sign", "text": "TEST ROOM\nPLEASE DO NOT TEST THE TEST ROOM"},
-      {"speaker": "sign", "text": "Management has noted that you are\ncurrently testing this sign."},
+      {"speaker": "sign", "text": "Management has noted that you are\ncurrently testing this sign. In triplicate."},
       {"speaker": "sign", "text": "Management thanks you for your testing.\nPlease stop."}
     ],
 

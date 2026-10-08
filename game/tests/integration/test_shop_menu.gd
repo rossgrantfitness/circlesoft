@@ -160,7 +160,7 @@ func test_buying_with_the_quantity_picker_spends_credits_and_fills_the_bag() -> 
 	assert_eq(_state.call("get_credits"), 500 - 45)
 	assert_eq(_state.call("item_count", "ration_bar"), 2 + 3, "the starting two plus three")
 	assert_eq(menu.get_credits_text(), "455")
-	assert_eq(menu.get_info_text(), "Bought 3 Ration Bar. Thank you!")
+	assert_eq(menu.get_info_text(), "Bought 3 Ration Bar. Keep the receipt. They check.")
 	assert_eq(menu.get_state(), ShopMenu.State.LIST, "back to the shelf")
 	assert_false(menu.is_quantity_shown())
 	assert_eq(log, ["ration_bar x3"])
@@ -283,7 +283,7 @@ func test_selling_pays_half_and_empties_the_row() -> void:
 	menu.handle_command(MenuInput.Cmd.CONFIRM)
 	assert_eq(_state.call("get_credits"), 14)
 	assert_eq(_state.call("item_count", "ration_bar"), 0)
-	assert_eq(menu.get_info_text(), "Sold 2 Ration Bar. Pleasure doing business.")
+	assert_eq(menu.get_info_text(), "Sold 2 Ration Bar. No questions asked.")
 	assert_null(_row(menu, "ration_bar").get("id"), "the sold-out row is gone")
 	assert_eq(log, ["ration_bar x2"])
 

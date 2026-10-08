@@ -3,7 +3,7 @@
   "id": "harrow_general",
   "name": "Harrow General",
   "kind": "general",
-  "greeting": "Welcome! Everything's cans, mostly. Mind the ones that rattle.",
+  "greeting": "Cans, mostly. Mind the ones that rattle. Prices are on the shelf. Brace yourself.",
   "stock": [
     "ration_bar",
     "can_of_chili",

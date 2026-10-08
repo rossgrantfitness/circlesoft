@@ -6,6 +6,8 @@ extends TestCase
 ## once: godot --headless --path game --import
 
 const SHIBA_PATH: String = "res://art/placeholder/characters/red/red_shiba.glb"
+## The default Red since Ross approved the grim look (2026-10-08): player.tscn names her; F11 swaps in the classic shiba.
+const GRIM_SHIBA_PATH: String = "res://art/placeholder/characters/red/red_shiba_grim.glb"
 const PLAYER_SCENE: String = "res://scenes/actors/player.tscn"
 const LIT_SHADER: String = "res://shaders/psx_lit.gdshader"
 const PARTY_TRIANGLE_HARD_CAP: int = 900
@@ -131,7 +133,7 @@ func test_scale_origin_and_materials() -> void:
 func test_player_scene_points_at_the_shiba_and_attaches_it() -> void:
 	var player: PlayerController = (load(PLAYER_SCENE) as PackedScene).instantiate() as PlayerController
 	add_to_root(player)
-	assert_eq(player.model_path, SHIBA_PATH, "player.tscn names the shiba")
+	assert_eq(player.model_path, GRIM_SHIBA_PATH, "player.tscn names the grim shiba (the approved default look)")
 	assert_not_null(player.get_node_or_null("Visual/Model"), "model attached")
 	assert_null(player.get_node_or_null("Visual/PlaceholderCapsule"), "capsule stand-in removed")
 	assert_eq(player.get_current_animation(), &"idle")

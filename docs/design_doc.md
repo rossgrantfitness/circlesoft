@@ -2,17 +2,17 @@
 
 > Owner: Creative Director (proposes) · Ross (approves). Nothing here is final until it appears in docs/decisions.md.
 
-> **For Ross (tone pass, 2026-10-08, waiting on you):** Only the tone words changed: the Core pitch and elevator pitch now say "grim frontier, loud crew" instead of "loud, goofy" and drop "chibi"; Pillar 2 swaps "we DON'T go grimdark" for a DO / DON'T pair that puts the grime in the world and keeps the heart in the heroes; Pillar 3 says "animal characters" instead of "cute chibi critters". Every system, number and section below is untouched. Changed lines are tagged "TONE PASS 2026-10-08, pending Ross". The full tone guide is docs/tone_guide.md.
+> **For Ross (2026-10-08): your approvals are in.** The tone pass is official. The 10-hour structure now gives Harrow ten settings over about 3 hours (train, slums, Spillway, jammer works, lockdown, curfew, the Signals compound, the dead ore line, Biscuit's stomp, the cargo yard), and Act 2's moons are Pit Nine and Breaker's Ring. The slice now opens on the ore train and runs about 33 minutes; your art list goes from 41 to 42 (one train-car kit). Systems and numbers are untouched.
 
 ## Core pitch
-> ✅ APPROVED by Ross, 2026-10-06 (Relay swapped for timed hits per Ross). **TONE PASS 2026-10-08, pending Ross:** tone words in the last sentence, "chibi" dropped, one clause on the world added.
+> ✅ APPROVED by Ross, 2026-10-06 (Relay swapped for timed hits per Ross). **Tone pass ✅ APPROVED by Ross, 2026-10-08:** tone words in the last sentence, "chibi" dropped, one clause on the world added.
 
 LIGHTS LEFT ON is a classic 90s JRPG hero's journey. Ten years ago Red's mom flew into the starless dark to answer a distress call. Now the Hegemony has the frontier by the throat (checkpoints, curfews, quotas, the masts being jammed one by one), and Red, a silent scrappy pup in Mom's three-sizes-too-big jacket, goes after her anyway with a loud animal crew: a gentle bear, a panicky ferret genius, a by-the-book bunny and a show-off raccoon. In about 10 hours you climb from on foot to big robot to giant robot to giant spaceship to fighting a god. Battles are classic turn-based JRPG fights with timed hits: press the button at the right moment to hit harder, or to block when you're hit. Beat the Admiral's lieutenants and they end up on your side. And the call? It isn't what it seems. A low-poly PSX look in the spirit of Mega Man Legends, Tail Concerto, Metal Gear Solid and Final Fantasy VII: a greasy, grim, oppressed frontier, and a crew too loud and big-hearted to give up on it.
 
-**Elevator pitch** *(TONE PASS 2026-10-08, pending Ross)***:** On a frontier ground down by an empire, a silent pup and her loud animal crew chase her missing mom's distress call from on foot to giant robots to a giant spaceship, all the way up to punching out a god.
+**Elevator pitch** *(✅ APPROVED by Ross, 2026-10-08)***:** On a frontier ground down by an empire, a silent pup and her loud animal crew chase her missing mom's distress call from on foot to giant robots to a giant spaceship, all the way up to punching out a god.
 
 ## Pillars
-> ✅ APPROVED by Ross, 2026-10-06 (Relay swapped for timed hits per Ross). **TONE PASS 2026-10-08, pending Ross:** Pillar 2's body and its DO / DON'T lines; three words in Pillar 3. Pillar names unchanged.
+> ✅ APPROVED by Ross, 2026-10-06 (Relay swapped for timed hits per Ross). **Tone pass ✅ APPROVED by Ross, 2026-10-08:** Pillar 2's body and its DO / DON'T lines; three words in Pillar 3. Pillar names unchanged.
 
 1. **Always Bigger.** When two ideas are close, pick the one that makes the climb feel bigger (bigger machines, bigger bosses, bigger crowds) and makes every win feel like a knockout.
    *This means we DON'T* end a big fight on a quiet fizzle, stall at one scale for too long, or cut robots and spaceships to save time; cut something else first.
@@ -42,9 +42,9 @@ LIGHTS LEFT ON is a classic 90s JRPG hero's journey. Ten years ago Red's mom fle
 ### Towns
 **What you do:** talk to everyone (their lines change after every story beat), shop, rest, find hidden items and pick up small side jobs.
 
-**Harrow Landing (the slice town),** at night, with lamps in the windows:
-- **Red's home:** her window lamp. Rest (full heal) and save, free.
-- **Courier office:** the job board. The main job to the Old Relay Tower, plus one or two small side deliveries for credits and items.
+**Harrow Landing (the slice town),** at night: stacked slums under the ore line, about half the windows on Lamp Square dark, a few relighting on the walk home after Kasp (Ross, 2026-10-08):
+- **Red's home:** her window lamp. Rest (full heal) and save, free. The second stop of the game, after the ore train.
+- **Courier office:** the job board. The main job (a claim slip: get the ditched crate back from Otis's dock, then deliver it to Watch Zero at the Old Relay Tower), plus one or two small side deliveries for credits and items.
 - **The docks and Otis's dock office:** where the first fight happens. Otis's desk has things to examine.
 - **The bar:** barflies, gossip, rumors and the bets board (just flavor in the slice).
 - **General store** (healing items) and a **junk-and-gear shop** (weapons and armor, all scavenged).
@@ -63,8 +63,8 @@ LIGHTS LEFT ON is a classic 90s JRPG hero's journey. Ten years ago Red's mom fle
 - **Treasure:** chests are crates. Gray Hegemony supply crates (ring-and-bar stencil), and Coldrunner stashes marked with a chalked shuttered lantern, so sharp-eyed players learn to search wherever they see chalk.
 - **Save points:** a lamp in a little wall niche. Red does her lamp check to save. One at the entrance, one before the boss.
 
-**The Old Relay Tower (the slice dungeon):**
-- Watch Zero's back way leads into the half-buried bottom floor, then up about 5 floors around the old mast to Kasp and the Hushmaster at the top.
+**The Old Relay Tower, now the jammer works (the slice dungeon; ✅ recast approved by Ross, 2026-10-08):**
+- The Signals have built a jammer factory around the ancient mast. Watch Zero's drain grate leads into the untouched base of the mast, then up about 5 factory floors (cable mill, the walled-in bell shrine, power room, drone line) to Kasp and the Hushmaster on the roof.
 - The early floors teach battles and Clutch with easy fights. The call gets louder with every floor (audio).
 - **Puzzles:** Kasp's laminated access cards (grunts drop them; every card has his photo on it) open Signals doors; a power switch runs the old cage lift; one crate push opens a side path. **Optional:** ring the Zeroes' bells in the order of the tune an old Zero hums, for a bonus chest.
 - **Things to examine:** the Writer gives the level builder the list (some carry story details).
@@ -78,7 +78,7 @@ LIGHTS LEFT ON is a classic 90s JRPG hero's journey. Ten years ago Red's mom fle
 - **Respawning:** enemies come back when you leave an area and return. Bosses and story fights don't.
 
 ### Getting around the Marches
-- **Act 1 (Harrow, on foot):** no world map. Harrow's places are joined by short paths you walk (the Landing, the road to the tower, later the ore tunnels).
+- **Act 1 (Harrow, on foot):** no world map. Harrow's places are joined by short paths you walk or ride (the ore train in, the Landing, the Spillway to the jammer works, later the dead ore line).
 - **Biscuit (end of Act 1):** a story stomp through the Landing, not free roaming. Red drives and Biscuit steps over crates and fences. Afterward it rides in the ship's hold.
 - **The *Low Profile* (Act 2): the lane chart.** A simple map of the Marches, with moons and stations as dots joined by jump lanes (Ruo's family chart). Pick a destination, watch a short jump (the crew belts a lane-song; skippable after the first time) and land at that place's dock. New lanes light up as the story opens them. No random fights in space; ship fights are story set pieces.
 - **The titan (Act 2):** towed behind the *Low Profile*. On some moons you unload it for titan stages: same controls, camera pulled way back, stomping Hardfall Corps garrisons.
@@ -93,7 +93,7 @@ LIGHTS LEFT ON is a classic 90s JRPG hero's journey. Ten years ago Red's mom fle
 - **The lamp check (rest and save):** at Red's home window (free full heal + save) and at inns (full heal + save, for a small fee), and at save lamps (save only; use a Camp Stove there to rest). She lights the brass lamp, taps the glass twice and gives the sky a thumbs-up, then the save screen opens. Full length the first time each session, a short version after that; one press skips it.
 
 ### Cutscenes
-- **Long, and plenty of them** (Ross's call), played **in-engine** with the same chibi models as the field. Camera moves, close-ups and wide shots are staged like a movie.
+- **Long, and plenty of them** (Ross's call), played **in-engine** with the same models as the field. Camera moves, close-ups and wide shots are staged like a movie.
 - **Dialogue:** text boxes with 2D anime portraits that change expression mid-line. Each speaker has their own little text "blip" sound. No voice acting.
 - **Red's lines are her face:** her portrait shows the expression but never a text box, and her ears do the talking.
 - **Big moments get big staging:** slow push-ins, freeze-frames and a chunky title card when a boss arrives.
@@ -105,7 +105,7 @@ LIGHTS LEFT ON is a classic 90s JRPG hero's journey. Ten years ago Red's mom fle
 - Run/walk, one-button interaction, climb and hop spots, the crew following Red.
 - The fixed diorama camera (floor and two back walls, slides with Red, tall props fade).
 - Harrow Landing: Red's home, courier office, docks and Otis's office, bar, general store, gear shop, checkpoint; NPC lines that change after each story beat; one or two side deliveries; hidden items.
-- The road to the tower (a short walk) and the Old Relay Tower (about 5 floors): switches, access cards, a crate push, the optional bell chest, two save lamps.
+- The ore train opening (3 cars and the jump; inspectors with scanner sweeps), the Spillway (a short walk) and the jammer works at the Old Relay Tower (about 5 floors): switches, access cards, a crate push, the optional bell chest, two save lamps.
 - Visible enemies, the static transition, first-turn rules, Run, the blink after a fight, respawning.
 - Treasure crates, chalk stashes and item pickups.
 - The lamp check for rest and save.
@@ -443,7 +443,7 @@ The same structure and tiers as FF7–9, with our own names. Anyone can use any 
 - **Pep Talk Tape:** one fighter gets Fired Up.
 
 **Key items (slice):**
-- **Courier Job Slip:** the delivery to the Old Relay Tower.
+- **Claim Slip** (was "Courier Job Slip"; same item id, display name changed with the structure pass, 2026-10-08): claim the ditched crate at Otis's dock, then deliver it to Watch Zero at the Old Relay Tower.
 - **Delivery Crate:** heavier than expected (Mox is inside).
 - **Side-job parcels:** one or two, for the small deliveries in Harrow Landing.
 - **Kasp's Access Cards:** laminated, his photo on every one; grunts drop them and they open Signals doors. Shows a count.
@@ -582,7 +582,10 @@ Classic FF7–9 saving: you save at set spots, not anywhere.
 - **Later:** inns, the *Supper's On* bridge, and saving machine parts, Hull and Act 3 guest missions.
 
 ## The 10-hour structure (act by act)
-> ✅ APPROVED by Ross, 2026-10-06 (Act 2: two re-dressed moons, Option A; studio additions kept)
+> ✅ APPROVED by Ross, 2026-10-06 (Act 2: two re-dressed moons, Option A; studio additions kept).
+> **Structure pass ✅ APPROVED by Ross, 2026-10-08:** Act 1 plays Harrow as a whole world across ten settings in about 3 hours, opening on a playable ore-train run (D1 A); the slice's road and tower become the Spillway and the jammer works (D2 A); Act 2's two moons are **Pit Nine** and **Breaker's Ring** (D3 A). Hours per act are unchanged. Source: docs/structure_pass_2026-10-08.md.
+>
+> **Settings rule (Ross, 2026-10-08):** no genre-biome levels (no forest, grassland, ice, fire or desert stages) and no cosy "start in the sticks" opening. Places are urban, industrial and sci-fi working settings: rail lines, slums, factories, stations, ships.
 
 > **Pacing rule (Ross): keep it tight.** No filler. Every area, side job and rematch earns its minutes; studio additions (the Tilly rematch, the Slipway Prime hub, the two titan stages, the scouting run) stay short and punchy. When something runs long, cut it before padding anything. The ~10-hour target is a ceiling, not a quota.
 
@@ -597,7 +600,7 @@ Classic FF7–9 saving: you save at set spots, not anywhere.
 - **Scale:** on foot → big robot → giant robot → giant spaceship → god.
 - **Party:** 3 on the field, Red always in. The rest ride along on the bench.
 
-### Decisions for Ross
+### Decisions for Ross (answered 2026-10-06: A; kept as the record. The two moons were given identities by the 2026-10-08 structure pass.)
 
 DECISION NEEDED: How many new moons does Act 2 visit? (the biggest swing in your art load)
 Option A: Two moons, built by re-dressing Harrow's pieces (new palette, signs and props) — pros: Act 2 still feels like a road trip and hits 4 hours; mostly reused parts / cons: the moons look related to Harrow (fair: they're all dust moons).
@@ -613,50 +616,44 @@ Recommendation: A. It keeps the approved road-trip feel and the 4-hour act, and 
 - **Where each Act 3 guest fights** (from the approved guest list).
 
 ### Act 1
-**Harrow · about 3 hours · levels 1 → 15 · on foot, then big robot**
+**Harrow, a whole world before the ship leaves · about 3 hours · ten settings · levels 1 → 15 · on foot, then big robot** *(✅ APPROVED by Ross, 2026-10-08)*
 
-1. **[SLICE] Harrow Landing, night**
-   Town · on foot · ~8 min
-   Party: Red; Otis joins in the dock fight.
-2. **[SLICE] The road to the tower**
-   Travel (a short walk) + Watch Zero's sit-in · on foot · ~4 min
-   Party: Red, Otis; Mox joins (out of the crate).
-3. **[SLICE] The Old Relay Tower** (about 5 floors)
-   Dungeon · on foot · ~12 min
-   Party: Red, Otis, Mox.
-4. **[SLICE] Top of the tower**
-   Boss · on foot · ~6 min
-   **Boss: Sgt. Kasp in the Hushmaster.** About level 6.
-   **The vertical slice ends here: about 30 min.**
-5. **The lockdown** (Harrow Landing)
-   Set piece · on foot · ~10 min
-   Party: Red, Otis, Mox.
-6. **Harrow under curfew** (the Landing re-dressed with checkpoints) + first trip into the **Signals compound**
-   Town + dungeon · on foot · ~40 min
-   Shops and side jobs; Hardfall patrols are visible enemies. Ends caught by Vela.
-7. **Tilly's way out** (the old ore tunnels to her hidden pad)
-   Dungeon + boss · on foot · ~38 min
-   **Boss: Tilly in the *Fine Print*.** About level 9.
-8. **Vela's resignation** (breaking out of the Signals compound: the cells and the back half)
-   Dungeon + boss · on foot · ~30 min
-   **Boss: Kasp in the Hushmaster Mk II.** Vela joins mid-fight. About level 12.
-9. **Borrowing Biscuit** (stomp through the Landing)
-   Set piece with fights · big robot · ~15 min
-   Party: Red, Otis, Mox, Vela (3 at Biscuit's stations).
-10. **The cargo yard** (the docks' floodlit back lot)
-    Boss · big robot · ~12 min
-    **Boss: Lt. Brunt in the *HNS Title Shot*.** About level 15.
-11. **Off Harrow** (the ore freighter's hold)
-    Set piece · big robot · ~5 min
+Ross: "you should spend a few good hours on the first planet before the next." Every row is an approved Act 1 beat; nothing is added just to fill time.
+
+| # | Setting | Type · scale | What you do there | Party / boss | Time |
+|---|---|---|---|---|---|
+| 1 | **[SLICE] The ore train** (freight cars at night on the Harrow ore line) | Short dungeon · on foot | Run car to car past Signals inspectors' scanner sweeps, hide behind ore, one tutorial fight (Clutch), ditch the crate, jump | Red alone | ~3.5 min |
+| 2 | **[SLICE] Harrow Landing, the slums** (Lamp Square, the docks, the bar, the checkpoint) | Town · on foot | Home and the lamp (first save), the claim slip, the dock fight, shops, side jobs | Otis joins in the dock fight | ~8 min |
+| 3 | **[SLICE] The Spillway** (the drain channel under the slums) and the Works gate | Travel + set piece · on foot | Mox's crate scene; Watch Zero's sit-in at the gate of the jammer works | Mox joins | ~3.5 min |
+| 4 | **[SLICE] The jammer works** (the Signals factory around the Old Relay Tower's mast), floor by floor, then the roof | Dungeon + boss · on foot | The climb, three card fights, the cage-lift shortcut | **Boss: Sgt. Kasp in the Hushmaster.** About level 6 | ~18 min |
+| | | | **The vertical slice ends here: about 33 min** (about 28 skipping optional fights) | | |
+| 5 | **The lockdown** (Lamp Square, floodlit, full of Hardfall Corps troopers) | Set piece · on foot | Vane on every screen, then in person; the moon is sealed; a bounty on Red; Vela ordered to listen | Red, Otis, Mox | ~10 min |
+| 6 | **Harrow under curfew** (the slums re-dressed: searchlights, Hardfall checkpoints, boarded windows, propaganda; the Spillway is now the crew's smuggling route) | Town · on foot | Sneak around patrols (visible enemies), new shops and side jobs, townsfolk slipping Red supplies in the open | | ~25 min |
+| 7 | **The Signals compound, front half** (offices, the evidence lockup, the listening room) | Dungeon · on foot | Break in for the beacon part; caught by Vela, who writes Red a noise ticket instead | | ~15 min |
+| 8 | **The dead ore line and Tilly's pad** (the train-car kit again: an abandoned branch line under the Landing to a derelict loading tower) | Dungeon + boss · on foot | Tilly's "way out"; she sells the crew out | **Boss: Tilly in the *Fine Print*.** About level 9 | ~35 min |
+| 9 | **The Signals compound, back half** (the cells, the motor pool) | Dungeon + boss · on foot | Break out | **Boss: Kasp in the Hushmaster Mk II.** Vela joins mid-fight. About level 12 | ~30 min |
+| 10 | **Biscuit's stomp through the stacks** (the slums from a walker's height; Marchfolk drag containers into the street) | Set piece with fights · big robot | Stomp through the stacks while Watch Zero rings every bell | Red, Otis, Mox, Vela (3 at Biscuit's stations) | ~15 min |
+| 11 | **The cargo yard** (the docks' floodlit back lot, troopers cheering from the container stacks) | Boss · big robot | The title bout | **Boss: Lt. Brunt in the *HNS Title Shot*.** About level 15 | ~12 min |
+| 12 | **The freighter hold** (Biscuit wedged in an ore freighter as it lifts) | Set piece · big robot | Every window on Harrow lights up at once; the ship leaves | | ~5 min |
+| | **Act 1 total** | | | | **~180 min (about 3 hours)** |
+
+**The ten settings** are rows 1 to 11 with the compound counted once: train, slums, Spillway, jammer works, lockdown, curfew, compound, dead ore line and Tilly's pad, Biscuit's stomp, cargo yard. The freighter hold (12) is the closing shot.
+
+**How it stays tight:**
+- Every setting is an approved beat. Curfew (6) and the compound (7, 9) had about 40 and 30 minutes in the 2026-10-06 version; they are split by what you do, not stretched.
+- Three of the ten are re-dresses or reuses: curfew is the slums re-dressed, the compound is one build used twice, the dead ore line is the train kit again. Harrow feels like ten places while Ross builds about seven.
+- Short set pieces (5, 10, 12) alternate with longer playable stretches (6, 8, 9).
+- **If Act 1 runs long in playtests, trim curfew's side jobs first. Never cut a setting.**
 
 **Art load, Act 1:**
-- **New areas (6):** Harrow Landing (Red's home, courier office, docks and Otis's office, bar, two shops, checkpoint), the road, the Old Relay Tower, the ore tunnels and Tilly's pad, the Signals compound, the freighter hold. The first 3 are the slice.
-- **Re-dresses, not new:** the Landing under curfew (checkpoints, troopers, lit windows); the Landing for Biscuit's stomp.
+- **New areas (6):** (1) Harrow Landing as slums (Red's home, courier office, docks and Otis's office, bar, two shops, checkpoint); (2) the Spillway and the Works gate; (3) the jammer works kit around the mast; (4) the **train-car kit** (the ore train and the dead ore line) plus Tilly's pad; (5) the Signals compound; (6) the freighter hold. The first 3 and the train-car kit are in the slice.
+- **Re-dresses, not new:** the Landing under curfew (searchlights, checkpoints, troopers, boarded windows); the Landing for Biscuit's stomp; the lockdown (the square, floodlit).
 - **New big models (4):** the Hushmaster (Mk II is a variant), the *Fine Print*, Biscuit, the *HNS Title Shot*.
 - **Reuse tricks:**
+  - **One train-car module, three dressings** (flatcar, hopper, boxcar), used for the opening and again for the dead ore line, so the old ore-tunnel set is gone and the art load stays the same.
   - The **cargo yard is part of the docks**, so it isn't its own build.
   - **Size Biscuit to fit the Landing's own streets.** The stomp is the same rooms with the camera pulled back and containers in the road.
-  - **The Signals compound is used twice:** break in (beat 6), break out (beat 8), through different halves.
+  - **The Signals compound is used twice:** break in (beat 7), break out (beat 9), through different halves.
 
 ### Act 2
 **The Marches · about 4 hours · levels 15 → 35 · on foot and big robot, then giant robot, then giant spaceship**
@@ -666,9 +663,10 @@ Party from beat 1: Red + any 2 of Otis, Mox, Vela, Ruo.
 1. **Wobble Station** + the dockside getaway
    Town + short dungeon · on foot · ~30 min
    **Boss: Tilly rematch in the *Fine Print*** (studio addition). Ruo joins.
-2. **Moon-hopping** (Moon 1 and Moon 2; names to come)
+2. **Moon-hopping: Pit Nine and Breaker's Ring** *(✅ APPROVED by Ross, 2026-10-08, D3 A)*
    Travel (lane chart) + 2 small towns + 2 jammer-site dungeons · on foot and big robot (Biscuit at the jammer sites) · ~35 min
-3. **A rematch nobody scheduled** (Moon 2's outskirts)
+   **Pit Nine:** a company mining moon; the whole town is a strip pit with a company store, quota boards and ore crushers. **Breaker's Ring:** a junk city built inside a ring of broken hulls, with Coldrunner markets and salvage crews.
+3. **A rematch nobody scheduled** (the rim of Pit Nine's strip pit)
    Boss · big robot · ~12 min
    **Boss: Lt. Brunt in the patched *HNS Title Shot*** (called off halfway). About level 21.
 4. **The plan** (aboard the *Low Profile*)
@@ -680,7 +678,7 @@ Party from beat 1: Red + any 2 of Otis, Mox, Vela, Ruo.
 7. **The chase off Slipway Prime**
    Boss · giant robot · ~15 min
    **Boss: Lt. Calloway in the *Second Draft*.** About level 27.
-8. **Notes in the hatches** (back to Moon 1 and Moon 2)
+8. **Notes in the hatches** (back to Pit Nine and Breaker's Ring)
    Travel + 2 titan stages vs Hardfall garrisons · giant robot · ~25 min
 9. **The last lane**
    Travel + set piece · giant robot · ~8 min
@@ -694,12 +692,12 @@ Party from beat 1: Red + any 2 of Otis, Mox, Vela, Ruo.
     **Boss: Admiral Vane in the *HNS Magnificent*.** About level 35.
 
 **Art load, Act 2 (the heaviest act):**
-- **New areas (10, 4 of them mostly re-dressed):** Wobble Station, Moon 1, Moon 2, two jammer sites, the *Low Profile* cockpit (cutscenes only), Slipway Prime (gate and docks), the Scrapforge Division, the Rim blockade, the *Supper's On* (inside and out).
+- **New areas (10, 4 of them mostly kit-built):** Wobble Station, Pit Nine, Breaker's Ring, two jammer sites, the *Low Profile* cockpit (cutscenes only), Slipway Prime (gate and docks), the Scrapforge Division, the Rim blockade, the *Supper's On* (inside and out).
 - **New big models (7):** the *Low Profile*, the *Second Helping* (titan), the *Second Draft*, the *HNS Riposte* and its battleship, a gray Navy hull kit, the *Supper's On*, the *HNS Magnificent*.
 - **Reuse tricks, by flag:**
-  - **Moons:** Harrow's pieces with a new palette, signs and props. Low-res textures make palette swaps cheap.
-  - **Jammer sites:** the Old Relay Tower's mast pieces, re-dressed.
-  - **Titan stages:** big simple terrain, with the moon towns' own buildings shrunk down to toy size as props. No new buildings.
+  - **Pit Nine and Breaker's Ring:** built from kits already planned, about the same art as the old "re-dressed moons". Pit Nine is Harrow's slum kit and the jammer-works kit stepped down terraces, plus quota boards and crushers. Breaker's Ring is the slum kit and the Navy hull kit (the hull chunks become the city's walls). Defined by who runs them, not by weather.
+  - **Jammer sites:** the jammer-works kit around a mast section, re-dressed.
+  - **Titan stages:** the strip pit's terraces (Pit Nine) and the hull ring (Breaker's Ring) give the titan walls and height instead of a flat plain; the towns' own buildings shrink down as props. No new buildings.
   - **Slipway Prime (a whole shipyard world):** build one dock module (slipway, crane, half-built hull) and repeat it to the horizon. The heist is only three rooms (gate, dock walk, Scrapforge floor). The titan punch-out uses the same module from far back.
   - **The Navy (blockade, *Magnificent*, Scrapforge hulls, Act 3 fleets):** the lore already says every Navy ship is mismatched hulls painted one gray. Build a kit of 6 to 8 hull chunks and kitbash every Navy ship from it, with one gray texture. The *Magnificent* is the biggest kitbash plus the greatcoat sail.
   - **The Rim blockade:** only the lead battleship and the *Riposte* get detail. The "wall of gray hulls" behind them is the kitbash, mostly as silhouettes on a flat backdrop.
@@ -722,7 +720,7 @@ Party: Red + any 2 of the five. Guests take a field spot for their own mission (
 4. **Tilly's price tag** (scouting run through the Rim blockade's wreck)
    Dungeon · on foot · ~15 min
    **Guest: Tilly**, with Ruo locked in.
-5. **Rallying the Marches** (Wobble Station, Moon 1, Moon 2, a pass over Harrow)
+5. **Rallying the Marches** (Wobble Station, Pit Nine, Breaker's Ring, a pass over Harrow)
    Travel + town revisits · on foot and giant spaceship · ~25 min
    Last shops, side jobs, and the late side jobs for the ultimate weapons. About level 38.
 6. **Into the Quiet** (the fleet charge)
@@ -746,7 +744,7 @@ Party: Red + any 2 of the five. Guests take a field spot for their own mission (
 
 **Art load, Act 3 (the lightest act to build):**
 - **New areas (2):** the Quiet (one multi-scale dungeon) and the finale arena.
-- **Revisits, re-dressed:** Harrow, Wobble Station, Moon 1, Moon 2 (lamps lit, fleet overhead); the blockade wreck (the Act 2 hull kit, broken up).
+- **Revisits, re-dressed:** Harrow, Wobble Station, Pit Nine, Breaker's Ring (lamps lit, fleet overhead); the blockade wreck (the Act 2 hull kit, broken up).
 - **New big models (1):** the real enemy. Variants only: the refit *Supper's On*, the rebuilt *Second Draft*, the Hushmaster bolted to the hull.
 - **Reuse tricks, by flag:**
   - **The Quiet:** starless is the cheapest sky in the game: black, plus fog, radio hiss and lighting. Its rooms reuse the hull kit and the *Supper's On* pieces, re-lit.
@@ -757,47 +755,48 @@ Party: Red + any 2 of the five. Guests take a field spot for their own mission (
 
 | Act | Hours | Levels | Towns | Dungeons | Bosses | New areas | New big models |
 |---|---|---|---|---|---|---|---|
-| 1 | ~3 | 1→15 | 1 | 3 | 4 | 6 (3 in slice) | 4 |
-| 2 | ~4 | 15→35 | 4 | 5 | 5 | 10 (4 re-dressed) | 7 |
+| 1 | ~3 | 1→15 | 1 | 3 | 4 | 6 (4 used in the slice) | 4 |
+| 2 | ~4 | 15→35 | 4 | 5 | 5 | 10 (4 kit-built) | 7 |
 | 3 | ~3 | 35→45 | 0 new | 2 | 1 | 2 | 1 |
 | **Total** | **~10** | | **5** | **10** | **10** | **18** | **12** |
 
 - **Bosses by scale:** 4 on foot (Kasp, Tilly, Kasp Mk II, Tilly again), 2 big robot (Brunt twice), 2 giant robot (Calloway, Sorrell), 1 giant spaceship (Vane), 1 final that climbs every scale to god.
 - **3 of the 10 bosses are rematches** on a model you've already built. Unique boss rigs: 7.
-- **Where your art time goes:** Act 2 is about half of it (Slipway Prime, the Navy hull kit, the titan, the *Supper's On*). The hull kit pays for itself three times: Act 2's Navy, the blockade wreck, and the Quiet.
+- **Where your art time goes:** Act 2 is about half of it (Slipway Prime, the Navy hull kit, the titan, the *Supper's On*). The hull kit pays for itself four times: Act 2's Navy, Breaker's Ring, the blockade wreck, and the Quiet. The train-car kit pays for itself twice in Act 1 (the opening and the dead ore line).
 
 ## Vertical slice scope
 > ✅ APPROVED by Ross, 2026-10-06. Builds for Windows and Mac.
+> **Updated and ✅ APPROVED by Ross, 2026-10-08** (structure pass D1 A and D2 A; tone pass D2 B; the grim look): the slice opens on the ore train, the road is the Spillway, the tower is the jammer works, Harrow is slums with half its windows dark, and the art list is 42.
 
-**The slice in one paragraph:** Night on Harrow Landing. Red does her lamp check, takes a courier job to the Old Relay Tower and wades into Kasp's crew at the docks; Otis joins. On the road her delivery crate starts bragging: Mox is in. Watch Zero's old-timers show the back way in, and the crew climbs about 5 floors of fights, Clutch lessons and light puzzles while the call gets louder. At the top: Kasp in the Hushmaster. In the wreck Red finds the beacon part, hears the call clearly, and holds it up to her window lamp. About 30 minutes, no filler.
+**The slice in one paragraph:** Night on the Harrow ore line. Red rides a freight car with a contraband crate for Watch Zero while Signals inspectors sweep the train car by car; she sneaks forward, wins one tutorial fight, shoves the crate into the harbor and jumps for the platform. She runs home through the Quiet Hours siren to light her window lamp, picks up a claim slip at the courier office, and finds Kasp's crew ticketing her washed-up crate on Otis's dock; she wades in and Otis joins. Down the service stair, through the Spillway, her crate starts bragging: Mox is in. At the gate of the jammer works the Watch Zero sit-in pries open a drain grate, and the crew climbs about 5 factory floors around the ancient mast (fights, Clutch lessons, light puzzles) while the call gets louder. On the roof: Kasp in the Hushmaster. In the wreck Red finds the beacon part and hears the call clearly. On the 30-second walk home across Lamp Square a few dark windows light up again, and she holds the part up to her own lamp. About 33 minutes, no filler.
 
 **IN the slice (the build list):**
-- [ ] **Places:** Harrow Landing (home, courier office, docks and Otis's office, bar, two shops, checkpoint), the road, the Old Relay Tower (~5 floors).
+- [ ] **Places:** the ore train (3 car rooms and the jump), Harrow Landing as slums (home, courier office, docks and Otis's office, bar, two shops, checkpoint; about half the square's windows dark, a few relit on the walk home), the Spillway and the Works gate, the jammer works at the Old Relay Tower (~5 floors and the roof). Maps: docs/maps/ore_train.md, docs/maps/harrow_landing.md, docs/maps/road_and_tower.md.
 - [ ] **Party:** Red, Otis, Mox; levels 1–6; 3 skills each.
 - [ ] **Battle:** Attack, Skills, Items, Defend, Run; turn-order row; Juice; Clutch on every hit and block (all 3 presses, ratings, Payback); signature moves; Burnt Toast, Noise Ticket, Wobbly, Down for the Count; ~4 enemy types; Kasp's jam pulse, legs breaking in pairs, then Kasp on foot; victory screen.
-- [ ] **Exploration:** fixed diorama camera, one button, crew follows, visible enemies, 2 save lamps + Red's home, the lamp check, card doors, lift switch, crate push, optional bell chest.
+- [ ] **Exploration:** fixed diorama camera, one button, crew follows, visible enemies (plus the train inspectors' scanner sweep: a patrol with a visible cone), 2 save lamps + Red's home, the lamp check, card doors, lift switch, crate push, optional bell chest.
 - [ ] **Menus and save:** all but Lane Chart and Swap; 3 slots + auto-save.
 - [ ] **Gear:** 7 weapons, 5 armor, 4 charms, 13 items, 6 key items.
 - [ ] **Economy:** two shops, sell at half, 1–2 side deliveries, ~1,500 credits by Kasp.
 - [ ] **Story:** ~6 in-engine cutscenes; all dialogue in game/data/; the slice's twist clues per the story bible (Creative Director/Writer own).
-- [ ] **Audio:** 8 music tracks and jingles (title, Harrow at night, tower, battle, Kasp, victory, game over, the call); ~40 SFX (Clutch ding, ratings, hits, static transition, menu ticks, text blips, lamp check, bells, Hushmaster).
+- [ ] **Audio:** 8 music tracks and jingles (title, Harrow at night, the jammer works, battle, Kasp, victory, game over, the call; the train uses a stripped-down mix of the jammer-works track); ~47 SFX (Clutch ding, ratings, hits, static transition, menu ticks, text blips, lamp check, bells, Hushmaster, plus the curfew siren, the inspectors' scanner, and train, Spillway and factory ambience).
 - [ ] **Options:** Auto-Timing, Wide Windows, timing offset, Retry battle.
 
 **OUT of the slice (goes to Later):** everything on the task board's Later list. Biggest cuts: Vela and Ruo, Swap, robots/ships/god fights, travel off Harrow, inns, instant wins, Act 1 from the lockdown on.
 
-**Ross's art list for the slice (41 assets).** The look: PSX style, Mega Man Legends, Tail Concerto, MGS1, FF7.
+**Ross's art list for the slice (42 assets; was 41, the train-car kit added 2026-10-08).** The look: PSX style, Mega Man Legends, Tail Concerto, MGS1, FF7, in the approved grim, slum-cyberpunk dressing with edge-lit characters (docs/style_guide.md).
 1. Party models, rigged (3): Red, Otis (with door shield), Mox (with Tuesday).
 2. Weapon props (3): sword, hammer, wrench-mace; shop weapons are recolors.
 3. Portrait sets (6): Red, Otis, Mox ×5 expressions; Kasp + 2 key NPCs ×3 (24 images).
 4. Enemy models (4): Signals grunt, Signals drone, 2 more (variants of those two save you work).
 5. Boss (2): Kasp; the Hushmaster rig (8 legs, dish, toppled state).
 6. Townsfolk models (4): old Zero, dockhand, Marchfolk, shopkeeper; recolored for crowds.
-7. Environment sets (4): Landing streets and docks; 6 interiors; the road and mast foot; tower kit with cage lift and roof. Battle backdrops reuse these.
+7. Environment sets (5): Landing streets and docks (slum dressing); 6 interiors; the Spillway and the Works gate; the jammer-works kit around the mast, with cage lift and roof; the train-car kit (one car module dressed as flatcar, hopper and boxcar). Battle backdrops reuse these.
 8. Props (8): delivery crate, supply crate, chalk mark, save-lamp niche, bells, power switch, card-reader door, beacon part.
 9. UI art (7): item and status icons (~16); turn-order heads (8); rating lettering; field pop-ups and Red's gestures; Kasp's title card; title screen and logo; menu window and cursor.
 
 **Done means:**
-1. Playable from title screen to the lamp at the window in ~30 minutes, no dead ends.
+1. Playable from title screen (New Game starts on the ore train) to the lamp at the window in ~33 minutes, no dead ends.
 2. All tests in game/tests/ pass headless; the battle simulator hits the Feel targets.
 3. Full QA pass (no crash or major bugs open), text and asset checks, and a playtest report.
 4. Ross's art in everywhere (placeholders only with his OK).
@@ -808,7 +807,7 @@ Party: Red + any 2 of the five. Guests take a field spot for their own mission (
 1. PSX look (Mega Man Legends, Tail Concerto, MGS1, FF7) + diorama camera test room.
 2. Battle system and simulator. *Art in: party models, weapons.*
 3. Harrow Landing: exploration, menus, shops, saves. *Art in: Harrow sets, townsfolk, portraits.*
-4. The road and the tower. *Art in: enemies, tower kit, props.*
+4. The ore train, the Spillway and the jammer works. *Art in: enemies, train-car kit, jammer-works kit, props.*
 5. Kasp and the Hushmaster. *Art in: the boss.*
 6. Story, cutscenes, dialogue, audio.
 7. Polish and QA. *Art in: UI.*
@@ -817,4 +816,4 @@ Party: Red + any 2 of the five. Guests take a field spot for their own mission (
 - **Overall: Yes.** Every piece uses systems already planned and reviewed. Nothing needs new technology.
 - **Add to the build list:** (1) the PSX shader set (low-res render, vertex jitter, texture warping, dithering). It's in the build order but missing from the list. (2) The battle simulator, which "Done means" depends on. (3) A debug room with cheats (jump to any floor, start any fight) so testing stays fast. (4) A build for Ross's computer. Godot exports to Windows, Mac and Linux, so we need to know which one he uses (Mac adds a signing step). Button remapping is already covered in Config.
 - **Trim:** none.
-- **Biggest risk:** 41 art assets from one artist while the style guide is still blank. **Fix:** run one placeholder Red through the whole pipeline first (model, rig, shader, in game), then lock poly and texture budgets in the style guide.
+- **Biggest risk:** 42 art assets (41 when this check was written) from one artist while the style guide is still blank. **Fix:** run one placeholder Red through the whole pipeline first (model, rig, shader, in game), then lock poly and texture budgets in the style guide.

@@ -50,7 +50,7 @@
   },
   "game_over": {
     "title": "Game Over",
-    "sub": "Everyone's down for the count.",
+    "sub": "Down, not out. Light the lamp. Go again.",
     "retry": "Retry",
     "title_screen": "Back to title"
   },

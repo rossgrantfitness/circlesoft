@@ -161,7 +161,7 @@
     },
 
     {
-      "id": "grunt_bonk", "name": "Clipboard Bonk", "user": "signals_grunt", "kind": "enemy", "juice_cost": 0,
+      "id": "grunt_bonk", "name": "Clipboard Slam", "user": "signals_grunt", "kind": "enemy", "juice_cost": 0,
       "target": "one_enemy", "contact": "melee", "anim": "grunt_clipboard_raise", "show_name": false,
       "tell": "Raises the clipboard overhead, then brings it down.",
       "timeline_ms": {"windup": 650, "impact": 900, "end": 1300},

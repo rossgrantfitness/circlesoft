@@ -23,8 +23,8 @@
     "total": "Total",
     "owned": "Owned"
   },
-  "bought": "Bought {n} {item}. Thank you!",
-  "sold": "Sold {n} {item}. Pleasure doing business.",
+  "bought": "Bought {n} {item}. Keep the receipt. They check.",
+  "sold": "Sold {n} {item}. No questions asked.",
   "reasons": {
     "unknown_item": "The shop doesn't deal in that.",
     "bad_quantity": "Pick at least one.",

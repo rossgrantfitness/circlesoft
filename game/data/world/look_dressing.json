@@ -88,7 +88,7 @@
       0.12
      ],
      "width": 1.3,
-     "text": "ALL CLEAR"
+     "text": "SAFE MOON"
     },
     {
      "type": "screen",
@@ -99,7 +99,7 @@
      ],
      "yaw": 90,
      "width": 1.2,
-     "text": "CURFEW 22",
+     "text": "QUIET 22:00",
      "kind": "alert"
     },
     {
@@ -109,7 +109,7 @@
       3.3,
       0.18
      ],
-     "text": "COURIER",
+     "text": "PARCELS",
      "color": "#5fe0c8",
      "height": 0.45,
      "pattern": "1111h1111011",
@@ -122,7 +122,7 @@
       3.25,
       0.18
      ],
-     "text": "SUPPLY",
+     "text": "RATIONS",
      "color": "#ff9a3c",
      "height": 0.42,
      "pattern": "11111111h1",
@@ -135,7 +135,7 @@
       3.3,
       0.18
      ],
-     "text": "GEAR",
+     "text": "SCRAP",
      "color": "#ff3e9a",
      "height": 0.45,
      "pattern": "1110111011h1",
@@ -677,7 +677,7 @@
       0.12
      ],
      "width": 1.5,
-     "text": "ALL CLEAR"
+     "text": "REPORT IT"
     },
     {
      "type": "screen",
@@ -687,7 +687,7 @@
       0.12
      ],
      "width": 1.1,
-     "text": "HALT",
+     "text": "ID CHECK",
      "kind": "alert"
     },
     {
@@ -697,7 +697,7 @@
       2.95,
       3.08
      ],
-     "text": "CHECK",
+     "text": "PAPERS",
      "color": "#ff9a3c",
      "height": 0.4,
      "pattern": "11111h11h1",
@@ -1146,7 +1146,7 @@
       -4.32
      ],
      "width": 1.6,
-     "text": "ALL CLEAR"
+     "text": "NO NOISE"
     },
     {
      "type": "screen",
@@ -1157,7 +1157,7 @@
      ],
      "yaw": 90,
      "width": 1.2,
-     "text": "CURFEW 22",
+     "text": "LAMPS OFF 22",
      "kind": "alert"
     },
     {
@@ -1167,7 +1167,7 @@
       4.1,
       -4.3
      ],
-     "text": "DOCKS",
+     "text": "NO LOITER",
      "color": "#ff9a3c",
      "height": 0.5,
      "pattern": "111h1111011",
@@ -1181,7 +1181,7 @@
       -2.6
      ],
      "yaw": 90,
-     "text": "BAR",
+     "text": "LONG WAIT",
      "color": "#ff3e9a",
      "height": 0.45,
      "pattern": "1110h11011",
@@ -1606,7 +1606,7 @@
      ],
      "yaw": 90,
      "width": 0.95,
-     "text": "CURFEW 22",
+     "text": "BE QUIET!",
      "kind": "slogan",
      "light_energy": 0.7
     },
@@ -1813,7 +1813,7 @@
      ],
      "yaw": 90,
      "width": 0.95,
-     "text": "ALL CLEAR",
+     "text": "LAMPS OFF 22",
      "kind": "alert",
      "light_energy": 0.7
     },
@@ -2020,7 +2020,7 @@
      ],
      "yaw": 90,
      "width": 0.95,
-     "text": "ALL CLEAR",
+     "text": "BE LOYAL",
      "kind": "slogan",
      "light_energy": 0.7
     },
@@ -2227,7 +2227,7 @@
      ],
      "yaw": 90,
      "width": 0.95,
-     "text": "CURFEW 22",
+     "text": "NO LOOTING",
      "kind": "alert",
      "light_energy": 0.7
     },
@@ -2434,7 +2434,7 @@
      ],
      "yaw": 90,
      "width": 0.95,
-     "text": "ALL CLEAR",
+     "text": "NO NOISE",
      "kind": "slogan",
      "light_energy": 0.7
     },
@@ -2624,7 +2624,7 @@
       2.45,
       0.14
      ],
-     "text": "BAR",
+     "text": "LONG WAIT",
      "color": "#ff3e9a",
      "height": 0.34,
      "pattern": "11h11111",
@@ -2641,7 +2641,7 @@
      ],
      "yaw": 90,
      "width": 0.95,
-     "text": "CURFEW 22",
+     "text": "CLOSED AT 22",
      "kind": "alert",
      "light_energy": 0.7
     },
@@ -2833,7 +2833,7 @@
      ],
      "yaw": 90,
      "width": 0.95,
-     "text": "ALL CLEAR",
+     "text": "SHIFT 12 HRS",
      "kind": "alert",
      "light_energy": 0.7
     },
@@ -3021,7 +3021,7 @@
       3.4,
       0.18
      ],
-     "text": "BAR",
+     "text": "LONG WAIT",
      "color": "#ff3e9a",
      "height": 0.5,
      "pattern": "1110111011h1",
@@ -3035,7 +3035,7 @@
       0.12
      ],
      "width": 1.4,
-     "text": "ALL CLEAR"
+     "text": "QUOTA 100"
     },
     {
      "type": "poster",
@@ -3308,7 +3308,7 @@
      ],
      "yaw": 90,
      "width": 0.95,
-     "text": "ALL CLEAR",
+     "text": "STAY HOME",
      "kind": "slogan",
      "light_energy": 0.7
     },
@@ -3587,7 +3587,7 @@
      ],
      "yaw": 90,
      "width": 0.95,
-     "text": "ALL CLEAR",
+     "text": "SAFE MOON",
      "kind": "slogan",
      "light_energy": 0.7
     },
@@ -3866,7 +3866,7 @@
      ],
      "yaw": 90,
      "width": 0.95,
-     "text": "ALL CLEAR",
+     "text": "CARD ONLY",
      "kind": "alert",
      "light_energy": 0.7
     },
@@ -4145,7 +4145,7 @@
      ],
      "yaw": 90,
      "width": 0.95,
-     "text": "ALL CLEAR",
+     "text": "NO NOISE",
      "kind": "slogan",
      "light_energy": 0.7
     },

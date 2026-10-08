@@ -17,11 +17,11 @@
     {"id": "smoke_bomb", "name": "Smoke Bomb", "kind": "escape", "desc": "Escape a regular fight. Never works on bosses.", "price": 30, "icon": "bomb", "tint": "#8A8F98", "target": "self", "use_in": ["battle"], "effect": {"escape": true}},
     {"id": "protein_shake", "name": "Protein Shake", "kind": "booster", "desc": "Raises Attack for good. Chalky.", "price": 300, "icon": "bottle", "tint": "#F2E8D0", "target": "one_ally", "use_in": ["field"], "effect": {"boost": {"attack": 2}}},
 
-    {"id": "courier_job_slip", "name": "Courier Job Slip", "kind": "key", "key": true, "desc": "The delivery to the Old Relay Tower.", "price": 0, "icon": "key", "tint": "#C9A23A", "use_in": []},
+    {"id": "courier_job_slip", "name": "Claim Slip", "kind": "key", "key": true, "desc": "Claims Watch Zero's crate at Otis's dock.", "price": 0, "icon": "key", "tint": "#C9A23A", "use_in": []},
     {"id": "delivery_crate", "name": "Delivery Crate", "kind": "key", "key": true, "desc": "Heavier than expected. It is breathing, a bit.", "price": 0, "icon": "key", "tint": "#B08A52", "use_in": []},
     {"id": "side_job_parcel", "name": "Side-Job Parcel", "kind": "key", "key": true, "desc": "A small delivery for somebody in Harrow Landing.", "price": 0, "icon": "key", "tint": "#E0782B", "use_in": []},
     {"id": "kasp_access_card", "name": "Kasp's Access Card", "kind": "key", "key": true, "desc": "Laminated, his photo on every one. Opens Signals doors.", "price": 0, "icon": "key", "tint": "#7FB4D6", "use_in": []},
     {"id": "bell_tune_napkin", "name": "Bell Tune Napkin", "kind": "key", "key": true, "desc": "A tune written down on a napkin. For the bell.", "price": 0, "icon": "key", "tint": "#F2E8D0", "use_in": []},
-    {"id": "beacon_part", "name": "Beacon Part", "kind": "key", "key": true, "desc": "Pulled from the Hushmaster's wreck. (Final text from the Writer.)", "price": 0, "icon": "key", "tint": "#9FD6C4", "use_in": []}
+    {"id": "beacon_part", "name": "Beacon Part", "kind": "key", "key": true, "desc": "Pulled from the Hushmaster's wreck. It plays the call, clear as a bell.", "price": 0, "icon": "key", "tint": "#9FD6C4", "use_in": []}
   ]
 }

@@ -179,7 +179,7 @@
       "requires": {
         "flag": "job_main_taken"
       },
-      "locked_message": "Docks are shut, Red. Signals business.\nUnless you've got a pickup slip?"
+      "locked_message": "Docks are shut, Red. Signals business.\nYou'd need a claim slip."
     },
     "sq_to_test_room": {
       "room": "harrow_square",

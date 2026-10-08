@@ -286,7 +286,7 @@ static func is_variant_path(path: String) -> bool:
 static func dress_model(model: Node, source_path: String = "", role: String = "") -> void:
 	if model == null:
 		return
-	var cfg: Dictionary = character_config(active_id(), role)
+	var cfg: Dictionary = character_config(active_id(), role, source_path)
 	if not dresses_characters_for(active_id()):
 		return
 	var repaint: bool = bool(cfg.get("dull", false)) and not is_variant_path(source_path)
@@ -322,14 +322,22 @@ static func apply_rim(material: ShaderMaterial, cfg: Dictionary) -> void:
 	material.set_shader_parameter("rim_bands", float(cfg.get("rim_bands", 3.0)))
 
 
-## The characters block of a profile with one role's block laid over it.
-static func character_config(id: String, role: String = "") -> Dictionary:
+## The characters block of a profile with one role's block laid over it, then any "by_model" block whose key
+## appears in the model's path (so a Signals grunt standing in a room as an NPC gets the enemy look, whoever
+## loads it).
+static func character_config(id: String, role: String = "", source_path: String = "") -> Dictionary:
 	var base: Dictionary = _dict(profile(id).get("characters", {})).duplicate()
 	var roles: Dictionary = _dict(base.get("roles", {}))
+	var by_model: Dictionary = _dict(base.get("by_model", {}))
 	if not role.is_empty() and roles.has(role):
 		for key: Variant in _dict(roles[role]):
 			base[key] = (roles[role] as Dictionary)[key]
+	for fragment: Variant in by_model:
+		if not source_path.is_empty() and source_path.contains(str(fragment)):
+			for key: Variant in _dict(by_model[fragment]):
+				base[key] = (by_model[fragment] as Dictionary)[key]
 	base.erase("roles")
+	base.erase("by_model")
 	return base
 
 
@@ -344,7 +352,7 @@ static func dulls_characters_for(id: String) -> bool:
 ## True when the profile changes character materials at all (dulling, a tint lift or an edge light).
 static func dresses_characters_for(id: String) -> bool:
 	var cfg: Dictionary = _dict(profile(id).get("characters", {}))
-	return bool(cfg.get("dull", false)) or float(cfg.get("rim_strength", 0.0)) > 0.0 or float(cfg.get("tint_value", 1.0)) != 1.0 or cfg.has("roles")
+	return bool(cfg.get("dull", false)) or float(cfg.get("rim_strength", 0.0)) > 0.0 or float(cfg.get("tint_value", 1.0)) != 1.0 or cfg.has("roles") or cfg.has("by_model")
 
 
 ## A short key for "which look a model of this path gets right now": changes when the variant path or the

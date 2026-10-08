@@ -241,10 +241,11 @@ func test_the_jacket_is_darker_and_scuffed() -> void:
 
 # ---- it drops in ----
 
-func test_player_scene_still_names_the_approved_red_and_the_grim_one_drops_in_by_path() -> void:
+func test_player_scene_names_the_grim_red_and_the_classic_one_still_drops_in_by_path() -> void:
 	var player: PlayerController = (load("res://scenes/actors/player.tscn") as PackedScene).instantiate() as PlayerController
-	assert_eq(player.model_path, CLASSIC_PATH, "nothing approved was changed")
-	player.model_path = GRIM_PATH
+	assert_eq(player.model_path, GRIM_PATH, "Red is the grim shiba everywhere (Ross, 2026-10-08)")
+	LookProfiles.set_forced("classic")
+	player.model_path = CLASSIC_PATH
 	add_to_root(player)
-	assert_eq(player.get_node("Visual/Model").scene_file_path, GRIM_PATH, "setting model_path is all it takes")
+	assert_eq(player.get_node("Visual/Model").scene_file_path, CLASSIC_PATH, "setting model_path is all it takes, and the classic Red still loads")
 	assert_eq(player.get_current_animation(), &"idle")

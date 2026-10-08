@@ -218,6 +218,7 @@ func test_head_height_is_the_models_head_top_plus_the_bubble_lift() -> void:
 
 
 func test_materials_are_warmed_so_the_blue_room_does_not_grey_them() -> void:
+	LookProfiles.set_forced("classic")          # the grim look dresses characters with its own material copies
 	var npc: Npc = _npc(DIR + "mox/chr_mox.glb")
 	var checked: int = 0
 	for mesh_instance: MeshInstance3D in _meshes(npc.get_model()):

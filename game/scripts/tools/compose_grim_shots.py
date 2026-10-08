@@ -84,8 +84,54 @@ def red_sheet(raw, out):
     sheet.save(out)
 
 
+def readability(raw, before, out):
+    """Before and after the readability pass (edge light, brighter characters), battle and field, plus the
+    Calm battle camera and a 3x zoom on Red and a grunt."""
+    pairs = (("battle", "grim_readability_battle.png", None), ("square_east", "grim_readability_field.png", (640 - 150, 300 - 110, 640 + 150, 300 + 110)))
+    for name, target, zoom in pairs:
+        a = game_part(os.path.join(before, "%s_grim.png" % name))
+        b = game_part(os.path.join(raw, "%s_grim.png" % name))
+        sheet = labelled([a, b], ["BEFORE the readability pass", "AFTER: brighter characters + edge light"])
+        if zoom:
+            za = Image.open(os.path.join(before, "%s_grim.png" % name)).convert("RGB").crop(zoom).resize((900, 660), Image.NEAREST)
+            zb = Image.open(os.path.join(raw, "%s_grim.png" % name)).convert("RGB").crop(zoom).resize((900, 660), Image.NEAREST)
+            zoomed = labelled([za, zb], ["before (3x zoom)", "after (3x zoom)"])
+            full = Image.new("RGB", (max(sheet.width, zoomed.width), sheet.height + zoomed.height + GAP), BACK)
+            full.paste(sheet, (0, 0))
+            full.paste(zoomed, (0, sheet.height + GAP))
+            sheet = full
+        sheet.save(os.path.join(out, target))
+    calm = os.path.join(raw, "battle_grim_calm.png")
+    if os.path.exists(calm):
+        labelled([game_part(os.path.join(raw, "battle_grim.png")), game_part(calm)], ["AFTER, Dynamic battle camera", "AFTER, Calm battle camera"]).save(os.path.join(out, "grim_readability_battle_cameras.png"))
+
+
+def rooms_sheet(raw, out):
+    """A few other Harrow rooms in the default grim look."""
+    groups = (("grim_rooms_interiors_a.png", ("home", "courier", "store", "gear")), ("grim_rooms_interiors_b.png", ("office", "bar", "docks", "square")))
+    for target, names in groups:
+        images = []
+        for name in names:
+            path = os.path.join(raw, "%s_grim.png" % name)
+            if os.path.exists(path):
+                images.append(game_part(path))
+        if not images:
+            continue
+        w, h = images[0].size
+        sheet = Image.new("RGB", (w * 2 + GAP, (h + LABEL_H) * 2 + GAP), BACK)
+        draw = ImageDraw.Draw(sheet)
+        for i, (name, image) in enumerate(zip(names, images)):
+            x, y = (i % 2) * (w + GAP), (i // 2) * (h + LABEL_H + GAP)
+            sheet.paste(image, (x, y + LABEL_H))
+            draw.text((x + 12, y + 8), name.upper() + " (grim)", fill=TEXT, font=font(26))
+        sheet.save(os.path.join(out, target))
+
+
 def main():
     raw, out = sys.argv[1], sys.argv[2]
+    if len(sys.argv) > 3:
+        readability(raw, sys.argv[3], out)
+        rooms_sheet(raw, out)
     os.makedirs(out, exist_ok=True)
     side_by_side(raw, "square", out).save(os.path.join(out, "grim_square_compare.png"))
     side_by_side(raw, "square", out, suffix="_wide").save(os.path.join(out, "grim_square_wide_compare.png"))

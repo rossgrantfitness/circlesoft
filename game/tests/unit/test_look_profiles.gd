@@ -5,7 +5,8 @@ extends TestCase
 const POST_SHADER: String = "res://shaders/psx_post.gdshader"
 const RED_CLASSIC: String = "res://art/placeholder/characters/red/red_shiba.glb"
 const RED_GRIM: String = "res://art/placeholder/characters/red/red_shiba_grim.glb"
-const LOOK_TEST_SCENES: Array[String] = ["harrow_square", "harrow_checkpoint", "battle"]
+const EVERY_SCENE: Array[String] = ["harrow_square", "harrow_checkpoint", "battle", "harrow_bar", "harrow_home", "harrow_docks",
+		"road_mast_road", "test_room", "test_a", "test_b", "title", "nonsense"]
 
 
 func after_each() -> void:
@@ -20,22 +21,25 @@ func _material() -> ShaderMaterial:
 
 # ---- the data ----
 
-func test_the_file_has_classic_and_grim_and_defaults_to_classic() -> void:
+func test_the_file_has_classic_and_grim_and_defaults_to_grim() -> void:
 	assert_true(LookProfiles.has_profile("classic"))
 	assert_true(LookProfiles.has_profile("grim"))
-	assert_eq(LookProfiles.default_id(), "classic", "classic stays the default everywhere")
-	assert_eq(LookProfiles.active_id(), "classic", "nothing asked yet: the default")
+	assert_eq(LookProfiles.default_id(), "grim", "Ross approved grim as the default look everywhere (2026-10-08)")
+	assert_eq(LookProfiles.active_id(), "grim", "nothing asked yet: the default")
+	assert_true(LookProfiles.is_grim())
 
 
-func test_only_the_look_test_scenes_are_grim_by_default() -> void:
-	for key: String in LOOK_TEST_SCENES:
-		assert_eq(LookProfiles.scene_default(key), "grim", key + " is a look-test scene")
-	for key: String in ["harrow_bar", "harrow_home", "harrow_docks", "title", "road_mast_road", "nonsense"]:
-		assert_eq(LookProfiles.scene_default(key), "classic", key + " stays classic until Ross signs off")
+func test_every_scene_is_grim_by_default_and_classic_is_one_press_away() -> void:
+	for key: String in EVERY_SCENE:
+		assert_eq(LookProfiles.scene_default(key), "grim", key + " is grim by default")
+		assert_eq(LookProfiles.enter_scene(key), "grim")
 	var listed: Dictionary = DataDB.get_dict("world/look_profiles")["scene_defaults"]
 	for key: Variant in listed:
-		if not str(key).begins_with("_"):
-			assert_has(LOOK_TEST_SCENES, str(key), "only look-test scenes are listed")
+		assert_true(str(key).begins_with("_"), "no scene is an exception: " + str(key))
+	assert_true(LookProfiles.has_profile("classic"), "classic stays available for comparison")
+	LookProfiles.set_forced("classic")
+	for key: String in EVERY_SCENE:
+		assert_eq(LookProfiles.enter_scene(key), "classic", "F11 forces classic on " + key)
 
 
 func test_classic_is_an_exact_no_op() -> void:
@@ -45,7 +49,11 @@ func test_classic_is_an_exact_no_op() -> void:
 	assert_eq(params["dither_amount"], 1.0)
 	assert_false(LookProfiles.flag("classic", "dressing", true), "no props, no grime")
 	assert_false(LookProfiles.dulls_characters_for("classic"), "characters untouched")
-	assert_eq((LookProfiles.profile("classic")["models"] as Dictionary).size(), 0, "no model variants")
+	var classic_models: Dictionary = LookProfiles.profile("classic")["models"]
+	assert_eq(classic_models.size(), 1, "only Red's grim shiba maps (back to the classic shiba)")
+	assert_eq(classic_models[RED_GRIM], RED_CLASSIC)
+	assert_eq(LookProfiles.number("classic", "characters.rim_strength", 0.0), 0.0, "no edge light")
+	assert_false(LookProfiles.dresses_characters_for("classic"), "no character treatment")
 	assert_eq(LookProfiles.number("classic", "lighting.ambient_energy_mul", 0.0), 1.0)
 	assert_eq(LookProfiles.number("classic", "lighting.point_energy_mul", 0.0), 1.0)
 	assert_eq(LookProfiles.number("classic", "lighting.key_energy_mul", 0.0), 1.0)
@@ -74,33 +82,34 @@ func test_grim_is_clearly_not_subtle() -> void:
 	assert_true(LookProfiles.dulls_characters_for("grim"))
 
 
-func test_unknown_profile_reads_as_classic() -> void:
+func test_unknown_profile_reads_as_classic_values_but_the_default_is_active() -> void:
 	assert_eq(LookProfiles.number("no_such", "no.such.key", 5.0), 5.0, "a missing key gives the fallback")
 	assert_eq(LookProfiles.number("no_such", "grade.amount", 5.0), 0.0, "an unknown profile reads the classic values")
 	assert_eq(LookProfiles.profile("no_such"), LookProfiles.profile("classic"))
 	LookProfiles.apply("no_such")
-	assert_eq(LookProfiles.active_id(), "classic")
+	assert_eq(LookProfiles.active_id(), LookProfiles.default_id(), "an unknown id turns the default look on")
 
 
 # ---- which profile a scene gets ----
 
-func test_a_scene_asks_for_its_own_profile() -> void:
+func test_a_scene_asks_for_its_own_profile_and_a_data_exception_still_works() -> void:
 	assert_eq(LookProfiles.enter_scene("harrow_square"), "grim")
 	assert_eq(LookProfiles.active_id(), "grim")
-	assert_true(LookProfiles.is_grim())
-	assert_eq(LookProfiles.enter_scene("harrow_bar"), "classic")
-	assert_eq(LookProfiles.active_id(), "classic")
-	assert_eq(LookProfiles.scene_key(), "harrow_bar")
+	assert_eq(LookProfiles.scene_key(), "harrow_square")
+	LookProfiles.use_data_for_tests({"default": "grim", "scene_defaults": {"harrow_bar": "classic"},
+			"profiles": {"classic": {}, "grim": {}}})
+	assert_eq(LookProfiles.enter_scene("harrow_bar"), "classic", "a scene can still be listed as an exception")
+	assert_eq(LookProfiles.enter_scene("harrow_home"), "grim")
 
 
 func test_forcing_a_profile_beats_the_scene_default_and_cycles_through_auto() -> void:
 	assert_eq(LookProfiles.forced_id(), "", "auto at start")
 	assert_eq(LookProfiles.cycle_forced(), "classic", "auto -> classic")
-	assert_eq(LookProfiles.enter_scene("harrow_square"), "classic", "forced classic beats the square's grim")
+	assert_eq(LookProfiles.enter_scene("harrow_square"), "classic", "forced classic beats the scene default")
 	assert_eq(LookProfiles.cycle_forced(), "grim", "classic -> grim")
-	assert_eq(LookProfiles.enter_scene("harrow_bar"), "grim", "forced grim beats the bar's classic")
+	assert_eq(LookProfiles.enter_scene("harrow_bar"), "grim", "forced grim")
 	assert_eq(LookProfiles.cycle_forced(), "", "grim -> auto")
-	assert_eq(LookProfiles.active_id(), "classic", "auto again: the scene (the bar) decides")
+	assert_eq(LookProfiles.active_id(), "grim", "auto again: the scene decides, and every scene is grim")
 	LookProfiles.set_forced("grim")
 	assert_eq(LookProfiles.active_id(), "grim")
 	LookProfiles.set_forced("nonsense")
@@ -160,12 +169,11 @@ func test_apply_reaches_every_psx_screen_in_the_tree() -> void:
 	var screen: PsxScreen = (load("res://scenes/core/psx_screen.tscn") as PackedScene).instantiate() as PsxScreen
 	add_to_root(screen)
 	var material: ShaderMaterial = screen.get_display().material as ShaderMaterial
-	assert_eq(material.get_shader_parameter("grade_amount"), 0.0, "a fresh screen is classic")
-	LookProfiles.apply("grim")
-	assert_eq(material.get_shader_parameter("grade_amount"), 1.0)
+	assert_eq(material.get_shader_parameter("grade_amount"), 1.0, "a fresh screen starts in the default look: grim")
 	LookProfiles.apply("classic")
 	assert_eq(material.get_shader_parameter("grade_amount"), 0.0)
 	LookProfiles.apply("grim")
+	assert_eq(material.get_shader_parameter("grade_amount"), 1.0)
 	var second: PsxScreen = (load("res://scenes/core/psx_screen.tscn") as PackedScene).instantiate() as PsxScreen
 	add_to_root(second)
 	assert_eq((second.get_display().material as ShaderMaterial).get_shader_parameter("grade_amount"), 1.0, "a screen made later starts in the active look")
@@ -192,16 +200,18 @@ func test_drain_takes_colour_and_brightness_away() -> void:
 
 # ---- models ----
 
-func test_red_swaps_to_her_grim_shiba_only_in_grim() -> void:
+func test_red_is_the_grim_shiba_by_default_and_the_classic_one_in_classic() -> void:
 	assert_eq(LookProfiles.resolve_model_for(RED_CLASSIC, "classic"), RED_CLASSIC)
+	assert_eq(LookProfiles.resolve_model_for(RED_GRIM, "classic"), RED_CLASSIC, "classic (F11) shows the classic shiba wherever the grim one is named")
 	assert_eq(LookProfiles.resolve_model_for(RED_CLASSIC, "grim"), RED_GRIM)
+	assert_eq(LookProfiles.resolve_model_for(RED_GRIM, "grim"), RED_GRIM)
 	assert_eq(LookProfiles.resolve_model_for("res://art/placeholder/characters/otis/chr_otis.glb", "grim"), "res://art/placeholder/characters/otis/chr_otis.glb", "Otis keeps his model (his texture is dulled instead)")
 	assert_true(LookProfiles.is_variant_path(RED_GRIM))
 	assert_false(LookProfiles.is_variant_path(RED_CLASSIC))
-	LookProfiles.apply("grim")
-	assert_eq(LookProfiles.resolve_model(RED_CLASSIC), RED_GRIM)
+	assert_eq(LookProfiles.resolve_model(RED_CLASSIC), RED_GRIM, "the default look")
 	LookProfiles.apply("classic")
 	assert_eq(LookProfiles.resolve_model(RED_CLASSIC), RED_CLASSIC)
+	assert_eq(LookProfiles.resolve_model(RED_GRIM), RED_CLASSIC)
 
 
 func test_a_variant_that_is_not_there_falls_back_to_the_classic_model() -> void:
@@ -213,9 +223,10 @@ func test_a_variant_that_is_not_there_falls_back_to_the_classic_model() -> void:
 
 
 func test_the_look_key_changes_with_the_profile() -> void:
-	var classic_key: String = LookProfiles.model_look_key(RED_CLASSIC)
+	LookProfiles.apply("classic")
+	var classic_key: String = LookProfiles.model_look_key(RED_GRIM)
 	LookProfiles.apply("grim")
-	assert_ne(LookProfiles.model_look_key(RED_CLASSIC), classic_key, "Red needs reloading when the look changes")
+	assert_ne(LookProfiles.model_look_key(RED_GRIM), classic_key, "Red needs reloading when the look changes")
 	var otis: String = "res://art/placeholder/characters/otis/chr_otis.glb"
 	var grim_otis: String = LookProfiles.model_look_key(otis)
 	LookProfiles.apply("classic")
@@ -235,3 +246,51 @@ func test_backdrop_look_is_unchanged_in_classic_and_overridden_in_grim() -> void
 	assert_almost_eq(grim_lamp, base_lamp * LookProfiles.number("grim", "backdrop.lamp_energy_mul", 1.0), 0.0001)
 	assert_eq(str((grim["lamps"] as Array)[0]["color"]), str(LookProfiles.value("grim", "backdrop.lamp_color", "")))
 	assert_eq(base["floor_a"], "#4A3F46", "the source dictionary was not edited")
+
+
+# ---- characters: brighter than the set, with an edge light (Ross, 2026-10-08) ----
+
+func test_grim_lifts_characters_and_gives_every_role_an_edge_light() -> void:
+	assert_true(LookProfiles.dresses_characters_for("grim"))
+	for role: String in ["party", "enemy", "npc"]:
+		var cfg: Dictionary = LookProfiles.character_config("grim", role)
+		assert_gt(float(cfg["rim_strength"]), 0.2, role + " has an edge light")
+		assert_lt(float(cfg["rim_strength"]), 1.0, role + ": a subtle one, not a halo")
+		assert_ge(float(cfg["tint_value"]), 1.0, role + " is lifted, never darker than the albedo")
+		assert_le(float(cfg["tint_value"]), 1.6, role + ": not too bright")
+		assert_true(str(cfg["rim_color"]).begins_with("#"))
+	assert_false(LookProfiles.character_config("grim", "party").has("roles"), "the role blocks are merged away")
+	var party: Dictionary = LookProfiles.character_config("grim", "party")
+	var enemy: Dictionary = LookProfiles.character_config("grim", "enemy")
+	assert_ne(party["rim_color"], enemy["rim_color"], "warm for the crew, cool for the Signals")
+	assert_gt(float(party["saturation"]), 0.5, "less drained than the world (the world grade is 0.75 desaturated)")
+	assert_gt(float(enemy["saturation"]), 0.7, "the grunts keep their blue")
+	assert_gt(float(enemy["value"]), 0.7, "and are not so dark they vanish")
+	assert_eq(LookProfiles.character_config("grim", "unknown_role"), LookProfiles.character_config("grim", ""), "an unknown role uses the base block")
+
+
+func test_apply_rim_writes_the_edge_light_into_a_lit_material_and_zero_switches_it_off() -> void:
+	var material: ShaderMaterial = ShaderMaterial.new()
+	material.shader = load("res://shaders/psx_lit.gdshader") as Shader
+	LookProfiles.apply_rim(material, LookProfiles.character_config("grim", "enemy"))
+	assert_gt(float(material.get_shader_parameter("rim_strength")), 0.0)
+	assert_eq(material.get_shader_parameter("rim_color"), Color.html("#cfe8f2"))
+	assert_eq(material.get_shader_parameter("rim_bands"), 3.0, "banded, not a soft halo")
+	LookProfiles.apply_rim(material, LookProfiles.character_config("classic", "enemy"))
+	assert_eq(material.get_shader_parameter("rim_strength"), 0.0, "classic: off")
+
+
+func test_the_lit_shader_has_the_edge_light_off_by_default() -> void:
+	var shader: Shader = load("res://shaders/psx_lit.gdshader") as Shader
+	assert_has(shader.code, "uniform float rim_strength : hint_range(0.0, 2.0) = 0.0;")
+	for name: String in ["rim_color", "rim_power", "rim_top_bias", "rim_bands"]:
+		assert_true(shader.code.contains(name), name + " is declared")
+
+
+func test_any_enemy_model_gets_the_enemy_look_even_when_it_stands_in_a_room_as_an_npc() -> void:
+	var grunt: String = "res://art/placeholder/enemies/signals_grunt/enm_signals_grunt.glb"
+	var as_npc: Dictionary = LookProfiles.character_config("grim", "npc", grunt)
+	var enemy: Dictionary = LookProfiles.character_config("grim", "enemy")
+	assert_eq(as_npc["rim_color"], enemy["rim_color"], "cool edge light, not the town's")
+	assert_eq(as_npc["value"], enemy["value"], "dark enough to read as a solid blue-grey figure, not a pale ghost")
+	assert_ne(LookProfiles.character_config("grim", "npc", "res://art/placeholder/characters/otis/chr_otis.glb")["rim_color"], enemy["rim_color"], "the crew and townsfolk keep theirs")

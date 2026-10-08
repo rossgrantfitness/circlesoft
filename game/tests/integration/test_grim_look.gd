@@ -6,6 +6,18 @@ extends TestCase
 const SQUARE: String = "res://scenes/rooms/harrow/harrow_square.tscn"
 const CHECKPOINT: String = "res://scenes/rooms/harrow/harrow_checkpoint.tscn"
 const BAR: String = "res://scenes/rooms/harrow/harrow_bar.tscn"
+const HOME: String = "res://scenes/rooms/harrow/harrow_home.tscn"
+const COURIER: String = "res://scenes/rooms/harrow/harrow_courier.tscn"
+const STORE: String = "res://scenes/rooms/harrow/harrow_store.tscn"
+const GEAR: String = "res://scenes/rooms/harrow/harrow_gear.tscn"
+const OFFICE: String = "res://scenes/rooms/harrow/harrow_dock_office.tscn"
+const DOCKS: String = "res://scenes/rooms/harrow/harrow_docks.tscn"
+const ROAD: String = "res://scenes/rooms/road/road_mast_road.tscn"
+const TEST_ROOM: String = "res://scenes/debug/psx_test_room.tscn"
+const TEST_A: String = "res://scenes/rooms/test_a.tscn"
+const TEST_B: String = "res://scenes/rooms/test_b.tscn"
+const RED_CLASSIC: String = "res://art/placeholder/characters/red/red_shiba.glb"
+const RED_GRIM: String = "res://art/placeholder/characters/red/red_shiba_grim.glb"
 const BATTLE: String = "res://scenes/battle/battle_scene.tscn"
 const DRESSING_DATA: String = "world/look_dressing"
 const OTIS: String = "res://art/placeholder/characters/otis/chr_otis.glb"
@@ -230,6 +242,7 @@ func _plain_room() -> Node3D:
 
 
 func test_dressing_turns_on_with_grim_and_restores_classic_exactly() -> void:
+	LookProfiles.apply("classic")
 	var host: Node3D = _plain_room()
 	add_to_root(host)
 	var dressing: GrimDressing = host.get_node("GrimDressing") as GrimDressing
@@ -272,22 +285,45 @@ func test_dressing_leaves_characters_alone() -> void:
 	assert_eq(mesh.get_surface_override_material(0), own_material, "a character mesh keeps its material")
 
 
-func test_harrow_square_and_checkpoint_are_grim_by_default_and_the_bar_is_not() -> void:
-	for path: String in [SQUARE, CHECKPOINT]:
+func test_every_room_is_grim_and_dressed_by_default() -> void:
+	var rooms: Array[String] = [SQUARE, CHECKPOINT, BAR, HOME, COURIER, STORE, GEAR, OFFICE, DOCKS, ROAD, TEST_ROOM, TEST_A, TEST_B]
+	for path: String in rooms:
 		var room: Node = (load(path) as PackedScene).instantiate()
 		add_to_root(room)
-		var dressing: GrimDressing = room.get_node("GrimDressing") as GrimDressing
+		var dressing: GrimDressing = room.get_node_or_null("GrimDressing") as GrimDressing
+		assert_not_null(dressing, path + " carries a GrimDressing node")
+		if dressing == null:
+			continue
 		assert_true(dressing.is_on, path + " starts grim")
-		assert_gt(dressing.prop_count, 20, "with its props")
-		assert_true(LookProfiles.is_grim())
+		assert_gt(dressing.prop_count, 12, path + " has its props")
+		assert_le(_tris(dressing.props_root), DRESSING_TRIANGLE_CAP, path + " dressing stays cheap (%d tris)" % _tris(dressing.props_root))
+		assert_eq(LookProfiles.active_id(), "grim")
 		var void_color: Color = (room.get_node("WorldEnvironment") as WorldEnvironment).environment.background_color
-		assert_lt(void_color.b, 0.2, "the fog is the dirty olive, not the toy-box night blue")
+		assert_lt(void_color.b, 0.2, path + ": dirty olive fog, not the toy-box night blue")
 		room.free()
 		LookProfiles.reset()
-	var bar: Node = (load(BAR) as PackedScene).instantiate()
-	add_to_root(bar)
-	assert_eq(LookProfiles.active_id(), "classic", "the bar is not a look-test room")
-	assert_null(bar.get_node_or_null("GrimDressing"))
+
+
+func test_every_room_in_the_game_data_has_dressing_data() -> void:
+	var dressing: Dictionary = DataDB.get_dict(DRESSING_DATA)["rooms"]
+	for room_id: Variant in DataDB.get_dict("world/rooms")["rooms"]:
+		assert_true(dressing.has(str(room_id)) or str(room_id).begins_with("_"), "%s has grim dressing data" % room_id)
+	assert_true(dressing.has("battle"))
+	assert_true(dressing.has("test_room"))
+
+
+func test_f11_classic_strips_a_whole_room_back_to_the_toy_box_and_grim_returns() -> void:
+	var room: Node = (load(DOCKS) as PackedScene).instantiate()
+	add_to_root(room)
+	var dressing: GrimDressing = room.get_node("GrimDressing") as GrimDressing
+	assert_true(dressing.is_on)
+	LookProfiles.set_forced("classic")
+	assert_false(dressing.is_on)
+	assert_false(dressing.props_root.visible)
+	assert_eq((room.get_node("WorldEnvironment") as WorldEnvironment).environment.background_color, Color(0.12156863, 0.14509805, 0.2509804, 1), "classic night blue")
+	LookProfiles.set_forced("grim")
+	assert_true(dressing.is_on)
+	assert_true(dressing.props_root.visible)
 
 
 func test_the_room_lights_and_ambient_follow_the_profile_and_return_to_classic() -> void:
@@ -410,16 +446,17 @@ func _first_texture(model: Node) -> Texture2D:
 
 
 func test_otis_gets_a_dull_matte_scuffed_texture_in_grim_without_remodeling() -> void:
+	LookProfiles.apply("classic")
 	var classic_model: Node3D = (load(OTIS) as PackedScene).instantiate() as Node3D
 	own(classic_model)
 	var before: Texture2D = _first_texture(classic_model)
-	LookProfiles.dress_model(classic_model, OTIS)
+	LookProfiles.dress_model(classic_model, OTIS, "party")
 	assert_eq(_first_texture(classic_model), before, "classic: untouched")
 	LookProfiles.apply("grim")
 	var model: Node3D = (load(OTIS) as PackedScene).instantiate() as Node3D
 	own(model)
 	var source: Image = _first_texture(model).get_image()
-	LookProfiles.dress_model(model, OTIS)
+	LookProfiles.dress_model(model, OTIS, "party")
 	var after: Texture2D = _first_texture(model)
 	assert_ne(after, before)
 	assert_eq(after.get_size(), before.get_size(), "same texture size")
@@ -431,13 +468,118 @@ func test_otis_gets_a_dull_matte_scuffed_texture_in_grim_without_remodeling() ->
 	assert_eq(_first_texture(pristine), before, "the shared model resource was not changed")
 
 
-func test_red_in_the_field_loads_her_grim_shiba_and_swaps_live() -> void:
-	LookProfiles.set_forced("grim")
+func test_red_in_the_field_is_the_grim_shiba_by_default_and_f11_swaps_her_live() -> void:
 	var player: PlayerController = (load("res://scenes/actors/player.tscn") as PackedScene).instantiate() as PlayerController
 	add_to_root(player)
-	var model: Node = player.get_node("Visual/Model")
-	assert_eq(model.scene_file_path, "res://art/placeholder/characters/red/red_shiba_grim.glb")
-	assert_eq(player.model_path, "res://art/placeholder/characters/red/red_shiba.glb", "player.tscn still names the approved Red")
+	assert_eq(player.model_path, RED_GRIM, "player.tscn names the grim shiba")
+	assert_eq(player.get_node("Visual/Model").scene_file_path, RED_GRIM)
 	LookProfiles.set_forced("classic")
-	assert_eq(player.get_node("Visual/Model").scene_file_path, "res://art/placeholder/characters/red/red_shiba.glb", "F11 swaps her back")
+	assert_eq(player.get_node("Visual/Model").scene_file_path, RED_CLASSIC, "F11 swaps the classic shiba in")
 	assert_eq(player.get_current_animation(), &"idle")
+	assert_null(player.get_node_or_null("RedLamp"), "and her lamp light goes with the grim look")
+	LookProfiles.set_forced("grim")
+	assert_eq(player.get_node("Visual/Model").scene_file_path, RED_GRIM)
+	assert_not_null(player.get_node_or_null("RedLamp"))
+
+
+# ---- the readability pass: edge light and brightness on characters and enemies ----
+
+func _rim_of(model: Node) -> Array[float]:
+	var found: Array[float] = []
+	for node: Node in model.find_children("*", "MeshInstance3D", true, false):
+		var mesh_instance: MeshInstance3D = node as MeshInstance3D
+		for surface: int in mesh_instance.mesh.get_surface_count():
+			var material: ShaderMaterial = mesh_instance.get_active_material(surface) as ShaderMaterial
+			if material != null:
+				var strength: Variant = material.get_shader_parameter("rim_strength")
+				found.append(float(strength) if strength != null else 0.0)
+	return found
+
+
+func test_the_grim_red_gets_the_edge_light_but_not_a_repaint() -> void:
+	var packed: PackedScene = load(RED_GRIM) as PackedScene
+	var plain: Node3D = packed.instantiate() as Node3D
+	own(plain)
+	var source: Texture2D = _first_texture(plain)
+	var dressed: Node3D = packed.instantiate() as Node3D
+	own(dressed)
+	LookProfiles.dress_model(dressed, RED_GRIM, "party")
+	assert_eq(_first_texture(dressed), source, "already painted dull: the texture is left alone")
+	for strength: float in _rim_of(dressed):
+		assert_gt(strength, 0.2, "every surface has the edge light")
+	for strength: float in _rim_of(plain):
+		assert_eq(strength, 0.0, "the shared model resource has none")
+	var body: MeshInstance3D = dressed.find_children("*", "MeshInstance3D", true, false)[0] as MeshInstance3D
+	var tint: Color = (body.get_active_material(0) as ShaderMaterial).get_shader_parameter("albedo_tint")
+	assert_gt(tint.r, 1.0, "lifted so she reads against the dark floor")
+	assert_lt(tint.r, 1.6, "but not glowing")
+
+
+func test_party_and_enemy_edge_lights_differ_and_classic_has_none() -> void:
+	var packed: PackedScene = load(OTIS) as PackedScene
+	var party: Node3D = packed.instantiate() as Node3D
+	var enemy: Node3D = packed.instantiate() as Node3D
+	var untouched: Node3D = packed.instantiate() as Node3D
+	own(party)
+	own(enemy)
+	own(untouched)
+	LookProfiles.dress_model(party, OTIS, "party")
+	LookProfiles.dress_model(enemy, OTIS, "enemy")
+	var party_rim: Color = ((party.find_children("*", "MeshInstance3D", true, false)[0] as MeshInstance3D).get_active_material(0) as ShaderMaterial).get_shader_parameter("rim_color")
+	var enemy_rim: Color = ((enemy.find_children("*", "MeshInstance3D", true, false)[0] as MeshInstance3D).get_active_material(0) as ShaderMaterial).get_shader_parameter("rim_color")
+	assert_gt(party_rim.r, party_rim.b, "the crew's edge light is warm")
+	assert_gt(enemy_rim.b, enemy_rim.r, "the Signals' is cool")
+	assert_gt(_brightness_of(_first_texture(enemy).get_image()), 0.0)
+	LookProfiles.apply("classic")
+	var classic: Node3D = packed.instantiate() as Node3D
+	own(classic)
+	LookProfiles.dress_model(classic, OTIS, "party")
+	for strength: float in _rim_of(classic):
+		assert_eq(strength, 0.0, "classic: no edge light")
+
+
+func _under_a_character(node: Node, room: Node) -> bool:
+	var current: Node = node.get_parent()
+	while current != null and current != room:
+		if current is PlayerController or current is Npc or current is PartyFollower or current is MapEnemy:
+			return true
+		current = current.get_parent()
+	return false
+
+
+func test_the_room_materials_never_get_the_edge_light() -> void:
+	var room: Node = (load(SQUARE) as PackedScene).instantiate()
+	add_to_root(room)
+	var checked: int = 0
+	for node: Node in room.find_children("*", "MeshInstance3D", true, false):
+		var mesh_instance: MeshInstance3D = node as MeshInstance3D
+		if mesh_instance.mesh == null or _under_a_character(mesh_instance, room):
+			continue
+		var material: ShaderMaterial = mesh_instance.get_surface_override_material(0) as ShaderMaterial
+		if material != null and material.get_shader_parameter("rim_strength") != null:
+			assert_eq(float(material.get_shader_parameter("rim_strength")), 0.0, str(mesh_instance.name))
+		checked += 1
+	assert_gt(checked, 10)
+
+
+func test_battle_views_carry_the_edge_light_in_both_cameras() -> void:
+	for dynamic: bool in [true, false]:
+		var stage: BattleScene = (load(BATTLE) as PackedScene).instantiate() as BattleScene
+		stage.transitions_enabled = false
+		stage.audio = FakeAudio.new()
+		add_to_root(stage)
+		stage.set_dynamic_camera(dynamic)
+		var stub: RefCounted = (load("res://tests/fixtures/battle_stage/stub_battle_controller.gd") as GDScript).new() as RefCounted
+		stub.set("instant", true)
+		stage.attach_controller(stub)
+		stage._on_battle_started(stub.call("snapshot"))
+		for id: String in ["red", "otis", "mox", "e1", "e2"]:
+			var view: CombatantView = stage.get_view(id)
+			assert_not_null(view, id)
+			if view == null:
+				continue
+			var strengths: Array[float] = _rim_of(view.model)
+			assert_gt(strengths.size(), 0)
+			for strength: float in strengths:
+				assert_gt(strength, 0.2, "%s has the edge light (dynamic camera %s)" % [id, dynamic])
+		assert_eq(stage.get_view("red").model.scene_file_path, RED_GRIM, "the battle's Red is the grim shiba")

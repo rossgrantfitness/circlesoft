@@ -2,6 +2,8 @@
 
 > ✅ APPROVED by Ross, 2026-10-06: internal resolution 384×216 (A); portraits 96×96 pixel-art, 32 colors (A); one model per character (A). Numbers marked *(starting)* are confirmed by the placeholder-Red pipeline test.
 
+> **Updated 2026-10-08: the grim look is ✅ APPROVED by Ross** ("setting is good, but make characters and enemies brighter to stand out against background, not too bright though - edgelight"). Changed here: the visual pillars, the edge light, the grim palette notes, the environment table (slum-cyberpunk Harrow, the ore train, the Spillway, the jammer works), the reference notes, and the rating lettering (spray-paint stencil, tone pass D3 B). The model contract, the camera notes, the PSX rules and the UI windows are unchanged. Grim becomes the default look everywhere after the edge-light readability pass.
+
 > The authority on the look. Read before any visual work. Owner: Technical Artist with the Creative Director (proposes) · Ross (approves). Drafted 2026-10-06 (Milestone 0).
 
 **How to read this:** every number is picked so one artist can build it. If a rule ever fights "Ross can finish it", Ross's time wins. Numbers marked *(starting)* get checked by running one placeholder Red through the whole pipeline (model, rig, shader, in game) and are locked after that.
@@ -27,25 +29,37 @@ Recommendation: A. It matches "Ross is the only artist, so practicality is taste
 ## Visual pillars
 > **Ross's visual direction (2026-10-06):** "the visual design language we want is psx style, megaman legends tail concerto mgs1 ff7 inspired." This guide follows that brief.
 
-**Touchstones:** PSX style, inspired by **Mega Man Legends**, **Tail Concerto**, **Metal Gear Solid (1)** and **Final Fantasy VII**. Inspired by, never copied: describe them in words only, never trace or paste images.
+> **Ross's grim direction (2026-10-08):** the world goes grim (greasy, gritty sci-fi oppression), the art is "desaturated, darker, grimier", and the heroes stay loud; characters and enemies get an edge light so they stand out. Harrow is cyberpunk slums, not a dusty frontier town. The mood sources are named in docs/tone_guide.md (approved).
 
-1. **Toy-box diorama.** Every room looks like a little set you could pick up and shake: floor, two back walls, props sitting on top.
-2. **Chunky and readable.** Big simple shapes. If you fill a character in solid black at 40 pixels tall, you can still say who it is.
-3. **Lamps in the dark.** Warm amber light against cold night and cold gray. Warm means "ours, home, people"; cool means "the Hegemony, the dark".
-4. **Patched, not polished.** Mismatched plates, tape, rivets, charms and chalk marks. Sci-fi hardware that someone has fixed with love.
-5. **Loud pixels.** Big flashes, chunky rating letters, big reactions. The goofy tone shows in the feedback, not in messy art.
+**Touchstones:** PSX style, inspired by **Mega Man Legends**, **Tail Concerto**, **Metal Gear Solid (1)** and **Final Fantasy VII**. Borrow what works, change the surface: describe them in words only, never trace or paste images.
+
+1. **A grimy diorama.** Every room is still a little set seen from above (floor, two back walls, props sitting on top), but a lived-in, greasy one: stacked shacks, cable nests, puddles, steam, posters peeled over older paint. Built small, dressed heavy.
+2. **Chunky and readable.** Big simple shapes. If you fill a character in solid black at 40 pixels tall, you can still say who it is. In the dark rooms, the edge light (below) is what keeps this true.
+3. **Lamps in the dark.** Warm amber light against cold night and cold gray. Warm means "ours, home, people"; cool means "the Hegemony, the dark". There are fewer lamps now, so each one is precious and the eye goes straight to it.
+4. **Patched, not polished.** Mismatched plates, tape, rivets, rust streaks, oil stains, charms and chalk marks. Sci-fi hardware held together because nothing new is coming. Only the Hegemony's things are clean, and that's the point.
+5. **Loud heroes, loud pixels.** The world is quiet and tired; the crew and the battle screen are not. Big flashes, spray-paint stencil rating letters, big reactions. The heroes' voice shows in the feedback and in their silhouettes, never in messy art.
+
+### The edge light (approved 2026-10-08; the Technical Artist is tuning the numbers)
+Described in words here; the tuned values go in the look profile data and replace this description's "about" numbers when they lock.
+- **What it is:** a thin rim of light along the outline of every character and enemy, strongest on the side away from the room's main light, so a figure separates from a dark, grimy background. It is a shader effect, done in code: Ross never paints it into textures.
+- **Who gets it:** the party, named NPCs, crowd NPCs and enemies, in the field, in battle and in cutscenes. Not environments or props (the world stays murky; the people pop).
+- **How strong:** "brighter, not too bright" (Ross). Characters as a whole sit a notch brighter than the room around them, and the rim is a fine line, about 1 internal pixel wide at 384×216, never a glow, halo or bloom. It must never outshine a window lamp or the battle cue.
+- **Color (a suggestion; the Technical Artist's tuning decides):** a pale, slightly desaturated tint that follows the warm-ours, cool-theirs rule: a pale warm chalk-amber on the crew and Marchfolk, a pale cold steel on Hegemony troops and drones. Kept subtle enough that the grayscale check still passes on shape and value alone.
+- **PSX feel:** stepped, not smooth (it goes through the same 15-bit reduction and dither as everything else), and it wobbles with the vertex jitter like the rest of the model.
+- **Red first:** her jacket and lamp are already the most saturated things in a shot after the window lamps; with the edge light she should be the easiest figure on screen to find.
 
 ## Palette
 Paint in these colors. Names matter more than exact hex: if a tweak looks better on screen, tell the Technical Artist and we update this table.
 
 **Color rules**
+- **Grim by default (Ross, 2026-10-08):** desaturate, darken, grime. A muted gray-brown base everywhere, with color kept for accents: lamps (amber), warning and hazard stripes, the call's teal, sodium streetlight orange, and a little neon (sodium orange, hot pink). "A little" and "a bit" were his words: a push, not black-and-white and not photoreal. The grim look profile (data/world/look_profiles.json) does most of this in the shader; textures should already be dirty and muted before it.
 - **Warm = ours, cool = theirs.** Lamp light (amber) only on windows, lamps, the lamp check and people we like. Hegemony things are never amber.
 - **Hegemony = slate gray + white.** Slate #5B6573 armor, Hegemony white #F2F4F7 trim. All their ships share one gray, whatever the shape. Symbol: white ring cut by one bar.
 - **Signals Corps = blue-gray** #6F8BA8 uniforms, with slate gear. Status lights are cold pink-red #E8456A.
 - **Coldrunners = dark + chalk.** Dark coats #2B2B3D, chalk marks #EDEAD8 (the shuttered lantern).
-- **Marchfolk = warm and patched.** Terracotta, mustard and patch-green squares sewn on dusty tan.
+- **Marchfolk = faded and patched.** Terracotta, mustard and patch-green squares sewn on dusty tan, all washed out and stained. Only the Hegemony's slate and white look clean.
 - **Watch Zero = dust wraps and brass bells.** Tan #CBA878 wraps, brass #D9A441.
-- **The call = pale teal** #5FE0C8. It only shows up where the call is: the tower, the beacon part, the Quiet.
+- **The call = pale teal** #5FE0C8. It only shows up where the call is: the jammer works (brighter each floor), the beacon part, the Quiet. Neon signs may use a teal, but always a step duller and greener than Call teal, so the call stays its own color.
 - **No pure black and no pure white in textures.** Darkest is Ink #14121F; lightest is Chalk #EDEAD8 (or Hegemony white). Pure white is for flashes and rating outlines only.
 - **Up to 32 colors per texture** (a guide, not a wall). Fewer is better. Hand-dither gradients (checkerboard), never smooth-blend them.
 - **Check in grayscale.** Every character must still separate from its background with the color turned off.
@@ -77,6 +91,8 @@ Paint in these colors. Names matter more than exact hex: if a tweak looks better
 | Later: Vela, Ruo | silver-gray bunny; raccoon | Signals blue; Coldrunner dark | Vela's hand-stitched amber lamp patch; Ruo's plum scarf #8E3B6E (the one flashy thing on a dark crew) |
 
 Each party member owns one accent hue (Red red, Otis orange, Mox teal and mustard) so the three read apart even at 40 pixels tall.
+
+**Grim look (approved 2026-10-08):** these stay the base hues, but the grim textures and the grim profile mute and darken them: Red's jacket reads as a worn, dark oxblood red, Otis's coveralls a tired rust, Mox's vest old cardboard; fur is matte, with no gloss spots. Red's jacket and brass lamp stay the most saturated things in any shot after the window lamps. The tuned hex values come from the Technical Artist's grim textures (red_shiba_grim and the grim treatment on Otis, Mox and the grunts) and replace this table when they lock.
 
 **Environments**
 | Place | Colors | Mood |

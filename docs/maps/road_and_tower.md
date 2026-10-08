@@ -1,43 +1,41 @@
-# The road and the Old Relay Tower: layout map (vertical slice)
+# The Spillway and the jammer works (the Old Relay Tower): layout map (vertical slice)
 
 > Task M3-1 · Owner: Creative Director (proposes) · Ross (approves).
-> **Status: DRAFT for Ross's sign-off. Nothing here is final.** The build (M4-1, M4-2) starts only after Ross signs off.
-> Companion page: docs/maps/harrow_landing.md (room conventions and graybox rules are defined there and apply here too).
+> **Status: ✅ APPROVED by Ross, 2026-10-07** (tower as a stack with the lift shortcut, a two-scene approach, three must-win card fights). **Recast and ✅ APPROVED by Ross, 2026-10-08** (structure pass D2 A): the road becomes **the Spillway**, a drain channel under the slums, and the Old Relay Tower keeps its name but is now **a Signals jammer factory built around the ancient mast**. Same room ids, same flags, same encounters, same card doors, lift and bells, same climb, Kasp on the roof. The file name stays so nothing that links to it breaks.
+> Companion page: docs/maps/harrow_landing.md (room conventions and graybox rules are defined there and apply here too). Before this: docs/maps/ore_train.md and Harrow.
 
 ## For Ross (the short version)
 
-- **The road:** 2 outdoor scenes. A short night road where Mox pops out of the delivery crate, then the foot of the mast, where Watch Zero's bell-ringing sit-in is driving the Signals crazy. The old-timers open a drain tunnel: the back way in. About **4 minutes**.
-- **The tower:** 7 rooms stacked up the old mast: the half-buried bottom floor, four floors, a small landing before the top, and the roof. About **12 minutes** to climb, then **7 to 9 minutes** on the roof for Kasp and the ending.
-- **What you do inside:** 3 must-win fights (each grunt drops one of Kasp's access cards, which open the Signals doors), up to 3 more fights you can take or dodge, one crate to push, one power switch that wakes the old cage lift, one jump to a hidden crate, and the optional bells for the bonus sword. A quiet floor with no enemies sits in the middle as a breather.
-- **Save lamps:** one right inside the back way, one on the landing before the roof, with the old Zero and her thermos (one free full heal). The cage lift also runs back down to the first lamp as a shortcut.
-- **Whole slice:** Harrow about 8.5 + road about 4 + tower about 11 + roof about 7.5 = **about 31 minutes** with the optional fights; about 26 if you skip them all.
-- **Art:** gray boxes and reused models for now. The tower is one kit (floor, two walls, the mast column, the lift cage) re-dressed per floor, so it stays one set on your list (art row 20).
-- **Three choices for you are at the bottom of this page:** the tower's shape, how long the road is, and whether the card fights can be skipped. The map is drawn with the studio's recommended answers.
+- **The Spillway (was the road):** 2 scenes. A drain channel under the slums, neon leaking through the grates, where Mox pops out of the crate; then the gate of the jammer works, where Watch Zero's sit-in pries open a drain grate: the back way in. About **3.5 minutes**.
+- **The jammer works (was the tower):** the same 7 rooms up the mast, now factory floors: the untouched base of the mast, a cable mill, the Zeroes' walled-in bell shrine, the power room (the breather floor), the drone line, a last landing, and the roof among the smokestacks. About **11 minutes** to climb, then about **7** on the roof for Kasp.
+- **Everything you approved still holds:** 3 must-win card fights, the cage-lift shortcut, the crate push, the jump to a hidden crate, the optional bells, two save lamps and the old Zero's thermos.
+- **Whole slice:** train about 3.5 + Harrow about 8 + Spillway about 3.5 + Works about 11 + roof about 7 = **about 33 minutes** with the optional fights, about 28 without.
+- **Art:** gray boxes and reused models for now. Your sets are row 19 (the Spillway and the Works gate) and row 20 (the jammer-works kit around the mast), as before.
 
-**Borrowed, openly, with our own surface:** a floor-by-floor climb to a show-off boss on the roof is Mario RPG's Booster Tower and FF7's Shinra building. Keycards that open one Signals door after another are FF7's Shinra keycards (ours are all the same laminated photo of Kasp). The lift that wakes up and drops you back by the first save point is Dark Souls' elevator shortcut back to the bonfire. Ringing bells in the order of a tune you were taught is FF9's Gizamaluke's Grotto bells plus Mario RPG's tune-playing puzzle. The pre-boss healer is the classic JRPG "last rest before the boss". One borrowed role each; names, people, jokes and look are ours.
+**Borrowed, openly, with our own surface:** the Spillway is Half-Life 2's canals (a drain route under an occupied city, the way around the checkpoints). A floor-by-floor climb to a show-off boss on the roof is Mario RPG's Booster Tower and FF7's Shinra building; the factory around the mast is the role of FF7's Mako reactor. Keycards that open one Signals door after another are FF7's Shinra keycards (ours are all the same laminated photo of Kasp). The lift that wakes up and drops you back by the first save point is Dark Souls' elevator shortcut. Ringing bells in the order of a tune is FF9's Gizamaluke's Grotto bells plus Mario RPG's tune puzzle. **Stacking check:** train, slums, then a plant with keycards is the order of FF7's opening hour. Each piece is one borrowed role and the plot inside is ours: no bombing, no reactor blast, no mercenary crew; the boss is a petty sergeant on a jammer walker, the plant is wrapped around an ancient shrine-mast, and every card is the same photo of Kasp. Ross approved this with the flag raised (D2 A).
 
 ## Box diagram
 
 ```
-  from HARROW (checkpoint barrier)
+  from HARROW (checkpoint barrier -> service stair down)
         |
   +-----v--------------------------------------+
-  | R1 MAST ROAD   (Mox pops out of the crate)  |   patrol: grunt pair (dodgeable)
+  | R1 THE SPILLWAY (Mox pops out of the crate) |   patrol: grunt pair (dodgeable)
   +---------------------------------------+----+
                                           | east edge
   +---------------------------------------v----+
-  | R2 MAST FOOT   (Watch Zero sit-in)          |   front gate: locked for good
+  | R2 THE WORKS GATE (Watch Zero sit-in)       |   blast gate: locked for good
   +----+---------------------------------------+
-       | drain tunnel (opens in the sit-in scene)
-  =====|===================== THE OLD RELAY TOWER ==================================
+       | drain grate (opens in the sit-in scene)
+  ===== |============ THE OLD RELAY TOWER: THE JAMMER WORKS ==========================
        v
   +---------------------+                       ,----- cage lift (after the switch) -----.
   | T0 THE SUMP         |  SAVE LAMP 1          |                                         |
-  | bottom floor        |  card grunt #1 (must) |<---- lift stop T0 (shortcut down) ------|
+  | base of the old mast|  card grunt #1 (must) |<---- lift stop T0 (shortcut down) ------|
   +----------+----------+                       |                                         |
              | stairs                           |                                         |
   +----------v----------+                       |                                         |
-  | T1 CABLE HALL       |  drones (optional)    |                                         |
+  | T1 CABLE MILL       |  drones (optional)    |                                         |
   | crate push -> ledge |  CARD DOOR 1 (1 card) |                                         |
   +----------+----------+                       |                                         |
              | stairs                           |                                         |
@@ -47,13 +45,13 @@
   +----------+----------+                       |                                         |
              | stairs                           |                                         |
   +----------v----------+                       |                                         |
-  | T3 GENERATOR DECK   |  no enemies           |                                         |
-  | CARD DOOR 2 -> lever|  stairs up collapsed  |<---- lift stop T3 ----------------------|
+  | T3 POWER ROOM       |  no enemies           |                                         |
+  | CARD DOOR 2 -> lever|  stairs up torn out   |<---- lift stop T3 ----------------------|
   | jump -> girder crate|                       |                                         |
   +---------------------+                       |                                         |
                                                 |                                         |
   +---------------------+                       |                                         |
-  | T4 JAMMER DECK      |  squad #3 (must)      |<---- lift stop T4 ----------------------'
+  | T4 DRONE LINE       |  squad #3 (must)      |<---- lift stop T4 ----------------------'
   | Quota Ambush (opt.) |  CARD DOOR 3 (3 cards)
   +----------+----------+
              | card door 3
@@ -68,102 +66,102 @@
 
 ## The route (main path)
 
-1. **R1 Mast Road.** Halfway along, the delivery crate starts bragging: Mox pops out, gets sent home, and stomps back toward town. One grunt patrol further on (take it or dodge it). Party: Red, Otis.
-2. **R2 Mast Foot.** The sit-in scene: Red hands over the crate, Watch Zero sounds off, Kasp threatens over a loudspeaker, a Signals supply crate by the gate starts bragging (Mox again, so he's in), and the old Zero opens the drain tunnel. Talk to her again for the bell tune (optional). Party: Red, Otis, Mox.
-3. **T0 The Sump.** Save lamp 1. A grunt eating lunch with his back turned: sneak up for a free first turn. He drops card #1.
-4. **T1 Cable Hall.** Card door 1 opens with 1 card. Optional: push the crate to the ledge for a chalk stash; fight or dodge the drones.
-5. **T2 Bell Gallery.** Card grunts #2 patrol the floor (must-win, card #2). Optional: the bells.
-6. **T3 Generator Deck.** The stairs up are torn out for jammer cable. Card door 2 opens the switch cage; throw the lever: the tower's lights come on and the old cage lift wakes. Optional: hop to the girder crate. Ride the lift up.
-7. **T4 Jammer Deck.** The full Signals squad patrols the jammer (must-win, card #3). Optional: the Quota Ambush guarding a crate. Card door 3 opens with 3 cards.
+1. **R1 The Spillway.** Down the service stair from the checkpoint into the drain channel. Partway along, the delivery crate starts bragging: Mox pops out, gets sent home, and stomps back toward the stair. One grunt patrol further on (take it or dodge it). Party: Red, Otis.
+2. **R2 The Works gate.** The Spillway opens onto the gate apron of the jammer works. The sit-in scene: Red hands over the crate, Watch Zero sounds off (bells ringing again), Kasp threatens over a loudspeaker, a Signals supply crate by the gate starts bragging (Mox again, so he's in), and the Zeroes pry open the drain grate. Talk to the old Zero again for the bell tune (optional). Party: Red, Otis, Mox.
+3. **T0 The Sump.** Save lamp 1. The untouched base of the old mast. A grunt eating lunch with his back turned: sneak up for a free first turn. He drops card #1.
+4. **T1 Cable Mill.** Card door 1 opens with 1 card. Optional: push the crate to the ledge for a chalk stash; fight or dodge the drones.
+5. **T2 Bell Gallery.** The Zeroes' old shrine, walled in by the plant. Card grunts #2 patrol the floor (must-win, card #2). Optional: the bells.
+6. **T3 Power Room.** The stairs up are torn out for jammer cable. Card door 2 opens the switch cage; throw the lever: the plant's lights come on and the old cage lift, now the freight lift, wakes. Optional: hop to the girder crate. Ride the lift up.
+7. **T4 Drone Line.** Signals drones roll off an assembly line around the jammer console; the full Signals squad patrols it (must-win, card #3). Optional: the Quota Ambush guarding a crate. Card door 3 opens with 3 cards.
 8. **T4b Last Landing.** Save lamp 2; the old Zero (she came up the back way after you) pours one round from the thermos: full heal, once.
-9. **T5 The Roof.** Kasp in the Hushmaster. In the wreck: the beacon part. Then home to the window (see Harrow Decision 3).
+9. **T5 The Roof.** The mast's crown among the smokestacks. Kasp in the Hushmaster. In the wreck: the beacon part. Then the 30-second walk across Lamp Square (a few windows relight) and home to the window.
 
-**The call gets louder every floor:** each room has an audio level for the call layer, from 1 (R2) to 6 (the landing); it peaks on the roof. Audio needs go in docs/audio_requests.md with M4.
+**The call gets louder every floor:** each room has an audio level for the call layer, from 1 (R2) to 6 (the landing); it peaks on the roof. The factory machinery ambience runs under it and drops out on the roof.
 
-**Story beats used here:** `b2_road` (leaving town until Mox joins), `b3_tower` (inside), `b4_kasp_beaten` (after the boss). Party chime-ins and examine text come from the Writer (M6-2).
+**Story beats used here:** `b2_road` (leaving town until Mox joins; id kept), `b3_tower` (inside), `b4_kasp_beaten` (after the boss). Party chime-ins and examine text come from the Writer (M6-2).
 
 ## Rooms
 
-### R1 Mast Road (`road_mast_road`)
-- **What it is:** a dusty road at night, a rock cut and a sagging fence along the back, the mast's silhouette ahead against the stars, Harrow's lamps behind.
-- **Ways in and out:** from the checkpoint barrier (west wall); on to R2 (east edge).
+### R1 The Spillway (`road_mast_road`; id kept, display name "The Spillway")
+- **What it is:** a concrete drain channel under the slums. Runoff trickling down the middle, pipes and cable bundles along the walls, Watch Zero's mast-and-three-rings sprayed over Signals stencils, neon leaking down through street grates in the ceiling and pooling in colored squares on the floor. A sunken tram car from some older Harrow lies half buried against the north wall.
+- **Ways in and out:** from the service stair under the checkpoint (west wall); on to R2 (east edge).
 - **Story scene (once):** the bragging crate, about one third of the way along. About 1 minute. Mox is sent home.
-- **Enemy patrol:** `grunt_pair` walking a slow loop on the far half of the road. A clear lane along the front edge lets Red slip past. Regular enemy: respawns when you come back.
-- **Hidden item:** a broken-down hauler by the fence with a chalked lantern on its tailgate. Hop onto its bed: **Hot Sauce Bomb ×2.**
-- **Examine:** a mile marker (Harrow one way, the Old Relay the other).
+- **Enemy patrol:** `grunt_pair` walking a slow loop on the far half of the channel. A clear lane along the front edge lets Red slip past. Regular enemy: respawns when you come back.
+- **Hidden item:** a chalked lantern on the sunken tram car. Hop onto its roof: **Hot Sauce Bomb ×2.**
+- **Examine:** an old tram-stop sign ("LAMP SQUARE · RELAY"), a flood-level gauge with the levels marked in years, one of the ceiling grates (footsteps and a propaganda broadcast overhead).
 - **NPCs:** none outside the scene.
 
-### R2 Mast Foot (`road_mast_foot`)
-- **What it is:** the half-buried base of the mast fills the back wall: rust, the Watch Zero mast-and-three-rings symbol painted huge, Signals cable and the jammer dish far above. A blue-gray Signals blast door at its foot. A row of Zeroes sitting on cushions in front of it, ringing their sleeve bells.
-- **Ways in and out:** from R1 (front edge); the drain tunnel into the tower (west wall, opens in the scene); the front gate (locked for good: "Signals access only. And the Signals don't like you.").
-- **Story scene (once, about 1.5 minutes):** delivery handed over; "Watch Zero, sound off!" and every bell rings at once; Kasp on the loudspeaker; the old Zero's story line about the call (locked wording, from the Writer; don't cut it); Mox bursts out of a Signals crate by the gate and joins; the Zeroes pry open the tunnel grate.
+### R2 The Works gate (`road_mast_foot`; id kept, display name "The Works Gate")
+- **What it is:** the gate apron of the jammer works, where the Spillway comes out. The back wall is the plant: a chain-link fence topped with wire, a blue-gray Signals blast gate, floodlights, and, rising behind it all, the rusted base of the ancient mast with the Signals' cable and the jammer dish far above. A row of Zeroes sits on cushions in front of the gate, ringing their sleeve bells.
+- **Ways in and out:** from R1 (front edge); the drain grate into the Works (west wall, opens in the scene); the blast gate (locked for good: "Signals access only. And the Signals don't like you.").
+- **Story scene (once, about 1.5 minutes):** delivery handed over (the confiscated sleeve bells go back on sleeves); "Watch Zero, sound off!" and every bell rings at once; Kasp on the loudspeaker; the old Zero's story line about the call (locked wording, from the Writer; don't cut it); Mox bursts out of a Signals crate by the gate and joins; the Zeroes pry open the drain grate.
 - **NPCs:** *the old Zero* (proposed Key NPC B, portrait set art row 12; final pick in M6-1). After the scene, talk to her again: she hums the tune and writes it down: **Bell Tune Napkin** (key item, optional). *7 more Zeroes* (crowd): one line each, mostly shouting at the gate. *2 gate grunts* (not fights) in earmuffs, begging for quiet.
 - **Hidden item:** a gray Hegemony supply crate behind the Signals generator: **Smelling Salts ×1.** (First gray crate: teaches that the ring-and-bar stencil means loot.)
 
-### T0 The Sump (`tower_sump`): the half-buried bottom floor
-- **What it is:** sand drifting in through the tunnel, the old mast's base column rising through the ceiling, a worn plaque and a big faded mural on the back wall. Old and sacred, before the Signals junk starts.
-- **Save lamp 1:** in a wall niche right beside the tunnel.
+### T0 The Sump (`tower_sump`): the base of the old mast
+- **What it is:** the drain grate drops into the one part of the mast the Signals didn't build over: old stone, drain water seeping in, the mast's base column rising through the ceiling, a worn plaque and a big faded mural on the back wall. Old and sacred; the factory's noise is a hum through the ceiling.
+- **Save lamp 1:** in a wall niche right beside the grate.
 - **Story props (locked):** the plaque ("Raised so we can hear them") and the faded mural beside it (a crew of five waving from a ship heading down the last lane, every window behind them lit). Exact text and look are fixed by the Creative Director and Writer; don't move or reword them.
 - **Enemy, must-win:** card grunt #1 (`grunt_solo`), sitting on a cable spool eating lunch, back to the room. He only turns if Red walks in front of him, so the game teaches "hit them from behind for a free turn". **Drops Kasp's Access Card #1.** Doesn't respawn once beaten.
 - **The cage lift (stop T0):** a dead cage against the back wall, gate chained: "No power." It wakes after the T3 switch and becomes the shortcut back here.
 - **Pickup:** gray supply crate: **Ration Bar ×2.**
 - **Stairs up** to T1 (open).
 
-### T1 Cable Hall (`tower_cable_hall`)
-- **What it is:** the first Signals floor: cable bundles snaking everywhere, a quota chart on the wall, the mast column in the middle. A raised side ledge (too high to jump) runs along the west wall.
+### T1 Cable Mill (`tower_cable_hall`; id kept)
+- **What it is:** the first factory floor: jammer cable feeding off spools along a conveyor line on the back wall, cable bundles snaking everywhere, a quota chart on the wall, the mast column in the middle. A raised side ledge (too high to jump) runs along the west wall.
 - **Card door 1:** needs 1 card. Leads to the stairs up. Locked message: "SIGNALS ACCESS ONLY. Cards: 0 of 1."
 - **Puzzle, crate push:** a gray supply crate sits in the open. Push it west until it bumps the ledge (it snaps into place), hop onto it, then up onto the ledge. On the ledge, a chalked lantern stash: **Camp Stove ×1 + Canned Coffee ×1.**
 - **Enemy, optional:** `drone_flock` (two Signals drones and a Whistle Blower) circling the mast. Dodge by hugging the front edge, or fight.
-- **Examine:** the quota chart (target 400, achieved 1,203, Kasp's note: "NOT ENOUGH"), a cable spool labeled "PROPERTY OF SGT. KASP. DO NOT TOUCH. THIS MEANS YOU."
+- **Examine:** the quota chart (target 400, achieved 1,203, Kasp's note: "NOT ENOUGH"), a cable spool labeled "PROPERTY OF SGT. KASP. DO NOT TOUCH. THIS MEANS YOU.", the conveyor (it never stops, even for lunch).
 
 ### T2 Bell Gallery (`tower_bell_gallery`)
-- **What it is:** the Zeroes' old shrine floor: four brass bells of different sizes hanging from a beam along the west wall, prayer ribbons, a slit window looking back at Harrow's lamps. The Signals have taped "QUIET" signs on everything.
-- **Enemy, must-win:** card grunts #2: a grunt and a Whistle Blower (suggested new encounter `card_pair`; the Battle Programmer may reuse `grunt_pair` instead) patrolling a loop around the mast. **Drops Access Card #2.** No respawn once beaten.
-- **Optional puzzle, the bells:** ring the four bells (big, middle, little, tiny) in the order on the napkin. The tune has 5 notes; the Audio and Writer pick it, and the napkin draws it as bell sizes so nobody needs to read music. Wrong order: a sour clang, Mox comments, it resets. No penalty, no fail state. Right order: a hatch in the floor opens on a Zero chest: **Bread Knife, Extremely Large** (Red's bonus sword).
-  - Without the napkin, Mox says there must be a tune for these; the old Zero is still at the mast foot (T0 → tunnel → R2 is about 20 seconds).
+- **What it is:** the Zeroes' old shrine floor, walled in by the plant: four brass bells of different sizes hanging from a beam along the west wall, prayer ribbons gone gray, factory ducting bolted straight through the old stonework, and a slit window looking out over the slums' neon and Harrow's half-dark windows. The Signals have taped "QUIET" signs on everything.
+- **Enemy, must-win:** card grunts #2: a grunt and a Whistle Blower (suggested encounter `card_pair`; the Battle Programmer may reuse `grunt_pair`) patrolling a loop around the mast. **Drops Access Card #2.** No respawn once beaten.
+- **Optional puzzle, the bells:** ring the four bells (big, middle, little, tiny) in the order on the napkin. The tune has 5 notes; the Audio Designer and Writer pick it, and the napkin draws it as bell sizes so nobody needs to read music. Wrong order: a sour clang, Mox comments, it resets. No penalty, no fail state. Right order: a hatch in the floor opens on a Zero chest: **Bread Knife, Extremely Large** (Red's bonus sword).
+  - Without the napkin, Mox says there must be a tune for these; the old Zero is still at the Works gate (T0 → grate → R2 is about 20 seconds).
 - **Stairs up** to T3 (open).
 
-### T3 Generator Deck (`tower_generator`): the breather floor
-- **What it is:** old mast machinery, a big dead generator, girders overhead. The stairs up have been ripped out to run jammer cable ("The stairs are gone. Cable everywhere. Very Kasp."). **No enemies here:** a beat to breathe while the call gets loud.
+### T3 Power Room (`tower_generator`; id kept): the breather floor
+- **What it is:** the plant's power room, built around the mast's original generator: a big dead machine older than the factory, a newer Signals power board bolted beside it, girders overhead. The stairs up have been ripped out to run jammer cable ("The stairs are gone. Cable everywhere. Very Kasp."). **No enemies here:** a beat to breathe while the call gets loud.
 - **Card door 2:** the gate of a wire cage around the old power lever. Needs 2 cards.
-- **Puzzle, power switch:** throw the lever: the generator coughs on, lights come on up the whole tower (an audio swell of the call), and the cage lift hums. Flag `lift_powered`.
-- **The cage lift (stop T3):** rides up to T4, or down to T0 (the shortcut back to save lamp 1).
+- **Puzzle, power switch:** throw the lever: the generator coughs on, lights come on up the whole plant (an audio swell of the call), and the cage lift hums. Flag `lift_powered`.
+- **The cage lift (stop T3):** the mast's old cage lift, which the Signals now use as their freight lift. Rides up to T4, or down to T0 (the shortcut back to save lamp 1).
 - **Hidden item, jump:** hop a crate onto a girder catwalk; at its far end, a gray supply crate: **Protein Shake** (the slice's one booster).
-- **Examine:** the generator's maker's plate, older than any record.
+- **Examine:** the generator's maker's plate, older than any record; the Signals power board's inspection sticker, dated last week.
 
-### T4 Jammer Deck (`tower_jammer_deck`)
-- **What it is:** the busiest Signals floor: the jammer's control console, cable running up through the ceiling to the dish, a coffee station. The biggest tower room; the camera slides.
+### T4 Drone Line (`tower_jammer_deck`; id kept)
+- **What it is:** the busiest factory floor: an assembly line along the back wall where half-built Signals drones roll past under robot arms, the jammer's control console, cable running up through the ceiling to the dish, a coffee station. The biggest room in the Works; the camera slides.
 - **Arrive by:** the cage lift (stop T4).
 - **Enemy, must-win:** card squad #3 (`squad_four`) patrolling around the console. **Drops Access Card #3.** No respawn once beaten.
 - **Enemy, optional, the Quota Ambush:** `ambush_no_exit` (can't run), three tough enemies "on break" around a gray supply crate in a corner pen. They don't patrol or chase; touch one to fight. Crate: **Sore Loser Patch (charm) + 200 credits.** The pen's sign says "QUOTA ENFORCEMENT. DO NOT DISTURB." Respawns as a regular enemy, the crate doesn't.
 - **Card door 3:** needs 3 cards. Leads to the Last Landing.
-- **Examine:** the console (Kasp's spec sheet for the Hushmaster, which he wrote himself), the coffee station (decaf only, by order).
+- **Examine:** the console (Kasp's spec sheet for the Hushmaster, which he wrote himself), the assembly line (the drones' serial plates all say "BUILT FOR A QUIETER HARROW"), the coffee station (decaf only, by order).
 
 ### T4b Last Landing (`tower_landing`)
-- **What it is:** a small stairwell landing under the roof. The call is very loud here.
+- **What it is:** a small stairwell landing under the roof, where the old mast's stair survives. The call is very loud here.
 - **Save lamp 2:** in a wall niche.
-- **The old Zero with the thermos:** she climbed the back way after you ("Somebody had to"). Talk to her once: the party gets full HP and Juice. After that she just wishes you luck. She uses the thermos Red delivered (if Harrow Decision 2 is A).
+- **The old Zero with the thermos:** she came up the back way after you ("Somebody had to"). Talk to her once: the party gets full HP and Juice. After that she just wishes you luck. She uses the thermos Red delivered.
 - **Examine:** Kasp's coat rack with a spare lanyard of about forty laminated cards, every one his photo.
 - **Stairs up** to the roof. The boss starts when you step out.
 
 ### T5 The Roof (`tower_roof`): the boss arena
-- **What it is:** the top of the mast at night: the three rings of the old mast overhead, the Signals jammer dish bolted on, open sky, Harrow's lamps far below past the railing.
-- **Boss:** Kasp boards the Hushmaster (scene, title card), then the fight. Not a regular enemy: no Run, never respawns.
-- **After the fight (cutscene):** Red finds the beacon part in the wreck and the call plays clearly. Look and text per the Creative Director (art row 32). Then the ending at Red's window.
+- **What it is:** the top of the Works at night: the three rings of the old mast's crown overhead, the Signals jammer dish bolted onto it, the plant's smokestacks venting around the edges, and far below past the railing, the slums' neon and Harrow's half-dark windows.
+- **Boss:** Kasp boards the Hushmaster (scene, title card; it was built on the drone line below), then the fight. Not a regular enemy: no Run, never respawns.
+- **After the fight (cutscene):** Red finds the beacon part in the wreck and the call plays clearly. Look and text per the Creative Director (art row 32). Then the walk home across Lamp Square and the ending at Red's window.
 - **Camera:** pulled back a little compared with the floors below, so the Hushmaster fits on screen.
 
 ## Locks and what opens them
 
 | Lock | Where | Opens when | Message while locked |
 |---|---|---|---|
-| Tower front gate | R2 | Never in the slice (story) | "Signals access only. And the Signals don't like you." |
-| Drain tunnel grate | R2 → T0 | Sit-in scene done (`zeroes_back_way`) | The Zeroes are still arguing about whose turn it is to lift it. |
+| Works blast gate | R2 | Never in the slice (story) | "Signals access only. And the Signals don't like you." |
+| Drain grate | R2 → T0 | Sit-in scene done (`zeroes_back_way`) | The Zeroes are still arguing about whose turn it is to lift it. |
 | Card door 1 | T1 → T2 | Hold 1 or more cards | "SIGNALS ACCESS ONLY. Cards: X of 1." |
 | Card door 2 (switch cage) | T3 | Hold 2 or more cards | "SIGNALS ACCESS ONLY. Cards: X of 2." |
 | Card door 3 | T4 → T4b | Hold 3 cards | "SIGNALS ACCESS ONLY. Cards: X of 3." |
 | Cage lift (all stops) | T0, T3, T4 | Lever thrown in T3 (`lift_powered`) | "No power." |
 | Bell chest hatch | T2 | Bells rung in order (`bells_solved`) | (hidden until solved) |
-| Collapsed stairs | T3 | Never (the lift replaces them) | "The stairs are gone. Cable everywhere." |
+| Torn-out stairs | T3 | Never (the lift replaces them) | "The stairs are gone. Cable everywhere." |
 
 - **Cards are counted, not used up.** Every door just checks how many of Kasp's cards you hold. They're all the same card anyway.
 - **No dead ends:** a card grunt you run from stays put until you beat him; the bells have no fail state; the lift can't strand you because the T0 stop only works after it's powered from T3.
@@ -175,97 +173,102 @@
 | R1 | `grunt_pair` | No | Yes | 2 |
 | T0 | `grunt_solo` (card #1) | Yes | No | 2 to 3 |
 | T1 | `drone_flock` | No | Yes | 3 |
-| T2 | `card_pair` (new; or `grunt_pair`) (card #2) | Yes | No | 3 to 4 |
+| T2 | `card_pair` (or `grunt_pair`) (card #2) | Yes | No | 3 to 4 |
 | T4 | `squad_four` (card #3) | Yes | No | 4 to 5 |
 | T4 | `ambush_no_exit` | No (no Run once started) | Yes (crate doesn't) | 5 |
 | T5 | Kasp in the Hushmaster | Yes (boss) | No | 6 |
 
-With the dock fight in Harrow, that's 8 fights for a player who takes everything, 5 for one who dodges every optional fight. The Battle Programmer checks the level 6 and 1,500-credit targets with the simulator (M4-3). **If the numbers come up short, raise the rewards on the existing fights before adding new ones** (no filler).
+With the train's tutorial fight and the dock fight, that's 9 fights for a player who takes everything (more if the train inspectors catch Red), 6 for one who dodges every optional fight. The Battle Programmer re-checks the level 6 and 1,500-credit targets with the simulator, now including the train fight. **If the numbers come up short, raise the rewards on the existing fights before adding new ones** (no filler).
 
 ## Walking time and pacing
 
 | Piece | Walking | Everything else | Rough total |
 |---|---|---|---|
-| R1 Mast Road | 0:10 | crate scene 1:00, optional patrol fight 1:30 | 1:10 to 2:40 |
-| R2 Mast Foot | 0:15 | sit-in scene 1:30 | about 1:45 |
-| **Road total** | | | **about 3 to 4.5 minutes** (design doc target: 4) |
+| R1 The Spillway | 0:10 | crate scene 1:00, optional patrol fight 1:30 | 1:10 to 2:40 |
+| R2 The Works gate | 0:15 | sit-in scene 1:30 | about 1:45 |
+| **Spillway total** | | | **about 3 to 4.5 minutes** (structure pass: about 3.5) |
 | T0 to T4b, main path | about 1:00 (about 160 m, 7 fades) | must-win fights 4:30; switch, lift and crate push 1:00; scenes and saves 1:15 | about 8 |
-| Optional in the tower | about 0:30 | drones or ambush 1:30 to 3:30; bells 1:00; girder 0:20 | up to 5 more |
-| **Tower total** | | | **about 8 to 13 minutes; about 11 for a typical player** (target: 12) |
-| T5 Roof | 0:05 | Kasp intro 1:00, boss 5 to 8, beacon part 1:00, window ending 0:45 | **about 7.5 to 10.5 minutes** (target: 6) |
+| Optional in the Works | about 0:30 | drones or ambush 1:30 to 3:30; bells 1:00; girder 0:20 | up to 5 more |
+| **Works total** | | | **about 8 to 13 minutes; about 11 for a typical player** |
+| T5 Roof | 0:05 | Kasp intro 1:00, boss 5 to 8, beacon part 1:00, walk home and window 1:00 | **about 7.5 to 10.5 minutes** |
 
-**The whole slice:** Harrow about 8.5 + road about 4 + tower about 11 + roof about 7.5 = **about 31 minutes**. The roof is where it runs over: the approved boss length (5 to 8 minutes) is longer than the roof's 6-minute slot. If playtests run long, trim the optional fights' length first, then the Kasp intro; don't cut the breather floor (T3), it costs only seconds.
+**The whole slice:** train about 3.5 + Harrow about 8 + Spillway about 3.5 + Works about 11 + roof about 7 = **about 33 minutes**, about 28 skipping optional fights. The roof is where it runs over: the approved boss length (5 to 8 minutes) is long. If playtests run long, trim the optional fights first, then the Kasp intro; don't cut the breather floor (T3), it costs only seconds.
 
 ## What stands in for art (placeholders only, no new character modeling)
 
 | Who or what | Stand-in |
 |---|---|
-| Red, Otis, Mox | `red_shiba`, `chr_otis`, `chr_mox` |
+| Red, Otis, Mox | `red_shiba_grim`, `chr_otis`, `chr_mox` (grim texture treatment) |
 | Signals grunt, Whistle Blower, drone, Buzzkill | `enm_signals_grunt`, `enm_grunt_variant`, `enm_signals_drone`, `enm_drone_variant` (all existing) |
 | Card grunts | the same grunt models, plus a small bright yellow box on the chest (the card lanyard) so players can spot who carries one |
 | The old Zero and the 7 sit-in Zeroes | `npc_old_zero`, recolored per Zero |
 | Kasp | `enm_grunt_variant` scaled about 1.2, brown tint, a flat box for his paddle tail |
 | The Hushmaster | the M5 blockout when it exists; until then a 2 × 1.5 × 2 m box body, eight thin cylinder legs and a flat disc dish, about 3.5 m tall |
 | Delivery crate, supply crates, chalk mark | 0.9 m cubes (tan for the delivery crate, gray with a white ring-and-bar decal), a white chalk decal quad |
-| Tower kit | flat-colored boxes and planes: rust-brown walls, the mast column as a 3 m wide 12-sided cylinder, blue-gray boxes for Signals doors and gear |
+| The Spillway | the grim kit: gray-brown channel walls with code-painted grime, pipe and cable cylinders, a sunken tram car as a 4 × 2 × 0.9 m box with window cutouts, colored light squares under ceiling grates (neon decals), a shallow runoff strip (cosmetic, walkable) |
+| The Works gate | a chain-link fence plane (1-bit alpha), a blue-gray blast-gate box, two floodlights, the mast base as a big curved box rising past the top of the back wall |
+| Jammer-works kit | flat-colored boxes and planes in grime grays: the mast column as a 3 m wide 12-sided cylinder (old ironstone, the one non-factory piece), blue-gray boxes for Signals doors and gear, conveyor and assembly-line boxes with roller strips, robot arms as two-box hinges, smokestack cylinders on the roof |
 | Bells, lever, lift cage, save-lamp niche | cylinders sized 0.9 / 0.7 / 0.5 / 0.35 m; a box lever on a hinge; a 2 × 2 m wire box with bars; a box niche with an amber light |
 
 ## Graybox build notes (for the Gameplay Programmer, M4-1 and M4-2)
 
-Same conventions as docs/maps/harrow_landing.md: meters, origin at the north-west floor corner, +X east along the north wall, +Z south toward the camera, steps up of 1.0 m or less, crates 0.9 m.
+Same conventions as docs/maps/harrow_landing.md: meters, origin at the north-west floor corner, +X east along the north wall, +Z south toward the camera, steps up of 1.0 m or less, crates 0.9 m. **All coordinates, sizes, doors, spawns and camera bounds are unchanged from the approved 2026-10-07 version;** only dressing changed. New dressing pieces are scenery with no collision unless noted.
 
-**Tower-wide rules, so every floor reads the same:**
+**Works-wide rules, so every floor reads the same:**
 - Floors T0 to T3 are 16 × 10 m with 4 m walls. **The mast column** (3 m wide) stands half sunk into the north wall at x=6.5 to 9.5 on every floor. **The lift shaft** is a 2 × 2 m column at x=14 to 16, z=0 to 2 on every floor; it has doors only at T0, T3 and T4 (meshed cage on T1 and T2).
 - **Wayfinding:** you arrive at the front-left (stairhead around (2, 8)) and the way up is at the back-right (north wall, x=12). Same on every floor.
+- **Old versus new:** the mast column, T0 and T2's bells and stonework are the old mast (ironstone, verdigris, brass); everything else is Signals factory (slate, blue-gray, hazard stripes, grime). That contrast is the read.
 - Yaw 35 on every floor. Camera bounds X 5 to 11, Z 4 to 6 unless noted.
 - The debug warp (M4-1's jump-to-floor cheat) uses each room's arrival spawn: `from_below`, or `from_tunnel` (T0) and `from_lift` (T4).
 
-**R1 Mast Road (`road_mast_road`)**
-- Floor 34 × 8 m; rock cut on the N wall 3 m; fence line on the W wall. Yaw 20. Camera bounds X 5 to 29, Z 4 to 4.
+**R1 The Spillway (`road_mast_road`)**
+- Floor 34 × 8 m; channel wall on the N wall 4 m with ceiling grates along its top edge every 6 m; the service stair coming down on the W wall. Yaw 20. Camera bounds X 5 to 29, Z 4 to 4.
 - Doors: from Harrow at W wall @ z=4 → back to `harrow_checkpoint:from_road`; E edge, z=2 to 6 → `road_mast_foot:from_road`.
 - Crate scene trigger: plane at x=11 (fires once, flag `mox_crate_scene`).
-- Patrol `grunt_pair`: waypoints (19, 2) → (28, 2) → (28, 5) → (19, 5), walking speed. Dodge lane z=6 to 8 stays clear. Hauler wreck 4 × 2 m at (23, 1), bed top 0.9 m; chalk stash on the bed at (24, 1).
+- Patrol `grunt_pair`: waypoints (19, 2) → (28, 2) → (28, 5) → (19, 5), walking speed. Dodge lane z=6 to 8 stays clear. Sunken tram car 4 × 2 m at (23, 1), roof top 0.9 m; chalk stash on the roof at (24, 1).
+- Runoff strip (cosmetic decal, walkable) along z=3.5 to 4.5. Neon light squares on the floor under each grate (colored decals plus a weak point light: sodium orange, teal, one pink).
 - Spawns: `from_harrow` (1.2, 4), `from_mast_foot` (32.8, 4).
 
-**R2 Mast Foot (`road_mast_foot`)**
-- Floor 18 × 12 m; the mast base on the N wall, 8 m tall, curved; rocky slope on the W wall. Yaw 30. Camera bounds X 5 to 13, Z 5 to 7.
-- Doors: S edge @ x=3 → `road_mast_road:from_mast_foot`; drain tunnel grate W wall @ z=8, 1.6 m wide → `tower_sump:from_tunnel` (locked until `zeroes_back_way`); front gate N wall @ x=11, 3 m wide (never opens).
-- Sit-in row: Zeroes at z=5, x=6 to 14, 1.1 m apart, facing north. Old Zero at (4.5, 7). Gate grunts at (9.5, 1.5) and (12.5, 1.5). Mox's Signals crate at (14.5, 2.5). Generator box 2 × 1.5 m at (16, 8); supply crate behind it at (17.3, 9).
+**R2 The Works gate (`road_mast_foot`)**
+- Floor 18 × 12 m; the plant fence and blast gate along the N wall, with the mast base rising behind, 8 m tall, curved; the Spillway's outfall wall on the W wall. Yaw 30. Camera bounds X 5 to 13, Z 5 to 7.
+- Doors: S edge @ x=3 → `road_mast_road:from_mast_foot`; drain grate W wall @ z=8, 1.6 m wide → `tower_sump:from_tunnel` (locked until `zeroes_back_way`); blast gate N wall @ x=11, 3 m wide (never opens).
+- Sit-in row: Zeroes at z=5, x=6 to 14, 1.1 m apart, facing north. Old Zero at (4.5, 7). Gate grunts at (9.5, 1.5) and (12.5, 1.5). Mox's Signals crate at (14.5, 2.5). Generator box 2 × 1.5 m at (16, 8); supply crate behind it at (17.3, 9). Floodlights on the fence at x=5 and x=15, 4 m up.
 - Scene trigger: on first entry (whole room).
 - Spawns: `from_road` (3, 11), `from_tunnel` (1.2, 8).
 
 **T0 The Sump (`tower_sump`)**
-- Floor 16 × 10 m (floor ramps down 0.5 m over z=6 to 9 from the tunnel). Camera bounds X 5 to 11, Z 4 to 6.
-- Doors: tunnel W wall @ z=8 → `road_mast_foot:from_tunnel`; stairs up N wall @ x=12 → `tower_cable_hall:from_below`; lift door N side of the shaft (15, 2.1) (active once `lift_powered`; a menu offers T3 or T4).
+- Floor 16 × 10 m (floor ramps down 0.5 m over z=6 to 9 from the grate). Camera bounds X 5 to 11, Z 4 to 6.
+- Doors: grate W wall @ z=8 → `road_mast_foot:from_tunnel`; stairs up N wall @ x=12 → `tower_cable_hall:from_below`; lift door N side of the shaft (15, 2.1) (active once `lift_powered`; a menu offers T3 or T4).
 - Save lamp niche W wall @ z=5. Plaque N wall @ x=1.5; mural N wall x=2 to 6, 2.5 m tall. Card grunt #1 seated at (10, 4), facing north (notice cone 2 m in front only). Supply crate (12.5, 7).
 - Spawns: `from_tunnel` (1.2, 8) (also the debug warp spot for this floor), `from_lift` (15, 3), `from_above` (12, 1.2).
 
-**T1 Cable Hall (`tower_cable_hall`)**
+**T1 Cable Mill (`tower_cable_hall`)**
 - Floor 16 × 10 m. Camera bounds X 5 to 11, Z 4 to 6.
 - Doors: stairhead (2, 8) back down → `tower_sump:from_above`; card door 1 N wall @ x=12 → `tower_bell_gallery:from_below` (requires 1 card).
 - Ledge: x=0 to 3, z=0 to 4, 1.8 m high; chalk stash on it at (1, 1). Push crate starts at (7, 3) and moves along z=3 only; it snaps at (3.45, 3) against the ledge's east face (grid push, 1 m per push, no diagonal). Reset if the room reloads before it's placed; once placed, it stays (flag `t1_crate_placed`).
+- Conveyor line (scenery, fenced, collision as a wall): along the N wall from x=10 to 16 at z=0 to 1, 1 m tall, rollers animated by a scrolling texture. Keep it east of the card door's approach.
 - Patrol `drone_flock`: circle around (8, 5), radius 3, hovering. Dodge lane z=8.5 to 10.
 - Spawns: `from_below` (2, 8), `from_above` (12, 1.2).
 
 **T2 Bell Gallery (`tower_bell_gallery`)**
 - Floor 16 × 10 m. Camera bounds X 5 to 11, Z 4 to 6.
 - Doors: stairhead (3.5, 8.5) → `tower_cable_hall:from_above`; stairs up N wall @ x=12 → `tower_generator:from_below`.
-- Bells on a beam along the W wall, ring points 0.8 m out: big (0.8, 2), middle (0.8, 4), little (0.8, 6), tiny (0.8, 8). The stairhead on this floor sits at (3.5, 8.5) instead of (2, 8), so the tiny bell isn't on the arrival spot. Hatch chest at (4, 5), hidden until `bells_solved`. Slit window N wall @ x=3.
+- Bells on a beam along the W wall, ring points 0.8 m out: big (0.8, 2), middle (0.8, 4), little (0.8, 6), tiny (0.8, 8). The stairhead on this floor sits at (3.5, 8.5) instead of (2, 8), so the tiny bell isn't on the arrival spot. Hatch chest at (4, 5), hidden until `bells_solved`. Slit window N wall @ x=3. Factory duct (scenery) punched through the N wall at x=10 to 12, 3 m up.
 - Patrol `card_pair`: waypoints (5, 3) → (12, 3) → (12, 7) → (5, 7).
 - Spawns: `from_below` (3.5, 8.5), `from_above` (12, 1.2).
 
-**T3 Generator Deck (`tower_generator`)**
+**T3 Power Room (`tower_generator`)**
 - Floor 16 × 10 m. Camera bounds X 5 to 11, Z 4 to 6.
-- Doors: stairhead (2, 8) → `tower_bell_gallery:from_above`; rubble pile at N wall @ x=12 (examine only); lift door (15, 2.1) (active once `lift_powered`).
+- Doors: stairhead (2, 8) → `tower_bell_gallery:from_above`; torn-out stair rubble at N wall @ x=12 (examine only); lift door (15, 2.1) (active once `lift_powered`).
 - Switch cage 3 × 3 m at x=0.5 to 3.5, z=0.5 to 3.5; card door 2 on its east side at (3.5, 2) (requires 2 cards); lever at (1.5, 1.5).
 - Catwalk 1.8 m high, 1.2 m wide, x=9 to 13.5 at z=4 to 5.2; step crate at (9.5, 6), 0.9 m; supply crate on the catwalk at (13, 4.6).
-- Generator box 3 × 2 m at (6, 6).
+- Generator box 3 × 2 m at (6, 6) (old); Signals power board 2 × 0.4 × 2 m against the W wall at z=5 (new, examine).
 - Spawns: `from_below` (2, 8), `from_lift` (15, 3).
 
-**T4 Jammer Deck (`tower_jammer_deck`)**
+**T4 Drone Line (`tower_jammer_deck`)**
 - Floor 18 × 12 m, 4 m walls (the lift shaft and the mast column stay at the same x). Camera bounds X 5 to 13, Z 4 to 8.
 - Doors: lift door (15, 2.1); card door 3 N wall @ x=3.5 → `tower_landing:from_below` (requires 3 cards).
-- Console 3 × 1.5 m at (9, 6). Patrol `squad_four`: loop (5, 4) → (13, 4) → (13, 8.5) → (5, 8.5). Quota pen: x=0 to 4, z=8 to 12, fence 1.1 m with a 1.4 m gap at (4, 10); ambush enemies at (1.5, 9), (2.5, 11), (3, 9.5) (stationary); crate at (1, 11.2).
+- Console 3 × 1.5 m at (9, 6). Assembly line (scenery, fenced, collision as a wall) along the N wall from x=5 to 13 at z=0 to 1.2, drones as small boxes sliding along it every 3 s, two robot-arm hinges above it. Patrol `squad_four`: loop (5, 4) → (13, 4) → (13, 8.5) → (5, 8.5). Quota pen: x=0 to 4, z=8 to 12, fence 1.1 m with a 1.4 m gap at (4, 10); ambush enemies at (1.5, 9), (2.5, 11), (3, 9.5) (stationary); crate at (1, 11.2).
 - Spawns: `from_lift` (15, 3), `from_above` (3.5, 1.2).
 
 **T4b Last Landing (`tower_landing`)**
@@ -275,33 +278,33 @@ Same conventions as docs/maps/harrow_landing.md: meters, origin at the north-wes
 - Spawns: `from_below` (4, 5), `from_above` (6, 1.2).
 
 **T5 The Roof (`tower_roof`)**
-- Floor 20 × 14 m; the mast top and its three rings rise from the N wall at x=8 to 12; railings on the S and E edges (no walk-off). Yaw 30, pitch a little higher and camera further back than the floors (about 1.3 × the usual frame). Camera bounds X 8 to 12, Z 6 to 8.
+- Floor 20 × 14 m; the mast top and its three rings rise from the N wall at x=8 to 12; railings on the S and E edges (no walk-off). Smokestacks (scenery, 1.5 m wide cylinders, 8 m tall, venting steam puffs) at the NW and NE corners, (1.5, 1.5) and (18.5, 1.5), outside the arena. Yaw 30, pitch a little higher and camera further back than the floors (about 1.3 × the usual frame). Camera bounds X 8 to 12, Z 6 to 8.
 - Doors: stairhead at (3, 12) → `tower_landing:from_above` (blocked by the boss scene until Kasp is beaten).
 - Boss trigger: plane at z=10. Arena: clear floor x=4 to 18, z=3 to 11 for the Hushmaster (assumed about 3.5 m tall with a 5 m leg span; confirm with the M5 blockout). Wreck and beacon-part spot at (11, 6) after the fight.
 - Spawns: `from_below` (3, 12).
 
-**Data hooks (suggestions; GP-A and GP-B own the files):** beats `b2_road`, `b3_tower`, `b4_kasp_beaten`. Flags `mox_crate_scene`, `mox_joined`, `zeroes_back_way`, `has_bell_napkin`, `t1_crate_placed`, `bells_solved`, `lift_powered`, `thermos_used`, `kasp_beaten`, `card_grunt_1_beaten` / `_2_` / `_3_`. Card count read from the Kasp's Access Cards key item quantity. Auto-save fires on entering R1 (the road) and T0 (the tower). Pickup contents are suggestions; the Battle Programmer finalizes them in placements.json (Equipment & items is Level 2).
+**Data hooks (suggestions; the Gameplay Programmers own the files):** beats `b2_road`, `b3_tower`, `b4_kasp_beaten`. Flags `mox_crate_scene`, `mox_joined`, `zeroes_back_way`, `has_bell_napkin`, `t1_crate_placed`, `bells_solved`, `lift_powered`, `thermos_used`, `kasp_beaten`, `card_grunt_1_beaten` / `_2_` / `_3_`. Card count read from the Kasp's Access Cards key item quantity. Auto-save fires on entering R1 (the Spillway) and T0 (the Works). Room display names change ("The Spillway", "The Works Gate", "Cable Mill", "Power Room", "Drone Line"); ids stay. Pickup contents are suggestions; the Battle Programmer finalizes them in placements.json (Equipment & items is Level 2).
 
 ---
 
-## Choices for Ross
+## Choices for Ross (answered 2026-10-07: A, A, A; all three still hold after the 2026-10-08 recast; kept as the record)
 
 DECISION NEEDED: What shape should the tower be?
-Option A: **A stack, one room per floor** (as drawn: bottom floor, four floors, a landing, the roof; 7 rooms), with the cage lift covering the one broken flight and doubling as a shortcut back down to the first save lamp (the Dark Souls elevator trick) — pros: easy to read, about 11 minutes, one kit you re-dress per floor / cons: each floor is one scene, so "climbing around the mast" is told more by the mast in every room than by the path itself.
-Option B: **A spiral:** each floor split into two half-rooms that wrap around the mast (about 12 rooms) — pros: the strongest feeling of winding up the mast; more nooks for treasure / cons: nearly twice the rooms to build and dress, about 4 minutes longer, and it starts to feel like padding.
-Option C: **A central lift shaft as the hub,** with each floor branching off it (FF7's Shinra elevator, Mega Man Legends' ruins) — pros: impossible to get lost; one big memorable set / cons: you keep coming back to the same room, the lift ride starts to feel like a loading screen, and the climb loses its sense of going up.
-Recommendation: A. It hits the 12-minute target with the least art and keeps the climb moving.
+Option A: **A stack, one room per floor** (bottom floor, four floors, a landing, the roof; 7 rooms), with the cage lift covering the one broken flight and doubling as a shortcut back down to the first save lamp (the Dark Souls elevator trick) — pros: easy to read, about 11 minutes, one kit you re-dress per floor / cons: each floor is one scene, so "climbing around the mast" is told more by the mast in every room than by the path itself.
+Option B: **A spiral:** each floor split into two half-rooms that wrap around the mast (about 12 rooms) — pros: the strongest feeling of winding up the mast / cons: nearly twice the rooms, about 4 minutes longer, and it starts to feel like padding.
+Option C: **A central lift shaft as the hub,** with each floor branching off it — pros: impossible to get lost / cons: the lift ride starts to feel like a loading screen, and the climb loses its sense of going up.
+Recommendation: A. **Approved 2026-10-07.**
 
-DECISION NEEDED: How long is the road between town and the tower?
-Option A: **Two scenes:** the road (Mox's crate scene and one dodgeable patrol) and the mast foot (the sit-in) — pros: each story beat gets its own stage; about 4 minutes, right on target / cons: one more set for you than option B.
-Option B: **One long scene:** the road runs straight into the mast foot — pros: the tightest (about 3 minutes); one set / cons: two story scenes back to back in one room, and the camera slides about 40 meters.
-Option C: **Three scenes,** adding a wreck field with a second patrol and a chalk stash — pros: more to find / cons: about 6 minutes; this is the kind of stretch the "keep pacing tight" rule is meant to stop.
-Recommendation: A. It's the approved 4 minutes and gives Mox and the Zeroes their own moments.
+DECISION NEEDED: How long is the approach between town and the tower?
+Option A: **Two scenes** (now the Spillway with Mox's crate scene and one dodgeable patrol, then the Works gate with the sit-in) — pros: each story beat gets its own stage; about 3.5 to 4 minutes / cons: one more set than option B.
+Option B: **One long scene** — pros: the tightest / cons: two story scenes back to back in one room.
+Option C: **Three scenes** — pros: more to find / cons: the kind of stretch the "keep pacing tight" rule is meant to stop.
+Recommendation: A. **Approved 2026-10-07.**
 
 DECISION NEEDED: Can the player skip the fights that drop Kasp's access cards?
-Option A: **No: three card fights must be won** (one per card door); every other enemy can be dodged — pros: guarantees players learn Clutch, blocks and skills before Kasp, and keeps levels on track for about level 6 / cons: three fights in the tower you can't avoid.
-Option B: **Yes: every card has a second source** (a crate, or a sleeping grunt you can sneak up on), so every fight is optional — pros: the "see every fight coming and choose" promise holds completely / cons: a sneaky player can reach Kasp under-leveled, and it adds placements and tuning.
-Option C: **One card opens everything** (all of Kasp's cards are the same card): one must-win fight in the tower — pros: simplest / cons: loses the card-count joke and the steady rhythm of fights that teach the battle system.
-Recommendation: A. Three must-win fights in 12 minutes is the classic JRPG dungeon rhythm, and they double as the battle tutorial.
+Option A: **No: three card fights must be won** (one per card door); every other enemy can be dodged — pros: guarantees players learn Clutch, blocks and skills before Kasp, and keeps levels on track for about level 6 / cons: three fights you can't avoid.
+Option B: **Yes: every card has a second source.**
+Option C: **One card opens everything.**
+Recommendation: A. **Approved 2026-10-07.**
 
-*Studio calls made inside this map (overturnable, logged on approval):* cards are counted, not spent; T3 has no enemies (breather); the old Zero heals once; card grunts carry a visible lanyard marker; the roof camera pulls back; pickup contents and encounter ids are suggestions for the Battle Programmer; room ids and spawn names are suggestions for GP-A.
+*Studio calls made inside this map (overturnable):* cards are counted, not spent; T3 has no enemies (breather); the old Zero heals once; card grunts carry a visible lanyard marker; the roof camera pulls back; the new floor names (Cable Mill, Power Room, Drone Line) and the factory dressing per floor; pickup contents and encounter ids are suggestions for the Battle Programmer; room ids and spawn names are kept from the approved version.
