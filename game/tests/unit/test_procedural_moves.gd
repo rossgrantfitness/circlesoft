@@ -7,7 +7,7 @@ const RED: String = "res://art/final/characters/red/red_ross_v1_rigged.glb"
 
 func _model(path: String) -> Node3D:
 	var model: Node3D = (load(path) as PackedScene).instantiate() as Node3D
-	own(model)
+	add_to_root(model)
 	return model
 
 

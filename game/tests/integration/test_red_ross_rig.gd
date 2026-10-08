@@ -46,6 +46,13 @@ func _meshes(model: Node) -> Array[MeshInstance3D]:
 	return out
 
 
+func _most_keys(animation: Animation) -> int:
+	var most: int = 0
+	for track: int in animation.get_track_count():
+		most = maxi(most, animation.track_get_key_count(track))
+	return most
+
+
 func test_has_every_required_bone_and_the_optional_ones() -> void:
 	var skeleton: Skeleton3D = _skeleton(_red())
 	for bone: String in REQUIRED_BONES:
@@ -112,7 +119,7 @@ func test_clips_are_stepped_short_loop_right_and_have_key_poses() -> void:
 		for track: int in animation.get_track_count():
 			assert_eq(animation.track_get_interpolation_type(track), Animation.INTERPOLATION_NEAREST, "%s track %d is stepped" % [clip, track])
 		# two to five key poses (plus the closing key of a loop): never a baked, per-frame clip
-		var keys: int = animation.track_get_key_count(0)
+		var keys: int = _most_keys(animation)
 		assert_ge(keys, 2, clip + " has at least two key poses")
 		assert_le(keys, 7, clip + " stays cheap")
 
@@ -120,9 +127,13 @@ func test_clips_are_stepped_short_loop_right_and_have_key_poses() -> void:
 func test_attacks_hit_at_the_frames_the_move_data_assumes() -> void:
 	# docs/pivot/combat_api.md example: anim.keys at clip_s 0, 0.133 (frame 2) and 0.267 (frame 4)
 	var animation: Animation = _player(_red()).get_animation("light_1")
+	var busiest: int = 0
+	for track: int in animation.get_track_count():
+		if animation.track_get_key_count(track) > animation.track_get_key_count(busiest):
+			busiest = track
 	var times: Array[float] = []
-	for key: int in animation.track_get_key_count(0):
-		times.append(animation.track_get_key_time(0, key))
+	for key: int in animation.track_get_key_count(busiest):
+		times.append(animation.track_get_key_time(busiest, key))
 	assert_has(times, 0.0)
 	assert_almost_eq(times[1], 2.0 / 15.0, 0.005, "strike pose at frame 2")
 	assert_almost_eq(times[2], 4.0 / 15.0, 0.005, "follow-through at frame 4")
@@ -197,7 +208,7 @@ func test_the_bone_map_maps_every_humanoid_bone_that_exists() -> void:
 	var profile: SkeletonProfile = map.profile
 	assert_not_null(profile)
 	var mapped: int = 0
-	for index: int in profile.get_bone_count():
+	for index: int in profile.bone_size:
 		var humanoid: StringName = profile.get_bone_name(index)
 		var ours: StringName = map.get_skeleton_bone_name(humanoid)
 		if ours == &"":

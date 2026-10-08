@@ -94,6 +94,7 @@ func test_the_wolf_uses_the_ps2_shader_with_512_textures() -> void:
 func test_the_wolf_windup_reads_differently_from_idle() -> void:
 	# the telegraph: the right hand ends high above the head, the idle hand hangs low
 	var wolf: Node3D = _load(WOLF_PATH)
+	add_to_root(wolf)
 	var skeleton: Skeleton3D = _skeleton(wolf)
 	var player: AnimationPlayer = _player(wolf)
 	var hand: int = skeleton.find_bone("hand_r")

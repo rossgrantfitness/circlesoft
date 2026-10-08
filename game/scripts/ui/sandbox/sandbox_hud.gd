@@ -184,8 +184,10 @@ func bind(target: Object) -> void:
 
 func unbind() -> void:
 	for binding: Array in _bindings:
+		if not is_instance_valid(binding[0]):
+			continue  # the source was freed first (scene teardown); nothing to disconnect
 		var source: Object = binding[0] as Object
-		if is_instance_valid(source) and source.is_connected(binding[1], binding[2]):
+		if source.is_connected(binding[1], binding[2]):
 			source.disconnect(binding[1], binding[2])
 	_bindings.clear()
 	_director = null

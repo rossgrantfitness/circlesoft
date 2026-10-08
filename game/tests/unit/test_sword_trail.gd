@@ -85,6 +85,7 @@ func test_a_frozen_clock_freezes_the_trail() -> void:
 	trail._process(1.0)
 	assert_eq(trail.sample_count(), count, "hit-stop: nothing ages, nothing is added")
 	trail.set_time_scale(1.0)
+	trail.set_active(false)
 	trail._process(1.0)
 	assert_eq(trail.sample_count(), 0, "a second of real time later it has all faded")
 
