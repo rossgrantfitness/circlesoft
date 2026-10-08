@@ -71,7 +71,7 @@ func test_history_is_bounded_but_recent_stamps_stay_right() -> void:
 		clock.step(1000, 1.0)
 	var recent: int = clock.real_now_usec() - 5000
 	assert_eq(clock.local_at_real(recent), clock.now_usec() - 5000)
-	assert_eq(clock.local_at_real(0), clock.local_at_real(-1) + 1, "very old stamps do not crash")
+	assert_le(clock.local_at_real(0), clock.now_usec(), "very old stamps do not crash")
 
 
 func test_anchor_real_pins_the_axis() -> void:

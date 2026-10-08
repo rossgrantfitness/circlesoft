@@ -35,6 +35,7 @@ func _initialize() -> void:
 		quit(1)
 		return
 	_hud.set("listen_input", false)
+	_hud.set_process(false)
 	await _fight_shot()
 	await _panel_shot()
 	await _pause_shots()
@@ -54,7 +55,6 @@ func _grab(file: String) -> void:
 
 
 func _fight_shot() -> void:
-	var player: Object = _sandbox.call("get_player") as Object
 	var enemies: Array = _sandbox.call("get_enemies")
 	_director.emit_signal("hp_changed", &"red", 78, 120)
 	if not enemies.is_empty():
@@ -71,18 +71,17 @@ func _fight_shot() -> void:
 	_director.emit_signal("flare_started", {"source": "dodge", "duration_s": 2.5, "enemy_scale": 0.25})
 	_director.emit_signal("perfect_dodge", {"attacker": &"grunt_1", "move_id": &"swipe"})
 	_director.emit_signal("parry_judged", {"attacker": &"grunt_1", "rating": "totally_rad", "outcome": "perfect_parry"})
-	for i: int in 8:
+	for i: int in 4:
 		_hud.call("tick", 0.0833)
 		await process_frame
+	_hud.call("tick", 0.0001)
 	await _grab("sandbox_hud.png")
-	if player != null:
-		pass
 
 
 func _panel_shot() -> void:
 	var panel: Node = _hud.call("get_feel_panel") as Node
-	panel.call("open_panel")
 	panel.set("animations_enabled", false)
+	panel.call("open_panel")
 	panel.call("focus_knob", "dash_distance_m")
 	panel.call("set_knob_value", "dash_distance_m", 5.5)
 	panel.call("set_knob_value", "cam_distance_m", 6.0)
@@ -93,7 +92,7 @@ func _panel_shot() -> void:
 func _pause_shots() -> void:
 	var pause: Node = _hud.call("get_pause_menu") as Node
 	pause.set("animations_enabled", false)
-	_hud.call("open_pause")
+	pause.call("open_menu")
 	await _grab("sandbox_pause.png")
 	var card: Node = pause.call("get_card") as Node
 	card.set("animations_enabled", false)

@@ -133,8 +133,21 @@ func start_sandbox() -> Node:
 	_free_kept_room()
 	_room = null
 	_sandbox = screen.load_world(scene)
+	print_verbose("Main: the combat sandbox is up (feature tag: %s)" % OS.has_feature(SANDBOX_FEATURE))
+	_hide_overlay_hint()
 	_set_state(State.SANDBOX)
 	return _sandbox
+
+
+## The F-key look keys stay (F12 is the feel panel and F1 to F11 are look toggles), but the "F1: PSX
+## options" hint would sit on top of the sandbox HUD's health bar, so its words go.
+func _hide_overlay_hint() -> void:
+	if overlay == null:
+		return
+	for node: Node in overlay.find_children("*", "Label", true, false):
+		var label: Label = node as Label
+		if label.text == PsxDebugOverlay.HINT_TEXT:
+			label.text = ""
 
 
 func get_title() -> Node:

@@ -218,7 +218,7 @@ func _draw_overlay() -> void:
 		var rect: Rect2 = Rect2(x, float(_layout["first_row_y"]) + float(i) * float(_layout["row_step"]), w, float(_layout["row_h"]))
 		SandboxStyle.list_bar(_overlay, rect, false, i % 2 == 1)
 		var base: float = rect.position.y + 11.0
-		SandboxStyle.text(_overlay, "body", Vector2(float(_layout["label_x"]), base), str(rows[i]["label"]), SandboxStyle.color("text_selected"))
+		SandboxStyle.text(_overlay, "body", Vector2(float(_layout["label_x"]), base), str(rows[i]["label"]), SandboxStyle.color("label"))
 		SandboxStyle.text(_overlay, "body", Vector2(float(_layout["key_x"]), base), str(rows[i]["key"]), SandboxStyle.color("text"))
 		SandboxStyle.text(_overlay, "body", Vector2(float(_layout["pad_x"]), base), str(rows[i]["pad"]), SandboxStyle.color("text"))
 	var footer: Rect2 = _hint_rect()

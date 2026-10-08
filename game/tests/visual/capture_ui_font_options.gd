@@ -9,10 +9,10 @@ const OUT: String = "res://../docs/screenshots/ui_font_options.png"
 const FONT_DIR: String = "res://art/final/ui/fonts/"
 const LABEL_FONT: String = "Silkscreen-Regular.ttf"
 const CARDS: Array[Dictionary] = [
-	{"name": "Jersey 15", "file": "Jersey15-Regular.ttf", "size": 20, "license": "SIL OFL 1.1 (Google Fonts)", "note": "chunky, tall; shown at 20 px"},
-	{"name": "DotGothic16", "file": "DotGothic16-Regular.ttf", "size": 16, "license": "SIL OFL 1.1 (Google Fonts)", "note": "crisp, even, clean; shown at 16 px (best match)"},
-	{"name": "VT323", "file": "VT323-Regular.ttf", "size": 20, "license": "SIL OFL 1.1 (Google Fonts)", "note": "thin, tall terminal look; shown at 20 px"},
-	{"name": "Pixelify Sans", "file": "PixelifySans-VariableFont_wght.ttf", "size": 16, "license": "SIL OFL 1.1 (already in the project)", "note": "round and friendly; shown at 16 px"},
+	{"name": "Jersey 15", "file": "Jersey15-Regular.ttf", "size": 20, "license": "SIL OFL 1.1 (Google Fonts)", "note": "closest feel; chunky and tall; 20 px; DEFAULT"},
+	{"name": "DotGothic16", "file": "DotGothic16-Regular.ttf", "size": 16, "license": "SIL OFL 1.1 (Google Fonts)", "note": "crisp and even; 16 px; i and l look alike"},
+	{"name": "VT323", "file": "VT323-Regular.ttf", "size": 20, "license": "SIL OFL 1.1 (Google Fonts)", "note": "thin terminal look; 20 px; light weight"},
+	{"name": "Pixelify Sans", "file": "PixelifySans-VariableFont_wght.ttf", "size": 16, "license": "SIL OFL 1.1 (already in the project)", "note": "round, friendly; 16 px; weakest digits"},
 ]
 const SIZE: Vector2i = Vector2i(640, 360)
 

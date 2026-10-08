@@ -785,7 +785,7 @@ func _tab_rects() -> Array[Rect2]:
 	var x: float = _left()
 	var pad: float = float(_layout.get("tab_pad_x", 6))
 	for group: String in _groups:
-		var w: float = SandboxStyle.text_width("body", FeelFormat.group_title(group)) + pad * 2.0
+		var w: float = SandboxStyle.text_width("label", FeelFormat.group_title(group).to_upper()) + pad * 2.0
 		out.append(Rect2(x, float(_layout["tab_y"]), w, float(_layout["tab_h"])))
 		x += w + float(_layout.get("tab_gap", 2))
 	return out
@@ -848,9 +848,9 @@ func _draw_tabs() -> void:
 		var active: bool = i == _tab
 		SandboxStyle.list_bar(_overlay, rect, active, not active)
 		var pad: float = float(_layout.get("tab_pad_x", 6))
-		SandboxStyle.text(_overlay, "body", Vector2(rect.position.x + pad, rect.position.y + 11.0), FeelFormat.group_title(_groups[i]), SandboxStyle.row_color(active))
+		SandboxStyle.text(_overlay, "label", Vector2(rect.position.x + pad, rect.position.y + 9.0), FeelFormat.group_title(_groups[i]).to_upper(), SandboxStyle.row_color(active))
 		if active and _zone == Zone.TABS:
-			SandboxStyle.cursor(_overlay, Vector2(rect.position.x + 1.0, rect.position.y + rect.size.y / 2.0))
+			SandboxStyle.cursor(_overlay, Vector2(rect.position.x - 1.0, rect.position.y + rect.size.y / 2.0))
 		if _group_changed(_groups[i]):
 			_overlay.draw_rect(Rect2(rect.end.x - 4.0, rect.position.y + 2.0, 2.0, 2.0), SandboxStyle.color("pip"))
 	var mid: float = float(_layout["tab_y"]) + float(_layout["tab_h"]) / 2.0

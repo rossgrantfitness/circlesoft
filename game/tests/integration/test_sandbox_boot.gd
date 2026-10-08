@@ -273,3 +273,32 @@ func test_walking_onto_a_stand_swaps_the_sword_in_her_hand() -> void:
 		return
 	assert_eq(player.current_sword(), other.sword_id, "the glass_core stand put its sword in her hand")
 	assert_ne(player.current_sword(), first.sword_id)
+
+
+func test_the_sandbox_hud_is_not_covered_by_the_old_f1_hint() -> void:
+	var main: Main = (load(MAIN_SCENE) as PackedScene).instantiate() as Main
+	main.show_title = false
+	main.sandbox_boot_enabled = false
+	add_to_root(main)
+	main.start_sandbox()
+	for node: Node in main.overlay.find_children("*", "Label", true, false):
+		assert_ne((node as Label).text, PsxDebugOverlay.HINT_TEXT, "the F1 hint is gone in the sandbox")
+
+
+func test_reset_respawns_every_enemy_the_data_lists() -> void:
+	var arena: CombatSandbox = _arena()
+	var listed: int = (arena.get_data()["enemy_spawns"] as Array).size()
+	var spawned: int = arena.get_enemies().size()
+	var expected: int = 0
+	for entry: Variant in arena.get_data()["enemy_spawns"] as Array:
+		var kind: String = str((entry as Dictionary)["enemy"])
+		var path: String = str(((arena.get_data()["enemy_scenes"]) as Dictionary).get(kind, ""))
+		if ResourceLoader.exists(path):
+			expected += 1
+	assert_eq(spawned, expected, "one enemy per listed spawn whose scene exists (%d listed)" % listed)
+	if spawned > 0:
+		var first: Node3D = arena.get_enemies()[0]
+		first.global_position = Vector3(3, 0, 3)
+	arena.reset_arena()
+	await tree.process_frame
+	assert_eq(arena.get_enemies().size(), expected, "all of them are back")

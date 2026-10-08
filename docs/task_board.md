@@ -33,7 +33,7 @@
 | CS-7 | ParryJudge (on ClutchJudge), perfect dodge, Lamp Flare; `parry` entry in timing_windows.json; flare knobs | Battle Programmer | CS-6 | No | Contract 4.3, 4.4. |
 | CS-8 | ActionEnemy, EnemyBrain, AttackTokens; Grunt and Brute move sets and `enemies.json`; `enemies_attack` knob | Battle Programmer | CS-6, CS-12 (models can be blockouts at first) | No | Grunt = Ross's Cyberwolf Sentinel once rigged. |
 | CS-9 | Noise (StyleMeter) and the Lights On stub (fills, shows, simple buffs); `style.json` | Battle Programmer | CS-6 | No | Contract 4.5. Rank names are Level 1. |
-| CS-10 | Rig Ross's Red (`red_ross_v1_rigged.glb`, `weapon_socket` on `hand_r`) and her clips or key poses; `anim.keys` in moves.json; procedural fallbacks for missing clips | Technical Artist | | No (his model, rigged; Ross sees it in the build) | **In progress.** Contract section 5. Test: test_red_ross_rig. |
+| CS-10 | Rig Ross's Red (clips: **prefab CC0 only, no new authored clips**, Ross 2026-10-08; Quaternius Universal Animation Library 1+2 retargeted) (`red_ross_v1_rigged.glb`, `weapon_socket` on `hand_r`) and her clips or key poses; `anim.keys` in moves.json; procedural fallbacks for missing clips | Technical Artist | | No (his model, rigged; Ross sees it in the build) | **In progress.** Contract section 5. Test: test_red_ross_rig. |
 | CS-11 | Swords: split (done), `swords.json` for all six, GearVisuals swap on `weapon_socket` | Technical Artist | CS-10 | No | Contract 4.7. Test: test_gear_visuals. |
 | CS-12 | Enemy models: rig the Cyberwolf Sentinel (the Grunt), Brute blockout in art/placeholder/, idle / move / wind-up and strike poses | Technical Artist | | No | Readable wind-ups for parrying. |
 | CS-13 | PS2 rendering for the sandbox: `grim_ps2` profile, 640×360, per-pixel lit shader with the edge light, one shadow light, glow, jitter / affine / dither off, `art/final/` textures smooth with mipmaps | Technical Artist | | No (D4 approved; show Ross screenshots) | Contract section 6. Old game's look unchanged. |
@@ -45,7 +45,7 @@
 | CS-19 | Feel pass before Ross plays (does every move read, is anything mushy) | Playtester | CS-18 | No | Report, not fixes. |
 | CS-20 | Sandbox builds for Windows and Mac, download link, short how-to-play, studio log with screenshots or a clip; **Ross plays it** and sends feel notes and his saved feel file | Producer + Gameplay Programmer | CS-18, CS-19 | **Yes** (feel and the "Ross picks by playing" toggles) | Taste Keeper records predictions first. |
 
-**Later (not in the sandbox):** Rip on big bosses; double jump; gadget arm; goggles on/off; Signals grunts fleeing from Lights On; materials, crafting and the workshop; gear beyond swords; saving; towns under the hybrid camera; sorting field buttons against combat buttons.
+**Later (not in the sandbox):** swappable faces for Red (approved design 2026-10-08: swappable eyes and mouths plus whole-face specials for big moments; keep room for it, build it when scheduled); Ross's own motion capture for signature moves (after the placeholder phase); a Level Designer for the slice; Rip on big bosses; double jump; gadget arm; goggles on/off; Signals grunts fleeing from Lights On; materials, crafting and the workshop; gear beyond swords; saving; towns under the hybrid camera; sorting field buttons against combat buttons.
 
 ### Milestone 2: Battle system and battle simulator
 | ID | Task | Assigned to | Depends on | Ross sign-off | Notes |

@@ -62,6 +62,7 @@ func _ready() -> void:
 	_apply_look()
 	if bool(_data.get("capture_mouse", true)):
 		set_mouse_captured(true)
+	print_verbose("CombatSandbox: ready; parts not there yet: %s" % [missing])
 
 
 func _exit_tree() -> void:
@@ -70,6 +71,8 @@ func _exit_tree() -> void:
 		_relay.queue_free()
 	for node: Node in _attached:
 		if is_instance_valid(node) and node.get_parent() != self:
+			if node.has_method("unbind"):
+				node.call("unbind")        # let go of the director while it is still alive
 			node.queue_free()
 	_attached.clear()
 

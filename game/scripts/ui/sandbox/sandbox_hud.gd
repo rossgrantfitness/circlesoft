@@ -85,7 +85,7 @@ var _pause: SandboxPause = null
 
 
 func _ready() -> void:
-	process_mode = Node.PROCESS_MODE_PAUSABLE
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	size = Vector2(UiStage.STAGE_SIZE)
@@ -564,16 +564,13 @@ func _tick_noise(delta: float) -> void:
 func _tick_lights_and_flare(delta: float) -> void:
 	if _lights_active:
 		var lights: Object = _director.get(&"lights_on") as Object if _director != null else null
-		if lights != null and lights.has_method(&"remaining_s"):
-			_lights_left = float(lights.call(&"remaining_s"))
-		else:
-			_lights_left = maxf(0.0, _lights_left - delta)
+		var left: float = float(lights.call(&"remaining_s")) if lights != null and lights.has_method(&"remaining_s") else 0.0
+		# The model's own clock when it has one (it follows Red's hit-stop); our count-down otherwise.
+		_lights_left = left if left > 0.0 else maxf(0.0, _lights_left - delta)
 	if _flare_active:
 		var time: Object = _director.get(&"time") as Object if _director != null else null
-		if time != null and time.has_method(&"flare_left_s"):
-			_flare_left = float(time.call(&"flare_left_s"))
-		else:
-			_flare_left = maxf(0.0, _flare_left - delta)
+		var flare_left: float = float(time.call(&"flare_left_s")) if time != null and time.has_method(&"flare_left_s") else 0.0
+		_flare_left = flare_left if flare_left > 0.0 else maxf(0.0, _flare_left - delta)
 
 
 func _tick_world(delta: float) -> void:
@@ -613,6 +610,8 @@ func _draw_meters() -> void:
 	_draw_lights()
 	_draw_noise()
 	_draw_flare()
+	if is_menu_open():
+		return
 	var hint_y: float = SandboxUiData.ui_float("hud.hint_y", 211.0)
 	SandboxStyle.label(_meters, Vector2(8.0, hint_y), get_hint_text(), SandboxStyle.color("label_dim"))
 	var tag: Vector2 = SandboxUiData.vec("hud.camera_tag_right")

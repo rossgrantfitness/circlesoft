@@ -146,8 +146,8 @@
   "feel": {
     "title": "Feel Knobs",
     "paused": "Game paused",
-    "unsaved": "Unsaved changes",
-    "saved": "All saved",
+    "unsaved": "Unsaved",
+    "saved": "Saved",
     "on": "On",
     "off": "Off",
     "default_line": "Studio default: {value}",

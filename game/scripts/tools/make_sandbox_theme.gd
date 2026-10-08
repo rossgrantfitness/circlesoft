@@ -32,7 +32,7 @@ const COLORS: Dictionary = {
 	"text_on_header": "#E8FFF6",
 	"shadow": "#05040C",
 	"label": "#6FD6EE",
-	"label_dim": "#5B6A8C",
+	"label_dim": "#7C8AB0",
 	"bar_top": "#1C2658",
 	"bar_bottom": "#101839",
 	"bar_sel_top": "#3A57B0",
