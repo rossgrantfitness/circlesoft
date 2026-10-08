@@ -97,9 +97,26 @@ def docks():
     return kit
 
 
+def keep_written_text(room, old_room):
+    """The Writer owns the words on signs and screens. Whatever text the file already has for a prop (matched by
+    type and order within the room) wins over this generator's defaults, so re-running never reverts it."""
+    old = {}
+    for item in old_room.get("items", []) if old_room else []:
+        if "text" in item:
+            old.setdefault(item["type"], []).append(item["text"])
+    seen = {}
+    for item in room["items"]:
+        if "text" in item:
+            n = seen.get(item["type"], 0)
+            seen[item["type"]] = n + 1
+            if n < len(old.get(item["type"], [])):
+                item["text"] = old[item["type"]][n]
+
+
 def build():
     with open(DATA) as f:
         data = json.load(f)
+    existing = data["rooms"]
     rooms = {k: v for k, v in data["rooms"].items() if k in KEEP}
     rooms["harrow_home"] = interior(0, 7, 0, 5, "HOME", TEAL, "CURFEW 22", variant=0)
     rooms["harrow_courier"] = interior(0, 8, 0, 6, "PARCEL", SODIUM, "ALL CLEAR", variant=1)
@@ -112,6 +129,9 @@ def build():
     rooms["test_room"] = outdoor(-5, 13, -4, 4, "TEST", TEAL, variant=0)
     rooms["test_a"] = outdoor(-6, 10, -4, 4, "YARD A", SODIUM, variant=1)
     rooms["test_b"] = outdoor(-5, 9, -4, 4, "YARD B", TEAL, variant=2)
+    for key, room in rooms.items():
+        if key not in KEEP:
+            keep_written_text(room, existing.get(key))
     data["rooms"] = rooms
     data["_about"] = ("What the grim look profile adds to each place (Technical Artist). 'rooms' keys are the dressing ids GrimDressing "
                       "nodes carry (a room's id, or 'battle'). Each item is one prop built by scripts/field/grim_props.gd: type, pos [x, y, z], "

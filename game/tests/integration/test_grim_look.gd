@@ -583,3 +583,15 @@ func test_battle_views_carry_the_edge_light_in_both_cameras() -> void:
 			for strength: float in strengths:
 				assert_gt(strength, 0.2, "%s has the edge light (dynamic camera %s)" % [id, dynamic])
 		assert_eq(stage.get_view("red").model.scene_file_path, RED_GRIM, "the battle's Red is the grim shiba")
+
+
+func test_no_placeholder_sign_words_remain_in_the_dressing_data() -> void:
+	var banned: Array[String] = ["ALL CLEAR", "CURFEW 22", "HALT"]
+	var seen: int = 0
+	for room_id: Variant in DataDB.get_dict(DRESSING_DATA)["rooms"]:
+		for entry: Variant in (DataDB.get_dict(DRESSING_DATA)["rooms"][room_id] as Dictionary)["items"]:
+			var item: Dictionary = entry
+			if item.has("text"):
+				seen += 1
+				assert_false(banned.has(str(item["text"]).to_upper()), "%s still has the placeholder word %s" % [room_id, item["text"]])
+	assert_gt(seen, 20, "the signs and screens do have text")
