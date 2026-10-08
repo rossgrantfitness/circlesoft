@@ -115,9 +115,50 @@ def arm_fix(p, w):
     return w
 
 
+def weld_and_smooth(me, table, passes=2, factor=0.5, skip=None):
+    """Corners that sit at the same spot share one set of weights (so seams cannot tear), then the weights are relaxed
+    toward their neighbours a little (so a shoulder bends instead of creasing). Vertices in `skip` keep their weights."""
+    key = lambda co: (round(co.x * 5000), round(co.y * 5000), round(co.z * 5000))
+    keys = [key(v.co) for v in me.vertices]
+    groups = {}
+    for i, k in enumerate(keys):
+        groups.setdefault(k, []).append(i)
+    merged = {}
+    for k, idx in groups.items():
+        acc = {}
+        for i in idx:
+            for b, x in table[i].items():
+                acc[b] = acc.get(b, 0.0) + x / len(idx)
+        merged[k] = acc
+    nbrs = {k: set() for k in groups}
+    for e in me.edges:
+        a, b = keys[e.vertices[0]], keys[e.vertices[1]]
+        if a != b:
+            nbrs[a].add(b)
+            nbrs[b].add(a)
+    frozen = set(keys[i] for i in (skip or ()))
+    for _ in range(passes):
+        nxt = {}
+        for k, w in merged.items():
+            if k in frozen or not nbrs[k]:
+                nxt[k] = w
+                continue
+            avg = {}
+            for n in nbrs[k]:
+                for b, x in merged[n].items():
+                    avg[b] = avg.get(b, 0.0) + x / len(nbrs[k])
+            out = {}
+            for b in set(w) | set(avg):
+                out[b] = (1.0 - factor) * w.get(b, 0.0) + factor * avg.get(b, 0.0)
+            nxt[k] = out
+        merged = nxt
+    return [dict(merged[k]) for k in keys]
+
+
 def fix_weights(obj, arm):
     """Automatic weights, then the hand fixes: boots follow the feet, the tail follows the tail, belt pouches follow the
-    hips, ears hang from the head and swing on the ear bones, arms never pull the jacket (torso verts lose arm weight)."""
+    hips, ears hang from the head and swing on the ear bones, arms never pull the jacket (torso verts lose arm weight);
+    finally seams are welded and the arm/ear transitions relaxed."""
     me = obj.data
     names = [b.name for b in arm.data.bones]
     table = weights_of(obj, names)
@@ -128,39 +169,34 @@ def fix_weights(obj, arm):
     main = max(sizes, key=sizes.get)
     seg = {n: bone_axis(arm, n) for n in names}
     ear_seg = {n: seg[n] for n in EAR}
+    table = weld_and_smooth(me, table, passes=0)             # weld seams first
     out = []
+    loose = []
     for i, v in enumerate(me.vertices):
         p = v.co
         w = dict(table[i])
         if pid[i] != main:
-            c = Vector((p.x, p.y, p.z))
+            loose.append(i)
+            side = "l" if p.x > 0 else "r"
             if p.z < 0.12:                                                   # a boot
-                side = "l" if p.x > 0 else "r"
-                k = smoothstep(0.045, 0.115, p.z)                            # ankle blend up the cuff
-                w = {"foot_" + side: 1.0 - 0.75 * k, "shin_" + side: 0.75 * k} if k > 0 else {"foot_" + side: 1.0}
-                if p.z > 0.08:
-                    w = {"foot_" + side: 0.35, "shin_" + side: 0.65}
+                k = smoothstep(0.07, 0.115, p.z)                             # ankle blend up the cuff
+                w = {"foot_" + side: 1.0 - 0.7 * k, "shin_" + side: 0.7 * k}
             elif p.y > 0.05:                                                 # the tail ball
                 w = {"tail": 1.0}
             else:                                                            # belt pouches
-                side = "l" if p.x > 0 else "r"
                 w = {"hips": 0.75, "thigh_" + side: 0.25}
             out.append(w)
             continue
-        # ears: a flap near an ear bone, behind the face, outside the head
         side = "l" if p.x > 0 else "r"
         ear = "ear_" + side
         t, d = seg_param(p, ear_seg[ear][0], ear_seg[ear][1])
-        in_ear = d < 0.075 and p.y > 0.05 and abs(p.x) > 0.095 and p.z > 0.52
-        if in_ear:
-            k = smoothstep(0.12, 0.55, t)                                    # base stays on the head, the tip swings
-            w = {"head": 1.0 - k, ear: k}
-            out.append(w)
+        if d < 0.075 and p.y > 0.05 and abs(p.x) > 0.095 and p.z > 0.52:    # an ear flap: behind the face, outside the head
+            k = smoothstep(0.25, 0.75, t) * smoothstep(0.80, 0.68, p.z)      # the cap and the ear's root stay on the head
+            out.append({"head": 1.0 - k, ear: k})
+            loose.append(i)                                                  # keep these exactly as set
             continue
-        # jacket must not follow the arms: above the armpit line only the shoulder-to-hand bones move the sleeve
-        if not RAW:
-            w = arm_fix(p, w)
-        out.append(w)
+        out.append(arm_fix(p, w) if not RAW else w)
+    out = weld_and_smooth(me, out, passes=2, factor=0.5, skip=loose)
     write_weights(obj, out)
 
 
