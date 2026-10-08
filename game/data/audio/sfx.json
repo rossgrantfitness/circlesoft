@@ -235,6 +235,177 @@
       "loop": false,
       "placeholder": true,
       "note": "Battle command menu opens: tiny bright rising chirp."
+    },
+    "combat_swing_light": {
+      "file": "res://audio/sfx/placeholder/combat_swing_light.wav",
+      "bus": "SFX",
+      "volume_db": -11.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Light sword swing: a fast thin air-slice with a snick at the front. Fires constantly, so it sits low."
+    },
+    "combat_swing_heavy": {
+      "file": "res://audio/sfx/placeholder/combat_swing_heavy.wav",
+      "bus": "SFX",
+      "volume_db": -8.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Heavy sword swing: a big low cleaving swoosh with weight under it."
+    },
+    "combat_hit_light": {
+      "file": "res://audio/sfx/placeholder/combat_hit_light.wav",
+      "bus": "SFX",
+      "volume_db": -7.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Light hit: a snappy crunchy smack, thump plus crack."
+    },
+    "combat_hit_heavy": {
+      "file": "res://audio/sfx/placeholder/combat_hit_heavy.wav",
+      "bus": "SFX",
+      "volume_db": -3.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Heavy hit: deep thump, thick body, hard crack and a steel clank. Must feel powerful."
+    },
+    "combat_hit_launch": {
+      "file": "res://audio/sfx/placeholder/combat_hit_launch.wav",
+      "bus": "SFX",
+      "volume_db": -3.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Launcher hit: a hard crack then a rising whoosh-crack that sends the enemy up."
+    },
+    "combat_hit_air": {
+      "file": "res://audio/sfx/placeholder/combat_hit_air.wav",
+      "bus": "SFX",
+      "volume_db": -6.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Hit on an airborne enemy: lighter and bouncier, a crisp pop with a bright ping."
+    },
+    "combat_parry": {
+      "file": "res://audio/sfx/placeholder/combat_parry.wav",
+      "bus": "SFX",
+      "volume_db": -4.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Parry: a bright metallic ring, blade on blade."
+    },
+    "combat_parry_perfect": {
+      "file": "res://audio/sfx/placeholder/combat_parry_perfect.wav",
+      "bus": "SFX",
+      "volume_db": -1.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Perfect parry: a bigger ring with a low thud and a rising sparkle shower."
+    },
+    "combat_dash": {
+      "file": "res://audio/sfx/placeholder/combat_dash.wav",
+      "bus": "SFX",
+      "volume_db": -10.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Ground dash: a boot scuff and a short whoosh."
+    },
+    "combat_air_dash": {
+      "file": "res://audio/sfx/placeholder/combat_air_dash.wav",
+      "bus": "SFX",
+      "volume_db": -10.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Air dash: thinner and brighter than the ground dash, a rising airy zip."
+    },
+    "combat_jump": {
+      "file": "res://audio/sfx/placeholder/combat_jump.wav",
+      "bus": "SFX",
+      "volume_db": -9.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Jump: a push-off scuff, a little rising spring tone and a puff of air."
+    },
+    "combat_land": {
+      "file": "res://audio/sfx/placeholder/combat_land.wav",
+      "bus": "SFX",
+      "volume_db": -8.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Landing: a solid thump on steel grating with a dusty scuff."
+    },
+    "combat_lamp_flare": {
+      "file": "res://audio/sfx/placeholder/combat_lamp_flare.wav",
+      "bus": "SFX",
+      "volume_db": -2.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Lamp Flare (perfect dodge slow-mo trigger): bright ping, warm bright swell, and a low time-stretch thoom."
+    },
+    "combat_lights_on_activate": {
+      "file": "res://audio/sfx/placeholder/combat_lights_on_activate.wav",
+      "bus": "SFX",
+      "volume_db": 0.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Lights On activation: big and triumphant. Charge zip, boom, crash, wide brassy chord, sparkle shower. Loudest sound in the sandbox."
+    },
+    "combat_noise_rank_up": {
+      "file": "res://audio/sfx/placeholder/combat_noise_rank_up.wav",
+      "bus": "SFX",
+      "volume_db": -5.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Noise rank up: a short punchy sting, five quick steps rising."
+    },
+    "combat_lock_on": {
+      "file": "res://audio/sfx/placeholder/combat_lock_on.wav",
+      "bus": "SFX",
+      "volume_db": -10.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Lock-on: a dry click then two quick rising beeps."
+    },
+    "combat_enemy_telegraph": {
+      "file": "res://audio/sfx/placeholder/combat_enemy_telegraph.wav",
+      "bus": "SFX",
+      "volume_db": -4.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Enemy attack telegraph: a sharp dissonant two-stab warning with a metal ping. Cold and urgent."
+    },
+    "combat_enemy_death": {
+      "file": "res://audio/sfx/placeholder/combat_enemy_death.wav",
+      "bus": "SFX",
+      "volume_db": -5.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Enemy death: a hard crack, a bit-crushed power-down, a fizz of sparks and a last thud."
+    },
+    "combat_brute_slam": {
+      "file": "res://audio/sfx/placeholder/combat_brute_slam.wav",
+      "bus": "SFX",
+      "volume_db": -1.0,
+      "pitch_scale": 1.0,
+      "loop": false,
+      "placeholder": true,
+      "note": "Brute slam: heavy ground-shaking impact with a clang, rumble tail and debris."
     }
   }
 }
