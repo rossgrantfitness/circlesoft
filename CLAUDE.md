@@ -47,8 +47,9 @@ Then wait. After Ross approves, the Producer logs it in docs/decisions.md with t
 - Every gameplay system gets automated tests in game/tests/ that can run headless.
 
 ## Scope discipline
-- Current milestone: VERTICAL SLICE (one town, one dungeon, one boss, three party members, full battle system, ~30 min of story).
-- Anything beyond the slice goes in a "Later" list on the task board, not into the build.
+- Game direction (Ross, 2026-10-08): **LIGHTS ON**, a single-character action RPG (Mega Man Legends-style town/dungeon loop, fast character-action combat, visible customizable gear), with the Lights Left On cast and world. The turn-based version is shelved, not deleted.
+- Current milestone: **COMBAT SANDBOX** (a playable feel prototype Ross downloads and judges by hand). Next: the action VERTICAL SLICE (one town, one dungeon, one boss, Red as the single playable hero, full combat system), scoped after Ross plays the sandbox.
+- Anything beyond the current milestone goes in a "Later" list on the task board, not into the build.
 
 ## Borrow what works, transform it
 - Good artists copy, great artists steal. Take proven systems, mechanics, story shapes, character roles and the spirit of the games and shows we love, and curate them into a new combination. That combination, shaped by Ross's taste, is what makes the work original.

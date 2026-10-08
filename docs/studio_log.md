@@ -4,6 +4,7 @@
 
 ## 2026-10-08
 
+- **Ross approved the action RPG plan (LIGHTS ON + Rip; combat sandbox now; hybrid camera; early PS2; stylized cast in a gritty world) and sent six swords.** Combat sandbox started: Technical Director writing the combat contract; Technical Artist rigging Ross's Red, splitting the swords and switching on PS2-style rendering; Audio Designer making placeholder combat sounds. Programmers start once the contract lands.
 - **Turn-based Lights Left On fully shelved at commit 9b61011** (all 1552 tests green): battle system, Harrow graybox, train opening, jammer works, Kasp boss logic, grim look and edge light are all saved there and can be revived. The action RPG pivot package (pitches + buildability + Ross's new Red model) is with Ross for sign-off.
 - **Ross: the turn-based JRPG is played out and boring; he's thinking of a Mega Man Legends-style action RPG** with fast character-action combat (dash, jump, juggle, parry) and gear that shows on the character. In-flight turn-based work stopped at a clean point. Creative Director drafting concept pitches; Technical Director auditing what we can reuse and what's buildable, plus a combat-feel prototype plan.
 - **A-pose reference sheets sent to Ross** (docs/art_reference/: 9 character sheets, lineup at true scale, 4x textures, README with the model contract). Placeholder lines re-toned to the grim, chilling-funny voice (still PLACEHOLDER until M6-2); neon/sign words now propaganda and slum signage.
