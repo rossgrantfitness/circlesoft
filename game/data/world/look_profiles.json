@@ -208,12 +208,12 @@
   "grim_ps2": {
    "name": "Grim PS2 (combat sandbox)",
    "grade": {
-    "_note": "amount 1 = fully on. desat drains colour (accent_keep spares bright saturated pixels: lamps, warning stripes, the call's teal). crush/gamma/gain darken. The split tone pushes shadows teal and highlights sodium orange.",
+    "_note": "Ross's 'B filter' (2026-10-08): a lighter grade than grim (desat 0.35 not 0.75, tint 0.3 not 0.6, gamma 1.0 not 1.1); grain, vignette, crush and accent_keep as in grim.",
     "amount": 1.0,
-    "desat": 0.75,
+    "desat": 0.35,
     "accent_keep": 0.8,
     "gain": 1.0,
-    "gamma": 1.1,
+    "gamma": 1.0,
     "crush": 0.03,
     "shadow_tint": [
      0.55,
@@ -225,7 +225,7 @@
      0.84,
      0.66
     ],
-    "tint_amount": 0.6,
+    "tint_amount": 0.3,
     "grain": 0.065,
     "grain_fps": 12.0,
     "vignette": 0.4
@@ -388,7 +388,7 @@
     }
    },
    "texture_filter": {
-    "_note": "smooth = linear with mipmaps; nearest = crisp pixels. Groups: characters (Red, NPCs), enemies, weapons, placeholders (the old blockouts), city_tiles (Ross's pixel-art floor and wall tiles; default nearest until he answers), default.",
+    "_note": "smooth = linear with mipmaps; nearest = crisp pixels. Groups: characters (Red, NPCs), enemies, weapons, placeholders (the old blockouts), city_tiles (Ross's pixel-art floor and wall tiles: nearest 'for now', Ross 2026-10-08; he may change it, so it stays a data setting), default.",
     "characters": "smooth",
     "enemies": "smooth",
     "weapons": "smooth",

@@ -47,7 +47,7 @@
     "controller": "Controller",
     "change_hint": "Confirm: change buttons    Cancel: back",
     "view_hint": "Cancel: back",
-    "lock_note": "Lock on: press to lock, press again to let go. Flick the camera to switch targets.",
+    "lock_note": "Lock on: tap again to let go. Flick to switch.",
     "rows": [
       {
         "action": "move",

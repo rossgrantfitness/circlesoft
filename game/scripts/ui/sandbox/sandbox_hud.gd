@@ -35,16 +35,6 @@ const RESET_METHODS: Array[StringName] = [&"reset_arena", &"reset"]
 const MODE_DIORAMA: int = 1
 const TEAM_PLAYER: String = "player"
 const NO_POSITION: Vector2 = Vector2.INF
-const BULB_ROWS: Array[String] = [
-	"..XXX..",
-	".XXXXX.",
-	"XXXXXXX",
-	"XXXXXXX",
-	".XXXXX.",
-	"..XXX..",
-	"..ooo..",
-	"..ooo..",
-]
 
 var sandbox: Object = null
 var audio: UiAudio = UiAudio.new()
@@ -87,8 +77,6 @@ var _pad_mode: bool = false
 var _clock: float = 0.0
 var _popups: Array[BattlePopup] = []
 
-var _hp_window: UiWindow = null
-var _noise_window: UiWindow = null
 var _meters: Control = null
 var _world: Control = null
 var _popup_layer: Control = null
@@ -114,8 +102,6 @@ func _exit_tree() -> void:
 
 
 func _build() -> void:
-	_hp_window = _make_window("HpWindow", SandboxUiData.rect("hud.hp_window"))
-	_noise_window = _make_window("NoiseWindow", SandboxUiData.rect("hud.noise_window"))
 	_meters = Control.new()
 	_meters.name = "Meters"
 	_meters.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -150,16 +136,6 @@ func _build() -> void:
 	_pause.quit_requested.connect(_on_quit_requested)
 	add_child(_pause)
 	_update_camera_text()
-
-
-func _make_window(window_name: String, rect: Rect2) -> UiWindow:
-	var window: UiWindow = UiWindow.new()
-	window.name = window_name
-	window.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	window.position = rect.position
-	window.size = rect.size
-	add_child(window)
-	return window
 
 
 # ---- binding ----
@@ -626,105 +602,73 @@ func open_pause() -> void:
 		_pause.open_menu()
 
 
-# ---- drawing: meters ----
+# ---- drawing: meters (the look is SandboxStyle's) ----
 
 func _draw_meters() -> void:
 	_draw_hp()
 	_draw_lights()
 	_draw_noise()
 	_draw_flare()
-	var hint_y: float = SandboxUiData.ui_float("hud.hint_y", 210.0)
-	UiText.draw(_meters, "tag", Vector2(6.0, hint_y), get_hint_text(), SandboxUiData.palette("text_dim"))
-	var tag_at: Vector2 = SandboxUiData.vec("hud.camera_tag_pos")
-	UiText.draw(_meters, "tag", tag_at, get_camera_text(), SandboxUiData.palette("text_dim"), HORIZONTAL_ALIGNMENT_RIGHT, 160.0 if false else -1.0)
-
-
-## A bar with an Ink outline, an empty track, a chip behind the fill and a lighter top edge.
-func _draw_bar(canvas: CanvasItem, rect: Rect2, fill: float, color: Color, back: Color, chip: float = -1.0, chip_color: Color = Color.WHITE) -> void:
-	canvas.draw_rect(rect.grow(1.0), SandboxUiData.palette("ink"))
-	canvas.draw_rect(rect, back)
-	if chip > fill:
-		canvas.draw_rect(Rect2(rect.position, Vector2(floorf(rect.size.x * clampf(chip, 0.0, 1.0)), rect.size.y)), chip_color)
-	var fill_w: float = floorf(rect.size.x * clampf(fill, 0.0, 1.0))
-	if fill_w > 0.0:
-		canvas.draw_rect(Rect2(rect.position, Vector2(fill_w, rect.size.y)), color)
-		canvas.draw_rect(Rect2(rect.position, Vector2(fill_w, 1.0)), color.lerp(Color.WHITE, 0.45))
+	var hint_y: float = SandboxUiData.ui_float("hud.hint_y", 211.0)
+	SandboxStyle.label(_meters, Vector2(8.0, hint_y), get_hint_text(), SandboxStyle.color("label_dim"))
+	var tag: Vector2 = SandboxUiData.vec("hud.camera_tag_right")
+	var tag_text: String = get_camera_text().to_upper()
+	SandboxStyle.label(_meters, Vector2(tag.x - SandboxStyle.text_width("label", tag_text), tag.y), tag_text, SandboxStyle.color("label_dim"))
 
 
 func _draw_hp() -> void:
 	var bar: Rect2 = SandboxUiData.rect("hud.hp_bar")
 	var frac: float = float(_hp) / float(_hp_max)
 	var low: bool = frac * 100.0 <= SandboxUiData.ui_float("hud.hp_low_pct", 25.0) and _hp > 0
-	var color: Color = SandboxUiData.color("hp_low" if low else "hp")
+	var top: Color = SandboxStyle.color("hp_low_top" if low else "hp_top")
+	var bottom: Color = SandboxStyle.color("hp_low_bottom" if low else "hp_bottom")
 	if low and int(_clock / 0.25) % 2 == 1:
-		color = color.lerp(Color.WHITE, 0.35)
-	_draw_bar(_meters, bar, frac, color, SandboxUiData.color("hp_empty"), _hp_chip / float(_hp_max), SandboxUiData.color("hp_chip"))
-	var y: float = SandboxUiData.ui_float("hud.hp_label_y", 17.0)
-	UiText.draw(_meters, "tag", Vector2(bar.position.x, y), SandboxUiData.text("hud.hp"), SandboxUiData.palette("lamp_amber"))
-	var number_color: Color = SandboxUiData.color("hp_low") if low else SandboxUiData.palette("text")
-	UiText.draw(_meters, "tag", Vector2(bar.end.x, y), "%d/%d" % [_hp, _hp_max], number_color, HORIZONTAL_ALIGNMENT_RIGHT, 70.0 if false else -1.0)
+		top = top.lerp(Color.WHITE, 0.35)
+	var text_at: Vector2 = SandboxUiData.vec("hud.hp_text_pos")
+	var tint: Color = SandboxStyle.color("warn") if low else SandboxStyle.color("text")
+	SandboxStyle.text(_meters, "body", text_at, "%s %d/%d" % [SandboxUiData.text("hud.hp"), _hp, _hp_max], tint)
+	SandboxStyle.thin_bar(_meters, bar, frac, top, bottom, _hp_chip / float(_hp_max))
 
 
 func _draw_lights() -> void:
-	var rect: Rect2 = SandboxUiData.rect("hud.lights_pos")
 	var ready_to_go: bool = not _lights_active and _noise_fill >= 1.0
 	var pulse: bool = int(_clock / 0.25) % 2 == 0
-	var accent: Color = SandboxUiData.color("lights_on") if (_lights_active or ready_to_go) else SandboxUiData.color("lights_off")
-	_meters.draw_rect(rect.grow(1.0), SandboxUiData.palette("ink"))
-	_meters.draw_rect(rect, Color(SandboxUiData.palette("window_fill"), 0.85))
-	if _lights_active:
-		_meters.draw_rect(rect, Color(accent, 0.22 if pulse else 0.34))
-	_meters.draw_rect(Rect2(rect.position, Vector2(rect.size.x, 1.0)), accent)
-	_draw_bulb(rect.position + Vector2(4.0, 3.0), _lights_active or (ready_to_go and pulse), accent)
+	var lit: bool = _lights_active or (ready_to_go and pulse)
+	var glass: Color = SandboxStyle.color("lights_top")
+	SandboxStyle.bulb(_meters, SandboxUiData.vec("hud.lights_icon_pos"), lit, glass)
 	var key: String = "lights_on" if _lights_active else ("lights_ready" if ready_to_go else "lights_off")
-	var label_color: Color = accent if (_lights_active or ready_to_go) else SandboxUiData.palette("text_dim")
-	UiText.draw(_meters, "tag", Vector2(rect.position.x + 15.0, rect.position.y + 11.0), SandboxUiData.text("hud.%s" % key), label_color)
+	var tint: Color = glass if (_lights_active or ready_to_go) else SandboxStyle.color("label_dim")
+	SandboxStyle.text(_meters, "label", SandboxUiData.vec("hud.lights_text_pos"), SandboxUiData.text("hud.%s" % key).to_upper(), tint)
 	if _lights_active:
-		var bar: Rect2 = SandboxUiData.rect("hud.lights_bar")
-		_draw_bar(_meters, bar, _lights_left / _lights_total, accent, SandboxUiData.color("hp_empty"))
-
-
-func _draw_bulb(at: Vector2, lit: bool, color: Color) -> void:
-	var glass: Color = color if lit else SandboxUiData.color("lights_off")
-	for y: int in BULB_ROWS.size():
-		var row: String = BULB_ROWS[y]
-		for x: int in row.length():
-			var cell: String = row[x]
-			if cell == "X":
-				_meters.draw_rect(Rect2(at + Vector2(float(x), float(y)), Vector2.ONE), glass)
-			elif cell == "o":
-				_meters.draw_rect(Rect2(at + Vector2(float(x), float(y)), Vector2.ONE), SandboxUiData.palette("slate"))
-	if lit:
-		_meters.draw_rect(Rect2(at + Vector2(-2.0, 2.0), Vector2(1.0, 2.0)), glass)
-		_meters.draw_rect(Rect2(at + Vector2(8.0, 2.0), Vector2(1.0, 2.0)), glass)
+		SandboxStyle.thin_bar(_meters, SandboxUiData.rect("hud.lights_bar"), _lights_left / _lights_total, SandboxStyle.color("lights_top"), SandboxStyle.color("lights_bottom"))
 
 
 func _draw_noise() -> void:
-	var rect: Rect2 = SandboxUiData.rect("hud.noise_window")
-	var bar: Rect2 = SandboxUiData.rect("hud.noise_bar")
-	var color: Color = SandboxUiData.color("noise")
+	var frame: Rect2 = SandboxUiData.rect("hud.noise_frame")
+	var inner: Rect2 = SandboxStyle.metal_frame(_meters, frame)
+	var top: Color = SandboxStyle.color("noise_top")
+	var bottom: Color = SandboxStyle.color("noise_bottom")
 	if _noise_flash_left > 0.0 and int(_noise_flash_left / SandboxUiData.ui_float("step_s", 0.0833)) % 2 == 1:
-		color = _noise_flash_color.lerp(Color.WHITE, 0.4)
-	_draw_bar(_meters, bar, _noise_shown, color, SandboxUiData.color("noise_empty"))
-	var y: float = SandboxUiData.ui_float("hud.noise_label_y", 17.0)
-	UiText.draw(_meters, "tag", Vector2(bar.position.x, y), SandboxUiData.text("hud.noise"), SandboxUiData.palette("lamp_amber"))
-	UiText.draw(_meters, "tag", Vector2(bar.end.x, y), str(roundi(_noise_points)), SandboxUiData.palette("text"), HORIZONTAL_ALIGNMENT_RIGHT, 60.0 if false else -1.0)
+		top = _noise_flash_color.lerp(Color.WHITE, 0.4)
+		bottom = _noise_flash_color
+	SandboxStyle.thin_bar(_meters, inner, _noise_shown, top, bottom)
+	SandboxStyle.label(_meters, SandboxUiData.vec("hud.noise_label_pos"), SandboxUiData.text("hud.noise"), SandboxStyle.color("label"))
+	var points_at: Vector2 = SandboxUiData.vec("hud.noise_points_right")
+	SandboxStyle.text_right(_meters, "body", points_at.x, points_at.y, str(roundi(_noise_points)), SandboxStyle.color("noise_top"), 80.0)
+	var rank_at: Vector2 = SandboxUiData.vec("hud.noise_rank_right")
 	var rank_text: String = _rank_name if not _rank_name.is_empty() else SandboxUiData.text("hud.rank_none")
-	var rank_color: Color = SandboxPopups.rank_color(_rank_id) if not _rank_name.is_empty() else SandboxUiData.palette("text_dim")
-	UiText.draw(_meters, "menu", Vector2(bar.position.x, rect.position.y + SandboxUiData.ui_float("hud.noise_rank_y", 40.0) - 6.0), rank_text, rank_color)
+	var rank_color: Color = SandboxPopups.rank_color(_rank_id) if not _rank_name.is_empty() else SandboxStyle.color("text_dim")
+	SandboxStyle.text_right(_meters, "title", rank_at.x, rank_at.y, rank_text, rank_color, 130.0)
 
 
 func _draw_flare() -> void:
 	if not _flare_active:
 		return
-	var rect: Rect2 = SandboxUiData.rect("hud.flare_pos")
-	var accent: Color = SandboxUiData.color("flare")
-	_meters.draw_rect(rect.grow(1.0), SandboxUiData.palette("ink"))
-	_meters.draw_rect(rect, Color(SandboxUiData.palette("window_fill"), 0.85))
-	_meters.draw_rect(Rect2(rect.position, Vector2(rect.size.x, 1.0)), accent)
-	_draw_bulb(rect.position + Vector2(4.0, 3.0), true, accent)
-	UiText.draw(_meters, "tag", Vector2(rect.position.x + 15.0, rect.position.y + 11.0), SandboxUiData.text("hud.flare"), accent)
-	_draw_bar(_meters, SandboxUiData.rect("hud.flare_bar"), _flare_left / _flare_total, accent, SandboxUiData.color("hp_empty"))
+	var tag: Rect2 = SandboxUiData.rect("hud.flare_tag")
+	SandboxStyle.bar(_meters, tag, SandboxStyle.color("flare_bottom").darkened(0.45), SandboxStyle.color("flare_bottom").darkened(0.7))
+	SandboxStyle.bulb(_meters, tag.position + Vector2(5.0, 2.0), true, SandboxStyle.color("flare_top"))
+	SandboxStyle.text(_meters, "label", tag.position + Vector2(20.0, 9.0), SandboxUiData.text("hud.flare").to_upper(), SandboxStyle.color("flare_top"))
+	SandboxStyle.thin_bar(_meters, SandboxUiData.rect("hud.flare_bar"), _flare_left / _flare_total, SandboxStyle.color("flare_top"), SandboxStyle.color("flare_bottom"))
 
 
 # ---- drawing: over the fighters ----
@@ -769,7 +713,7 @@ func _draw_reticle() -> void:
 		half += 1.0
 	var corner: float = float(data.get("corner", 5))
 	var center: Vector2 = Vector2(roundf(at.x), roundf(at.y))
-	var ink: Color = SandboxUiData.palette("ink")
+	var ink: Color = SandboxStyle.color("shadow")
 	var amber: Color = SandboxUiData.color("reticle")
 	var glow: Color = SandboxUiData.color("reticle_glow")
 	for sx: int in [-1, 1]:

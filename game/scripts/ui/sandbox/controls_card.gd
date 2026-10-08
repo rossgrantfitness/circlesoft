@@ -23,11 +23,10 @@ var allow_remap: bool = true
 var camera_mode_text: String = ""
 
 var _layout: Dictionary = {}
-var _palette: Dictionary[String, Color] = {}
+var _reveal: float = 1.0
 var _open: bool = false
 var _open_clock: float = 0.0
 var _dim: ColorRect = null
-var _window: UiWindow = null
 var _overlay: Control = null
 var _input_map: MenuInput = MenuInput.new()
 
@@ -38,26 +37,16 @@ func _ready() -> void:
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	size = Vector2(UiStage.STAGE_SIZE)
 	_layout = SandboxUiData.ui("controls_card", {})
-	for key: String in DataDB.get_value(SandboxUiData.THEME_ID, "palette", {}):
-		_palette[key] = SandboxUiData.palette(key)
-	var rect: Rect2 = SandboxUiData.rect("controls_card.window")
 	_dim = ColorRect.new()
 	_dim.name = "Dim"
 	_dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_dim.color = Color(_palette["ink"], float(_layout.get("dim_alpha", 0.5)))
+	_dim.color = Color(SandboxStyle.color("dim"), float(_layout.get("dim_alpha", 0.5)))
 	_dim.size = size
 	add_child(_dim)
-	_window = UiWindow.new()
-	_window.name = "Window"
-	_window.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_window.position = rect.position
-	_window.size = rect.size
-	add_child(_window)
 	_overlay = Control.new()
 	_overlay.name = "Overlay"
 	_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_overlay.position = rect.position
-	_overlay.size = rect.size
+	_overlay.size = size
 	_overlay.draw.connect(_draw_overlay)
 	add_child(_overlay)
 	visible = false
@@ -69,12 +58,13 @@ func _process(delta: float) -> void:
 
 
 func tick(delta: float) -> void:
-	if not _open or not animations_enabled or _window.open_amount >= 1.0:
+	if not _open or not animations_enabled or _reveal >= 1.0:
 		return
 	_open_clock += delta
 	var steps: int = int(_layout.get("open_steps", 4))
 	var step_s: float = SandboxUiData.ui_float("step_s", 0.0833)
-	_window.open_amount = minf(1.0, 0.25 + 0.75 * float(int(_open_clock / step_s) + 1) / float(steps))
+	_reveal = minf(1.0, 0.25 + 0.75 * float(int(_open_clock / step_s) + 1) / float(steps))
+	_overlay.queue_redraw()
 
 
 # ---- open and close ----
@@ -85,7 +75,7 @@ func open_card() -> void:
 	_open = true
 	visible = true
 	_open_clock = 0.0
-	_window.open_amount = 0.25 if animations_enabled else 1.0
+	_reveal = 0.25 if animations_enabled else 1.0
 	audio.sfx("confirm")
 	_overlay.queue_redraw()
 
@@ -171,8 +161,7 @@ func handle_event(event: InputEvent) -> bool:
 			close_card()
 			return true
 		if click.pressed and click.button_index == MOUSE_BUTTON_LEFT:
-			var at: Vector2 = _overlay.get_global_transform().affine_inverse() * click.position
-			if allow_remap and _hint_rect().has_point(at):
+			if allow_remap and _hint_rect().has_point(click.position):
 				remap_requested.emit()
 			return true
 		return false
@@ -202,7 +191,7 @@ func handle_command(command: MenuInput.Cmd) -> bool:
 
 
 func _hint_rect() -> Rect2:
-	return Rect2(8.0, float(_layout.get("hint_y", 192)) - 10.0, _overlay.size.x - 16.0, 14.0)
+	return Rect2(float(_layout["x"]), float(_layout["footer_y"]), float(_layout["w"]), float(_layout["footer_h"]))
 
 
 # ---- drawing ----
@@ -211,21 +200,31 @@ func _draw_overlay() -> void:
 	if not _open or _layout.is_empty():
 		return
 	var words: Dictionary = DataDB.get_value(SandboxUiData.TEXT_ID, "controls_card", {})
-	UiText.draw(_overlay, "menu", Vector2(16, float(_layout["title_y"])), str(words.get("title", "")), _palette["lamp_amber"])
+	var x: float = float(_layout["x"])
+	var w: float = float(_layout["w"])
+	var header: Rect2 = Rect2(x, float(_layout["header_y"]), w * _reveal, float(_layout["header_h"]))
+	SandboxStyle.header_bar(_overlay, header)
+	if _reveal < 1.0:
+		return
+	var head_base: float = header.position.y + 12.0
+	SandboxStyle.text(_overlay, "body", Vector2(x + 8.0, head_base), str(words.get("title", "")), SandboxStyle.color("text_on_header"))
 	if not camera_mode_text.is_empty():
-		UiText.draw(_overlay, "tag", Vector2(_overlay.size.x - 14.0, float(_layout["title_y"])), camera_mode_text, _palette["slate_light"], HORIZONTAL_ALIGNMENT_RIGHT, 150.0)
-	var head_y: float = float(_layout["head_y"])
-	UiText.draw(_overlay, "tag", Vector2(float(_layout["key_x"]), head_y), str(words.get("keyboard", "")), _palette["lamp_glow"])
-	UiText.draw(_overlay, "tag", Vector2(float(_layout["pad_x"]), head_y), str(words.get("controller", "")), _palette["lamp_glow"])
-	_overlay.draw_rect(Rect2(10.0, head_y + 3.0, _overlay.size.x - 20.0, 1.0), Color(_palette["slate"], 0.7))
+		SandboxStyle.text_right(_overlay, "body", x + w - 8.0, head_base, camera_mode_text, SandboxStyle.color("text_on_header"), 150.0)
+	var label_y: float = float(_layout["head_label_y"])
+	SandboxStyle.label(_overlay, Vector2(float(_layout["key_x"]), label_y), str(words.get("keyboard", "")))
+	SandboxStyle.label(_overlay, Vector2(float(_layout["pad_x"]), label_y), str(words.get("controller", "")))
 	var rows: Array[Dictionary] = get_rows()
 	for i: int in rows.size():
-		var y: float = float(_layout["first_row_y"]) + float(i) * float(_layout["row_h"]) + 8.0
-		if i % 2 == 1:
-			_overlay.draw_rect(Rect2(10.0, y - 8.0, _overlay.size.x - 20.0, float(_layout["row_h"])), Color(_palette["dusk"], 0.25))
-		UiText.draw(_overlay, "tag", Vector2(float(_layout["label_x"]), y), str(rows[i]["label"]), _palette["text"])
-		UiText.draw(_overlay, "tag", Vector2(float(_layout["key_x"]), y), str(rows[i]["key"]), _palette["chalk"])
-		UiText.draw(_overlay, "tag", Vector2(float(_layout["pad_x"]), y), str(rows[i]["pad"]), _palette["chalk"])
-	UiText.draw(_overlay, "tag", Vector2(16.0, float(_layout["note_y"])), str(words.get("lock_note", "")), _palette["slate_light"])
+		var rect: Rect2 = Rect2(x, float(_layout["first_row_y"]) + float(i) * float(_layout["row_step"]), w, float(_layout["row_h"]))
+		SandboxStyle.list_bar(_overlay, rect, false, i % 2 == 1)
+		var base: float = rect.position.y + 11.0
+		SandboxStyle.text(_overlay, "body", Vector2(float(_layout["label_x"]), base), str(rows[i]["label"]), SandboxStyle.color("text_selected"))
+		SandboxStyle.text(_overlay, "body", Vector2(float(_layout["key_x"]), base), str(rows[i]["key"]), SandboxStyle.color("text"))
+		SandboxStyle.text(_overlay, "body", Vector2(float(_layout["pad_x"]), base), str(rows[i]["pad"]), SandboxStyle.color("text"))
+	var footer: Rect2 = _hint_rect()
+	SandboxStyle.list_bar(_overlay, footer, allow_remap)
 	var hint: String = str(words.get("change_hint" if allow_remap else "view_hint", ""))
-	UiText.draw(_overlay, "tag", Vector2(16.0, float(_layout.get("hint_y", 192))), hint, _palette["lamp_amber"] if allow_remap else _palette["text_dim"])
+	if allow_remap:
+		SandboxStyle.cursor(_overlay, Vector2(footer.position.x + 4.0, footer.position.y + footer.size.y / 2.0))
+	SandboxStyle.text(_overlay, "body", Vector2(footer.position.x + 16.0, footer.position.y + 11.0), hint, SandboxStyle.row_color(allow_remap))
+	SandboxStyle.text(_overlay, "label", Vector2(x + 2.0, float(_layout["note_y"])), str(words.get("lock_note", "")).to_upper(), SandboxStyle.color("label_dim"))

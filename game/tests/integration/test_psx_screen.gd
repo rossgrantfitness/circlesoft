@@ -4,7 +4,7 @@ extends TestCase
 const SCREEN_SCENE: String = "res://scenes/core/psx_screen.tscn"
 const MAIN_SCENE: String = "res://scenes/core/main.tscn"
 const TEST_ROOM: String = "res://scenes/debug/psx_test_room.tscn"
-const EXPECTED_RESOLUTIONS: Array[Vector2i] = [Vector2i(384, 216), Vector2i(320, 240), Vector2i(426, 240), Vector2i(480, 270)]
+const EXPECTED_RESOLUTIONS: Array[Vector2i] = [Vector2i(384, 216), Vector2i(320, 240), Vector2i(426, 240), Vector2i(480, 270), Vector2i(640, 360)]
 const DEFAULT_RESOLUTION: Vector2i = Vector2i(384, 216)
 const FULL_HD: Vector2 = Vector2(1920, 1080)
 const BASE_WINDOW: Vector2 = Vector2(1280, 720)
@@ -25,7 +25,7 @@ func test_default_resolution_is_384_by_216() -> void:
 	assert_eq(screen.get_world_viewport().size, DEFAULT_RESOLUTION)
 
 
-func test_lists_the_four_approved_resolutions() -> void:
+func test_lists_the_approved_resolutions_and_the_ps2_640x360() -> void:
 	var screen: PsxScreen = _make_screen()
 	assert_eq(screen.get_resolutions(), EXPECTED_RESOLUTIONS)
 

@@ -1,0 +1,1152 @@
+{
+ "version": 1,
+ "_about": "Procedural clip fallbacks (docs/pivot/combat_api.md section 5). When a model lacks a contract clip, scripts/combat/fx/procedural_moves.gd builds a short Animation from these key poses so gameplay never waits on a clip. Bone values are degrees about the MODEL's axes: [x, y, z] with x positive = the bone's top tips forward, y positive = turns toward her left, z leans toward her left. 'squash' stretches the root (negative = squash), 'lift' raises or lowers the hips in metres. Times are fractions of the clip length. 'clips' maps each contract clip name to a fallback and its default length in seconds.",
+ "fallbacks": {
+  "breathe": {
+   "loop": true,
+   "keys": [
+    {
+     "t": 0,
+     "squash": 0.0,
+     "spine": [
+      2,
+      0,
+      0
+     ]
+    },
+    {
+     "t": 0.5,
+     "squash": -0.016,
+     "spine": [
+      4,
+      0,
+      0
+     ],
+     "head": [
+      -3,
+      0,
+      0
+     ]
+    },
+    {
+     "t": 1.0,
+     "squash": 0.0,
+     "spine": [
+      2,
+      0,
+      0
+     ]
+    }
+   ]
+  },
+  "run_lean": {
+   "loop": true,
+   "keys": [
+    {
+     "t": 0,
+     "spine": [
+      18,
+      0,
+      0
+     ],
+     "head": [
+      -10,
+      0,
+      0
+     ],
+     "squash": -0.05,
+     "lift": 0.0,
+     "thigh_l": [
+      -40,
+      0,
+      0
+     ],
+     "thigh_r": [
+      40,
+      0,
+      0
+     ],
+     "upper_arm_l": [
+      40,
+      0,
+      0
+     ],
+     "upper_arm_r": [
+      -30,
+      0,
+      0
+     ]
+    },
+    {
+     "t": 0.5,
+     "spine": [
+      18,
+      0,
+      0
+     ],
+     "head": [
+      -10,
+      0,
+      0
+     ],
+     "squash": 0.04,
+     "lift": 0.05,
+     "thigh_l": [
+      40,
+      0,
+      0
+     ],
+     "thigh_r": [
+      -40,
+      0,
+      0
+     ],
+     "upper_arm_l": [
+      -40,
+      0,
+      0
+     ],
+     "upper_arm_r": [
+      30,
+      0,
+      0
+     ]
+    },
+    {
+     "t": 1.0,
+     "spine": [
+      18,
+      0,
+      0
+     ],
+     "head": [
+      -10,
+      0,
+      0
+     ],
+     "squash": -0.05,
+     "lift": 0.0,
+     "thigh_l": [
+      -40,
+      0,
+      0
+     ],
+     "thigh_r": [
+      40,
+      0,
+      0
+     ],
+     "upper_arm_l": [
+      40,
+      0,
+      0
+     ],
+     "upper_arm_r": [
+      -30,
+      0,
+      0
+     ]
+    }
+   ]
+  },
+  "stretch_up": {
+   "loop": false,
+   "keys": [
+    {
+     "t": 0,
+     "squash": -0.16,
+     "spine": [
+      14,
+      0,
+      0
+     ]
+    },
+    {
+     "t": 0.35,
+     "squash": 0.16,
+     "spine": [
+      -4,
+      0,
+      0
+     ],
+     "upper_arm_l": [
+      -120,
+      0,
+      0
+     ],
+     "upper_arm_r": [
+      -60,
+      0,
+      0
+     ]
+    },
+    {
+     "t": 1.0,
+     "squash": 0.12,
+     "spine": [
+      -4,
+      0,
+      0
+     ],
+     "upper_arm_l": [
+      -120,
+      0,
+      0
+     ],
+     "upper_arm_r": [
+      -60,
+      0,
+      0
+     ]
+    }
+   ]
+  },
+  "lean_tuck": {
+   "loop": true,
+   "keys": [
+    {
+     "t": 0,
+     "squash": 0.05,
+     "spine": [
+      6,
+      0,
+      0
+     ],
+     "thigh_l": [
+      -30,
+      0,
+      0
+     ],
+     "thigh_r": [
+      10,
+      0,
+      0
+     ],
+     "shin_l": [
+      40,
+      0,
+      0
+     ],
+     "shin_r": [
+      30,
+      0,
+      0
+     ],
+     "upper_arm_l": [
+      -90,
+      0,
+      0
+     ],
+     "upper_arm_r": [
+      -50,
+      0,
+      0
+     ]
+    },
+    {
+     "t": 0.5,
+     "squash": 0.05,
+     "spine": [
+      6,
+      0,
+      0
+     ],
+     "thigh_l": [
+      -10,
+      0,
+      0
+     ],
+     "thigh_r": [
+      -20,
+      0,
+      0
+     ],
+     "shin_l": [
+      30,
+      0,
+      0
+     ],
+     "shin_r": [
+      40,
+      0,
+      0
+     ],
+     "upper_arm_l": [
+      -100,
+      0,
+      0
+     ],
+     "upper_arm_r": [
+      -60,
+      0,
+      0
+     ]
+    },
+    {
+     "t": 1.0,
+     "squash": 0.05,
+     "spine": [
+      6,
+      0,
+      0
+     ],
+     "thigh_l": [
+      -30,
+      0,
+      0
+     ],
+     "thigh_r": [
+      10,
+      0,
+      0
+     ],
+     "shin_l": [
+      40,
+      0,
+      0
+     ],
+     "shin_r": [
+      30,
+      0,
+      0
+     ],
+     "upper_arm_l": [
+      -90,
+      0,
+      0
+     ],
+     "upper_arm_r": [
+      -50,
+      0,
+      0
+     ]
+    }
+   ]
+  },
+  "squash_land": {
+   "loop": false,
+   "keys": [
+    {
+     "t": 0,
+     "squash": -0.24,
+     "spine": [
+      24,
+      0,
+      0
+     ],
+     "thigh_l": [
+      -40,
+      0,
+      0
+     ],
+     "thigh_r": [
+      -30,
+      0,
+      0
+     ],
+     "shin_l": [
+      80,
+      0,
+      0
+     ],
+     "shin_r": [
+      70,
+      0,
+      0
+     ]
+    },
+    {
+     "t": 0.5,
+     "squash": -0.1,
+     "spine": [
+      12,
+      0,
+      0
+     ]
+    },
+    {
+     "t": 1.0,
+     "squash": 0.0
+    }
+   ]
+  },
+  "dash_lean": {
+   "loop": false,
+   "keys": [
+    {
+     "t": 0,
+     "squash": -0.12,
+     "spine": [
+      20,
+      0,
+      0
+     ]
+    },
+    {
+     "t": 0.25,
+     "squash": 0.1,
+     "spine": [
+      36,
+      0,
+      0
+     ],
+     "head": [
+      -24,
+      0,
+      0
+     ],
+     "thigh_l": [
+      -50,
+      0,
+      0
+     ],
+     "thigh_r": [
+      30,
+      0,
+      0
+     ]
+    },
+    {
+     "t": 1.0,
+     "squash": 0.08,
+     "spine": [
+      34,
+      0,
+      0
+     ],
+     "head": [
+      -22,
+      0,
+      0
+     ],
+     "thigh_l": [
+      -50,
+      0,
+      0
+     ],
+     "thigh_r": [
+      30,
+      0,
+      0
+     ]
+    }
+   ]
+  },
+  "swing_r": {
+   "loop": false,
+   "keys": [
+    {
+     "t": 0,
+     "spine": [
+      0,
+      -25,
+      0
+     ],
+     "upper_arm_r": [
+      -100,
+      0,
+      30
+     ],
+     "squash": -0.04
+    },
+    {
+     "t": 0.3,
+     "spine": [
+      8,
+      30,
+      0
+     ],
+     "upper_arm_r": [
+      -70,
+      0,
+      -50
+     ],
+     "squash": 0.08
+    },
+    {
+     "t": 0.6,
+     "spine": [
+      6,
+      45,
+      0
+     ],
+     "upper_arm_r": [
+      -60,
+      0,
+      -70
+     ]
+    },
+    {
+     "t": 1.0,
+     "spine": [
+      0,
+      0,
+      0
+     ],
+     "upper_arm_r": [
+      -20,
+      0,
+      0
+     ]
+    }
+   ]
+  },
+  "swing_l": {
+   "loop": false,
+   "keys": [
+    {
+     "t": 0,
+     "spine": [
+      0,
+      40,
+      0
+     ],
+     "upper_arm_r": [
+      -70,
+      0,
+      -60
+     ],
+     "squash": -0.04
+    },
+    {
+     "t": 0.3,
+     "spine": [
+      8,
+      -30,
+      0
+     ],
+     "upper_arm_r": [
+      -80,
+      0,
+      50
+     ],
+     "squash": 0.08
+    },
+    {
+     "t": 0.6,
+     "spine": [
+      6,
+      -45,
+      0
+     ],
+     "upper_arm_r": [
+      -90,
+      0,
+      60
+     ]
+    },
+    {
+     "t": 1.0,
+     "spine": [
+      0,
+      0,
+      0
+     ],
+     "upper_arm_r": [
+      -20,
+      0,
+      0
+     ]
+    }
+   ]
+  },
+  "thrust": {
+   "loop": false,
+   "keys": [
+    {
+     "t": 0,
+     "spine": [
+      -4,
+      -15,
+      0
+     ],
+     "upper_arm_r": [
+      -30,
+      0,
+      20
+     ],
+     "squash": -0.08,
+     "thigh_l": [
+      -10,
+      0,
+      0
+     ],
+     "thigh_r": [
+      10,
+      0,
+      0
+     ]
+    },
+    {
+     "t": 0.3,
+     "spine": [
+      28,
+      -6,
+      0
+     ],
+     "head": [
+      -20,
+      0,
+      0
+     ],
+     "upper_arm_r": [
+      -95,
+      0,
+      0
+     ],
+     "squash": 0.1,
+     "thigh_l": [
+      -40,
+      0,
+      0
+     ],
+     "thigh_r": [
+      25,
+      0,
+      0
+     ]
+    },
+    {
+     "t": 0.7,
+     "spine": [
+      30,
+      -4,
+      0
+     ],
+     "upper_arm_r": [
+      -95,
+      0,
+      0
+     ],
+     "thigh_l": [
+      -40,
+      0,
+      0
+     ],
+     "thigh_r": [
+      25,
+      0,
+      0
+     ]
+    },
+    {
+     "t": 1.0
+    }
+   ]
+  },
+  "overhead": {
+   "loop": false,
+   "keys": [
+    {
+     "t": 0,
+     "spine": [
+      22,
+      0,
+      0
+     ],
+     "squash": -0.18,
+     "upper_arm_r": [
+      -60,
+      0,
+      0
+     ],
+     "thigh_l": [
+      -30,
+      0,
+      0
+     ],
+     "thigh_r": [
+      20,
+      0,
+      0
+     ]
+    },
+    {
+     "t": 0.3,
+     "spine": [
+      -8,
+      0,
+      0
+     ],
+     "squash": 0.16,
+     "upper_arm_r": [
+      -170,
+      0,
+      0
+     ],
+     "upper_arm_l": [
+      -160,
+      0,
+      0
+     ]
+    },
+    {
+     "t": 0.5,
+     "spine": [
+      34,
+      0,
+      0
+     ],
+     "head": [
+      -20,
+      0,
+      0
+     ],
+     "upper_arm_r": [
+      -50,
+      0,
+      0
+     ],
+     "upper_arm_l": [
+      -50,
+      0,
+      0
+     ],
+     "thigh_l": [
+      -45,
+      0,
+      0
+     ],
+     "thigh_r": [
+      25,
+      0,
+      0
+     ]
+    },
+    {
+     "t": 1.0
+    }
+   ]
+  },
+  "uppercut": {
+   "loop": false,
+   "keys": [
+    {
+     "t": 0,
+     "spine": [
+      28,
+      0,
+      0
+     ],
+     "squash": -0.2,
+     "upper_arm_r": [
+      -20,
+      0,
+      0
+     ],
+     "thigh_l": [
+      -45,
+      0,
+      0
+     ],
+     "thigh_r": [
+      25,
+      0,
+      0
+     ]
+    },
+    {
+     "t": 0.35,
+     "spine": [
+      -10,
+      0,
+      0
+     ],
+     "head": [
+      8,
+      0,
+      0
+     ],
+     "squash": 0.2,
+     "upper_arm_r": [
+      -165,
+      0,
+      0
+     ]
+    },
+    {
+     "t": 1.0
+    }
+   ]
+  },
+  "air_swing": {
+   "loop": false,
+   "keys": [
+    {
+     "t": 0,
+     "spine": [
+      0,
+      -30,
+      0
+     ],
+     "upper_arm_r": [
+      -100,
+      0,
+      30
+     ],
+     "thigh_l": [
+      -20,
+      0,
+      0
+     ],
+     "shin_l": [
+      40,
+      0,
+      0
+     ]
+    },
+    {
+     "t": 0.35,
+     "spine": [
+      10,
+      30,
+      0
+     ],
+     "upper_arm_r": [
+      -70,
+      0,
+      -60
+     ],
+     "squash": 0.08
+    },
+    {
+     "t": 1.0,
+     "spine": [
+      4,
+      40,
+      0
+     ],
+     "upper_arm_r": [
+      -60,
+      0,
+      -70
+     ]
+    }
+   ]
+  },
+  "air_swing_l": {
+   "loop": false,
+   "keys": [
+    {
+     "t": 0,
+     "spine": [
+      0,
+      40,
+      0
+     ],
+     "upper_arm_r": [
+      -70,
+      0,
+      -60
+     ],
+     "thigh_l": [
+      -20,
+      0,
+      0
+     ],
+     "shin_l": [
+      40,
+      0,
+      0
+     ]
+    },
+    {
+     "t": 0.35,
+     "spine": [
+      10,
+      -30,
+      0
+     ],
+     "upper_arm_r": [
+      -80,
+      0,
+      50
+     ],
+     "squash": 0.08
+    },
+    {
+     "t": 1.0,
+     "spine": [
+      4,
+      -40,
+      0
+     ],
+     "upper_arm_r": [
+      -90,
+      0,
+      60
+     ]
+    }
+   ]
+  },
+  "spin": {
+   "loop": false,
+   "keys": [
+    {
+     "t": 0,
+     "spine": [
+      0,
+      0,
+      0
+     ],
+     "upper_arm_r": [
+      -90,
+      0,
+      40
+     ]
+    },
+    {
+     "t": 0.5,
+     "spine": [
+      16,
+      180,
+      0
+     ],
+     "upper_arm_r": [
+      -80,
+      0,
+      -60
+     ],
+     "squash": 0.1
+    },
+    {
+     "t": 1.0,
+     "spine": [
+      22,
+      359.0,
+      0
+     ],
+     "upper_arm_r": [
+      -50,
+      0,
+      0
+     ]
+    }
+   ]
+  },
+  "brace": {
+   "loop": false,
+   "keys": [
+    {
+     "t": 0,
+     "spine": [
+      -6,
+      0,
+      0
+     ],
+     "squash": -0.06,
+     "upper_arm_r": [
+      -70,
+      0,
+      -20
+     ]
+    },
+    {
+     "t": 0.4,
+     "spine": [
+      -14,
+      0,
+      0
+     ],
+     "head": [
+      6,
+      0,
+      0
+     ],
+     "squash": 0.02,
+     "upper_arm_r": [
+      -80,
+      0,
+      -30
+     ]
+    },
+    {
+     "t": 1.0,
+     "spine": [
+      -10,
+      0,
+      0
+     ],
+     "upper_arm_r": [
+      -80,
+      0,
+      -30
+     ]
+    }
+   ]
+  },
+  "recoil": {
+   "loop": false,
+   "keys": [
+    {
+     "t": 0,
+     "spine": [
+      -24,
+      0,
+      0
+     ],
+     "head": [
+      16,
+      0,
+      0
+     ],
+     "squash": -0.1,
+     "upper_arm_l": [
+      -30,
+      0,
+      0
+     ],
+     "upper_arm_r": [
+      -30,
+      0,
+      0
+     ]
+    },
+    {
+     "t": 0.5,
+     "spine": [
+      -12,
+      0,
+      0
+     ],
+     "head": [
+      8,
+      0,
+      0
+     ],
+     "squash": 0.03
+    },
+    {
+     "t": 1.0
+    }
+   ]
+  },
+  "fall_flat": {
+   "loop": false,
+   "keys": [
+    {
+     "t": 0,
+     "spine": [
+      -20,
+      0,
+      0
+     ]
+    },
+    {
+     "t": 0.35,
+     "hips": [
+      -60,
+      0,
+      0
+     ],
+     "lift": -0.14
+    },
+    {
+     "t": 0.6,
+     "hips": [
+      -86,
+      0,
+      0
+     ],
+     "lift": -0.27,
+     "squash": -0.04
+    },
+    {
+     "t": 1.0,
+     "hips": [
+      -86,
+      0,
+      0
+     ],
+     "lift": -0.27
+    }
+   ]
+  }
+ },
+ "clips": {
+  "idle": {
+   "fallback": "breathe",
+   "length_s": 1.5
+  },
+  "run": {
+   "fallback": "run_lean",
+   "length_s": 0.6
+  },
+  "walk": {
+   "fallback": "run_lean",
+   "length_s": 0.8
+  },
+  "jump_up": {
+   "fallback": "stretch_up",
+   "length_s": 0.4
+  },
+  "fall": {
+   "fallback": "lean_tuck",
+   "length_s": 0.5
+  },
+  "land": {
+   "fallback": "squash_land",
+   "length_s": 0.3
+  },
+  "dash": {
+   "fallback": "dash_lean",
+   "length_s": 0.35
+  },
+  "air_dash": {
+   "fallback": "dash_lean",
+   "length_s": 0.35
+  },
+  "light_1": {
+   "fallback": "swing_r",
+   "length_s": 0.5
+  },
+  "light_2": {
+   "fallback": "swing_l",
+   "length_s": 0.5
+  },
+  "light_3": {
+   "fallback": "thrust",
+   "length_s": 0.6
+  },
+  "heavy": {
+   "fallback": "overhead",
+   "length_s": 0.8
+  },
+  "launcher": {
+   "fallback": "uppercut",
+   "length_s": 0.67
+  },
+  "air_1": {
+   "fallback": "air_swing",
+   "length_s": 0.47
+  },
+  "air_2": {
+   "fallback": "air_swing_l",
+   "length_s": 0.47
+  },
+  "air_3": {
+   "fallback": "spin",
+   "length_s": 0.6
+  },
+  "parry": {
+   "fallback": "brace",
+   "length_s": 0.4
+  },
+  "parry_success": {
+   "fallback": "swing_l",
+   "length_s": 0.4
+  },
+  "hurt": {
+   "fallback": "recoil",
+   "length_s": 0.4
+  },
+  "knockdown": {
+   "fallback": "fall_flat",
+   "length_s": 0.8
+  },
+  "getup": {
+   "fallback": "squash_land",
+   "length_s": 0.8
+  }
+ }
+}

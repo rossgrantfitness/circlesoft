@@ -650,3 +650,36 @@ func test_missing_clips_never_stop_play() -> void:
 	assert_true(true, "reached the end: nothing waited on a clip")
 	for clip: StringName in _player.get_missing_clips():
 		assert_true(String(clip).length() > 0)
+
+
+func test_a_light_connects_with_a_dummy_once_per_swing_and_both_sides_freeze() -> void:
+	await _arena(true)
+	var enemy: CombatActor = _enemy(Vector3(0.0, 0.0, -1.3))
+	await tree.physics_frame
+	await tree.physics_frame
+	_player.rotation.y = PI                                  # faces -Z, toward the dummy
+	var hits: Array[Dictionary] = []
+	_director.hit_landed.connect(func(info: Dictionary) -> void: hits.append(info))
+	_player.press(&"light")
+	_step(40)
+	assert_eq(hits.size(), 1, "one swing, one hit, even though two hitbox slices overlap the target")
+	assert_lt(enemy.hp, enemy.hp_max)
+	assert_eq(str(hits[0]["move_id"]), "light_1")
+
+
+func test_hit_stop_from_a_landed_hit_freezes_her_clock_for_a_moment() -> void:
+	await _arena(true)
+	var enemy: CombatActor = _enemy(Vector3(0.0, 0.0, -1.3))
+	await tree.physics_frame
+	await tree.physics_frame
+	_player.rotation.y = PI
+	_player.press(&"light")
+	var froze: bool = false
+	var last: int = -1
+	for i: int in 40:
+		_step(1)
+		var now: int = _player.clock.now_usec()
+		froze = froze or now == last
+		last = now
+	assert_true(froze, "her clock stood still for at least one frame (the hit-stop)")
+	assert_lt(enemy.hp, enemy.hp_max)

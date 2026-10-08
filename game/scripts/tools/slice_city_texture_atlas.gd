@@ -61,7 +61,7 @@ func _initialize() -> void:
 			if measure:
 				_record_seams(tile, variant_name, piece)
 	if measure:
-		_write_atlas(atlas)
+		CityAtlasIo.write_atlas(atlas)
 	print("sliced %d tile files, %d failures%s" % [written, failures, ", seam test rewritten" if measure else ""])
 	quit(1 if failures > 0 else 0)
 
@@ -116,49 +116,3 @@ func _record_seams(tile: Dictionary, variant_name: String, piece: Image) -> void
 		tile["tiles_y"] = surface and y_result["ok"]
 	else:
 		tile["tiles_seamlessly_" + variant_name] = seamless
-
-
-# ---- Writing: one tile per line group, rects inline, so the file stays readable and diffs small. ----
-
-const FIELD_ORDER: PackedStringArray = ["id", "rect", "kind", "tiles_seamlessly", "tiles_x", "tiles_y",
-	"tiles_seamlessly_busted", "variants", "rect_override", "text", "text_busted", "notes", "busted_notes", "seam"]
-
-
-func _write_atlas(atlas: Dictionary) -> void:
-	var out: String = "{\n"
-	var keys: Array = atlas.keys()
-	for k: Variant in keys:
-		if String(k) == "tiles":
-			continue
-		out += "\t%s: %s,\n" % [JSON.stringify(k), _json(atlas[k])]
-	out += "\t\"tiles\": [\n"
-	var tiles: Array = atlas["tiles"]
-	for i: int in tiles.size():
-		var tile: Dictionary = tiles[i]
-		var lines: PackedStringArray = []
-		for field: String in FIELD_ORDER:
-			if tile.has(field):
-				lines.append("\t\t\t%s: %s" % [JSON.stringify(field), _json(tile[field])])
-		out += "\t\t{\n" + ",\n".join(lines) + "\n\t\t}" + ("," if i < tiles.size() - 1 else "") + "\n"
-	out += "\t]\n}\n"
-	var f: FileAccess = FileAccess.open(ProjectSettings.globalize_path(ATLAS_PATH), FileAccess.WRITE)
-	f.store_string(out)
-	f.close()
-
-
-## JSON text with whole-number floats written as integers (Godot reads every number back as a float)
-## and keys kept in the order they were written.
-func _json(value: Variant) -> String:
-	if value is float and is_equal_approx(float(value), roundf(float(value))):
-		return str(int(value))
-	if value is Array:
-		var items: PackedStringArray = []
-		for item: Variant in value:
-			items.append(_json(item))
-		return "[" + ", ".join(items) + "]"
-	if value is Dictionary:
-		var pairs: PackedStringArray = []
-		for key: Variant in value:
-			pairs.append("%s: %s" % [JSON.stringify(key), _json(value[key])])
-		return "{" + ", ".join(pairs) + "}"
-	return JSON.stringify(value, "", false)

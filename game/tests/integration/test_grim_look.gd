@@ -361,7 +361,7 @@ func test_the_grim_room_adds_a_hard_key_light_and_classic_has_none_extra() -> vo
 
 # ---- the F11 switch ----
 
-func test_f11_cycles_auto_classic_grim_and_the_panel_says_so() -> void:
+func test_f11_cycles_auto_classic_grim_grim_ps2_and_the_panel_says_so() -> void:
 	var event: InputEventKey = null
 	var bound: bool = false
 	for e: InputEvent in InputMap.action_get_events("debug_look_profile"):
@@ -380,6 +380,8 @@ func test_f11_cycles_auto_classic_grim_and_the_panel_says_so() -> void:
 	assert_eq(LookProfiles.forced_id(), "grim")
 	assert_has(overlay.build_text(), "Grim")
 	assert_has(overlay.build_text(), "(forced)")
+	overlay._input(press)
+	assert_eq(LookProfiles.forced_id(), "grim_ps2", "the PS2 sandbox look is one more press (added 2026-10-08)")
 	overlay._input(press)
 	assert_eq(LookProfiles.forced_id(), "")
 	assert_has(overlay.build_text(), "auto")
