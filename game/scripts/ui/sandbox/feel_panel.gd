@@ -82,7 +82,6 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	size = Vector2(UiStage.STAGE_SIZE)
 	_layout = SandboxUiData.ui("feel_panel", {})
 	_dim = ColorRect.new()
 	_dim.name = "Dim"
@@ -96,6 +95,9 @@ func _ready() -> void:
 	_overlay.size = size
 	_overlay.draw.connect(_draw_overlay)
 	add_child(_overlay)
+	_fit()
+	if get_parent() is Control:
+		(get_parent() as Control).resized.connect(_fit)
 	visible = false
 	set_process(not manual_ticks)
 
@@ -103,6 +105,16 @@ func _ready() -> void:
 func _exit_tree() -> void:
 	if _open and pause_game:
 		SandboxPauseGate.release(get_tree(), self)
+
+
+## Sizes itself to the UI space it lives in and centers its reference-sized layout there.
+func _fit() -> void:
+	size = SandboxStyle.ui_size(self)
+	if _dim != null:
+		_dim.size = size
+	if _overlay != null:
+		_overlay.size = Vector2(SandboxStyle.REFERENCE_SIZE)
+		_overlay.position = SandboxStyle.center_offset(self)
 
 
 # ---- binding ----
@@ -632,7 +644,7 @@ func _say(text: String, good: bool) -> void:
 # ---- mouse ----
 
 func _local(stage_point: Vector2) -> Vector2:
-	return _overlay.get_global_transform().affine_inverse() * stage_point
+	return _overlay.get_global_transform_with_canvas().affine_inverse() * stage_point
 
 
 ## Hover, click, drag and wheel. `event.position` must be in stage pixels. Returns true when used.

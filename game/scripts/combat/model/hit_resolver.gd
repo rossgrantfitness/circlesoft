@@ -5,11 +5,14 @@ extends RefCounted
 ##   1 same team, or target dead          -> ignored
 ##   2 target invulnerable (i-frames)     -> evaded
 ##   3 target is Red and a parry rating   -> perfect_parry / parried / guarded
+##   3b target has its guard up and the hit comes from the front arc -> blocked / guard_broken
 ##   4 target armored, poise survives     -> armored
 ##   5 otherwise                          -> hit (or stagger if this hit broke poise)
 ##
 ## attack   = the move's `hit` block + {move_id, launcher, swing_id, parryable}
 ## attacker, target = CombatActor.snapshot() (+ position, forward, weight)
+##          An enemy with its guard up adds `guard` = {up, arc_deg, meter, break_poise, break_by_launcher, chip_scale,
+##          min_chip, knockback_scale, hit_stop_scale, break_ms, spark, sfx}; one that is running away adds `flee_knockdown`.
 ## ctx      = {parry: {rating}, lights_on: {active, damage_mult, super_armor}, feel: FeelKnobs, hit_feel: Dictionary}
 
 const OUTCOME_IGNORED: StringName = &"ignored"
@@ -17,6 +20,8 @@ const OUTCOME_EVADED: StringName = &"evaded"
 const OUTCOME_PERFECT_PARRY: StringName = &"perfect_parry"
 const OUTCOME_PARRIED: StringName = &"parried"
 const OUTCOME_GUARDED: StringName = &"guarded"
+const OUTCOME_BLOCKED: StringName = &"blocked"
+const OUTCOME_GUARD_BROKEN: StringName = &"guard_broken"
 const OUTCOME_ARMORED: StringName = &"armored"
 const OUTCOME_HIT: StringName = &"hit"
 const OUTCOME_STAGGER: StringName = &"stagger"
@@ -75,6 +80,13 @@ static func resolve(attack: Dictionary, attacker: Dictionary, target: Dictionary
 				result["juggle_count"] = 0
 				return result
 
+	# 3b: an enemy's raised guard (the front arc only; a hit from the side or behind ignores it)
+	var guard: Dictionary = target.get("guard", {})
+	if not guard.is_empty() and bool(guard.get("up", false)) and not bool(attack.get("unblockable", false)) \
+			and EnemyRules.in_front_arc(Vector3(target.get("position", Vector3.ZERO)), Vector3(target.get("forward", Vector3.BACK)),
+					Vector3(attacker.get("position", Vector3.ZERO)), float(guard.get("arc_deg", 150.0))):
+		return _resolve_guard(result, attack, attacker, target, guard, base_damage, hit_stop_scale, hit_feel)
+
 	var damage: int = _damage(base_damage, base_damage > 0.0)
 	var poise_max: float = float(target.get("poise_max", 0.0))
 	var poise_now: float = float(target.get("poise", poise_max))
@@ -112,6 +124,8 @@ static func resolve(attack: Dictionary, attacker: Dictionary, target: Dictionary
 	var launchable: bool = bool(target.get("launchable", true))
 	var launch: float = 0.0
 	var knockdown: bool = bool(attack.get("knockdown", false)) and (launchable or broke)
+	if bool(target.get("flee_knockdown", false)):
+		knockdown = true        # a hit on an enemy that is running away always knocks it down
 	if launchable:
 		var launch_mps: float = float(attack.get("launch_mps", 0.0))
 		if JuggleRules.can_juggle(count):
@@ -136,6 +150,32 @@ static func resolve(attack: Dictionary, attacker: Dictionary, target: Dictionary
 	return result
 
 
+## A raised guard takes the hit: chip damage, no hit-stun, little push. A Launcher, a hit with `break_poise` or more
+## poise damage, or an emptied guard meter breaks the guard at once (outcome guard_broken, a long stagger).
+static func _resolve_guard(result: Dictionary, attack: Dictionary, attacker: Dictionary, target: Dictionary, guard: Dictionary,
+		base_damage: float, hit_stop_scale: float, hit_feel: Dictionary) -> Dictionary:
+	var drain: float = float(attack.get("poise_damage", 0.0))
+	var breaks: bool = (bool(attack.get("launcher", false)) and bool(guard.get("break_by_launcher", true))) \
+			or drain >= float(guard.get("break_poise", 999.0)) \
+			or float(guard.get("meter", 0.0)) - drain <= 0.0
+	var chip: int = _damage(base_damage * float(guard.get("chip_scale", 0.25)), false)
+	if base_damage > 0.0:
+		chip = maxi(chip, int(guard.get("min_chip", 1)))
+	result["outcome"] = OUTCOME_GUARD_BROKEN if breaks else OUTCOME_BLOCKED
+	result["damage"] = chip
+	result["guard_drain"] = drain
+	result["hitstun_ms"] = float(guard.get("break_ms", hit_feel.get("stagger_ms", 1100.0))) if breaks else 0.0
+	result["knockback"] = _push(attack, attacker, target, hit_feel) * float(guard.get("knockback_scale", 0.35))
+	result["hit_stop_ms"] = float(attack.get("hit_stop_ms", 0.0)) * hit_stop_scale * float(guard.get("hit_stop_scale", 0.5))
+	result["poise_after"] = float(target.get("poise", 0.0))
+	result["staggered_target"] = breaks
+	result["juggle_count"] = 0
+	result["lethal"] = int(target.get("hp", 0)) - chip <= 0
+	result["style_points"] = 0.0
+	result["feedback"] = {"spark": str(guard.get("spark", "guard")), "sfx": str(guard.get("sfx", "combat_hit_light"))}
+	return result
+
+
 ## One swing hits each target once, unless the move has `rehit_ms`. `ledger` maps "swing:target" to the
 ## local time (ms) of the last hit; it is updated when the hit is allowed.
 static func may_hit(ledger: Dictionary, swing_id: int, target_id: StringName, now_ms: float, rehit_ms: float = 0.0) -> bool:
@@ -155,7 +195,7 @@ static func _blank(attack: Dictionary, attacker: Dictionary, target: Dictionary)
 		"attacker": attacker.get("id", &""), "target": target.get("id", &""),
 		"move_id": attack.get("move_id", &""), "swing_id": int(attack.get("swing_id", 0)),
 		"parry_rating": ClutchJudge.RATING_MISS, "launched": false, "staggered_target": false,
-		"staggered_attacker": false, "armored": false, "air_hit": false, "lethal": false,
+		"staggered_attacker": false, "armored": false, "air_hit": false, "lethal": false, "guard_drain": 0.0,
 	}
 
 

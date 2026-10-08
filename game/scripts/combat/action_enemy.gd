@@ -3,8 +3,13 @@ extends CombatActor
 ## A sandbox enemy (the Grunt or the Brute), driven by data/combat/enemies.json and moves.json.
 ## The EnemyBrain decides, the MoveRunner plays the attack on this fighter's own clock (so hit-stop and the
 ## Lamp Flare slow it correctly), the Hitbox does the damage, and the body reacts to hits with a small
-## state machine: free, hurt, stagger, recoil, launched, down, getting up, dead. Reactions are procedural
-## (a lean, a tumble, a flash) so a blockout works today and Ross's rigged model drops in later by path.
+## state machine: free, dodge, block, hurt, stagger, recoil, launched, down, getting up, dead. Reactions are
+## procedural (a lean, a tumble, a flash) so a blockout works today and Ross's rigged model drops in later by
+## path; clips are looked up by the names in `behaviour.clips` and a missing one is simply skipped.
+##
+## enemy_ai_design: the brain also dodges (i-frames, then a punish window), blocks (front arc, guard meter,
+## guard break), repositions, flees, flanks and enrages; this body carries those out, keeps the guard meter,
+## enforces the wind-up floors (500 ms, 650 ms from behind) and asks the AttackTokens before every wind-up.
 ##
 ## Everything per-frame is in tick(delta); _physics_process only calls it, so tests can step it by hand.
 
@@ -13,6 +18,8 @@ const DEFAULT_RESPAWN_S: float = 6.0
 const FACE_TURN_EPS: float = 0.02
 const KNOCK_DECAY: float = 12.0
 const AIR_DRAG: float = 1.5
+const FAST_TURN_DEG_PER_S: float = 1500.0
+const CORNERED_SPEED_RATIO: float = 0.3
 const ST_FREE: StringName = &"free"
 const ST_HURT: StringName = &"hurt"
 const ST_STAGGER: StringName = &"stagger"
@@ -20,7 +27,19 @@ const ST_RECOIL: StringName = &"recoil"
 const ST_LAUNCHED: StringName = &"launched"
 const ST_DOWN: StringName = &"down"
 const ST_GETUP: StringName = &"getup"
+const ST_DODGE: StringName = &"dodge"
+const ST_BLOCK: StringName = &"block"
 const ST_DEAD: StringName = &"dead"
+const PHASE_RAISE: StringName = &"raise"
+const PHASE_HOLD: StringName = &"hold"
+const PHASE_LOWER: StringName = &"lower"
+const MOVE_DODGE: StringName = &"dodge"
+const MOVE_GETUP_ROLL: StringName = &"getup_roll"
+const MOVE_BLOCK_START: StringName = &"block_start"
+const MOVE_BLOCK_HOLD: StringName = &"block_hold"
+const MOVE_BLOCK_BREAK: StringName = &"block_break"
+const TELEGRAPH_HZ: float = 8.0
+const DODGE_TELL_COLOR: Color = Color(0.3, 0.95, 1.0)
 
 static var _spawn_counts: Dictionary = {}
 
@@ -30,6 +49,7 @@ static var _spawn_counts: Dictionary = {}
 var data: Dictionary = {}
 var brain: EnemyBrain = null
 var runner: MoveRunner = null
+var guard: GuardMeter = null
 var spawn_position: Vector3 = Vector3.ZERO
 var spawn_yaw: float = 0.0
 var body_state: StringName = ST_FREE
@@ -40,6 +60,8 @@ var test_target: CombatActor = null        ## tests may aim an enemy at a stand-
 
 var _moves: MoveSet = null
 var _hit_feel: Dictionary = {}
+var _beh: Dictionary = {}
+var _rules: Dictionary = {}
 var _state_ms: float = 0.0
 var _stun_ms: float = 0.0
 var _knock: Vector3 = Vector3.ZERO
@@ -47,6 +69,9 @@ var _knockdown_on_land: bool = false
 var _slam: bool = false
 var _move_start_usec: int = 0
 var _prev_move_ms: float = 0.0
+var _vt_ms: float = 0.0                    # the move's own time: the wind-up can be stretched by the feel knob
+var _windup_scale: float = 1.0
+var _chain_cut_ms: float = -1.0
 var _dead_real_s: float = 0.0
 var _respawn_s: float = DEFAULT_RESPAWN_S
 var _anim: AnimationPlayer = null
@@ -54,11 +79,29 @@ var _overlay: StandardMaterial3D = null
 var _overlay_meshes: Array[MeshInstance3D] = []
 var _flash: float = 0.0
 var _telegraph_left_ms: float = 0.0
+var _telegraph_total_ms: float = 0.0
 var _telegraph_color: Color = Color(1.0, 0.3, 0.2)
+var _enrage_color: Color = Color(1.0, 0.23, 0.1)
 var _current_clip: StringName = &""
 var _pitch: float = 0.0
 var _drop: float = 0.0
 var _visual_kind: String = ""
+var _rng_fx: RandomNumberGenerator = RandomNumberGenerator.new()
+var _hp_scale_applied: float = 1.0
+var _dodge_dir: Vector3 = Vector3.ZERO
+var _dodge_prev_ms: float = 0.0
+var _block_phase: StringName = PHASE_RAISE
+var _block_phase_ms: float = 0.0
+var _block_raise_ms: float = 100.0
+var _block_lower_ms: float = 160.0
+var _guard_from_ms: float = 60.0
+var _guard_break_ms: float = 1100.0
+var _flinch_clip: StringName = &"hurt"
+var _stagger_clip: StringName = &"stagger"
+var _face_red_ms: float = 0.0
+var _cornered: bool = false
+var _commanded_speed: float = 0.0
+var _clip_speed: float = 1.0
 
 
 func _ready() -> void:
@@ -68,7 +111,7 @@ func _ready() -> void:
 	spawn_yaw = rotation.y
 	_build_body_shape()
 	_build_visual()
-	brain = EnemyBrain.create(data, rng_seed if rng_seed != 0 else hash(String(actor_id)))
+	brain = _make_brain()
 	runner = MoveRunner.create(_moves, move_set_id)
 	set_physics_process(true)
 
@@ -86,8 +129,19 @@ func current_swing_id() -> int:
 	return runner.swing_id() if runner != null else 0
 
 
+## Untouchable: dead, the first moments of getting up, and the i-frames of a dodge or a get-up roll.
 func is_invulnerable() -> bool:
-	return body_state == ST_GETUP or body_state == ST_DEAD
+	match body_state:
+		ST_DEAD:
+			return true
+		ST_GETUP:
+			return _state_ms < float((_beh.get("reactions", {}) as Dictionary).get("getup_invuln_ms", 250.0))
+		ST_DODGE:
+			if runner != null and runner.is_busy():
+				var frames: Dictionary = runner.data().get("iframes", {})
+				var ms: float = runner.elapsed_ms()
+				return not frames.is_empty() and ms >= float(frames.get("from_ms", 0.0)) and ms < float(frames.get("to_ms", 0.0))
+	return false
 
 
 func is_armored() -> bool:
@@ -97,7 +151,39 @@ func is_armored() -> bool:
 
 
 func is_attacking() -> bool:
-	return runner != null and runner.is_busy()
+	return runner != null and runner.is_busy() and body_state == ST_FREE
+
+
+## Is the guard up right now (and covering the front)?
+func is_guarding() -> bool:
+	return body_state == ST_BLOCK and _block_phase != PHASE_LOWER and _state_ms >= _guard_from_ms
+
+
+func is_dodging() -> bool:
+	return body_state == ST_DODGE
+
+
+func is_enraged() -> bool:
+	return brain != null and brain.is_enraged()
+
+
+## The resolver also reads the raised guard and "running away" (a hit then always knocks it down).
+func snapshot() -> Dictionary:
+	var snap: Dictionary = super.snapshot()
+	snap["guard"] = _guard_snapshot()
+	snap["flee_knockdown"] = brain != null and brain.is_fleeing()
+	return snap
+
+
+func _guard_snapshot() -> Dictionary:
+	if not is_guarding() or guard == null:
+		return {}
+	var cfg: Dictionary = _beh.get("guard", {})
+	return {"up": true, "arc_deg": float(cfg.get("arc_deg", 150.0)), "meter": guard.meter,
+			"break_poise": float(cfg.get("break_poise", 999.0)), "break_by_launcher": bool(cfg.get("break_by_launcher", true)),
+			"chip_scale": float(cfg.get("chip_damage_scale", 0.25)), "min_chip": int(cfg.get("min_chip_damage", 1)),
+			"knockback_scale": float(cfg.get("knockback_scale", 0.35)), "hit_stop_scale": float(cfg.get("hit_stop_scale", 0.5)),
+			"break_ms": _guard_break_ms, "spark": str(cfg.get("spark", "guard")), "sfx": str(cfg.get("sfx", "combat_hit_light"))}
 
 
 # ---- per-frame ----
@@ -114,14 +200,21 @@ func tick(delta: float) -> void:
 		return
 	if dt <= 0.0:
 		return
+	_apply_hp_scale(director)
 	_state_ms += dt * 1000.0
 	_stun_ms = maxf(_stun_ms - dt * 1000.0, 0.0)
 	get_hitbox().tick(dt)
-	tick_poise(dt)
+	if brain.poise_regen_allowed():
+		tick_poise(dt)
 	var now_ms: float = clock.now_ms()
+	guard.step(dt, now_ms)
 	match body_state:
 		ST_FREE:
 			_tick_free(dt, now_ms, director)
+		ST_DODGE:
+			_tick_dodge(dt, now_ms, director)
+		ST_BLOCK:
+			_tick_block(dt, now_ms, director)
 		ST_HURT, ST_STAGGER, ST_RECOIL:
 			_tick_stun(dt)
 		ST_LAUNCHED:
@@ -130,6 +223,7 @@ func tick(delta: float) -> void:
 			_tick_down(dt)
 	_update_visual(dt)
 	slide_scaled(dt / delta if delta > 0.0 else 1.0)
+	_note_cornered(dt)
 
 
 func _target() -> CombatActor:
@@ -139,54 +233,72 @@ func _target() -> CombatActor:
 	return director.player() if director != null else null
 
 
-func _tick_free(dt: float, now_ms: float, director: CombatDirector) -> void:
-	var target: CombatActor = _target()
+## The geometry of the moment: the unit vector toward Red on the floor, and how far she is.
+func _toward(target: CombatActor) -> Dictionary:
 	var to_target: Vector3 = Vector3.ZERO
 	var dist: float = 999.0
 	if target != null:
 		to_target = target.global_position - global_position
 		to_target.y = 0.0
 		dist = to_target.length()
-	var dir_to: Vector3 = to_target.normalized() if dist > 0.001 else forward()
+	return {"dist": dist, "dir": to_target.normalized() if dist > 0.001 else forward()}
+
+
+func _tick_free(dt: float, now_ms: float, director: CombatDirector) -> void:
+	var target: CombatActor = _target()
+	var geo: Dictionary = _toward(target)
+	var dist: float = geo["dist"]
+	var dir_to: Vector3 = geo["dir"]
 	_apply_gravity(dt)
-	if runner.is_busy():
-		_tick_attack(dt, dir_to, target != null)
-		return
 	var tokens: AttackTokens = director.tokens if director != null else null
 	var has_token: bool = tokens != null and tokens.has_token(actor_id)
 	var enabled: bool = director.feel.get_b("enemies_attack") if director != null else true
-	var view: Dictionary = {"dist_to_player": dist, "player_airborne": target != null and target.is_airborne(),
-			"player_attacking": false, "has_token": has_token, "state": EnemyBrain.FREE,
-			"poise_frac": poise / poise_max if poise_max > 0.0 else 1.0, "attacks_enabled": enabled and target != null and not target.dead}
+	enabled = enabled and target != null and not target.dead
+	var view: Dictionary = _make_view(target, dist, has_token, enabled, EnemyBrain.FREE, director)
+	if runner.is_busy():
+		_tick_attack(dt, dir_to, target, view)
+		return
 	var intent: Dictionary = brain.step(now_ms, view)
 	last_intent = intent
 	if bool(intent["want_token"]) and not has_token and tokens != null:
-		if tokens.request(actor_id):
+		if tokens.request(actor_id, {"flank": bool(intent.get("flank", false))}):
 			brain.notify(&"token_granted")
 	elif not bool(intent["want_token"]) and has_token and tokens != null and brain.state() != EnemyBrain.ATTACK:
-		tokens.release(actor_id)
+		tokens.release(actor_id)       # defending, fleeing and idle enemies hold no token
+	var defend: Dictionary = intent.get("defend", {})
+	if not defend.is_empty():
+		_begin_defence(defend, dir_to, tokens)
+		return
 	if target != null and bool(intent["face_player"]):
 		_turn_toward(dir_to, dt)
-	var wanted: Vector3 = _world_move(intent["move_dir"], dir_to) * float(data.get("move_speed_mps", 2.8))
+	var wanted: Vector3 = _wanted_velocity(intent, dir_to)
+	_commanded_speed = wanted.length()
+	if bool(intent.get("face_move", false)) and wanted.length() > 0.3:
+		_turn_toward(wanted.normalized(), dt)
 	velocity.x = move_toward(velocity.x, wanted.x, 30.0 * dt)
 	velocity.z = move_toward(velocity.z, wanted.z, 30.0 * dt)
 	if StringName(intent["start_move"]) != &"":
-		_start_attack(StringName(intent["start_move"]))
+		_start_attack(StringName(intent["start_move"]), intent, view, tokens)
 
 
-func _tick_attack(dt: float, dir_to: Vector3, has_target: bool) -> void:
-	var intent_face: bool = bool(last_intent.get("face_player", false))
-	# the brain keeps deciding whether to keep tracking during the wind-up
-	if has_target:
-		var view: Dictionary = {"dist_to_player": 0.0, "player_airborne": false, "player_attacking": false,
-				"has_token": true, "state": EnemyBrain.FREE, "poise_frac": 1.0, "attacks_enabled": true}
-		last_intent = brain.step(clock.now_ms(), view)
-		intent_face = bool(last_intent.get("face_player", false))
-	if has_target and intent_face:
+## The brain's move_dir (player frame) as a world velocity. `speed_mps` (flee, retreat) wins over the walk speed.
+func _wanted_velocity(intent: Dictionary, dir_to: Vector3) -> Vector3:
+	var world: Vector3 = _world_move(intent["move_dir"], dir_to)
+	var speed_mps: float = float(intent.get("speed_mps", 0.0))
+	if speed_mps > 0.0:
+		return world.normalized() * speed_mps if world.length() > 0.001 else Vector3.ZERO
+	return world * float(data.get("move_speed_mps", 2.8)) * float(intent.get("speed_mult", 1.0))
+
+
+func _tick_attack(dt: float, dir_to: Vector3, target: CombatActor, view: Dictionary) -> void:
+	last_intent = brain.step(clock.now_ms(), view)
+	if target != null and bool(last_intent.get("face_player", false)):
 		_turn_toward(dir_to, dt)
-	var now: int = clock.now_usec()
-	var events: Array[Dictionary] = runner.step(now)
+	var events: Array[Dictionary] = runner.step(_advance_move_clock(dt))
 	_handle_events(events)
+	if runner.is_busy() and _chain_cut_ms >= 0.0 and runner.elapsed_ms() >= _chain_cut_ms:
+		_handle_events(runner.interrupt())
+		_finish_attack()
 	if runner.is_busy():
 		var ms: float = runner.elapsed_ms()
 		var lunge_m: float = runner.forward_between(_prev_move_ms, ms)
@@ -199,19 +311,41 @@ func _tick_attack(dt: float, dir_to: Vector3, has_target: bool) -> void:
 		velocity.z = 0.0
 
 
+## The move's own clock: the wind-up (everything before the impact) runs at 1 / windup_scale, then normal speed.
+func _advance_move_clock(dt: float) -> int:
+	var remaining: float = dt * 1000.0
+	var impact: float = float(runner.data().get("impact_ms", 0.0)) if runner.is_busy() else 0.0
+	var rate: float = 1.0 / maxf(_windup_scale, 0.01)
+	while remaining > 0.0:
+		if _vt_ms < impact and not is_equal_approx(rate, 1.0):
+			var to_impact: float = (impact - _vt_ms) / rate
+			var used: float = minf(remaining, to_impact)
+			_vt_ms += used * rate
+			remaining -= used
+		else:
+			_vt_ms += remaining
+			remaining = 0.0
+	return _move_start_usec + int(_vt_ms * 1000.0)
+
+
 func _handle_events(events: Array[Dictionary]) -> void:
 	var director: CombatDirector = find_director()
 	for event: Dictionary in events:
 		match String(event["type"]):
 			"telegraph":
-				_telegraph_left_ms = maxf(float(runner.data().get("impact_ms", 0.0)) - float(event["t_ms"]), 0.0)
+				var impact_eff: float = float(runner.data().get("impact_ms", 0.0)) * _windup_scale
+				_telegraph_total_ms = maxf(impact_eff - float(event["t_ms"]) * _windup_scale, 0.0)
+				_telegraph_left_ms = _telegraph_total_ms
 				if director != null:
-					director.telegraph(self, runner.current_move(), _move_start_usec + int(float(runner.data().get("impact_ms", 0.0)) * 1000.0))
+					director.telegraph(self, runner.current_move(), _move_start_usec + int(impact_eff * 1000.0),
+							StringName(str(runner.data().get("telegraph_kind", ""))))
 			"swing":
 				if director != null:
 					director.notify_move_started(self, runner.current_move(), event.get("swing", {}))
 			"hitbox_on":
-				get_hitbox().activate(event["box"], runner.attack_data(), runner.swing_id())
+				var attack: Dictionary = runner.attack_data()
+				attack["damage"] = int(roundf(float(attack.get("damage", 0)) * brain.damage_mult()))
+				get_hitbox().activate(event["box"], attack, runner.swing_id())
 			"hitbox_off":
 				get_hitbox().deactivate(int(event["index"]))
 			"interrupted":
@@ -221,20 +355,178 @@ func _handle_events(events: Array[Dictionary]) -> void:
 			"done":
 				get_hitbox().clear()
 				_telegraph_left_ms = 0.0
-				if director != null and director.tokens != null:
-					director.tokens.release(actor_id)
-				brain.notify(&"move_finished")
+				if body_state == ST_DODGE:
+					_finish_dodge(StringName(event.get("move_id", &"")))
+				else:
+					_finish_attack()
 
 
-func _start_attack(move_id: StringName) -> void:
-	if not runner.start(move_id, clock.now_usec()):
+## An attack (or the roar) ended: tell the brain, give the token back (unless the Brute chains a second slam).
+func _finish_attack() -> void:
+	var director: CombatDirector = find_director()
+	_telegraph_left_ms = 0.0
+	_chain_cut_ms = -1.0
+	_windup_scale = 1.0
+	brain.notify(&"move_finished")
+	if director != null and director.tokens != null:
+		if brain.keeps_token():
+			director.tokens.end_attack(actor_id)
+		else:
+			director.tokens.release(actor_id)
+
+
+## Start a move the brain asked for. An attack first asks the tokens (no two hits closer than 450 ms, one attacker
+## at a time from Red's rear arc); the wind-up never gets shorter than the floors, whatever the knob says.
+func _start_attack(move_id: StringName, intent: Dictionary, view: Dictionary, tokens: AttackTokens) -> void:
+	var move: Dictionary = _moves.get_move(move_set_id, move_id)
+	if move.is_empty():
 		push_warning("ActionEnemy %s: unknown move %s" % [actor_id, move_id])
 		brain.notify(&"move_finished")
 		return
+	var is_attack: bool = not (move.get("hit", {}) as Dictionary).is_empty()
+	var scale: float = 1.0
+	if is_attack:
+		var director: CombatDirector = find_director()
+		var knob: float = director.feel.get_f("enemy_windup_scale") if director != null and director.feel.has("enemy_windup_scale") else 1.0
+		var rear: bool = bool(view.get("in_rear_arc", false))
+		scale = EnemyRules.windup_scale(knob, EnemyRules.windup_ms(move), EnemyRules.min_windup_ms(_rules, rear))
+		if tokens != null and not tokens.begin_attack(actor_id, float(move.get("impact_ms", 0.0)) * scale, rear):
+			brain.notify(&"attack_denied")
+			return
+		brain.set_attack_timing(float(move.get("impact_ms", 0.0)) * scale, scale)
+	if not runner.start(move_id, clock.now_usec()):
+		brain.notify(&"move_finished")
+		return
+	_windup_scale = scale
+	_vt_ms = 0.0
 	_move_start_usec = clock.now_usec()
 	_prev_move_ms = 0.0
-	_handle_events(runner.step(clock.now_usec()))
+	var chain_ms: float = float(intent.get("chain_recover_ms", 0.0))
+	_chain_cut_ms = float(move.get("startup_ms", 0.0)) + float(move.get("active_ms", 0.0)) + chain_ms if chain_ms > 0.0 else -1.0
+	_start_move_clip(move, float(move.get("impact_ms", 0.0)) * scale)
+	_handle_events(runner.step(_move_start_usec))
 
+
+# ---- dodge and block ----
+
+func _begin_defence(defend: Dictionary, dir_to: Vector3, tokens: AttackTokens) -> void:
+	if tokens != null:
+		tokens.release(actor_id)
+	if StringName(defend.get("kind", &"")) == EnemyDefence.KIND_BLOCK:
+		_begin_block()
+		return
+	var back: bool = StringName(defend.get("variant", &"side")) == &"back"
+	var direction: Vector3 = -dir_to if back else dir_to.cross(Vector3.UP) * float(defend.get("sign", 1.0))
+	_begin_dodge(MOVE_DODGE, direction, &"dodge_back" if back else &"dodge_side")
+
+
+func _begin_dodge(move_id: StringName, direction: Vector3, clip_key: StringName) -> void:
+	if not runner.start(move_id, clock.now_usec()):
+		brain.notify(&"defence_finished")
+		return
+	_vt_ms = 0.0
+	_windup_scale = 1.0
+	_move_start_usec = clock.now_usec()
+	_dodge_prev_ms = 0.0
+	_dodge_dir = Vector3(direction.x, 0.0, direction.z).normalized()
+	_set_state(ST_DODGE)
+	_play_once(_clip_for(clip_key))
+	_handle_events(runner.step(_move_start_usec))
+
+
+func _tick_dodge(dt: float, _now_ms: float, _director: CombatDirector) -> void:
+	_apply_gravity(dt)
+	var target: CombatActor = _target()
+	var geo: Dictionary = _toward(target)
+	if not runner.is_busy():
+		_set_state(ST_FREE)
+		brain.notify(&"defence_finished")
+		return
+	if target != null and runner.current_move() == MOVE_DODGE:
+		_turn_toward(geo["dir"], dt)
+	var events: Array[Dictionary] = runner.step(clock.now_usec())
+	var ms: float = runner.elapsed_ms()
+	var travel: float = _travel_between(_dodge_prev_ms, ms, runner.data().get("motion", {}))
+	_dodge_prev_ms = ms
+	velocity.x = _dodge_dir.x * travel / maxf(dt, 0.0001)
+	velocity.z = _dodge_dir.z * travel / maxf(dt, 0.0001)
+	_handle_events(events)
+	if body_state == ST_DODGE:
+		last_intent = brain.step(clock.now_ms(), _make_view(target, geo["dist"], false, false, EnemyBrain.BUSY, find_director()))
+
+
+## Metres moved between two times of a dodge: `travel_m` spread over `from_ms`..`to_ms`.
+func _travel_between(prev_ms: float, cur_ms: float, motion: Dictionary) -> float:
+	var travel_m: float = float(motion.get("travel_m", 0.0))
+	if travel_m == 0.0:
+		return 0.0
+	var from_ms: float = float(motion.get("from_ms", 0.0))
+	var to_ms: float = float(motion.get("to_ms", from_ms))
+	if to_ms <= from_ms:
+		return travel_m if (prev_ms < from_ms and cur_ms >= from_ms) else 0.0
+	var a: float = clampf((prev_ms - from_ms) / (to_ms - from_ms), 0.0, 1.0)
+	var b: float = clampf((cur_ms - from_ms) / (to_ms - from_ms), 0.0, 1.0)
+	return travel_m * (b - a)
+
+
+func _finish_dodge(move_id: StringName) -> void:
+	velocity.x = 0.0
+	velocity.z = 0.0
+	_set_state(ST_FREE)
+	if move_id == MOVE_GETUP_ROLL:
+		brain.notify(&"landed")
+	else:
+		brain.notify(&"defence_finished")
+
+
+func _begin_block() -> void:
+	var start: Dictionary = _moves.get_move(move_set_id, MOVE_BLOCK_START)
+	var hold: Dictionary = _moves.get_move(move_set_id, MOVE_BLOCK_HOLD)
+	_block_raise_ms = float(start.get("total_ms", 100.0))
+	_guard_from_ms = float((start.get("guard", {}) as Dictionary).get("from_ms", 60.0))
+	_block_lower_ms = float(hold.get("recovery_ms", 160.0))
+	_block_phase = PHASE_RAISE
+	_block_phase_ms = 0.0
+	_set_state(ST_BLOCK)
+	_play_once(_clip_for(&"block_start"))
+
+
+func _tick_block(dt: float, now_ms: float, director: CombatDirector) -> void:
+	_apply_gravity(dt)
+	var target: CombatActor = _target()
+	var geo: Dictionary = _toward(target)
+	if target != null:
+		_turn_toward(geo["dir"], dt)
+	var view: Dictionary = _make_view(target, geo["dist"], false, false, EnemyBrain.BUSY, director)
+	var intent: Dictionary = brain.step(now_ms, view)
+	last_intent = intent
+	_block_phase_ms += dt * 1000.0
+	match _block_phase:
+		PHASE_RAISE:
+			if not bool(intent.get("guard", false)):
+				_start_lowering()
+			elif _state_ms >= _block_raise_ms:
+				_block_phase = PHASE_HOLD
+				_block_phase_ms = 0.0
+				_play_loop(_clip_for(&"block_hold"), 1.0)
+		PHASE_HOLD:
+			if not bool(intent.get("guard", false)) or brain.state() != EnemyBrain.DEFEND:
+				_start_lowering()
+		PHASE_LOWER:
+			if _block_phase_ms >= _block_lower_ms:
+				_set_state(ST_FREE)
+				brain.notify(&"defence_finished")
+	_knock *= exp(-KNOCK_DECAY * dt)
+	velocity.x = _knock.x
+	velocity.z = _knock.z
+
+
+func _start_lowering() -> void:
+	_block_phase = PHASE_LOWER
+	_block_phase_ms = 0.0
+
+
+# ---- stun, launch, get-up ----
 
 func _tick_stun(dt: float) -> void:
 	_apply_gravity(dt)
@@ -242,6 +534,12 @@ func _tick_stun(dt: float) -> void:
 	_knock *= decay
 	velocity.x = _knock.x
 	velocity.z = _knock.z
+	if _face_red_ms > 0.0:
+		# a light flinch turns to face Red within turn_to_red_ms
+		_face_red_ms = maxf(_face_red_ms - dt * 1000.0, 0.0)
+		var target: CombatActor = _target()
+		if target != null:
+			_turn_toward_fast(_toward(target)["dir"], dt)
 	if _stun_ms <= 0.0:
 		_set_state(ST_FREE)
 		velocity.x = 0.0
@@ -266,7 +564,14 @@ func _tick_down(dt: float) -> void:
 	velocity.z = move_toward(velocity.z, 0.0, 40.0 * dt)
 	var reaction: Dictionary = _hit_feel.get("reaction", {})
 	if body_state == ST_DOWN and _state_ms >= float(reaction.get("knockdown_ms", 900.0)):
-		_set_state(ST_GETUP)
+		if brain.roll_getup_roll() and _moves.has_move(move_set_id, MOVE_GETUP_ROLL):
+			# 25% (Grunt): roll away instead of standing up; the roll has its own i-frames
+			var target: CombatActor = _target()
+			var away: Vector3 = -_toward(target)["dir"] if target != null else -forward()
+			_begin_dodge(MOVE_GETUP_ROLL, away, &"dodge_back")
+		else:
+			_set_state(ST_GETUP)
+			_play_once(_clip_for(&"getup"))
 	elif body_state == ST_GETUP and _state_ms >= float(reaction.get("getup_ms", 600.0)):
 		_set_state(ST_FREE)
 		brain.notify(&"landed")
@@ -291,11 +596,16 @@ func respawn() -> void:
 	_dead_real_s = 0.0
 	_knock = Vector3.ZERO
 	_set_state(ST_FREE)
-	brain = EnemyBrain.create(data, rng_seed if rng_seed != 0 else hash(String(actor_id)))
+	brain = _make_brain()
+	guard.refill()
+	_windup_scale = 1.0
+	_chain_cut_ms = -1.0
+	_cornered = false
 	runner.interrupt()
 	get_hitbox().clear()
 	get_hurtbox().collision_layer = CombatLayers.bit(CombatLayers.hurtbox_layer(team))
 	collision_layer = CombatLayers.bit(CombatLayers.body_layer(team))
+	poise_regen_per_s = float(data.get("poise_regen_per_s", 15.0))
 	if model_root != null:
 		model_root.visible = true
 
@@ -305,11 +615,20 @@ func respawn() -> void:
 func _on_hit_reaction(result: Dictionary) -> void:
 	var outcome: StringName = result.get("outcome", &"hit")
 	_flash = 1.0
-	if outcome == HitResolver.OUTCOME_ARMORED or outcome == HitResolver.OUTCOME_EVADED:
+	if outcome == HitResolver.OUTCOME_EVADED or body_state == ST_DEAD:
 		return
-	if body_state == ST_DEAD:
+	if body_state == ST_GETUP and is_invulnerable():
 		return
-	if body_state == ST_GETUP:
+	if outcome == HitResolver.OUTCOME_ARMORED:
+		brain.notify(&"armored_hit")        # the Brute does not flinch, but it may answer
+		_alert_allies(&"hit")
+		return
+	_alert_allies(&"hit")
+	if outcome == HitResolver.OUTCOME_BLOCKED:
+		_on_blocked(result)
+		return
+	if outcome == HitResolver.OUTCOME_GUARD_BROKEN:
+		_on_guard_broken(result)
 		return
 	_cut_attack()
 	var launch: float = float(result.get("launch_mps", 0.0))
@@ -332,16 +651,50 @@ func _on_hit_reaction(result: Dictionary) -> void:
 	if bool(result.get("knockdown", false)):
 		_knock = push * KNOCK_DECAY
 		_set_state(ST_DOWN)
+		_play_once(_clip_for(&"knockdown"))
 		brain.notify(&"hit")
 		return
+	var reactions: Dictionary = _beh.get("reactions", {})
 	var stun: float = float(result.get("hitstun_ms", 0.0))
+	if stagger:
+		stun = maxf(stun, float(reactions.get("stagger_ms", stun)))
+	var heavy: bool = stagger or stun > float(reactions.get("flinch_max_hitstun_ms", 400.0))
 	_knock = push * KNOCK_DECAY
 	if body_state == ST_STAGGER or body_state == ST_RECOIL:
 		_stun_ms = maxf(_stun_ms, stun)
 	else:
 		_stun_ms = stun
 		_set_state(ST_STAGGER if stagger else ST_HURT)
+		_stagger_clip = &"stagger"
+		_flinch_clip = _pick_flinch_clip()
+		_face_red_ms = 0.0 if heavy else float(reactions.get("turn_to_red_ms", 120.0))
 	brain.notify(&"staggered" if stagger else &"hit")
+
+
+## A raised guard took the hit: the meter drains, no hit-stun, a little push, and the string goes on.
+func _on_blocked(result: Dictionary) -> void:
+	guard.absorb(float(result.get("guard_drain", 0.0)), clock.now_ms())
+	_knock = (result.get("knockback", Vector3.ZERO) as Vector3) * KNOCK_DECAY
+	_play_once(_clip_for(&"block_impact"))
+	brain.notify(&"blocked")
+
+
+## The guard broke: a long stagger with the armor off (the punish window), and a fresh meter afterwards.
+func _on_guard_broken(result: Dictionary) -> void:
+	guard.refill()
+	_cut_attack()
+	_stun_ms = maxf(float(result.get("hitstun_ms", _guard_break_ms)), 1.0)
+	_knock = (result.get("knockback", Vector3.ZERO) as Vector3) * KNOCK_DECAY
+	_stagger_clip = &"block_break"
+	_set_state(ST_STAGGER)
+	brain.notify(&"guard_broken")
+
+
+func _pick_flinch_clip() -> StringName:
+	var names: Array = (_beh.get("reactions", {}) as Dictionary).get("flinch_anims", [])
+	if names.is_empty():
+		return &"hurt"
+	return _clip_for(StringName(str(names[_rng_fx.randi() % names.size()])))
 
 
 func _on_parried(result: Dictionary) -> void:
@@ -353,6 +706,7 @@ func _on_parried(result: Dictionary) -> void:
 	_stun_ms = float(parry.get("stagger_ms", 1500.0)) if perfect else float(parry.get("recoil_ms", 700.0))
 	_knock = Vector3.ZERO
 	_flash = 1.0
+	_stagger_clip = &"stagger"
 	_set_state(ST_STAGGER if perfect else ST_RECOIL)
 	brain.notify(&"staggered" if perfect else &"parried")
 
@@ -366,6 +720,7 @@ func _on_death(_result: Dictionary) -> void:
 	var director: CombatDirector = find_director()
 	if director != null and director.tokens != null:
 		director.tokens.release(actor_id)
+	_alert_allies(&"died")
 
 
 func _cut_attack() -> void:
@@ -373,6 +728,8 @@ func _cut_attack() -> void:
 		runner.interrupt()
 	get_hitbox().clear()
 	_telegraph_left_ms = 0.0
+	_windup_scale = 1.0
+	_chain_cut_ms = -1.0
 	var director: CombatDirector = find_director()
 	if director != null and director.tokens != null:
 		director.tokens.release(actor_id)
@@ -384,12 +741,123 @@ func _land() -> void:
 	_knock = Vector3.ZERO
 	_slam = false
 	_set_state(ST_DOWN)
+	_play_once(_clip_for(&"knockdown"))
 	brain.notify(&"landed")
 
 
 func _set_state(next: StringName) -> void:
 	body_state = next
 	_state_ms = 0.0
+
+
+# ---- allies ----
+
+func _alert_allies(event: StringName) -> void:
+	var director: CombatDirector = find_director()
+	if director != null:
+		director.alert_allies(self, event)
+
+
+## Another enemy was hit or died at `at`. True if this one heard it (inside its own alert radius).
+func hear_ally(at: Vector3, event: StringName) -> bool:
+	if dead or brain == null:
+		return false
+	var alert: Dictionary = _beh.get("alert", {})
+	if alert.is_empty():
+		return false
+	if event == &"died" and not bool(alert.get("on_ally_death", true)):
+		return false
+	if event != &"died" and not bool(alert.get("on_ally_hit", true)):
+		return false
+	if global_position.distance_to(at) > float(alert.get("radius_m", 9.0)):
+		return false
+	brain.notify(&"ally_died" if event == &"died" else &"ally_alert")
+	return true
+
+
+# ---- the brain's eyes ----
+
+## What the brain gets to see this frame (the `view` of EnemyBrain).
+func _make_view(target: CombatActor, dist: float, has_token: bool, enabled: bool, body: StringName, director: CombatDirector) -> Dictionary:
+	var view: Dictionary = {"dist_to_player": dist, "player_airborne": target != null and target.is_airborne(),
+			"player_attacking": false, "has_token": has_token, "state": body,
+			"poise_frac": poise / poise_max if poise_max > 0.0 else 1.0, "attacks_enabled": enabled,
+			"hp_frac": float(hp) / float(maxi(hp_max, 1)), "knobs": _knob_view(director), "cornered": _cornered}
+	if target == null or director == null:
+		return view
+	var angle: float = EnemyRules.relative_angle_deg(target.global_position, target.forward(), global_position)
+	view["my_angle_deg"] = angle
+	view["in_rear_arc"] = EnemyRules.in_rear_arc(angle, float(_rules.get("rear_arc_deg", 120.0)))
+	var info: Dictionary = director.player_swing_info(self)
+	var defend: Dictionary = _beh.get("defend", {})
+	view["player_swing_id"] = info["id"]
+	view["player_move_class"] = info["class"]
+	view["player_swing_active"] = info["active"]
+	view["player_swing_threat"] = bool(info["threat"]) and dist <= float(defend.get("threat_range_m", 3.2))
+	view["player_attacking"] = bool(info["active"]) and info["class"] != EnemyRules.CLASS_NONE
+	view["player_combo_len"] = int(info["combo_len"])
+	view["player_dashing_toward"] = director.player_dash_toward(self)
+	view["flare"] = director.time.is_slowed(actor_id)
+	var repo: Dictionary = _beh.get("reposition", {})
+	var crowd_radius: float = float(repo.get("crowd_radius_m", 2.6))
+	var pack_radius: float = float((_beh.get("low_health", {}) as Dictionary).get("pack_radius_m", 8.0))
+	var crowd: int = 0
+	var near: int = 0
+	var flankers: int = 0
+	var allies: Array[Dictionary] = []
+	for other: CombatActor in director.living_enemies():
+		if other == self:
+			continue
+		var gap: float = other.global_position.distance_to(global_position)
+		allies.append({"angle_deg": EnemyRules.relative_angle_deg(target.global_position, target.forward(), other.global_position), "dist_m": gap})
+		if other.global_position.distance_to(target.global_position) <= crowd_radius:
+			crowd += 1
+		if gap <= pack_radius:
+			near += 1
+		var buddy: ActionEnemy = other as ActionEnemy
+		if buddy != null and buddy.brain != null and buddy.brain.is_flanking():
+			flankers += 1
+	view["crowd_count"] = crowd
+	view["allies_near"] = near
+	view["flankers_other"] = flankers
+	view["allies"] = allies
+	return view
+
+
+func _knob_view(director: CombatDirector) -> Dictionary:
+	if director == null or director.feel == null:
+		return {}
+	var out: Dictionary = {}
+	for id: String in ["enemy_aggression", "enemy_reaction_scale", "enemy_dodge_scale", "enemy_block_scale", "enemy_spacing_scale"]:
+		if director.feel.has(id):
+			out[id] = director.feel.get_f(id)
+	for id: String in ["enemy_flee_on", "enemy_flank_on", "enemy_enrage_on"]:
+		if director.feel.has(id):
+			out[id] = director.feel.get_b(id)
+	return out
+
+
+## Running into a wall while fleeing: the commanded speed is there but the body is not getting anywhere.
+func _note_cornered(_dt: float) -> void:
+	if brain == null or not brain.is_fleeing() or _commanded_speed < 1.0:
+		_cornered = false
+		return
+	var actual: float = Vector2(get_real_velocity().x, get_real_velocity().z).length()
+	_cornered = actual < _commanded_speed * CORNERED_SPEED_RATIO
+
+
+## The Grunt's hp can be scaled live by the "Enemy health" knob (hp keeps its share).
+func _apply_hp_scale(director: CombatDirector) -> void:
+	if director == null or director.feel == null or not director.feel.has("enemy_hp_scale"):
+		return
+	var scale: float = director.feel.get_f("enemy_hp_scale")
+	if is_equal_approx(scale, _hp_scale_applied):
+		return
+	var share: float = float(hp) / float(maxi(hp_max, 1))
+	hp_max = maxi(int(roundf(float(data.get("hp", 40)) * scale)), 1)
+	hp = clampi(int(roundf(share * float(hp_max))), 1 if hp > 0 else 0, hp_max)
+	_hp_scale_applied = scale
+	director.hp_changed.emit(actor_id, hp, hp_max)
 
 
 # ---- movement helpers ----
@@ -409,22 +877,30 @@ func _turn_toward(direction: Vector3, dt: float) -> void:
 	rotation.y = rotate_toward(rotation.y, wanted, step)
 
 
+func _turn_toward_fast(direction: Vector3, dt: float) -> void:
+	if direction.length() < FACE_TURN_EPS:
+		return
+	rotation.y = rotate_toward(rotation.y, atan2(direction.x, direction.z), deg_to_rad(FAST_TURN_DEG_PER_S) * dt)
+
+
 ## The brain's move_dir (player frame) in world space.
 func _world_move(move_dir: Vector3, dir_to_player: Vector3) -> Vector3:
 	var side: Vector3 = dir_to_player.cross(Vector3.UP)
 	return dir_to_player * move_dir.z + side * move_dir.x
 
 
-# ---- data and visuals ----
+# ---- data ----
 
 func _load_data() -> void:
 	var all: Dictionary = CombatData.enemies()
 	data = ((all.get("enemies", {}) as Dictionary).get(String(enemy_id), {}) as Dictionary).duplicate(true)
+	_rules = (all.get("telegraph_rules", {}) as Dictionary).duplicate(true)
 	_hit_feel = CombatData.hit_feel()
 	_moves = MoveSet.load_default()
 	if data.is_empty():
 		push_error("ActionEnemy: no enemy '%s' in enemies.json" % enemy_id)
 		return
+	_beh = data.get("behaviour", {})
 	if actor_id == &"":
 		_spawn_counts[enemy_id] = int(_spawn_counts.get(enemy_id, 0)) + 1
 		actor_id = StringName("%s_%d" % [enemy_id, int(_spawn_counts[enemy_id])])
@@ -441,8 +917,25 @@ func _load_data() -> void:
 	height_m = float(data.get("height_m", 1.2))
 	radius_m = float(data.get("radius_m", 0.36))
 	_telegraph_color = Color.html(str(data.get("telegraph_color", "#ff4a3a")))
+	var enrage: Dictionary = ((_beh.get("low_health", {}) as Dictionary).get("enrage", {}) as Dictionary)
+	_enrage_color = Color.html(str(enrage.get("color", "#ff3a1a")))
+	guard = GuardMeter.from_data(_beh.get("guard", {}))
+	_guard_break_ms = float(_moves.get_move(move_set_id, MOVE_BLOCK_BREAK).get("total_ms", 1100.0))
+	_rng_fx.seed = (rng_seed if rng_seed != 0 else hash(String(actor_id))) + 7
 	var sandbox: Dictionary = CombatData.combat_file(CombatData.FILE_SANDBOX)
 	_respawn_s = float(sandbox.get("respawn_s", DEFAULT_RESPAWN_S))
+
+
+func _make_brain() -> EnemyBrain:
+	var brain_data: Dictionary = data.duplicate(true)
+	var gaits: Dictionary = {}
+	for gait: String in ["strafe", "retreat", "flee"]:
+		var move: Dictionary = _moves.get_move(move_set_id, StringName(gait))
+		if move.has("speed_mps"):
+			gaits[gait] = float(move["speed_mps"])
+	brain_data["gaits"] = gaits
+	brain_data["telegraph_rules"] = _rules
+	return EnemyBrain.create(brain_data, rng_seed if rng_seed != 0 else hash(String(actor_id)))
 
 
 func _build_body_shape() -> void:
@@ -582,8 +1075,22 @@ func _collect_meshes(root: Node) -> void:
 		_collect_meshes(child)
 
 
+# ---- clips ----
+
+## The clip a behaviour name maps to: `behaviour.clips.<key>.clip` from enemies.json, else the key itself.
+func _clip_for(key: StringName) -> StringName:
+	var clips: Dictionary = _beh.get("clips", {})
+	if clips.has(String(key)):
+		return StringName(str((clips[String(key)] as Dictionary).get("clip", key)))
+	return key
+
+
+func _has_clip(clip: StringName) -> bool:
+	return _anim != null and _anim.has_animation(String(clip))
+
+
 func _play_pose(clip: StringName, clip_s: float) -> void:
-	if _anim == null or not _anim.has_animation(String(clip)):
+	if not _has_clip(clip):
 		return
 	_anim.play(String(clip))
 	_anim.seek(clip_s, true)
@@ -591,35 +1098,91 @@ func _play_pose(clip: StringName, clip_s: float) -> void:
 	_current_clip = &""
 
 
-func _play_loop(clip: StringName, speed: float) -> void:
-	if _anim == null or not _anim.has_animation(String(clip)):
+## Play a one-shot clip from its start (skipped when the model does not have it: the lean and the flash still run).
+func _play_once(clip: StringName) -> void:
+	if not _has_clip(clip):
 		return
-	if _current_clip != clip:
-		_anim.play(String(clip), 0.1)
-		_current_clip = clip
+	_anim.play(String(clip), 0.05)
+	_anim.speed_scale = 1.0
+	_current_clip = clip
+
+
+func _play_loop(clip: StringName, speed: float, backwards: bool = false) -> void:
+	if not _has_clip(clip):
+		return
+	var tag: StringName = StringName(String(clip) + ("<" if backwards else ""))
+	if _current_clip != tag:
+		if backwards:
+			_anim.play_backwards(String(clip), 0.1)
+		else:
+			_anim.play(String(clip), 0.1)
+		_current_clip = tag
 	_anim.speed_scale = speed
+
+
+## A move with no pose keys (the Brute's slam) stretches its clip over the move so the strike lands on the impact.
+func _start_move_clip(move: Dictionary, windup_ms: float) -> void:
+	_clip_speed = 1.0
+	var anim: Dictionary = move.get("anim", {})
+	var clip: StringName = StringName(str(anim.get("clip", "")))
+	if not (anim.get("keys", []) as Array).is_empty() or not _has_clip(clip):
+		return
+	var total_s: float = (float(move.get("total_ms", 1000.0)) + maxf(windup_ms - float(move.get("impact_ms", 0.0)), 0.0)) / 1000.0
+	_clip_speed = _anim.get_animation(String(clip)).length / maxf(total_s, 0.1)
+	_anim.play(String(clip), 0.05)
+	_anim.speed_scale = _clip_speed
+	_current_clip = clip
+
+
+func _play_locomotion(speed: float) -> void:
+	var flat: float = Vector2(velocity.x, velocity.z).length()
+	var gait: StringName = StringName(str(last_intent.get("gait", "idle")))
+	var key: StringName = &"idle"
+	if flat > 0.3:
+		if gait == &"strafe" or gait == &"walk" or gait == &"approach" or gait == &"retreat" or gait == &"flee" or gait == &"stalk":
+			key = gait
+		else:
+			key = &"approach" if flat > 2.0 else &"walk"
+	elif gait == &"notice":
+		key = &"notice"
+	var clips: Dictionary = _beh.get("clips", {})
+	var entry: Dictionary = clips.get(String(key), {})
+	var clip: StringName = _clip_for(key)
+	if not _has_clip(clip):
+		# fall back to what any wolf has: walk, run, idle
+		for fallback: StringName in ([&"run", &"walk", &"idle"] if key == &"flee" or key == &"approach" else [&"walk", &"idle"]):
+			if _has_clip(fallback):
+				clip = fallback
+				break
+		entry = {}
+	_play_loop(clip, speed * float(entry.get("speed_scale", 1.0)), bool(entry.get("reverse", false)))
 
 
 func _update_visual(dt: float) -> void:
 	if model_root == null:
 		return
+	var ratio: float = clampf(dt / maxf(get_physics_process_delta_time(), 0.0001), 0.0, 2.0)
 	# clips for the loops (idle / walk / reactions) when the model has them
-	if _anim != null and not runner.is_busy():
-		var speed: float = clampf(dt / maxf(get_physics_process_delta_time(), 0.0001), 0.0, 2.0)
-		var flat_speed: float = Vector2(velocity.x, velocity.z).length()
+	if _anim != null:
 		match body_state:
 			ST_FREE:
-				_play_loop(&"run" if flat_speed > 2.0 and _anim.has_animation("run") else (&"walk" if flat_speed > 0.3 and _anim.has_animation("walk") else &"idle"), speed)
+				if runner.is_busy():
+					if _clip_speed != 1.0:
+						_anim.speed_scale = _clip_speed * ratio
+				else:
+					_play_locomotion(ratio)
+			ST_DODGE, ST_BLOCK:
+				_anim.speed_scale = ratio
 			ST_HURT, ST_RECOIL:
-				_play_loop(&"hurt", speed)
+				_play_loop(_flinch_clip, ratio)
 			ST_STAGGER:
-				_play_loop(&"stagger", speed)
+				_play_loop(_clip_for(_stagger_clip), ratio)
 			ST_LAUNCHED:
-				_play_loop(&"launched", speed)
+				_play_loop(_clip_for(&"launched"), ratio)
 			ST_DOWN:
-				_play_loop(&"knockdown", speed)
+				_play_loop(_clip_for(&"knockdown"), ratio)
 			ST_GETUP:
-				_play_loop(&"getup", speed)
+				_play_loop(_clip_for(&"getup"), ratio)
 	# procedural lean / tumble: always on, small on a rigged model, the whole show on a blockout
 	var target_pitch: float = 0.0
 	var target_drop: float = 0.0
@@ -636,6 +1199,10 @@ func _update_visual(dt: float) -> void:
 					target_pitch = 0.5
 				else:
 					target_pitch = 0.1
+		ST_DODGE:
+			target_pitch = 0.25
+		ST_BLOCK:
+			target_pitch = -0.18 if is_guarding() else 0.0
 		ST_HURT, ST_RECOIL:
 			target_pitch = -0.3
 		ST_STAGGER:
@@ -653,14 +1220,33 @@ func _update_visual(dt: float) -> void:
 	model_root.position.y = _drop
 	if body_state == ST_DEAD:
 		model_root.visible = fmod(_dead_real_s * 12.0, 1.0) < 0.5 and _dead_real_s < 0.7
-	# colour overlay: red-ish pulse in a wind-up, white flash on hit
+	_update_overlay(dt)
+
+
+## The colour overlay: white flash on a hit; a cyan blink just before a Grunt dodge; the wind-up flash in the
+## enemy's colour pulsing 8 times a second and getting brighter toward the impact; a steady glow when enraged.
+func _update_overlay(dt: float) -> void:
 	_flash = maxf(_flash - dt * 7.0, 0.0)
-	var telegraph_glow: float = 0.0
 	if _telegraph_left_ms > 0.0:
 		_telegraph_left_ms = maxf(_telegraph_left_ms - dt * 1000.0, 0.0)
-		telegraph_glow = 0.35 + 0.35 * sin(clock.now_ms() * 0.03)
-	if _overlay != null:
-		if _flash > 0.0:
-			_overlay.albedo_color = Color(1.0, 1.0, 1.0, 0.6 * _flash)
-		else:
-			_overlay.albedo_color = Color(_telegraph_color.r, _telegraph_color.g, _telegraph_color.b, telegraph_glow)
+	if _overlay == null:
+		return
+	if _flash > 0.0:
+		_overlay.albedo_color = Color(1.0, 1.0, 1.0, 0.6 * _flash)
+		return
+	if body_state == ST_DODGE and runner.is_busy():
+		var tell: Dictionary = runner.data().get("tell", {})
+		var ms: float = runner.elapsed_ms()
+		if not tell.is_empty() and ms >= float(tell.get("from_ms", 0.0)) and ms < float(tell.get("to_ms", 0.0)):
+			_overlay.albedo_color = Color(DODGE_TELL_COLOR.r, DODGE_TELL_COLOR.g, DODGE_TELL_COLOR.b, 0.7)
+			return
+	if _telegraph_left_ms > 0.0 and _telegraph_total_ms > 0.0:
+		var progress: float = 1.0 - _telegraph_left_ms / _telegraph_total_ms
+		var pulse: float = 0.5 + 0.5 * sin(TAU * TELEGRAPH_HZ * clock.now_ms() / 1000.0)
+		var alpha: float = lerpf(0.2, 0.65, progress) * (0.45 + 0.55 * pulse)
+		_overlay.albedo_color = Color(_telegraph_color.r, _telegraph_color.g, _telegraph_color.b, alpha)
+		return
+	if is_enraged() and body_state != ST_DEAD:
+		_overlay.albedo_color = Color(_enrage_color.r, _enrage_color.g, _enrage_color.b, 0.2)
+		return
+	_overlay.albedo_color = Color(_telegraph_color.r, _telegraph_color.g, _telegraph_color.b, 0.0)

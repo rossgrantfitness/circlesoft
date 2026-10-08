@@ -15,7 +15,26 @@ const TYPE: StringName = &"SandboxUi"
 const THEME_KEY: String = "theme_path"
 const GRADIENT_STEPS_MIN: int = 2
 
+## The size the layouts in data/ui/sandbox_ui.json are written for. The real UI space is larger (the
+## window divided by a whole number); things are anchored to its corners, or centered, from this size.
+const REFERENCE_SIZE: Vector2i = Vector2i(384, 216)
+
 static var _theme: Theme = null
+
+
+## The UI space a node lives in: its SandboxHud's size, else the reference size.
+static func ui_size(node: Node) -> Vector2:
+	var walker: Node = node
+	while walker != null:
+		if walker is SandboxHud:
+			return (walker as SandboxHud).ui_size()
+		walker = walker.get_parent()
+	return Vector2(REFERENCE_SIZE)
+
+
+## Where a reference-sized, centered layout starts inside the UI space.
+static func center_offset(node: Node) -> Vector2:
+	return ((ui_size(node) - Vector2(REFERENCE_SIZE)) / 2.0).floor().max(Vector2.ZERO)
 
 
 ## The Theme (loaded once; call reload() after changing the file in a test).
@@ -90,15 +109,17 @@ static func text(canvas: CanvasItem, role: String, at: Vector2, text_value: Stri
 	var f: Font = font(role)
 	var px: int = font_size(role)
 	var shadow: Vector2 = Vector2(float(const_int("shadow_x")), float(const_int("shadow_y")))
+	var shadow_color: Color = color("shadow")
+	shadow_color.a = tint.a
 	var lean: float = slant(role)
 	if lean != 0.0:
 		# Leaning letters: shear the canvas around the baseline's left end, then draw upright.
 		canvas.draw_set_transform_matrix(Transform2D(Vector2(1, 0), Vector2(-lean, 1), at))
-		canvas.draw_string(f, shadow, text_value, align, width, px, color("shadow"))
+		canvas.draw_string(f, shadow, text_value, align, width, px, shadow_color)
 		canvas.draw_string(f, Vector2.ZERO, text_value, align, width, px, tint)
 		canvas.draw_set_transform_matrix(Transform2D.IDENTITY)
 		return
-	canvas.draw_string(f, at + shadow, text_value, align, width, px, color("shadow"))
+	canvas.draw_string(f, at + shadow, text_value, align, width, px, shadow_color)
 	if const_int("top_light") > 0:
 		canvas.draw_string(f, at, text_value, align, width, px, color("text_light"))
 		canvas.draw_string(f, at + Vector2(0, 1), text_value, align, width, px, tint)

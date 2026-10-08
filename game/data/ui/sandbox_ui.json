@@ -90,14 +90,7 @@
       378,
       211
     ],
-    "rank_popup_pos": [
-      314,
-      100
-    ],
-    "flare_popup_lift_px": 40,
-    "parry_popup_lift_px": 8,
-    "damage_popup_lift_px": 4,
-    "damage_stack_px": 18,
+    "damage_stack_px": 14,
     "damage_stack_max": 4,
     "max_popups": 24,
     "enemy_bar": {
@@ -107,28 +100,30 @@
       "show_s": 3.0,
       "fade_s": 0.5
     },
-    "rank_styles": {
-      "nice": "nice",
-      "rad": "rad",
-      "totally_rad": "totally_rad"
-    },
-    "rank_default_style": "nice",
     "rank_colors": {
-      "nice": "#7FE0FF",
-      "rad": "#FFD23F",
-      "totally_rad": "#FF3E9A"
+      "nice": "#FFFFFF",
+      "rad": "#FFFFFF",
+      "totally_rad": "#FFFFFF"
     },
-    "rank_default_color": "#E4E6EE",
-    "parry_styles": {
-      "nice": "blocked",
-      "rad": "rad",
-      "totally_rad": "totally_rad",
-      "miss": "blocked"
+    "rank_default_color": "#FFFFFF",
+    "damage_lift_px": 4,
+    "callouts": {
+      "pos": [
+        378,
+        96
+      ],
+      "max": 2,
+      "line_step": 18,
+      "slide_px": 14,
+      "slide_s": 0.15,
+      "hold_s": 1.4,
+      "fade_s": 0.4
     },
-    "miss_color": "#8D97A5",
-    "flare_style": "rad",
-    "stagger_style": "blocked",
-    "stagger_color": "#FFB347"
+    "floater": {
+      "life_s": 0.9,
+      "rise_px": 12,
+      "fade_from": 0.6
+    }
   },
   "reticle": {
     "size": 22,
@@ -214,5 +209,8 @@
     "message_s": 12.0,
     "path_chars": 44
   },
-  "theme_path": "res://art/placeholder/ui/sandbox_theme.tres"
+  "theme_path": "res://art/placeholder/ui/sandbox_theme.tres",
+  "window_px_per_scale": 400,
+  "window_px_per_scale_note": "The HUD draws at the real window size, scaled by a whole number: round(window height / this). 400 gives 3 at 1080p (a 640x360 UI), 2 at 720p, 5 at 4K.",
+  "layer": 90
 }

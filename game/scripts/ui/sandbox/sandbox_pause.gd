@@ -47,7 +47,6 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	size = Vector2(UiStage.STAGE_SIZE)
 	_layout = SandboxUiData.ui("pause", {})
 	_dim = ColorRect.new()
 	_dim.name = "Dim"
@@ -61,6 +60,9 @@ func _ready() -> void:
 	_overlay.size = size
 	_overlay.draw.connect(_draw_overlay)
 	add_child(_overlay)
+	_fit()
+	if get_parent() is Control:
+		(get_parent() as Control).resized.connect(_fit)
 	_card = (load("res://scenes/ui/sandbox/controls_card.tscn") as PackedScene).instantiate() as ControlsCard
 	_card.name = "ControlsCard"
 	_card.audio = audio
@@ -185,9 +187,9 @@ func _open_remap() -> void:
 		_config = ConfigScreen.new()
 		_config.name = "ConfigScreen"
 		_config.config = config
-		_config.position = Vector2(16, 8)
+		_config.position = _overlay.position + Vector2(16, 8)
 		_config.size = Vector2(352, 200)
-		_config.listen_input = listen_input
+		_config.listen_input = false
 		_config.manual_ticks = manual_ticks
 		_config.closed.connect(_on_config_closed)
 		add_child(_config)
@@ -206,7 +208,18 @@ func _on_config_closed() -> void:
 # ---- input ----
 
 func _input(event: InputEvent) -> void:
-	if listen_input and _open and handle_event(event):
+	if not (listen_input and _open):
+		return
+	if _config != null and _config.is_open():
+		# The Config screen reads positions in the layer's own units; events arrive in window units.
+		var forwarded: InputEvent = event
+		if event is InputEventMouse:
+			forwarded = event.duplicate() as InputEvent
+			(forwarded as InputEventMouse).position = _config.get_global_transform() * (_config.get_global_transform_with_canvas().affine_inverse() * (event as InputEventMouse).position)
+		if _config.handle_event(forwarded):
+			get_viewport().set_input_as_handled()
+		return
+	if handle_event(event):
 		get_viewport().set_input_as_handled()
 
 
@@ -215,7 +228,7 @@ func handle_event(event: InputEvent) -> bool:
 	if not _open or is_sub_page_open():
 		return false
 	if event is InputEventMouseMotion:
-		var hover: int = _row_at((event as InputEventMouseMotion).position)
+		var hover: int = _row_at(_to_local((event as InputEventMouseMotion).position))
 		if hover >= 0 and hover != _index:
 			_index = hover
 			audio.sfx("tick")
@@ -227,7 +240,7 @@ func handle_event(event: InputEvent) -> bool:
 			resume()
 			return true
 		if click.button_index == MOUSE_BUTTON_LEFT:
-			var hit: int = _row_at(click.position)
+			var hit: int = _row_at(_to_local(click.position))
 			if hit >= 0:
 				_index = hit
 				activate()
@@ -262,6 +275,20 @@ func handle_command(command: MenuInput.Cmd) -> bool:
 		_:
 			return false
 	return true
+
+
+## Sizes itself to the UI space it lives in and centers its reference-sized layout there.
+func _fit() -> void:
+	size = SandboxStyle.ui_size(self)
+	if _dim != null:
+		_dim.size = size
+	if _overlay != null:
+		_overlay.size = Vector2(SandboxStyle.REFERENCE_SIZE)
+		_overlay.position = SandboxStyle.center_offset(self)
+
+
+func _to_local(point: Vector2) -> Vector2:
+	return _overlay.get_global_transform_with_canvas().affine_inverse() * point
 
 
 func _row_rect(index: int) -> Rect2:

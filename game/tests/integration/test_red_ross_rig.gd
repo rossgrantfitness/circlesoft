@@ -1,9 +1,10 @@
 extends TestCase
-## Ross's Red, rigged (scripts/tools/rig_red.py): the model contract in docs/pivot/combat_api.md section 5. Checks the rigged
-## file only; Ross's original (red_ross_v1.glb) is never touched. Missing OPTIONAL clips are listed, not failed, because the
-## procedural fallbacks cover them.
+## Ross's Red, rigged (scripts/tools/rig_red.py) and animated with the free Quaternius clips (scripts/tools/retarget_ual.py):
+## the model contract in docs/pivot/combat_api.md section 5. Checks the file the game loads (red_ross_v1_rigged_ual.glb: the
+## TA's rig and mesh plus the retargeted clips); Ross's original (red_ross_v1.glb) is never touched. A missing OPTIONAL clip
+## is listed, not failed, because the procedural fallbacks cover it. The pipeline's own checks are in test_ual_retarget.gd.
 
-const RED_PATH: String = "res://art/final/characters/red/red_ross_v1_rigged.glb"
+const RED_PATH: String = "res://art/final/characters/red/red_ross_v1_rigged_ual.glb"
 const TRIANGLES: int = 1614                # Ross's mesh, unchanged by rigging
 const TRIANGLE_CAP: int = 5000
 const MAX_TEXTURE_PX: int = 512
@@ -14,14 +15,20 @@ const OPTIONAL_BONES: Array[String] = ["ear_l", "ear_l_2", "ear_r", "ear_r_2", "
 		"shoulder_l", "shoulder_r"]
 const REQUIRED_CLIPS: Array[String] = ["idle", "run", "jump_up", "fall", "land", "dash", "light_1", "light_2", "light_3", "heavy",
 		"launcher", "air_1", "air_2", "air_3", "parry", "hurt", "knockdown"]
-const OPTIONAL_CLIPS: Array[String] = ["walk", "air_dash", "parry_success", "getup"]
+const OPTIONAL_CLIPS: Array[String] = ["walk", "parry_success", "getup"]
+## air_dash has no free clip that fits: the game plays `dash` instead (contract section 5), so it is allowed to be absent
+const ABSENT_ON_PURPOSE: Array[String] = ["air_dash"]
 const LOOPING: Array[String] = ["idle", "run", "fall", "walk"]
-const MAX_CLIP_S: float = 1.7
+## the hand-posed stand-ins kept where no free clip fits: stepped 15 fps, as the TA made them
+const STAND_INS: Array[String] = ["air_1", "air_2", "air_3", "parry_success"]
+## clips whose strike lands on a contact frame (contact_s in data/combat/red_clip_keys.json)
+const STRIKES: Array[String] = ["light_1", "light_2", "light_3", "heavy", "launcher"]
+const MAX_CLIP_S: float = 2.6
 
 
 func _red() -> Node3D:
 	var packed: PackedScene = load(RED_PATH) as PackedScene
-	assert_not_null(packed, "red_ross_v1_rigged.glb should import (godot --headless --path game --import)")
+	assert_not_null(packed, "red_ross_v1_rigged_ual.glb should import (godot --headless --path game --import)")
 	var model: Node3D = packed.instantiate() as Node3D
 	own(model)
 	return model
@@ -107,7 +114,13 @@ func test_every_required_clip_exists_and_the_optional_ones_are_listed() -> void:
 	assert_eq(missing_optional.size(), 0, "optional clips missing: %s" % [missing_optional])
 
 
-func test_clips_are_stepped_short_loop_right_and_have_key_poses() -> void:
+func _look_interpolation() -> int:
+	var file: FileAccess = FileAccess.open("res://data/animation/import_look.json", FileAccess.READ)
+	var look: Dictionary = JSON.parse_string(file.get_as_text()) as Dictionary
+	return Animation.INTERPOLATION_NEAREST if str(look.get("interpolation", "linear")) == "nearest" else Animation.INTERPOLATION_LINEAR
+
+
+func test_clips_are_named_short_loop_right_and_are_baked_poses() -> void:
 	var player: AnimationPlayer = _player(_red())
 	for clip: String in REQUIRED_CLIPS + OPTIONAL_CLIPS:
 		var animation: Animation = player.get_animation(clip)
@@ -116,12 +129,16 @@ func test_clips_are_stepped_short_loop_right_and_have_key_poses() -> void:
 		assert_gt(animation.length, 0.2, clip + " is not a single pose")
 		var looped: bool = LOOPING.has(clip)
 		assert_eq(animation.loop_mode == Animation.LOOP_LINEAR, looped, clip + (" loops" if looped else " plays once"))
+		# the retargeted clips play the way data/animation/import_look.json says; the hand-posed stand-ins stay stepped
+		var expected: int = Animation.INTERPOLATION_NEAREST if STAND_INS.has(clip) else _look_interpolation()
 		for track: int in animation.get_track_count():
-			assert_eq(animation.track_get_interpolation_type(track), Animation.INTERPOLATION_NEAREST, "%s track %d is stepped" % [clip, track])
-		# two to five key poses (plus the closing key of a loop): never a baked, per-frame clip
+			assert_eq(animation.track_get_interpolation_type(track), expected, "%s track %d playback look" % [clip, track])
+		# a baked clip has a key for most frames (30 fps; the stand-ins have a handful of key poses)
 		var keys: int = _most_keys(animation)
-		assert_ge(keys, 2, clip + " has at least two key poses")
-		assert_le(keys, 30, clip + " is not a long mocap clip")
+		assert_ge(keys, 5, clip + " has several key poses")
+		assert_le(keys, 90, clip + " is not a long mocap clip")
+	for clip: String in ABSENT_ON_PURPOSE:
+		assert_false(player.has_animation(clip), clip + " is played as `dash` (no free clip fits)")
 
 
 func _rotation_at(animation: Animation, bone: String, time: float) -> Quaternion:
@@ -132,19 +149,48 @@ func _rotation_at(animation: Animation, bone: String, time: float) -> Quaternion
 	return Quaternion.IDENTITY
 
 
-func test_attack_poses_are_held_and_change_at_the_frames_the_move_data_assumes() -> void:
-	# docs/pivot/combat_api.md example: anim.keys at clip_s 0, 0.133 (frame 2) and 0.267 (frame 4); the clips are stepped,
-	# so each key pose is held until the next one.
-	var animation: Animation = _player(_red()).get_animation("light_1")
-	var wind_up: Quaternion = _rotation_at(animation, "upper_arm_r", 0.0)
-	var held: Quaternion = _rotation_at(animation, "upper_arm_r", 0.07)
-	var strike: Quaternion = _rotation_at(animation, "upper_arm_r", 2.0 / 15.0 + 0.005)
-	var strike_held: Quaternion = _rotation_at(animation, "upper_arm_r", 3.0 / 15.0)
-	var follow: Quaternion = _rotation_at(animation, "upper_arm_r", 4.0 / 15.0 + 0.005)
-	assert_true(wind_up.is_equal_approx(held), "the wind-up is held until frame 2")
-	assert_false(wind_up.is_equal_approx(strike), "the strike pose arrives at frame 2")
-	assert_true(strike.is_equal_approx(strike_held), "and is held")
-	assert_false(strike.is_equal_approx(follow), "the follow-through arrives at frame 4")
+func _clip_keys() -> Dictionary:
+	var file: FileAccess = FileAccess.open("res://data/combat/red_clip_keys.json", FileAccess.READ)
+	return (JSON.parse_string(file.get_as_text()) as Dictionary)["clips"]
+
+
+func test_attack_clips_have_a_contact_frame_and_the_strike_pose_arrives_there() -> void:
+	# every strike clip carries contact_s (the frame the blade is fastest); the move data snaps the clip there at the hit
+	# (docs/pivot/combat_api.md section 3, anim.keys), so wind-up, strike and follow-through must be different poses
+	var animations: AnimationPlayer = _player(_red())
+	var clips: Dictionary = _clip_keys()
+	var moves: Dictionary = (JSON.parse_string(FileAccess.get_file_as_string("res://data/combat/moves.json")) as Dictionary)["sets"]["red"]["moves"]
+	for clip: String in STRIKES:
+		var entry: Dictionary = clips[clip]
+		assert_true(entry.has("contact_s"), clip + " has a contact frame")
+		assert_true(entry.has("contact_frame"), clip + " has a contact frame number")
+		var contact: float = float(entry["contact_s"])
+		var animation: Animation = animations.get_animation(clip)
+		assert_gt(contact, 0.05, clip + " has a wind-up")
+		assert_lt(contact, animation.length - 0.1, clip + " has a follow-through")
+		var wind_up: Quaternion = _rotation_at(animation, "upper_arm_r", 0.0)
+		var strike: Quaternion = _rotation_at(animation, "upper_arm_r", contact)
+		var follow: Quaternion = _rotation_at(animation, "upper_arm_r", minf(contact + 0.2, animation.length))
+		assert_gt(wind_up.angle_to(strike), 0.25, clip + ": the strike pose is not the wind-up pose")
+		assert_gt(strike.angle_to(follow), 0.15, clip + ": the follow-through is not the strike pose")
+		# the move's key at its hit time lands on this contact frame
+		var move: Dictionary = moves.get(clip, {})
+		if move.is_empty():
+			continue
+		var found: bool = false
+		for key: Dictionary in (move["anim"] as Dictionary)["keys"]:
+			if int(key["at_ms"]) == int(move["startup_ms"]):
+				found = true
+				assert_almost_eq(float(key["clip_s"]), contact, 1.0 / 30.0, clip + ": the key at the hit is the contact frame")
+		assert_true(found, clip + ": the move data has a pose key at its hit time")
+
+
+func test_stand_ins_that_are_kept_are_listed_as_stand_ins_and_still_play() -> void:
+	var animations: AnimationPlayer = _player(_red())
+	var clips: Dictionary = _clip_keys()
+	for clip: String in ["air_1", "air_2", "air_3", "parry_success"]:
+		assert_true(animations.has_animation(clip), clip + " is still in the file")
+		assert_true(str(clips[clip]["source"]).contains("stand-in"), clip + " is recorded as a stand-in (no free clip fits)")
 
 
 func test_triangles_textures_and_influences() -> void:

@@ -12,13 +12,14 @@ signal actor_died(actor_id: StringName)
 signal hp_changed(actor_id: StringName, hp: int, hp_max: int)
 signal move_started(info: Dictionary)          ## {actor, move_id, swing_sfx, trail}
 signal hit_landed(info: Dictionary)            ## {attacker, target, move_id, outcome, damage, launch, knockdown, airborne, hit_stop_ms, shake, spark, sfx, position}
+								## outcome is also &"blocked" / &"guard_broken" when an enemy's raised guard took the hit
 signal launched(info: Dictionary)              ## {attacker, target, launch_mps}
-signal telegraphed(info: Dictionary)           ## {attacker, move_id, impact_in_ms, parryable}
+signal telegraphed(info: Dictionary)           ## {attacker, move_id, impact_in_ms, parryable, telegraph_kind}
 signal parry_judged(info: Dictionary)          ## {attacker, rating, outcome, delta_ms, position}
 signal perfect_dodge(info: Dictionary)         ## {attacker, move_id, position}
 signal flare_started(info: Dictionary)         ## {source, duration_s, enemy_scale}
 signal flare_ended()
-signal stagger(info: Dictionary)               ## {target, by}
+signal stagger(info: Dictionary)               ## {target, by: "parry" / "poise" / "guard"}
 signal noise_changed(points: float, fill: float, rank_id: StringName, rank_name: String)
 signal noise_rank_changed(rank_id: StringName, rank_name: String, went_up: bool)
 signal lights_on_changed(active: bool, duration_s: float)
@@ -52,6 +53,12 @@ var _fake_real_usec: int = 0
 var _last_noise_points: float = -1.0
 var _last_rank_index: int = 0
 var _lights_was_active: bool = false
+## What enemies see of Red (enemy_ai_design 2.1): her current swing, how long her string of hits is, her dash.
+var _read: Dictionary = {}
+var _swing: Dictionary = {}                 # {id, move_id, class, zone: {enemy id: bool}, end_ms (Red's clock)}
+var _combo_len: int = 0
+var _stand_in_swings: int = 0
+var _combo_last_ms: float = -1.0e9
 
 
 func _init() -> void:
@@ -95,6 +102,8 @@ func register(actor: CombatActor) -> void:
 	actor.clock.anchor_real(stamp_usec())
 	if actor.team == PLAYER_TEAM:
 		time.player_id = actor.actor_id
+		if actor.has_signal(&"move_started") and not actor.is_connected(&"move_started", _on_player_move_started):
+			actor.connect(&"move_started", _on_player_move_started)
 	if not actor.died.is_connected(_on_actor_died):
 		actor.died.connect(_on_actor_died)
 	actor_registered.emit(actor.actor_id, actor.team)
@@ -111,6 +120,8 @@ func unregister(actor: CombatActor) -> void:
 		tokens.release(actor.actor_id)
 	if actor.died.is_connected(_on_actor_died):
 		actor.died.disconnect(_on_actor_died)
+	if actor.team == PLAYER_TEAM and actor.has_signal(&"move_started") and actor.is_connected(&"move_started", _on_player_move_started):
+		actor.disconnect(&"move_started", _on_player_move_started)
 
 
 func actors(team: StringName = &"") -> Array[CombatActor]:
@@ -167,9 +178,14 @@ func tick(delta: float) -> void:
 			actor.clock.sync_real(Time.get_ticks_usec())
 	if not time.is_flaring():
 		_flare_cooldown_s = maxf(_flare_cooldown_s - delta, 0.0)
+	tokens.step(delta)
+	if feel.has("enemy_max_attackers"):
+		tokens.max_attackers = maxi(int(roundf(feel.get_f("enemy_max_attackers"))), 0)
 	var red: CombatActor = player()
 	if red != null:
 		var now_ms: float = red.clock.now_ms()
+		if _combo_len > 0 and now_ms - _combo_last_ms > float(_player_read().get("combo_gap_ms", 1200.0)):
+			_combo_len = 0
 		style.step(now_ms)
 		if lights_on.is_active():
 			if lights_on.step(now_ms):
@@ -228,7 +244,9 @@ func report_dash(real_usec: int) -> void:
 
 
 ## An enemy move reached its telegraph: remember it as a threat, and tell the HUD and FX.
-func telegraph(attacker: CombatActor, move_id: StringName, impact_local_usec: int) -> void:
+## `kind` picks the wind-up cue in fx.json `telegraph.kinds` (default: the move's `telegraph_kind`, else
+## "parryable" / "unparryable").
+func telegraph(attacker: CombatActor, move_id: StringName, impact_local_usec: int, kind: StringName = &"") -> void:
 	var move: Dictionary = _moves.get_move(attacker.move_set_id, move_id)
 	var boxes: Array = move.get("hitboxes", [])
 	var key: String = "%s:%s:%d" % [attacker.actor_id, move_id, attacker.current_swing_id()]
@@ -237,8 +255,108 @@ func telegraph(attacker: CombatActor, move_id: StringName, impact_local_usec: in
 	_threats.append({"attacker": attacker.actor_id, "move_id": move_id, "impact_usec": impact_local_usec, "boxes": boxes,
 			"flared": false, "dodge_flare": bool(move.get("dodge_flare", true)), "key": key})
 	var in_ms: float = float(impact_local_usec - attacker.clock.now_usec()) / 1000.0
+	var parryable: bool = bool(move.get("parryable", true))
+	if kind == &"":
+		kind = StringName(str(move.get("telegraph_kind", "parryable" if parryable else "unparryable")))
 	telegraphed.emit({"attacker": attacker.actor_id, "move_id": move_id, "impact_in_ms": in_ms,
-			"parryable": bool(move.get("parryable", true))})
+			"parryable": parryable, "telegraph_kind": kind})
+
+
+# ---- what enemies see of Red (enemy_ai_design 2.1, 7) ----
+
+func _player_read() -> Dictionary:
+	if _read.is_empty():
+		_read = CombatData.enemies().get("player_read", {})
+	return _read
+
+
+func _on_player_move_started(move_id: StringName) -> void:
+	begin_player_swing(player(), move_id)
+
+
+## Red started a swing: work out which enemies stand inside its threat zone (the move's hitboxes grown by
+## `threat_margin_m`, also where its lunge ends) and what class of move it is. Enemies roll their defence from this.
+## ActionPlayer's `move_started` signal calls it; tests may call it by hand.
+func begin_player_swing(red: CombatActor, move_id: StringName) -> void:
+	if red == null:
+		return
+	var move: Dictionary = _moves.get_move(red.move_set_id, move_id)
+	var move_class: StringName = EnemyRules.move_class(move_id, move, _player_read().get("move_class", {}))
+	var zone: Dictionary = {}
+	if move_class != EnemyRules.CLASS_NONE:
+		var margin: float = float(hit_feel.get("threat_margin_m", 0.35)) if not hit_feel.is_empty() else 0.35
+		var boxes: Array = move.get("hitboxes", [])
+		var lunge: float = float((move.get("motion", {}) as Dictionary).get("forward_m", 0.0))
+		var base: Transform3D = red.global_transform
+		var moved: Transform3D = Transform3D(base.basis, base.origin + red.forward() * lunge)
+		for enemy: CombatActor in living_enemies():
+			var point: Vector3 = enemy.anchor(&"center")
+			var grow: float = margin + enemy.radius_m
+			zone[enemy.actor_id] = PerfectDodge.point_in_zone(point, base, boxes, grow) \
+					or (lunge > 0.0 and PerfectDodge.point_in_zone(point, moved, boxes, grow))
+	_swing = {"id": red.current_swing_id(), "move_id": move_id, "class": move_class, "zone": zone,
+			"end_ms": red.clock.now_ms() + float(move.get("total_ms", 400.0))}
+	if int(_swing["id"]) == 0:
+		_stand_in_swings += 1
+		_swing["id"] = -_stand_in_swings      # a stand-in for Red without a runner still gets a fresh id per swing
+
+
+## What `enemy` sees of Red's current swing: {id, class, threat (it stands in the zone), active, combo_len}.
+func player_swing_info(enemy: CombatActor) -> Dictionary:
+	var out: Dictionary = {"id": 0, "class": EnemyRules.CLASS_NONE, "threat": false, "active": false, "combo_len": _combo_len}
+	if _swing.is_empty():
+		return out
+	var red: CombatActor = player()
+	out["id"] = int(_swing["id"])
+	out["class"] = _swing["class"]
+	out["threat"] = bool((_swing["zone"] as Dictionary).get(enemy.actor_id, false))
+	out["active"] = red != null and red.clock.now_ms() <= float(_swing["end_ms"])
+	return out
+
+
+## How many hits in Red's current string (0 once she stops for `player_read.combo_gap_ms`).
+func combo_len() -> int:
+	return _combo_len
+
+
+func _note_player_hit(red_now_ms: float) -> void:
+	_combo_len += 1
+	_combo_last_ms = red_now_ms
+
+
+## Is Red dashing toward `enemy`? (An enemy may step away from it.)
+func player_dash_toward(enemy: CombatActor) -> bool:
+	var red: CombatActor = player()
+	if red == null or not red.has_method(&"get_dash"):
+		return false
+	var dash: DashRun = red.call(&"get_dash") as DashRun
+	if dash == null or dash.is_done():
+		return false
+	var to_enemy: Vector3 = enemy.global_position - red.global_position
+	to_enemy.y = 0.0
+	var read: Dictionary = _player_read()
+	if to_enemy.length() > float(read.get("dash_toward_range_m", 7.0)) or to_enemy.length() < 0.01:
+		return false
+	return dash.direction.dot(to_enemy.normalized()) >= float(read.get("dash_toward_dot", 0.7))
+
+
+## An enemy was hit or died: idle allies within their own alert radius notice sooner, and the nearest waiting
+## one steps up as the next attacker (enemy_ai_design 7). `event` is &"hit" or &"died".
+func alert_allies(source: CombatActor, event: StringName) -> void:
+	var nearest: ActionEnemy = null
+	var nearest_dist: float = INF
+	for ally: CombatActor in living_enemies():
+		if ally == source:
+			continue
+		var enemy: ActionEnemy = ally as ActionEnemy
+		if enemy == null or not enemy.hear_ally(source.global_position, event):
+			continue
+		var dist: float = enemy.global_position.distance_to(source.global_position)
+		if enemy.brain != null and enemy.brain.state() == EnemyBrain.CIRCLE and not tokens.has_token(enemy.actor_id) and dist < nearest_dist:
+			nearest = enemy
+			nearest_dist = dist
+	if nearest != null and event == &"hit":
+		nearest.brain.notify(&"step_up")
 
 
 # ---- contact ----
@@ -326,6 +444,7 @@ func _on_parry(attacker: CombatActor, target: CombatActor, attack: Dictionary, r
 func _on_damage(attacker: CombatActor, target: CombatActor, attack: Dictionary, result: Dictionary, position: Vector3,
 		red_now_ms: float) -> void:
 	var outcome: StringName = result["outcome"]
+	var guard_hit: bool = outcome == HitResolver.OUTCOME_BLOCKED or outcome == HitResolver.OUTCOME_GUARD_BROKEN
 	if outcome == HitResolver.OUTCOME_GUARDED:
 		var guard_rating: String = ClutchJudge.RATING_NICE
 		parry_judged.emit({"attacker": attacker.actor_id, "rating": guard_rating, "outcome": outcome,
@@ -333,24 +452,42 @@ func _on_damage(attacker: CombatActor, target: CombatActor, attack: Dictionary, 
 	target.apply_hit(result)
 	attacker.on_hit_landed(result)
 	time.add_hit_stop([attacker.actor_id, target.actor_id] as Array[StringName], float(result["hit_stop_ms"]))
-	if attacker.team == PLAYER_TEAM and outcome != HitResolver.OUTCOME_GUARDED:
+	if attacker.team == PLAYER_TEAM and outcome != HitResolver.OUTCOME_GUARDED and not guard_hit:
 		style.add_hit(StringName(attack.get("move_id", &"")), float(result["style_points"]), red_now_ms)
 		if bool(result["launched"]) and float(attack.get("launch_mps", 0.0)) > 0.0:
 			style.add_bonus(&"launch", red_now_ms)
 		elif bool(result["air_hit"]):
 			style.add_bonus(&"air_hit", red_now_ms)
+	elif attacker.team == PLAYER_TEAM and outcome == HitResolver.OUTCOME_GUARD_BROKEN:
+		style.add_bonus(&"guard_break", red_now_ms)      # worth points once style.json has bonuses.guard_break
 	elif target.team == PLAYER_TEAM and int(result["damage"]) > 0 and not lights_on.is_active():
 		style.took_damage(red_now_ms)
+	if attacker.team == PLAYER_TEAM and outcome != HitResolver.OUTCOME_IGNORED:
+		_note_player_hit(red_now_ms)
+	elif target.team == PLAYER_TEAM and int(result["damage"]) > 0:
+		_combo_len = 0
 	hp_changed.emit(target.actor_id, target.hp, target.hp_max)
+	var spark: String = str(attack.get("spark", ""))
+	var sfx: String = str(attack.get("sfx", ""))
+	var shake: String = str(attack.get("shake", ""))
+	if guard_hit:
+		var feedback: Dictionary = result.get("feedback", {})
+		spark = str(feedback.get("spark", "guard"))
+		sfx = str(feedback.get("sfx", "combat_hit_light"))
+		if outcome == HitResolver.OUTCOME_GUARD_BROKEN:
+			var broke: Dictionary = _moves.get_move(target.move_set_id, &"block_break")
+			spark = str(broke.get("spark", "heavy"))
+			sfx = str(broke.get("sfx", "combat_hit_heavy"))
+			shake = str(broke.get("shake", "medium"))
 	hit_landed.emit({"attacker": attacker.actor_id, "target": target.actor_id, "move_id": result["move_id"],
 			"outcome": outcome, "damage": int(result["damage"]), "launch": float(result["launch_mps"]),
 			"knockdown": bool(result["knockdown"]), "airborne": bool(result["air_hit"]),
-			"hit_stop_ms": float(result["hit_stop_ms"]), "shake": str(attack.get("shake", "")),
-			"spark": str(attack.get("spark", "")), "sfx": str(attack.get("sfx", "")), "position": position})
+			"hit_stop_ms": float(result["hit_stop_ms"]), "shake": shake,
+			"spark": spark, "sfx": sfx, "position": position})
 	if bool(result["launched"]):
 		launched.emit({"attacker": attacker.actor_id, "target": target.actor_id, "launch_mps": float(result["launch_mps"])})
 	if bool(result["staggered_target"]):
-		stagger.emit({"target": target.actor_id, "by": "poise"})
+		stagger.emit({"target": target.actor_id, "by": "guard" if outcome == HitResolver.OUTCOME_GUARD_BROKEN else "poise"})
 
 
 # ---- the Lamp Flare ----

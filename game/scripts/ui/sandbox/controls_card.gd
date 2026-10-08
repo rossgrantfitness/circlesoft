@@ -35,7 +35,6 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	size = Vector2(UiStage.STAGE_SIZE)
 	_layout = SandboxUiData.ui("controls_card", {})
 	_dim = ColorRect.new()
 	_dim.name = "Dim"
@@ -49,6 +48,9 @@ func _ready() -> void:
 	_overlay.size = size
 	_overlay.draw.connect(_draw_overlay)
 	add_child(_overlay)
+	_fit()
+	if get_parent() is Control:
+		(get_parent() as Control).resized.connect(_fit)
 	visible = false
 	set_process(not manual_ticks)
 
@@ -161,7 +163,7 @@ func handle_event(event: InputEvent) -> bool:
 			close_card()
 			return true
 		if click.pressed and click.button_index == MOUSE_BUTTON_LEFT:
-			if allow_remap and _hint_rect().has_point(click.position):
+			if allow_remap and _hint_rect().has_point(_overlay.get_global_transform_with_canvas().affine_inverse() * click.position):
 				remap_requested.emit()
 			return true
 		return false
@@ -188,6 +190,16 @@ func handle_command(command: MenuInput.Cmd) -> bool:
 		MenuInput.Cmd.NONE:
 			return false
 	return true
+
+
+## Sizes itself to the UI space it lives in and centers its reference-sized layout there.
+func _fit() -> void:
+	size = SandboxStyle.ui_size(self)
+	if _dim != null:
+		_dim.size = size
+	if _overlay != null:
+		_overlay.size = Vector2(SandboxStyle.REFERENCE_SIZE)
+		_overlay.position = SandboxStyle.center_offset(self)
 
 
 func _hint_rect() -> Rect2:

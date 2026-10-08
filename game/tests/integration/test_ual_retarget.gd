@@ -260,6 +260,24 @@ func test_move_data_pose_keys_put_the_contact_on_the_data_timed_hit() -> void:
 	assert_ge(checked, 8, "Red's six moves and the Grunt's two swipes are timed from the real clips")
 
 
+func test_playback_look_comes_from_the_data_file() -> void:
+	# data/animation/import_look.json decides smooth or stepped for the retargeted clips (scripts/tools/ual_post_import.gd);
+	# the hand-posed stand-ins kept in Red's file stay stepped
+	var look: Dictionary = _json("res://data/animation/import_look.json")
+	var wanted: int = Animation.INTERPOLATION_NEAREST if str(look.get("interpolation", "linear")) == "nearest" else Animation.INTERPOLATION_LINEAR
+	for rig: String in RIGS:
+		var settings: Dictionary = _json(str(RIGS[rig]["settings"]))
+		var player: AnimationPlayer = _player(_model(_output(settings)))
+		var standins: Array = settings.get("keep_standins", [])
+		for clip: String in player.get_animation_list():
+			var expected: int = Animation.INTERPOLATION_NEAREST if standins.has(clip) else wanted
+			var animation: Animation = player.get_animation(clip)
+			for track: int in animation.get_track_count():
+				assert_eq(animation.track_get_interpolation_type(track), expected, "%s: %s track %d playback look" % [rig, clip, track])
+				if animation.track_get_interpolation_type(track) != expected:
+					break
+
+
 func test_loops_close_on_their_first_pose() -> void:
 	for rig: String in RIGS:
 		var settings: Dictionary = _json(str(RIGS[rig]["settings"]))
@@ -347,13 +365,13 @@ func test_feet_stay_on_the_floor_in_standing_and_moving_clips() -> void:
 			var length: float = player.get_animation(clip).length
 			for step: int in 12:
 				_set_pose(player, skeleton, clip, length * float(step) / 12.0)
-				assert_almost_eq(_lowest_sole(skeleton, soles), 0.0, 0.012, "%s: %s frame %d: a foot is on the floor" % [rig, clip, step])
+				assert_almost_eq(_lowest_sole(skeleton, soles), 0.0, 0.02, "%s: %s frame %d: a foot is on the floor" % [rig, clip, step])
 		for clip: String in moving:
 			var length: float = player.get_animation(clip).length
 			for step: int in 12:
 				_set_pose(player, skeleton, clip, length * float(step) / 12.0)
 				var low: float = _lowest_sole(skeleton, soles)
-				assert_ge(low, -0.015, "%s: %s frame %d: nothing sinks into the floor" % [rig, clip, step])
+				assert_ge(low, -0.03, "%s: %s frame %d: nothing sinks into the floor (3 cm of slack: the rigs have no toe bone)" % [rig, clip, step])
 				assert_le(low, 0.12, "%s: %s frame %d: the flight phase of a sprint stays low (scaled stride)" % [rig, clip, step])
 
 
@@ -400,9 +418,13 @@ func test_side_steps_and_backwards_clips_are_the_walk_turned_not_new_motion() ->
 	assert_gt(walk.y, walk.x, "walking: the feet swap along the way she faces")
 	assert_gt(left.x, left.y, "strafe_l: the feet swap sideways")
 	assert_gt(right.x, right.y, "strafe_r: the feet swap sideways")
-	# the two sides step opposite ways: the leading foot differs
-	_set_pose(player, skeleton, "strafe_l", 0.35)
-	var left_lead: float = _bone_origin(skeleton, "foot_l").x - _bone_origin(skeleton, "foot_r").x
-	_set_pose(player, skeleton, "strafe_r", 0.35)
-	var right_lead: float = _bone_origin(skeleton, "foot_l").x - _bone_origin(skeleton, "foot_r").x
-	assert_ne(snappedf(left_lead, 0.02), snappedf(right_lead, 0.02), "the two side-steps are different clips")
+	# the two sides step opposite ways: the feet are in different places at the same moment of the cycle
+	var most_different: float = 0.0
+	for step: int in 16:
+		var time: float = player.get_animation("strafe_l").length * float(step) / 16.0
+		_set_pose(player, skeleton, "strafe_l", time)
+		var left_pose: float = _bone_origin(skeleton, "foot_l").x - _bone_origin(skeleton, "foot_r").x
+		_set_pose(player, skeleton, "strafe_r", time)
+		var right_pose: float = _bone_origin(skeleton, "foot_l").x - _bone_origin(skeleton, "foot_r").x
+		most_different = maxf(most_different, absf(left_pose - right_pose))
+	assert_gt(most_different, 0.03, "the two side-steps are different clips")

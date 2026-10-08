@@ -1,0 +1,4 @@
+{
+ "_about": "How the retargeted clips (the *_ual.glb files) are played back. Read by scripts/tools/ual_post_import.gd every time one of those files is imported. 'linear': smooth between the 30 fps frames. 'nearest': every track holds its key until the next one (the stepped look of the TA's old stand-ins; at 30 fps it is hardly visible, set the retarget fps lower for 'on twos'). The look is a call for Ross; change it here and reimport (godot --headless --path game --import).",
+ "interpolation": "linear"
+}

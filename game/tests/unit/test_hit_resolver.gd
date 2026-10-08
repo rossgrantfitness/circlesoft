@@ -286,3 +286,117 @@ func test_the_real_numbers_kill_a_grunt_in_about_five_hits() -> void:
 func assert_between_hits(count: int) -> void:
 	assert_ge(float(count), 4.0, "not dead too fast")
 	assert_le(float(count), 6.0, "not too slow")
+
+
+# ---- row 3b: an enemy's raised guard (enemy_ai_design 6) ----
+
+func _guard(extra: Dictionary = {}) -> Dictionary:
+	var guard: Dictionary = {"up": true, "arc_deg": 150.0, "meter": 24.0, "break_poise": 20.0, "break_by_launcher": true,
+		"chip_scale": 0.25, "min_chip": 1, "knockback_scale": 0.35, "hit_stop_scale": 0.5, "break_ms": 1100.0,
+		"spark": "guard", "sfx": "combat_hit_light"}
+	guard.merge(extra, true)
+	return guard
+
+
+func _heavy(extra: Dictionary = {}) -> Dictionary:
+	var attack: Dictionary = {"damage": 22, "hitstun_ms": 450, "knockback_m": 1.4, "launch_mps": 0.0, "knockdown": false,
+		"hit_stop_ms": 90, "poise_damage": 30, "style_points": 14, "move_id": &"heavy", "launcher": false, "swing_id": 9, "parryable": true}
+	attack.merge(extra, true)
+	return attack
+
+
+func test_row3b_a_light_into_a_raised_guard_is_blocked() -> void:
+	var result: Dictionary = _resolve_on_foe(_light(), {"guard": _guard()})
+	assert_eq(result["outcome"], &"blocked")
+	assert_eq(result["damage"], 2, "8 x 0.25 chip damage")
+	assert_almost_eq(float(result["hitstun_ms"]), 0.0, 0.001, "no hit-stun on a block")
+	assert_almost_eq(float(result["guard_drain"]), 8.0, 0.001, "it drains the hit's poise damage")
+	assert_almost_eq(float(result["hit_stop_ms"]), 25.0, 0.001, "hit-stop halved")
+	assert_almost_eq(float(result["poise_after"]), 30.0, 0.001, "poise is untouched")
+	assert_almost_eq(float(result["style_points"]), 0.0, 0.001)
+	assert_false(bool(result["staggered_target"]))
+	assert_eq(result["feedback"]["spark"], "guard")
+	assert_eq(result["feedback"]["sfx"], "combat_hit_light")
+
+
+func test_row3b_a_block_pushes_back_a_little() -> void:
+	var open: Dictionary = _resolve_on_foe(_light())
+	var blocked: Dictionary = _resolve_on_foe(_light(), {"guard": _guard()})
+	assert_almost_eq((blocked["knockback"] as Vector3).length(), (open["knockback"] as Vector3).length() * 0.35, 0.001)
+
+
+func test_row3b_chip_damage_is_at_least_one() -> void:
+	var result: Dictionary = _resolve_on_foe(_light({"damage": 2}), {"guard": _guard({"chip_scale": 0.15, "min_chip": 1})})
+	assert_eq(result["damage"], 1)
+	var none: Dictionary = _resolve_on_foe(_light({"damage": 0}), {"guard": _guard()})
+	assert_eq(none["damage"], 0, "a hit with no damage stays at none")
+
+
+func test_row3b_a_heavy_always_breaks_the_guard() -> void:
+	for break_poise: float in [20.0, 30.0]:
+		var result: Dictionary = _resolve_on_foe(_heavy(), {"guard": _guard({"break_poise": break_poise, "meter": 60.0})})
+		assert_eq(result["outcome"], &"guard_broken", "break_poise %.0f" % break_poise)
+		assert_true(bool(result["staggered_target"]))
+		assert_almost_eq(float(result["hitstun_ms"]), 1100.0, 0.001, "the guard-break stagger")
+		assert_eq(result["damage"], 6, "chip damage on the breaking hit (22 x 0.25)")
+
+
+func test_row3b_a_launcher_breaks_the_guard_even_if_its_poise_is_small() -> void:
+	var launcher: Dictionary = _light({"launcher": true, "poise_damage": 12, "launch_mps": 11.0, "move_id": &"launcher"})
+	var result: Dictionary = _resolve_on_foe(launcher, {"guard": _guard({"meter": 60.0})})
+	assert_eq(result["outcome"], &"guard_broken")
+	assert_almost_eq(float(result["launch_mps"]), 0.0, 0.001, "no launch out of a guard break")
+	var no_break: Dictionary = _resolve_on_foe(launcher, {"guard": _guard({"meter": 60.0, "break_by_launcher": false})})
+	assert_eq(no_break["outcome"], &"blocked")
+
+
+func test_row3b_an_emptied_meter_breaks_the_guard() -> void:
+	var three: Dictionary = _resolve_on_foe(_light(), {"guard": _guard({"meter": 8.0})})
+	assert_eq(three["outcome"], &"guard_broken", "the third Light empties a 24 meter")
+	var two: Dictionary = _resolve_on_foe(_light(), {"guard": _guard({"meter": 9.0})})
+	assert_eq(two["outcome"], &"blocked")
+
+
+func test_row3b_a_hit_from_the_side_or_behind_ignores_the_guard() -> void:
+	var foe: Dictionary = _foe({"guard": _guard()})
+	var from_behind: Dictionary = HitResolver.resolve(_light(), _red({"position": Vector3(0, 0, 6)}), foe, _ctx())
+	assert_eq(from_behind["outcome"], &"hit", "Red stands behind the foe (it faces -Z)")
+	assert_eq(from_behind["damage"], 8)
+	var from_side: Dictionary = HitResolver.resolve(_light(), _red({"position": Vector3(3, 0, 2.3)}), foe, _ctx())
+	assert_eq(from_side["outcome"], &"hit", "75 degrees is the edge of a 150 degree arc: this is 90")
+	var front: Dictionary = HitResolver.resolve(_light(), _red({"position": Vector3(1, 0, 0)}), foe, _ctx())
+	assert_eq(front["outcome"], &"blocked")
+
+
+func test_row3b_a_lowered_guard_blocks_nothing() -> void:
+	var result: Dictionary = _resolve_on_foe(_light(), {"guard": _guard({"up": false})})
+	assert_eq(result["outcome"], &"hit")
+	var none: Dictionary = _resolve_on_foe(_light(), {"guard": {}})
+	assert_eq(none["outcome"], &"hit")
+
+
+func test_row3b_the_guard_comes_before_armor_and_after_i_frames() -> void:
+	var brute: Dictionary = _resolve_on_foe(_light(), {"guard": _guard(), "armored": true})
+	assert_eq(brute["outcome"], &"blocked", "a guarding Brute blocks instead of soaking")
+	var evade: Dictionary = _resolve_on_foe(_light(), {"guard": _guard(), "invulnerable": true})
+	assert_eq(evade["outcome"], &"evaded")
+
+
+func test_row3b_a_guard_only_helps_the_enemy_never_red() -> void:
+	var result: Dictionary = _resolve_on_red(_swipe(), "miss", {"guard": _guard()})
+	assert_eq(result["outcome"], &"blocked", "the resolver trusts the snapshot: only enemies ever send a guard")
+
+
+func test_a_killing_chip_is_lethal() -> void:
+	var result: Dictionary = _resolve_on_foe(_light({"damage": 8}), {"guard": _guard(), "hp": 2})
+	assert_true(bool(result["lethal"]))
+
+
+func test_a_hit_on_a_fleeing_enemy_always_knocks_it_down() -> void:
+	var plain: Dictionary = _resolve_on_foe(_light())
+	assert_false(bool(plain["knockdown"]))
+	var fleeing: Dictionary = _resolve_on_foe(_light(), {"flee_knockdown": true})
+	assert_eq(fleeing["outcome"], &"hit")
+	assert_true(bool(fleeing["knockdown"]), "caught from behind while running")
+	var armored_fleeing: Dictionary = _resolve_on_foe(_light(), {"flee_knockdown": true, "armored": true})
+	assert_eq(armored_fleeing["outcome"], &"armored", "armor still soaks")

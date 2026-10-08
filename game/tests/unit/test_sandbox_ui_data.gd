@@ -105,12 +105,23 @@ func test_the_pause_menu_and_card_words_exist() -> void:
 	assert_ne(SandboxUiData.text("feel.info_label"), "")
 
 
-func test_every_popup_style_the_hud_borrows_exists_in_the_battle_hud() -> void:
-	for id: String in SandboxUiData.ui("hud.parry_styles", {}).values():
-		assert_true(BattleUiData.ui("ratings.kinds", {}).has(str(id)), "battle HUD has style %s" % id)
-	for id: String in SandboxUiData.ui("hud.rank_styles", {}).values():
-		assert_true(BattleUiData.ui("ratings.kinds", {}).has(str(id)), "battle HUD has style %s" % id)
-	assert_true(BattleUiData.ui("ratings.kinds", {}).has(str(SandboxUiData.ui("hud.flare_style", ""))))
+func test_the_call_out_words_exist() -> void:
+	for rating: String in ["nice", "rad", "totally_rad", "miss"]:
+		assert_ne(SandboxPopups.parry_text(rating), "", rating)
+	assert_ne(SandboxPopups.lamp_flare_text(), "")
+	for by: String in ["parry", "poise"]:
+		assert_ne(SandboxPopups.stagger_text(by), "", by)
+
+
+func test_the_text_is_white_with_a_solid_black_shadow_one_pixel_down_right() -> void:
+	assert_eq(SandboxStyle.color("text"), Color.html("#FFFFFF"))
+	assert_eq(SandboxStyle.color("shadow"), Color.html("#000000"))
+	assert_eq(SandboxStyle.const_int("shadow_x"), 1)
+	assert_eq(SandboxStyle.const_int("shadow_y"), 1)
+
+
+func test_the_lean_is_on_by_default() -> void:
+	assert_gt(SandboxStyle.slant("body"), 0.0, "Ross picked the leaning sample")
 
 
 func test_the_sounds_the_hud_plays_exist() -> void:

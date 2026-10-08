@@ -38,15 +38,15 @@ func test_drawing_returns_its_measured_width() -> void:
 	assert_almost_eq(seen[1], OffsetStat.measure("", "640", ""), 0.001)
 
 
-func test_the_lean_is_one_theme_switch_and_defaults_to_upright() -> void:
-	assert_almost_eq(SandboxStyle.slant("body"), 0.0, 0.0001, "upright until Ross says otherwise")
+func test_the_lean_is_one_theme_switch() -> void:
 	var theme: Theme = SandboxStyle.theme()
-	theme.set_constant(&"slant_pct", SandboxStyle.TYPE, 22)
-	assert_almost_eq(SandboxStyle.slant("body"), 0.22, 0.0001)
+	assert_almost_eq(SandboxStyle.slant("body"), 0.22, 0.0001, "leaning by default (Ross picked the slant)")
 	assert_almost_eq(SandboxStyle.slant("digits"), 0.22, 0.0001, "numerals lean the same way")
 	assert_almost_eq(SandboxStyle.slant("stat_big"), 0.22, 0.0001)
 	assert_almost_eq(SandboxStyle.slant("label"), 0.0, 0.0001, "the small caps labels stay upright")
 	theme.set_constant(&"slant_pct", SandboxStyle.TYPE, 0)
+	assert_almost_eq(SandboxStyle.slant("body"), 0.0, 0.0001, "one switch turns it off")
+	theme.set_constant(&"slant_pct", SandboxStyle.TYPE, 22)
 
 
 func test_the_fallback_switch_swaps_every_font_role_to_jersey_and_goes_upright() -> void:
@@ -62,7 +62,7 @@ func test_the_fallback_switch_swaps_every_font_role_to_jersey_and_goes_upright()
 		assert_gt(SandboxStyle.font_size(role), 0, role)
 	assert_eq(SandboxStyle.font("label"), theme.get_font(&"label", SandboxStyle.TYPE), "the label font never changes")
 	theme.set_constant(&"use_fallback_font", SandboxStyle.TYPE, 0)
-	theme.set_constant(&"slant_pct", SandboxStyle.TYPE, 0)
+	theme.set_constant(&"slant_pct", SandboxStyle.TYPE, 22)
 
 
 func test_numerals_never_use_a_face_whose_counters_fill_with_the_shadow() -> void:

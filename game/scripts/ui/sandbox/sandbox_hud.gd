@@ -45,6 +45,9 @@ var animations_enabled: bool = true
 var listen_input: bool = true
 ## Off: Quit only emits `quit_requested` (tests).
 var auto_quit: bool = true
+## On (the game): the HUD moves itself out of the 384x216 UI stage onto its own layer at the real window
+## resolution, scaled by a whole number, so text is crisp at 1080p and up. Tests turn it off.
+var relocate_to_window: bool = true
 
 var _director: Object = null
 var _lock_on: Object = null
@@ -75,9 +78,17 @@ var _lock_age: float = 0.0
 var _camera_diorama: bool = false
 var _pad_mode: bool = false
 var _clock: float = 0.0
-var _popups: Array[BattlePopup] = []
+var _floaters: Array[SandboxFloater] = []
+## Event call-outs, newest first: {text, age}. Drawn small and white under the Noise meter.
+var _callouts: Array[Dictionary] = []
+var _layer: CanvasLayer = null
+var _relocating: bool = false
+var _stretch: float = 1.0
 
-var _meters: Control = null
+var _meters: Control = null  ## top-left corner
+var _tr: Control = null  ## top-right corner
+var _bl: Control = null  ## bottom-left corner
+var _br: Control = null  ## bottom-right corner
 var _world: Control = null
 var _popup_layer: Control = null
 var _panel: FeelPanel = null
@@ -88,9 +99,11 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	size = Vector2(UiStage.STAGE_SIZE)
+	size = Vector2(SandboxStyle.REFERENCE_SIZE)
 	set_process(not manual_ticks)
 	_build()
+	if relocate_to_window:
+		_move_to_window.call_deferred()
 
 
 func _process(delta: float) -> void:
@@ -98,27 +111,94 @@ func _process(delta: float) -> void:
 
 
 func _exit_tree() -> void:
+	if _relocating:
+		return
 	unbind()
+	if is_instance_valid(_layer):
+		_layer.queue_free()
+
+
+## Moves the whole HUD (with its menus) onto a CanvasLayer on the root window, so it draws at window
+## resolution instead of inside the 3D picture's 384x216 UI stage, and keeps it sized to the window.
+func _move_to_window() -> void:
+	if not is_inside_tree() or get_parent() is CanvasLayer:
+		return
+	var root: Window = get_tree().root
+	_layer = CanvasLayer.new()
+	_layer.name = "SandboxHudLayer"
+	_layer.layer = SandboxUiData.ui_int("layer", 90)
+	_layer.process_mode = Node.PROCESS_MODE_ALWAYS
+	root.add_child(_layer)
+	_relocating = true
+	reparent(_layer, false)
+	_relocating = false
+	if not root.size_changed.is_connected(_fit_to_window):
+		root.size_changed.connect(_fit_to_window)
+	_fit_to_window()
+
+
+## Whole-number scale from the window height (data: ui.window_px_per_scale), and the UI size that gives.
+func _fit_to_window() -> void:
+	if not is_inside_tree():
+		return
+	# The project stretches the canvas to the window (canvas_items). This layer undoes that, so its units
+	# are real window pixels and the whole-number scale below is exact.
+	var window: Vector2 = Vector2(get_tree().root.size)
+	_stretch = maxf(0.01, get_tree().root.get_final_transform().get_scale().x)
+	if is_instance_valid(_layer):
+		_layer.scale = Vector2(1.0 / _stretch, 1.0 / _stretch)
+	var factor: float = float(maxi(1, roundi(window.y / SandboxUiData.ui_float("window_px_per_scale", 400.0))))
+	scale = Vector2(factor, factor)
+	position = Vector2.ZERO
+	size = (window / factor).floor()
+	_place_corners()
+
+
+## The 384x216 reference layout is anchored to the four corners of the (larger) UI size.
+func _place_corners() -> void:
+	var ref: Vector2 = Vector2(SandboxStyle.REFERENCE_SIZE)
+	var extra: Vector2 = (size - ref).max(Vector2.ZERO)
+	if _meters == null:
+		return
+	_meters.position = Vector2.ZERO
+	_tr.position = Vector2(extra.x, 0.0)
+	_bl.position = Vector2(0.0, extra.y)
+	_br.position = extra
+	_world.size = size
+	_popup_layer.size = size
+	for corner: Control in [_meters, _tr, _bl, _br]:
+		corner.size = ref
+
+
+## The UI size in UI units (the whole window divided by the whole-number scale).
+func ui_size() -> Vector2:
+	return size
+
+
+## UI units per window pixel is 1 / this.
+func ui_scale() -> float:
+	return scale.x
+
+
+func _make_layer(layer_name: String, callback: Callable, layer_size: Vector2) -> Control:
+	var control: Control = Control.new()
+	control.name = layer_name
+	control.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	control.size = layer_size
+	if callback.is_valid():
+		control.draw.connect(callback)
+	add_child(control)
+	return control
 
 
 func _build() -> void:
-	_meters = Control.new()
-	_meters.name = "Meters"
-	_meters.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_meters.size = size
-	_meters.draw.connect(_draw_meters)
-	add_child(_meters)
-	_world = Control.new()
-	_world.name = "World"
-	_world.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_world.size = size
-	_world.draw.connect(_draw_world)
-	add_child(_world)
-	_popup_layer = Control.new()
-	_popup_layer.name = "Popups"
-	_popup_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_popup_layer.size = size
-	add_child(_popup_layer)
+	var ref: Vector2 = Vector2(SandboxStyle.REFERENCE_SIZE)
+	_meters = _make_layer("TopLeft", _draw_tl, ref)
+	_tr = _make_layer("TopRight", _draw_tr, ref)
+	_bl = _make_layer("BottomLeft", _draw_bl, ref)
+	_br = _make_layer("BottomRight", _draw_br, ref)
+	_world = _make_layer("World", _draw_world, size)
+	_popup_layer = _make_layer("Floaters", Callable(), size)
 	_panel = (load(PANEL_SCENE) as PackedScene).instantiate() as FeelPanel
 	_panel.name = "FeelPanel"
 	_panel.audio = audio
@@ -267,8 +347,17 @@ func get_enemy_bar_ids() -> Array[String]:
 	return ids
 
 
-func get_popups() -> Array[BattlePopup]:
-	return _popups
+## The damage numbers floating over fighters right now.
+func get_floaters() -> Array[SandboxFloater]:
+	return _floaters
+
+
+## The event call-out texts on screen, newest first.
+func get_callouts() -> Array[String]:
+	var out: Array[String] = []
+	for entry: Dictionary in _callouts:
+		out.append(str(entry["text"]))
+	return out
 
 
 func get_camera_text() -> String:
@@ -286,7 +375,8 @@ func is_menu_open() -> bool:
 
 # ---- positions ----
 
-## Picture pixels -> stage pixels. The 3D picture is the PsxScreen's resolution when one is running.
+## Picture pixels -> UI units. With a PsxScreen running, the picture's real place on the window is used
+## (whatever the window size), else the picture is taken to fill the UI.
 func world_scale() -> Vector2:
 	var world: Vector2 = SandboxUiData.vec("world_size")
 	var screen: Node = get_tree().get_first_node_in_group(UiStage.SCREEN_GROUP) if is_inside_tree() else null
@@ -294,20 +384,30 @@ func world_scale() -> Vector2:
 		world = Vector2((screen as PsxScreen).get_resolution())
 	if world.x <= 0.0 or world.y <= 0.0:
 		return Vector2.ONE
-	return Vector2(UiStage.STAGE_SIZE) / world
+	return size / world
 
 
-## Where a fighter's anchor is on the stage, or NO_POSITION when the sandbox can't say.
+## A point in the 3D picture (picture pixels) in UI units.
+func picture_to_ui(point: Vector2) -> Vector2:
+	var screen: Node = get_tree().get_first_node_in_group(UiStage.SCREEN_GROUP) if is_inside_tree() else null
+	if screen is PsxScreen and relocate_to_window and get_parent() is CanvasLayer:
+		var display: Rect2 = ((screen as PsxScreen).get_display() as Control).get_global_rect()
+		var res: Vector2 = Vector2((screen as PsxScreen).get_resolution())
+		return (display.position + point / res * display.size) * _stretch / ui_scale()
+	return point * world_scale()
+
+
+## Where a fighter's anchor is on the UI, or NO_POSITION when the sandbox can't say.
 func position_of(actor_id: String, point: StringName = &"head") -> Vector2:
 	if sandbox == null or not sandbox.has_method(POS_METHOD):
 		return NO_POSITION
 	var at: Vector2 = sandbox.call(POS_METHOD, StringName(actor_id), point)
 	if at == Vector2.ZERO:
 		return NO_POSITION
-	return at * world_scale()
+	return picture_to_ui(at)
 
 
-## A world point on the stage (for hits that come with a Vector3), or NO_POSITION.
+## A world point on the UI (for hits that come with a Vector3), or NO_POSITION.
 func project_world(point: Vector3) -> Vector2:
 	var cam: Camera3D = _call(_camera, &"get_camera") as Camera3D
 	if cam == null or cam.is_position_behind(point):
@@ -315,11 +415,11 @@ func project_world(point: Vector3) -> Vector2:
 	var viewport_size: Vector2 = cam.get_viewport().get_visible_rect().size
 	if viewport_size.x <= 0.0:
 		return NO_POSITION
-	return cam.unproject_position(point) * (Vector2(UiStage.STAGE_SIZE) / viewport_size)
+	return picture_to_ui(cam.unproject_position(point) * (SandboxUiData.vec("world_size") / viewport_size))
 
 
 func _fallback_position() -> Vector2:
-	return Vector2(UiStage.STAGE_SIZE) * 0.5
+	return size * 0.5
 
 
 # ---- signals ----
@@ -368,35 +468,31 @@ func _on_hit_landed(info: Dictionary) -> void:
 		at = project_world(info["position"] as Vector3)
 	if not at.is_finite():
 		at = _fallback_position()
-	var color: Color = Color(0, 0, 0, 0)
+	var color: Color = SandboxStyle.color("text")
 	if target == _red_id:
 		color = SandboxUiData.color("red_damage")
 	elif outcome == "armored":
 		color = SandboxUiData.color("armored")
-	var popup: BattlePopup = SandboxPopups.damage(damage, color)
-	var stack: int = mini(_number_popups_on(target), SandboxUiData.ui_int("hud.damage_stack_max", 4))
-	var lift: float = float(SandboxUiData.ui_int("hud.damage_popup_lift_px", 4) + stack * SandboxUiData.ui_int("hud.damage_stack_px", 9))
-	var sway: float = float((_popup_serial % 3) - 1) * 6.0
-	_spawn(popup, at + Vector2(sway, -lift), target)
+	var stack: int = mini(_floaters_on(target), SandboxUiData.ui_int("hud.damage_stack_max", 4))
+	var lift: float = float(SandboxUiData.ui_int("hud.damage_lift_px", 4) + stack * SandboxUiData.ui_int("hud.damage_stack_px", 9))
+	var sway: float = float((_floater_serial % 3) - 1) * 4.0
+	_spawn_floater(str(damage), color, at + Vector2(sway, -lift), target)
 
 
-func _number_popups_on(target: String) -> int:
+func _floaters_on(target: String) -> int:
 	var count: int = 0
-	for popup: BattlePopup in _popups:
-		if popup.kind == BattlePopup.Kind.NUMBER and str(popup.get_meta(&"target", "")) == target:
+	for floater: SandboxFloater in _floaters:
+		if floater.target == target:
 			count += 1
 	return count
 
 
 func _on_parry_judged(info: Dictionary) -> void:
-	var popup: BattlePopup = SandboxPopups.parry(str(info.get("rating", "miss")))
-	if popup == null:
-		return
-	_spawn(popup, _over_red(SandboxUiData.ui_int("hud.parry_popup_lift_px", 14)), _red_id)
+	_call_out(SandboxPopups.parry_text(str(info.get("rating", "miss"))))
 
 
 func _on_perfect_dodge(_info: Dictionary) -> void:
-	_spawn(SandboxPopups.lamp_flare(), _over_red(SandboxUiData.ui_int("hud.flare_popup_lift_px", 30)), _red_id)
+	_call_out(SandboxPopups.lamp_flare_text())
 
 
 func _on_flare_started(info: Dictionary) -> void:
@@ -404,7 +500,7 @@ func _on_flare_started(info: Dictionary) -> void:
 	_flare_total = maxf(0.01, float(info.get("duration_s", 0.0)))
 	_flare_left = _flare_total
 	if str(info.get("source", "")) == "parry":
-		_spawn(SandboxPopups.lamp_flare(), _over_red(SandboxUiData.ui_int("hud.flare_popup_lift_px", 30)), _red_id)
+		_call_out(SandboxPopups.lamp_flare_text())
 
 
 func _on_flare_ended() -> void:
@@ -413,14 +509,7 @@ func _on_flare_ended() -> void:
 
 
 func _on_stagger(info: Dictionary) -> void:
-	var popup: BattlePopup = SandboxPopups.stagger(str(info.get("by", "poise")))
-	if popup == null:
-		return
-	var target: String = str(info.get("target", ""))
-	var at: Vector2 = position_of(target, &"head")
-	if not at.is_finite():
-		at = _fallback_position()
-	_spawn(popup, at + Vector2(0, -SandboxUiData.ui_int("hud.damage_popup_lift_px", 4) - 12), target)
+	_call_out(SandboxPopups.stagger_text(str(info.get("by", "poise"))))
 
 
 func _on_noise_changed(points: float, fill: float, rank_id: StringName, rank_name: String) -> void:
@@ -435,7 +524,7 @@ func _on_noise_rank_changed(rank_id: StringName, rank_name: String, went_up: boo
 	_rank_name = rank_name
 	var steps: float = float(SandboxUiData.ui_int("hud.noise_flash_steps", 4)) * SandboxUiData.ui_float("step_s", 0.0833)
 	if went_up:
-		_spawn(SandboxPopups.rank(_rank_id, rank_name), SandboxUiData.vec("hud.rank_popup_pos"), "")
+		_call_out(rank_name)
 		audio.sfx_id(str(SandboxUiData.ui("sfx.rank_up", "")))
 		_noise_flash_left = steps
 		_noise_flash_color = SandboxPopups.rank_color(_rank_id)
@@ -487,20 +576,51 @@ func _on_quit_requested() -> void:
 		get_tree().quit()
 
 
-## Drops pop-ups, enemy bars, the reticle and the meters' leftovers (a reset starts a fresh fight).
+## Drops floating numbers, call-outs, enemy bars, the reticle and the meters' leftovers (a reset starts a fresh fight).
 func _clear_transients() -> void:
-	for popup: BattlePopup in _popups:
-		popup.queue_free()
-	_popups.clear()
+	for floater: SandboxFloater in _floaters:
+		floater.queue_free()
+	_floaters.clear()
+	_callouts.clear()
 	_enemy_bars.clear()
 	_lock_id = ""
 	_flare_active = false
 	_lights_active = false
 
 
-# ---- pop-ups ----
+# ---- floating numbers and call-outs ----
 
-var _popup_serial: int = 0
+var _floater_serial: int = 0
+
+
+func _spawn_floater(text: String, color: Color, at: Vector2, target: String) -> void:
+	_floater_serial += 1
+	var floater: SandboxFloater = SandboxFloater.new()
+	floater.text = text
+	floater.tint = color
+	floater.target = target
+	floater.position = Vector2(clampf(at.x, 16.0, size.x - 16.0), clampf(at.y, 16.0, size.y - 8.0))
+	floater.finished.connect(_on_floater_finished)
+	_popup_layer.add_child(floater)
+	_floaters.append(floater)
+	var cap: int = SandboxUiData.ui_int("hud.max_popups", 24)
+	while _floaters.size() > cap:
+		var oldest: SandboxFloater = _floaters.pop_front()
+		oldest.queue_free()
+
+
+func _on_floater_finished(floater: SandboxFloater) -> void:
+	_floaters.erase(floater)
+	floater.queue_free()
+
+
+## Adds a short event line under the Noise meter ("Lamp Flare!", "Perfect Parry!"). At most two show.
+func _call_out(text: String) -> void:
+	if text.is_empty():
+		return
+	_callouts.push_front({"text": text, "age": 0.0})
+	while _callouts.size() > SandboxUiData.ui_int("hud.callouts.max", 2):
+		_callouts.pop_back()
 
 
 func _over_red(lift: int) -> Vector2:
@@ -510,40 +630,29 @@ func _over_red(lift: int) -> Vector2:
 	return at - Vector2(0, float(lift))
 
 
-func _spawn(popup: BattlePopup, at: Vector2, target: String) -> void:
-	if popup == null:
-		return
-	_popup_serial += 1
-	popup.set_meta(&"target", target)
-	var margin: float = clampf(popup.measure_width() / 2.0 + 4.0, 20.0, 120.0)
-	popup.position = Vector2(clampf(at.x, margin, float(UiStage.STAGE_SIZE.x) - margin), clampf(at.y, 24.0, float(UiStage.STAGE_SIZE.y) - 24.0))
-	popup.finished.connect(_on_popup_finished)
-	_popup_layer.add_child(popup)
-	_popups.append(popup)
-	var cap: int = SandboxUiData.ui_int("hud.max_popups", 24)
-	while _popups.size() > cap:
-		var oldest: BattlePopup = _popups.pop_front()
-		oldest.queue_free()
-
-
-func _on_popup_finished(popup: BattlePopup) -> void:
-	_popups.erase(popup)
-	popup.queue_free()
-
-
 # ---- time ----
 
 func tick(delta: float) -> void:
 	_clock += delta
-	for popup: BattlePopup in _popups.duplicate():
-		if is_instance_valid(popup):
-			popup.tick(delta)
+	for floater: SandboxFloater in _floaters.duplicate():
+		if is_instance_valid(floater):
+			floater.tick(delta)
+	_tick_callouts(delta)
 	_tick_hp(delta)
 	_tick_noise(delta)
 	_tick_lights_and_flare(delta)
 	_tick_world(delta)
-	_meters.queue_redraw()
-	_world.queue_redraw()
+	for layer: Control in [_meters, _tr, _bl, _br, _world]:
+		layer.queue_redraw()
+
+
+func _tick_callouts(delta: float) -> void:
+	var data: Dictionary = SandboxUiData.ui("hud.callouts", {})
+	var life: float = float(data.get("slide_s", 0.15)) + float(data.get("hold_s", 1.4)) + float(data.get("fade_s", 0.4))
+	for entry: Dictionary in _callouts.duplicate():
+		entry["age"] = float(entry["age"]) + delta
+		if float(entry["age"]) > life:
+			_callouts.erase(entry)
 
 
 func _tick_hp(delta: float) -> void:
@@ -607,18 +716,49 @@ func open_pause() -> void:
 
 # ---- drawing: meters (the look is SandboxStyle's) ----
 
-func _draw_meters() -> void:
+func _draw_tl() -> void:
 	_draw_hp()
 	_draw_lights()
+
+
+func _draw_tr() -> void:
 	_draw_noise()
 	_draw_flare()
+	_draw_callouts()
+
+
+func _draw_bl() -> void:
 	if is_menu_open():
 		return
-	var hint_y: float = SandboxUiData.ui_float("hud.hint_y", 211.0)
-	SandboxStyle.label(_meters, Vector2(8.0, hint_y), get_hint_text(), SandboxStyle.color("label_dim"))
+	SandboxStyle.label(_bl, Vector2(8.0, SandboxUiData.ui_float("hud.hint_y", 211.0)), get_hint_text(), SandboxStyle.color("label_dim"))
+
+
+func _draw_br() -> void:
+	if is_menu_open():
+		return
 	var tag: Vector2 = SandboxUiData.vec("hud.camera_tag_right")
 	var tag_text: String = get_camera_text().to_upper()
-	SandboxStyle.label(_meters, Vector2(tag.x - SandboxStyle.text_width("label", tag_text), tag.y), tag_text, SandboxStyle.color("label_dim"))
+	SandboxStyle.label(_br, Vector2(tag.x - SandboxStyle.text_width("label", tag_text), tag.y), tag_text, SandboxStyle.color("label_dim"))
+
+
+## The event lines: small, white, black shadow, sliding in from the right, then fading.
+func _draw_callouts() -> void:
+	var data: Dictionary = SandboxUiData.ui("hud.callouts", {})
+	var at: Array = data.get("pos", [378, 96])
+	var slide_s: float = float(data.get("slide_s", 0.15))
+	var hold_s: float = float(data.get("hold_s", 1.4))
+	var fade_s: float = float(data.get("fade_s", 0.4))
+	for i: int in _callouts.size():
+		var age: float = float((_callouts[i] as Dictionary)["age"])
+		var slide: float = 0.0
+		if age < slide_s:
+			slide = floorf((1.0 - age / slide_s) * float(data.get("slide_px", 14)))
+		var alpha: float = 1.0
+		if age > slide_s + hold_s:
+			alpha = clampf(1.0 - (age - slide_s - hold_s) / maxf(0.01, fade_s), 0.0, 1.0)
+		var y: float = float(at[1]) + float(i) * float(data.get("line_step", 16))
+		var tint: Color = Color(SandboxStyle.color("text"), alpha)
+		SandboxStyle.text_right(_tr, "body", float(at[0]) + slide, y, str((_callouts[i] as Dictionary)["text"]), tint, 150.0)
 
 
 func _draw_hp() -> void:
@@ -650,30 +790,30 @@ func _draw_lights() -> void:
 
 func _draw_noise() -> void:
 	var frame: Rect2 = SandboxUiData.rect("hud.noise_frame")
-	var inner: Rect2 = SandboxStyle.metal_frame(_meters, frame)
+	var inner: Rect2 = SandboxStyle.metal_frame(_tr, frame)
 	var top: Color = SandboxStyle.color("noise_top")
 	var bottom: Color = SandboxStyle.color("noise_bottom")
 	if _noise_flash_left > 0.0 and int(_noise_flash_left / SandboxUiData.ui_float("step_s", 0.0833)) % 2 == 1:
 		top = _noise_flash_color.lerp(Color.WHITE, 0.4)
 		bottom = _noise_flash_color
-	SandboxStyle.thin_bar(_meters, inner, _noise_shown, top, bottom)
-	SandboxStyle.label(_meters, SandboxUiData.vec("hud.noise_label_pos"), SandboxUiData.text("hud.noise"), SandboxStyle.color("label"))
+	SandboxStyle.thin_bar(_tr, inner, _noise_shown, top, bottom)
+	SandboxStyle.label(_tr, SandboxUiData.vec("hud.noise_label_pos"), SandboxUiData.text("hud.noise"), SandboxStyle.color("label"))
 	var points_at: Vector2 = SandboxUiData.vec("hud.noise_points_right")
-	OffsetStat.draw(_meters, points_at, "", str(roundi(_noise_points)), "", SandboxStyle.color("noise_top"), true)
+	OffsetStat.draw(_tr, points_at, "", str(roundi(_noise_points)), "", SandboxStyle.color("noise_top"), true)
 	var rank_at: Vector2 = SandboxUiData.vec("hud.noise_rank_right")
 	var rank_text: String = _rank_name if not _rank_name.is_empty() else SandboxUiData.text("hud.rank_none")
 	var rank_color: Color = SandboxPopups.rank_color(_rank_id) if not _rank_name.is_empty() else SandboxStyle.color("text_dim")
-	SandboxStyle.text_right(_meters, "title", rank_at.x, rank_at.y, rank_text, rank_color, 130.0)
+	SandboxStyle.text_right(_tr, "title", rank_at.x, rank_at.y, rank_text, rank_color, 130.0)
 
 
 func _draw_flare() -> void:
 	if not _flare_active:
 		return
 	var tag: Rect2 = SandboxUiData.rect("hud.flare_tag")
-	SandboxStyle.bar(_meters, tag, SandboxStyle.color("flare_bottom").darkened(0.45), SandboxStyle.color("flare_bottom").darkened(0.7))
-	SandboxStyle.bulb(_meters, tag.position + Vector2(5.0, 2.0), true, SandboxStyle.color("flare_top"))
-	SandboxStyle.text(_meters, "label", tag.position + Vector2(20.0, 9.0), SandboxUiData.text("hud.flare").to_upper(), SandboxStyle.color("flare_top"))
-	SandboxStyle.thin_bar(_meters, SandboxUiData.rect("hud.flare_bar"), _flare_left / _flare_total, SandboxStyle.color("flare_top"), SandboxStyle.color("flare_bottom"))
+	SandboxStyle.bar(_tr, tag, SandboxStyle.color("flare_bottom").darkened(0.45), SandboxStyle.color("flare_bottom").darkened(0.7))
+	SandboxStyle.bulb(_tr, tag.position + Vector2(5.0, 2.0), true, SandboxStyle.color("flare_top"))
+	SandboxStyle.text(_tr, "label", tag.position + Vector2(20.0, 9.0), SandboxUiData.text("hud.flare").to_upper(), SandboxStyle.color("flare_top"))
+	SandboxStyle.thin_bar(_tr, SandboxUiData.rect("hud.flare_bar"), _flare_left / _flare_total, SandboxStyle.color("flare_top"), SandboxStyle.color("flare_bottom"))
 
 
 # ---- drawing: over the fighters ----

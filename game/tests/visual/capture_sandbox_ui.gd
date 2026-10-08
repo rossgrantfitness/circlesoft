@@ -17,6 +17,8 @@ var _hud: Node = null
 
 
 func _initialize() -> void:
+	DisplayServer.window_set_size(Vector2i(1920, 1080))
+	root.size = Vector2i(1920, 1080)
 	_main = (load(MAIN_SCENE) as PackedScene).instantiate()
 	_main.set("debug_overlay_enabled", false)
 	root.add_child(_main)
@@ -54,6 +56,14 @@ func _grab(file: String) -> void:
 	print("saved ", file, " ", image.get_size())
 
 
+## A 1:1 crop of the last frame (to show how sharp the text is).
+func _crop(file: String, rect: Rect2i) -> void:
+	await _frames(2)
+	var image: Image = root.get_texture().get_image()
+	image.get_region(rect).save_png(ProjectSettings.globalize_path(OUT_DIR + file))
+	print("saved ", file, " ", rect.size)
+
+
 func _fight_shot() -> void:
 	var enemies: Array = _sandbox.call("get_enemies")
 	_director.emit_signal("hp_changed", &"red", 78, 120)
@@ -76,14 +86,7 @@ func _fight_shot() -> void:
 		await process_frame
 	_hud.call("tick", 0.0001)
 	await _grab("sandbox_hud.png")
-	await _grab("sandbox_hud_offset_upright.png")
-	# The same moment with the leaning letters (the theme's slant_pct switch), for Ross to compare.
-	var theme: Object = load("res://art/placeholder/ui/sandbox_theme.tres") as Object
-	theme.call("set_constant", "slant_pct", "SandboxUi", 22)
-	_hud.call("tick", 0.0001)
-	await _grab("sandbox_hud_offset_slant.png")
-	theme.call("set_constant", "slant_pct", "SandboxUi", 0)
-	_hud.call("tick", 0.0001)
+	await _crop("sandbox_hud_closeup.png", Rect2i(0, 0, 1920, 360))
 
 
 func _panel_shot() -> void:

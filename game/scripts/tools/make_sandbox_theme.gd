@@ -21,7 +21,7 @@ const FONT_DIR: String = "res://art/final/ui/fonts/"
 ## fallback text face), Micro5-Regular.ttf, JacquardaBastarda9-Regular.ttf.
 ## Ross picked (2026-10-08) "Pixelify + slant": body in Pixelify Sans leaning by slant_pct, numerals in VT323
 ## with the same lean; second place Jersey 15 (numerals stay VT323) alone (use_fallback_font = 1, no slant). slant_pct is the lean
-## switch: 0 = upright (the default until Ross says whether he wants the lean), 22 = the sample he liked.
+## switch: 0 = upright, 22 = the sample he liked (the default: Ross, 2026-10-08, "the bottom one is more interesting").
 ## Round one (Vagrant Story reference): docs/screenshots/ui_font_options.png.
 const BODY_FONT: String = "PixelifySans-VariableFont_wght.ttf"
 const BODY_WEIGHT: int = 500
@@ -98,7 +98,7 @@ const CONSTANTS: Dictionary = {
 	"shadow_x": 1,
 	"shadow_y": 1,
 	"top_light": 0,
-	"slant_pct": 0,
+	"slant_pct": 22,
 	"use_fallback_font": 0,
 	"stack_offset": 3,
 	"edge_light_pct": 30,

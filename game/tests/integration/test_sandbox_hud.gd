@@ -21,6 +21,7 @@ func _setup() -> void:
 	_hud.animations_enabled = false
 	_hud.listen_input = false
 	_hud.auto_quit = false
+	_hud.relocate_to_window = false
 	_hud.audio.target = _audio
 	add_to_root(_hud)
 	_hud.get_pause_menu().pause_game = false
@@ -36,20 +37,8 @@ func after_each() -> void:
 		_sandbox.free_nodes()
 
 
-func _numbers() -> Array[BattlePopup]:
-	var out: Array[BattlePopup] = []
-	for popup: BattlePopup in _hud.get_popups():
-		if popup.kind == BattlePopup.Kind.NUMBER:
-			out.append(popup)
-	return out
-
-
-func _letters() -> Array[BattlePopup]:
-	var out: Array[BattlePopup] = []
-	for popup: BattlePopup in _hud.get_popups():
-		if popup.kind == BattlePopup.Kind.RATING:
-			out.append(popup)
-	return out
+func _numbers() -> Array[SandboxFloater]:
+	return _hud.get_floaters()
 
 
 # ---- HP ----
@@ -90,15 +79,15 @@ func test_red_is_not_given_an_enemy_bar() -> void:
 
 # ---- damage numbers ----
 
-func test_a_hit_pops_a_damage_number_over_the_target_in_stage_pixels() -> void:
+func test_a_hit_floats_a_damage_number_over_the_target_in_ui_units() -> void:
 	_setup()
 	_sandbox.director.hit_landed.emit({"attacker": &"red", "target": &"grunt_1", "outcome": "hit", "damage": 12})
-	var numbers: Array[BattlePopup] = _numbers()
+	var numbers: Array[SandboxFloater] = _numbers()
 	assert_eq(numbers.size(), 1)
 	assert_eq(numbers[0].text, "12")
 	var scale: Vector2 = _hud.world_scale()
-	assert_almost_eq(scale.x, 0.6, 0.001, "640 wide picture onto the 384 wide stage")
-	assert_almost_eq(numbers[0].position.x, 320.0 * scale.x + 6.0 * float((1 % 3) - 1) + 0.0, 8.0)
+	assert_almost_eq(scale.x, 0.6, 0.001, "640 wide picture onto the 384 wide UI")
+	assert_almost_eq(numbers[0].position.x, 320.0 * scale.x, 8.0)
 	assert_lt(numbers[0].position.y, 180.0 * scale.y, "it sits above the target")
 
 
@@ -110,72 +99,82 @@ func test_no_number_for_a_miss_an_evade_or_zero_damage() -> void:
 	assert_eq(_numbers().size(), 0)
 
 
-func test_damage_to_red_is_not_drawn_white() -> void:
+func test_damage_numbers_are_white_and_damage_to_red_is_not() -> void:
 	_setup()
 	_sandbox.director.hit_landed.emit({"target": &"grunt_1", "outcome": "hit", "damage": 5})
 	_sandbox.director.hit_landed.emit({"target": &"red", "outcome": "hit", "damage": 7})
-	var numbers: Array[BattlePopup] = _numbers()
-	assert_eq(numbers[0].get_fill_color(), Color.html("#FFFFFF"))
-	assert_ne(numbers[1].get_fill_color(), Color.html("#FFFFFF"))
+	var numbers: Array[SandboxFloater] = _numbers()
+	assert_eq(numbers[0].tint, SandboxStyle.color("text"))
+	assert_eq(SandboxStyle.color("text"), Color.html("#FFFFFF"), "white text")
+	assert_ne(numbers[1].tint, numbers[0].tint)
 
 
 func test_numbers_on_one_target_stack_up_instead_of_overlapping() -> void:
 	_setup()
 	for i: int in 3:
 		_sandbox.director.hit_landed.emit({"target": &"grunt_1", "outcome": "hit", "damage": 3 + i})
-	var numbers: Array[BattlePopup] = _numbers()
+	var numbers: Array[SandboxFloater] = _numbers()
 	assert_lt(numbers[2].position.y, numbers[0].position.y, "later hits sit higher")
 
 
-func test_pop_ups_end_and_are_freed() -> void:
+func test_numbers_rise_fade_and_are_freed() -> void:
 	_setup()
 	_sandbox.director.hit_landed.emit({"target": &"grunt_1", "outcome": "hit", "damage": 3})
-	assert_eq(_hud.get_popups().size(), 1)
-	_hud.tick(3.0)
-	assert_eq(_hud.get_popups().size(), 0)
+	var number: SandboxFloater = _numbers()[0]
+	assert_eq(number.alpha(), 1.0)
+	_hud.tick(number.life_s() * 0.5)
+	assert_gt(number.rise_px(), 0.0, "it rose")
+	_hud.tick(number.life_s())
+	assert_eq(_numbers().size(), 0, "gone when its time is up")
 
 
-func test_a_hit_with_no_known_position_still_pops_in_the_middle() -> void:
+func test_a_hit_with_no_known_position_still_shows_in_the_middle() -> void:
 	_setup()
 	_sandbox.director.hit_landed.emit({"target": &"ghost", "outcome": "hit", "damage": 4})
-	var number: BattlePopup = _numbers()[0]
+	var number: SandboxFloater = _numbers()[0]
 	assert_true(number.position.x > 100.0 and number.position.x < 300.0)
 
 
-# ---- parry, Lamp Flare, stagger ----
+func test_no_big_lettering_is_built_for_events() -> void:
+	var source: String = FileAccess.get_file_as_string("res://scripts/ui/sandbox/sandbox_hud.gd") + FileAccess.get_file_as_string("res://scripts/ui/sandbox/sandbox_popups.gd")
+	assert_false(source.contains("BattlePopup"), "events are small text now, not the stencil lettering")
 
-func test_each_parry_rating_has_its_own_words_and_the_stencil_look() -> void:
+
+# ---- parry, Lamp Flare, stagger: small call-outs ----
+
+func test_each_parry_rating_has_its_own_words() -> void:
 	_setup()
 	var cases: Dictionary = {"nice": "Guard!", "rad": "Parry!", "totally_rad": "Perfect Parry!", "miss": "Missed"}
 	for rating: String in cases:
-		_sandbox.positions["red"] = Vector2(320, 200)
 		_sandbox.director.parry_judged.emit({"attacker": &"grunt_1", "rating": rating, "outcome": "parried", "delta_ms": 10})
-		var popup: BattlePopup = _letters().back()
-		assert_eq(popup.text, cases[rating], rating)
-		assert_eq(popup.kind, BattlePopup.Kind.RATING, "it is the battle HUD's stencil lettering")
+		assert_eq(_hud.get_callouts()[0], cases[rating], rating)
 
 
-func test_a_perfect_parry_is_the_loud_cycling_lettering() -> void:
-	_setup()
-	_sandbox.director.parry_judged.emit({"rating": "totally_rad"})
-	var popup: BattlePopup = _letters().back()
-	assert_eq(popup.style_id, "totally_rad")
-
-
-func test_a_perfect_dodge_pops_lamp_flare() -> void:
+func test_a_perfect_dodge_calls_out_lamp_flare() -> void:
 	_setup()
 	_sandbox.director.perfect_dodge.emit({"attacker": &"grunt_1", "move_id": &"swipe"})
-	assert_eq(_letters().back().text, SandboxUiData.text("popups.lamp_flare"))
+	assert_eq(_hud.get_callouts()[0], SandboxUiData.text("popups.lamp_flare"))
 	_sandbox.director.flare_started.emit({"source": "dodge", "duration_s": 2.5, "enemy_scale": 0.25})
-	assert_eq(_letters().size(), 1, "the flare that follows a dodge does not pop a second one")
+	assert_eq(_hud.get_callouts().size(), 1, "the flare that follows a dodge does not call out a second one")
 	assert_true(_hud.is_flaring())
 
 
-func test_a_parry_flare_pops_lamp_flare_itself() -> void:
+func test_a_parry_flare_calls_out_lamp_flare_itself() -> void:
 	_setup()
 	_sandbox.director.flare_started.emit({"source": "parry", "duration_s": 2.5, "enemy_scale": 0.25})
-	assert_eq(_letters().size(), 1)
-	assert_eq(_letters()[0].text, SandboxUiData.text("popups.lamp_flare"))
+	assert_eq(_hud.get_callouts(), [SandboxUiData.text("popups.lamp_flare")] as Array[String])
+
+
+func test_at_most_two_call_outs_show_newest_first_and_they_fade_away() -> void:
+	_setup()
+	_sandbox.director.parry_judged.emit({"rating": "nice"})
+	_sandbox.director.parry_judged.emit({"rating": "rad"})
+	_sandbox.director.perfect_dodge.emit({})
+	assert_eq(_hud.get_callouts().size(), 2)
+	assert_eq(_hud.get_callouts()[0], "Lamp Flare!")
+	assert_eq(_hud.get_callouts()[1], "Parry!")
+	_hud.tick(3.0)
+	assert_eq(_hud.get_callouts().size(), 0)
 
 
 func test_the_flare_timer_runs_down_and_ends() -> void:
@@ -187,12 +186,12 @@ func test_the_flare_timer_runs_down_and_ends() -> void:
 	assert_false(_hud.is_flaring())
 
 
-func test_a_stagger_pops_over_the_enemy() -> void:
+func test_a_stagger_is_called_out() -> void:
 	_setup()
 	_sandbox.director.stagger.emit({"target": &"grunt_1", "by": "parry"})
-	assert_eq(_letters().back().text, "Staggered!")
+	assert_eq(_hud.get_callouts()[0], "Staggered!")
 	_sandbox.director.stagger.emit({"target": &"grunt_1", "by": "poise"})
-	assert_eq(_letters().back().text, "Poise Break!")
+	assert_eq(_hud.get_callouts()[0], "Poise Break!")
 
 
 # ---- Noise and Lights On ----
@@ -206,27 +205,24 @@ func test_the_noise_meter_follows_the_signal() -> void:
 	assert_eq(noise["rank_name"], "Nice!")
 
 
-func test_a_rank_up_pops_the_rank_name_and_plays_its_sound() -> void:
+func test_a_rank_up_calls_out_the_rank_name_and_plays_its_sound() -> void:
 	_setup()
 	_sandbox.director.noise_rank_changed.emit(&"rad", "Rad!", true)
-	assert_eq(_letters().back().text, "Rad!")
-	assert_eq(_letters().back().style_id, "rad")
+	assert_eq(_hud.get_callouts()[0], "Rad!")
 	assert_has(_audio.sfx_ids, "combat_noise_rank_up")
-	_sandbox.director.noise_rank_changed.emit(&"totally_rad", "TOTALLY RAD!", true)
-	assert_eq(_letters().back().style_id, "totally_rad")
 
 
 func test_a_rank_down_is_quiet() -> void:
 	_setup()
 	_sandbox.director.noise_rank_changed.emit(&"nice", "Nice!", false)
-	assert_eq(_letters().size(), 0)
+	assert_eq(_hud.get_callouts().size(), 0)
 	assert_does_not_have(_audio.sfx_ids, "combat_noise_rank_up")
 
 
-func test_an_unknown_rank_still_gets_a_pop_up_in_the_default_style() -> void:
+func test_an_unknown_rank_still_gets_a_call_out() -> void:
 	_setup()
 	_sandbox.director.noise_rank_changed.emit(&"mystery_rank", "Whoa!", true)
-	assert_eq(_letters().back().text, "Whoa!")
+	assert_eq(_hud.get_callouts()[0], "Whoa!")
 
 
 func test_lights_on_shows_and_runs_down() -> void:
@@ -352,7 +348,7 @@ func test_a_reset_clears_leftover_pop_ups_and_bars() -> void:
 	_hud.get_pause_menu().handle_command(MenuInput.Cmd.DOWN)
 	_hud.get_pause_menu().handle_command(MenuInput.Cmd.CONFIRM)
 	assert_eq(_hud.get_enemy_bar_ids().size(), 0)
-	assert_eq(_hud.get_popups().size(), 0)
+	assert_eq(_hud.get_floaters().size() + _hud.get_callouts().size(), 0)
 
 
 func test_quit_says_so_without_closing_the_test_runner() -> void:
@@ -468,3 +464,53 @@ func test_the_feel_panel_is_bound_to_the_directors_knobs() -> void:
 	panel.focus_knob("shake_scale")
 	panel.handle_command(MenuInput.Cmd.RIGHT)
 	assert_almost_eq(_sandbox.director.feel.get_f("shake_scale"), 1.05, 0.0001)
+
+
+# ---- crisp text: the HUD draws at the window's own resolution ----
+
+func test_in_the_game_the_hud_moves_to_a_window_layer_with_a_whole_number_scale() -> void:
+	var sandbox: FakeCombatSandbox = FakeCombatSandbox.new()
+	var hud: SandboxHud = (load(HUD_SCENE) as PackedScene).instantiate() as SandboxHud
+	hud.manual_ticks = true
+	hud.listen_input = false
+	add_to_root(hud)
+	hud.bind(sandbox)
+	await tree.process_frame
+	await tree.process_frame
+	assert_true(hud.get_parent() is CanvasLayer, "moved onto its own layer on the window")
+	var factor: float = hud.scale.x
+	assert_eq(factor, roundf(factor), "a whole-number scale, so pixel fonts stay crisp")
+	assert_ge(factor, 1.0)
+	assert_eq(hud.scale.x, hud.scale.y)
+	var window: Vector2 = Vector2(tree.root.size)
+	assert_le(absf(hud.ui_size().x * factor - window.x), factor, "the UI covers the window")
+	assert_le(absf(hud.ui_size().y * factor - window.y), factor)
+	sandbox.director.hp_changed.emit(&"red", 33, 120)
+	assert_eq(hud.get_hp(), 33, "the bindings survive the move")
+	var layer: Node = hud.get_parent()
+	hud.get_parent().remove_child(hud)
+	hud.free()
+	sandbox.free_nodes()
+	if is_instance_valid(layer):
+		layer.free()
+
+
+func test_the_corner_pieces_sit_in_the_corners_of_a_larger_ui() -> void:
+	_setup()
+	_hud.size = Vector2(640, 360)
+	_hud._place_corners()
+	var ref: Vector2 = Vector2(SandboxStyle.REFERENCE_SIZE)
+	assert_eq(_hud.get_node("TopLeft").position, Vector2.ZERO)
+	assert_eq(_hud.get_node("TopRight").position, Vector2(640.0 - ref.x, 0.0))
+	assert_eq(_hud.get_node("BottomLeft").position, Vector2(0.0, 360.0 - ref.y))
+	assert_eq(_hud.get_node("BottomRight").position, Vector2(640.0 - ref.x, 360.0 - ref.y))
+
+
+func test_menus_center_themselves_in_a_larger_ui() -> void:
+	_setup()
+	_hud.size = Vector2(640, 360)
+	_hud.get_feel_panel()._fit()
+	var offset: Vector2 = SandboxStyle.center_offset(_hud.get_feel_panel())
+	assert_eq(offset, Vector2(128, 72))
+	assert_eq(_hud.get_feel_panel().get_node("Overlay").position, offset)
+	assert_eq(_hud.get_feel_panel().size, Vector2(640, 360), "the dim covers the whole UI")
