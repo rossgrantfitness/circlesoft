@@ -95,7 +95,7 @@
    ]
   },
   "dash": {
-   "length_s": 0.6,
+   "length_s": 0.7333,
    "loop": false,
    "source": "UAL2:Sword_Dash",
    "keys": [
@@ -104,16 +104,10 @@
      "clip_s": 0.0
     },
     {
-     "frame": 9,
-     "clip_s": 0.3
-    },
-    {
-     "frame": 18,
-     "clip_s": 0.6
+     "frame": 22,
+     "clip_s": 0.7333
     }
-   ],
-   "contact_s": 0.3,
-   "contact_frame": 9
+   ]
   },
   "light_1": {
    "length_s": 0.9333,

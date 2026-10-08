@@ -319,7 +319,14 @@ func _real_sandbox_shot(shot: String) -> void:
 	if shot == "fx":
 		await _stage_fx(sandbox, director, player)
 	else:
-		await _settle(20)
+		# a camera that shows the far walls: pulled back and level, looking down the long way
+		var feel: Object = sandbox.call("get_feel") as Object
+		if feel != null:
+			feel.call("set_value", "cam_distance_m", 9.0)
+		var camera: Node = sandbox.call("get_camera") as Node
+		if camera != null:
+			camera.call("set_orbit_angles", float(camera.call("get_yaw")), -0.05)
+		await _settle(40)
 	_stats(shot)
 	var image: Image = root.get_viewport().get_texture().get_image()
 	print("saved ", "%s/%s.png" % [_out, out_name], " ", image.get_size(), " error ", image.save_png("%s/%s.png" % [_out, out_name]))

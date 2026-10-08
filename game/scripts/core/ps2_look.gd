@@ -44,6 +44,7 @@ const SHADOW_QUALITIES: Dictionary[String, int] = {
 var _applied: bool = false
 var _saved_environment: Dictionary = {}
 var _saved_light: Dictionary = {}
+var _saved_camera: Dictionary = {}
 
 
 func _ready() -> void:
@@ -86,8 +87,14 @@ func _enter(profile: Dictionary) -> void:
 		if not _applied:
 			_saved_light = {"shadow_enabled": light.shadow_enabled, "directional_shadow_mode": light.directional_shadow_mode,
 					"directional_shadow_max_distance": light.directional_shadow_max_distance, "shadow_bias": light.shadow_bias,
-					"shadow_normal_bias": light.shadow_normal_bias, "shadow_blur": light.shadow_blur}
+					"shadow_normal_bias": light.shadow_normal_bias, "shadow_blur": light.shadow_blur,
+					"directional_shadow_blend_splits": light.directional_shadow_blend_splits}
 		apply_shadows(light, profile)
+	var camera: Camera3D = _camera()
+	if camera != null:
+		if not _applied:
+			_saved_camera = {"far": camera.far, "near": camera.near}
+		apply_camera(camera, profile)
 	_applied = true
 
 
@@ -105,6 +112,10 @@ func _leave() -> void:
 	if light != null and not _saved_light.is_empty():
 		for property: String in _saved_light:
 			light.set(property, _saved_light[property])
+	var camera: Camera3D = _camera()
+	if camera != null and not _saved_camera.is_empty():
+		for property: String in _saved_camera:
+			camera.set(property, _saved_camera[property])
 
 
 func _screen() -> PsxScreen:
@@ -121,6 +132,14 @@ func _environment() -> Environment:
 	elif get_parent() != null:
 		node = get_parent().find_child("WorldEnvironment", true, false) as WorldEnvironment
 	return node.environment if node != null else null
+
+
+func _camera() -> Camera3D:
+	if get_parent() == null:
+		return null
+	for found: Node in get_parent().find_children("*", "Camera3D", true, false):
+		return found as Camera3D
+	return null
 
 
 func _key_light() -> DirectionalLight3D:
@@ -269,9 +288,21 @@ static func apply_shadows(light: DirectionalLight3D, profile: Dictionary) -> voi
 	light.shadow_bias = float(shadows.get("bias", 0.05))
 	light.shadow_normal_bias = float(shadows.get("normal_bias", 1.0))
 	light.shadow_blur = float(shadows.get("blur", 1.0))
+	light.directional_shadow_blend_splits = bool(shadows.get("blend_splits", true))
+	if shadows.has("atlas_px"):
+		RenderingServer.directional_shadow_atlas_set_size(int(shadows["atlas_px"]), true)
 	var quality: int = int(SHADOW_QUALITIES.get(str(shadows.get("filter", "soft_low")), RenderingServer.SHADOW_QUALITY_SOFT_LOW))
 	RenderingServer.directional_soft_shadow_filter_set_quality(quality as RenderingServer.ShadowQuality)
 	RenderingServer.positional_soft_shadow_filter_set_quality(quality as RenderingServer.ShadowQuality)
+
+
+## A long far plane (no draw-distance limit for authenticity's sake). Profile `camera`: far_m, near_m.
+static func apply_camera(camera: Camera3D, profile: Dictionary) -> void:
+	var block_data: Dictionary = block(profile, "camera")
+	if block_data.has("far_m"):
+		camera.far = float(block_data["far_m"])
+	if block_data.has("near_m"):
+		camera.near = float(block_data["near_m"])
 
 
 # ---- materials ----

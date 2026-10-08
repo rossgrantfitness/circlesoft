@@ -248,12 +248,12 @@
    "fog": {
     "color": "#262d33",
     "mix": 1.0,
-    "near_mul": 1.6,
-    "far_mul": 3.2,
-    "near_m": 19.0,
-    "far_m": 77.0,
+    "near_mul": 2.5,
+    "far_mul": 6.25,
+    "near_m": 30.0,
+    "far_m": 150.0,
     "smooth": true,
-    "_note": "Gentle, smooth fog. PsxRoomLook (the sandbox's room look) scales its own 12 m / 24 m by near_mul and far_mul, which makes 19 m to 77 m; near_m and far_m are the same numbers for scenes without one (Ps2Look). Tuned so walls 15 to 25 m away keep their tiles and the gloom comes from the ambient light and the far haze (2026-10-08)."
+    "_note": "A gentle haze at long range, for mood only: it never hides distance (Ross, 2026-10-08: long draw distances are a modern convenience we keep). PsxRoomLook (the sandbox's room look) scales its 12 m / 24 m by near_mul and far_mul, giving 30 m to 150 m; near_m and far_m are the same numbers for scenes without one (Ps2Look). Nothing in the arena (44 m across) is more than a few percent fogged."
    },
    "materials": {
     "saturation": 0.5,
@@ -342,7 +342,8 @@
    "_about": "The early-PS2 look for the combat sandbox (Ross, 2026-10-08: 'the psx look needs a upgrade to ps2'; docs/pivot/combat_api.md section 6). Grim's grade, fog and edge light kept; 640x360 smooth picture, retro wobble (vertex jitter, affine warp), dither and 15-bit colour off, a real-time key-light shadow, glow, gentle smooth fog. Applied by scripts/core/ps2_look.gd (a look-aware node the sandbox adds); a scene without that node only gets the grade and fog. texture_filter is per texture group: smooth (linear + mipmaps) or nearest (crisp pixels); Ross has not chosen for the city tiles yet, so they stay nearest.",
    "screen": {
     "resolution": "640x360",
-    "smooth_scale": true
+    "smooth_scale": true,
+    "_note": "The internal picture size is a data setting (psx_look.json lists the sizes); Ross may revisit it."
    },
    "retro_wobble": {
     "jitter": 0.0,
@@ -356,14 +357,17 @@
    },
    "shadows": {
     "enabled": true,
-    "filter": "soft_low",
-    "mode": "parallel_2_splits",
-    "max_distance_m": 20.0,
+    "filter": "soft_medium",
+    "mode": "parallel_4_splits",
+    "max_distance_m": 60.0,
     "bias": 0.05,
     "normal_bias": 1.0,
-    "blur": 1.0,
+    "blur": 1.2,
     "fighters_cast": true,
-    "fx_cast": false
+    "fx_cast": false,
+    "blend_splits": true,
+    "atlas_px": 4096,
+    "_note": "One key light; modern quality where it is cheap: four stable cascades out to 60 m (the whole arena), blended seams, a medium soft filter, a 4096 atlas. No shimmer from a short distance."
    },
    "glow": {
     "enabled": true,
@@ -400,6 +404,11 @@
    "shader": {
     "smooth": "res://shaders/ps2_lit.gdshader",
     "nearest": "res://shaders/ps2_lit_crisp.gdshader"
+   },
+   "camera": {
+    "_note": "No draw-distance limit for authenticity: the far plane is long and nothing pops in.",
+    "far_m": 500.0,
+    "near_m": 0.05
    }
   }
  }

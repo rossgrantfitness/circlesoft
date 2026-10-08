@@ -299,9 +299,8 @@
   {
    "name": "dash",
    "source": "UAL2:Sword_Dash",
-   "from_s": 0.0,
-   "to_s": 0.6,
-   "contact_src_s": 0.3
+   "from_s": 0.38,
+   "to_s": 1.1
   },
   {
    "name": "light_1",

@@ -49,7 +49,7 @@ func test_the_ps2_blocks() -> void:
 	assert_false(bool(profile["dither"]["enabled"]))
 	assert_false(bool(profile["color_depth"]["enabled"]))
 	assert_true(bool(profile["shadows"]["enabled"]))
-	assert_almost_eq(float(profile["shadows"]["max_distance_m"]), 20.0, 0.001)
+	assert_ge(float(profile["shadows"]["max_distance_m"]), 40.0, "shadows reach across the whole arena (no short-distance limit for authenticity)")
 	assert_true(bool(profile["glow"]["enabled"]))
 	assert_false(bool(profile["characters"]["dull"]), "Ross's art is never repainted")
 	assert_gt(float(profile["characters"]["rim_strength"]), 0.0, "the edge light is kept")
@@ -95,8 +95,24 @@ func test_glow_and_shadow_settings_land_on_the_nodes() -> void:
 	own(light)
 	Ps2Look.apply_shadows(light, _profile())
 	assert_true(light.shadow_enabled)
-	assert_almost_eq(light.directional_shadow_max_distance, 20.0, 0.001)
-	assert_eq(light.directional_shadow_mode, DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS)
+	assert_almost_eq(light.directional_shadow_max_distance, float(_profile()["shadows"]["max_distance_m"]), 0.001)
+	assert_eq(light.directional_shadow_mode, DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS, "stable cascades")
+	assert_true(light.directional_shadow_blend_splits, "no visible seams between cascades")
+	var camera: Camera3D = Camera3D.new()
+	own(camera)
+	Ps2Look.apply_camera(camera, _profile())
+	assert_ge(camera.far, 300.0, "a long draw distance")
+
+
+func test_fog_is_a_light_haze_that_never_hides_distance() -> void:
+	var fog: Dictionary = _profile()["fog"]
+	assert_ge(float(fog["near_m"]), 25.0, "nothing in the 44 m arena is fogged to speak of")
+	assert_ge(float(fog["far_m"]), 100.0)
+	# what the sandbox's room look turns it into (its own 12 m / 24 m scaled by the profile)
+	assert_ge(12.0 * float(fog["near_mul"]), 25.0)
+	assert_ge(24.0 * float(fog["far_mul"]), 100.0)
+	for path: String in ["res://shaders/ps2_lit.gdshader", "res://shaders/ps2_lit_crisp.gdshader"]:
+		assert_true((load(path) as Shader).code.contains("fog_disabled"), "the profile's fog is the only fog on PS2 materials: " + path)
 
 
 # ---- the screen and the switch back ----

@@ -4,7 +4,8 @@
 //
 // What it does differently from psx_lit:
 //   * per-pixel lighting from the scene's lights, receives the key light's real-time shadow,
-//   * smooth distance fog in the same grim haze colours (psx_fog_* globals, no bands),
+//   * smooth, gentle distance fog from the profile (psx_fog_* globals, no bands); Godot's own fog is switched off for these
+//     materials (fog_disabled) so the look profile is the single place the haze is set. It is mood only, never a way to hide distance,
 //   * the banded edge light kept (rim_*; LookProfiles.dress_model writes it from the profile),
 //   * the glTF metallic-roughness map is read (G rough, B metal); the normal map stays in the file for step two,
 //   * bright, saturated texels (neon strips, blade glow) can feed the bloom (emissive_pick),
