@@ -20,7 +20,6 @@
     "size_m": [44.0, 44.0],
     "wall_height_m": 7.0,
     "wall_thickness_m": 1.0,
-    "texture_filter": "linear",
     "tile_variant": "clean",
     "tile_m": 2.0,
     "floor_tile": "floor_plate_diamond_cross_a",
@@ -44,8 +43,8 @@
     ]
   },
   "lighting": {
-    "key": {"color": "#ffd9b0", "energy": 1.25, "rot_deg": [-58.0, 35.0, 0.0], "shadow": true, "shadow_max_distance_m": 30.0},
-    "ambient": {"color": "#59607a", "energy": 1.3},
+    "key": {"color": "#ffd9b0", "energy": 1.1, "rot_deg": [-58.0, 35.0, 0.0], "shadow": true, "shadow_max_distance_m": 30.0},
+    "ambient": {"color": "#59607a", "energy": 1.1},
     "background": "#14172a",
     "fog": {"color": "#1f2540", "density": 0.012},
     "lamps": [

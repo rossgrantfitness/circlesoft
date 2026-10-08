@@ -40,9 +40,11 @@ var _lock: LockOn = null
 var _enemies: Array[Node3D] = []
 var _racks: Array[SwordRack] = []
 var _attached: Array[Node] = []
-var _materials: Dictionary[String, StandardMaterial3D] = {}
+var _materials: Dictionary[String, Material] = {}
 var _relay: InputRelay = null
 var _mouse_captured: bool = false
+## Tests set this to a Input.MouseMode value to stand in for the real window's mouse mode (-1 = ask Input).
+var mouse_mode_override: int = -1
 var _world_environment: WorldEnvironment = null
 var _enemy_serial: int = 0
 
@@ -51,6 +53,7 @@ func _ready() -> void:
 	_data = _load_data()
 	add_to_group(&"combat_sandbox")
 	_setup_screen()
+	_apply_look()          # first, so everything built below knows which profile (grim_ps2) it is dressing for
 	_build_arena()
 	_attach_parts(false)
 	_setup_feel()
@@ -198,11 +201,14 @@ func get_player_spawn() -> Transform3D:
 
 ## Captures or frees the mouse (the pause menu and the feel panel free it). Headless runs never capture.
 func set_mouse_captured(captured: bool) -> void:
-	if DisplayServer.get_name() == "headless":
-		_mouse_captured = false
-		return
 	_mouse_captured = captured
+	if DisplayServer.get_name() == "headless":
+		return
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED if captured else Input.MOUSE_MODE_VISIBLE
+
+
+func _current_mouse_mode() -> int:
+	return mouse_mode_override if mouse_mode_override >= 0 else int(Input.mouse_mode)
 
 
 func is_mouse_captured() -> bool:
@@ -319,9 +325,8 @@ func _add_box(parent: Node3D, node_name: String, pos: Vector3, size: Vector3, ro
 	body.position = pos
 	body.rotation_degrees = rot_deg
 	var mesh_node: MeshInstance3D = MeshInstance3D.new()
-	var mesh: BoxMesh = BoxMesh.new()
-	mesh.size = size
-	mesh_node.mesh = mesh
+	var tile_m: float = maxf(float(_block("arena").get("tile_m", 2.0)), 0.1)
+	mesh_node.mesh = _box_mesh(size, tile_m)
 	mesh_node.material_override = _material_for(tile)
 	body.add_child(mesh_node)
 	var shape_node: CollisionShape3D = CollisionShape3D.new()
@@ -330,6 +335,38 @@ func _add_box(parent: Node3D, node_name: String, pos: Vector3, size: Vector3, ro
 	shape_node.shape = shape
 	body.add_child(shape_node)
 	return body
+
+
+## A box whose UVs are in tile repeats (metres / tile_m) on every face, so a big floor and a thin wall
+## get the same texel density. Front faces are clockwise, as Godot wants.
+static func _box_mesh(size: Vector3, tile_m: float) -> ArrayMesh:
+	var tool: SurfaceTool = SurfaceTool.new()
+	tool.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var half: Vector3 = size * 0.5
+	# [normal, u axis, v axis] with u x v = normal
+	var faces: Array[Array] = [
+		[Vector3.RIGHT, Vector3.UP, Vector3.BACK], [Vector3.LEFT, Vector3.BACK, Vector3.UP],
+		[Vector3.UP, Vector3.BACK, Vector3.RIGHT], [Vector3.DOWN, Vector3.RIGHT, Vector3.BACK],
+		[Vector3.BACK, Vector3.RIGHT, Vector3.UP], [Vector3.FORWARD, Vector3.UP, Vector3.RIGHT],
+	]
+	for face: Array in faces:
+		var n: Vector3 = face[0]
+		var t: Vector3 = face[1]
+		var b: Vector3 = face[2]
+		var hn: float = absf(n.dot(half))
+		var ht: float = absf(t.dot(half))
+		var hb: float = absf(b.dot(half))
+		var corners: Array[Vector2] = [Vector2(-1, -1), Vector2(-1, 1), Vector2(1, 1), Vector2(1, -1)]
+		var points: Array[Vector3] = []
+		var uvs: Array[Vector2] = []
+		for c: Vector2 in corners:
+			points.append(n * hn + t * ht * c.x + b * hb * c.y)
+			uvs.append(Vector2((c.x + 1.0) * ht, (1.0 - c.y) * hb) / tile_m)
+		for index: int in [0, 1, 2, 0, 2, 3]:
+			tool.set_normal(n)
+			tool.set_uv(uvs[index])
+			tool.add_vertex(points[index])
+	return tool.commit()
 
 
 func _add_pillar(parent: Node3D, node_name: String, pos: Vector3, radius: float, height: float, tile: String) -> void:
@@ -346,7 +383,8 @@ func _add_pillar(parent: Node3D, node_name: String, pos: Vector3, radius: float,
 	mesh.height = height
 	mesh.radial_segments = 16
 	mesh_node.mesh = mesh
-	mesh_node.material_override = _material_for(tile)
+	var tile_m: float = maxf(float(_block("arena").get("tile_m", 2.0)), 0.1)
+	mesh_node.material_override = _material_for(tile, Vector2(TAU * radius / tile_m, height / tile_m))
 	body.add_child(mesh_node)
 	var shape_node: CollisionShape3D = CollisionShape3D.new()
 	var shape: CylinderShape3D = CylinderShape3D.new()
@@ -356,35 +394,40 @@ func _add_pillar(parent: Node3D, node_name: String, pos: Vector3, radius: float,
 	body.add_child(shape_node)
 
 
-## The arena's plain-grey fallback colour, or the tile's texture (world-triplanar so every box and
-## cylinder gets the same texel density). The filter comes from data, never from code: first the
-## look profile's texture_filter block, then sandbox.json arena.texture_filter.
-func _material_for(tile_id: String) -> StandardMaterial3D:
-	if _materials.has(tile_id):
-		return _materials[tile_id]
+## The look profile everything in the arena is dressed for.
+func _profile() -> Dictionary:
+	return LookProfiles.active()
+
+
+## A material for a city tile. With a texture it is the PS2 material from Ps2Look (so the texture filter and
+## the light grade come from the look profile's data); without one, plain grey. `uv_scale` is how many
+## tile repeats the surface covers (set per surface, because the PS2 shader maps by UV).
+func _material_for(tile_id: String, uv_scale: Vector2 = Vector2.ONE) -> Material:
+	var key: String = "%s|%.3f|%.3f" % [tile_id, uv_scale.x, uv_scale.y]
+	if _materials.has(key):
+		return _materials[key]
 	var arena: Dictionary = _block("arena")
-	var material: StandardMaterial3D = StandardMaterial3D.new()
-	var grey: Variant = arena.get("grey", [0.34, 0.35, 0.38])
-	var grey_list: Array = grey as Array
-	material.albedo_color = Color(float(grey_list[0]), float(grey_list[1]), float(grey_list[2]))
-	material.roughness = 0.9
-	material.metallic_specular = 0.2
 	var texture: Texture2D = _tile_texture(tile_id)
+	var material: Material = null
 	if texture != null:
-		material.albedo_texture = texture
-		material.albedo_color = Color.WHITE
-		material.uv1_triplanar = true
-		material.uv1_world_triplanar = true
-		var tile_m: float = maxf(float(arena.get("tile_m", 2.0)), 0.1)
-		material.uv1_scale = Vector3.ONE / tile_m
-		material.texture_filter = _filter_mode()
-		material.texture_repeat = true
-	elif not tile_id.is_empty():
-		missing.append("tile " + tile_id)
-	_materials[tile_id] = material
+		var shader_material: ShaderMaterial = Ps2Look.make_material(texture, "city_tiles", _profile())
+		shader_material.set_shader_parameter(&"uv_scale", uv_scale)
+		material = shader_material
+	else:
+		var grey: Array = arena.get("grey", [0.34, 0.35, 0.38]) as Array
+		var plain: StandardMaterial3D = StandardMaterial3D.new()
+		plain.albedo_color = Color(float(grey[0]), float(grey[1]), float(grey[2]))
+		plain.roughness = 0.9
+		plain.metallic_specular = 0.2
+		material = plain
+		if not tile_id.is_empty() and not missing.has("tile " + tile_id):
+			missing.append("tile " + tile_id)
+	_materials[key] = material
 	return material
 
 
+## The tile's picture: the seam-fixed copy when the atlas says there is one (`seamless_copy`, or
+## `seamless_copy_busted`), else the original slice.
 func _tile_texture(tile_id: String) -> Texture2D:
 	if tile_id.is_empty():
 		return null
@@ -395,26 +438,26 @@ func _tile_texture(tile_id: String) -> Texture2D:
 	var dir: String = str(db.call("get_value", ATLAS_ID, "variants.%s.tile_dir" % variant, ""))
 	if dir.is_empty():
 		return null
-	var path: String = dir.path_join(tile_id + ".png")
-	if not ResourceLoader.exists(path):
-		return null
-	return load(path) as Texture2D
+	var candidates: Array[String] = []
+	var entry: Dictionary = _atlas_entry(db, tile_id)
+	var flag: String = "seamless_copy" if variant == "clean" else "seamless_copy_" + variant
+	if bool(entry.get(flag, false)):
+		var seamless_dir: String = str(db.call("get_value", ATLAS_ID, "variants.%s.seamless_dir" % variant, ""))
+		if seamless_dir.is_empty():
+			seamless_dir = dir.trim_suffix("/") + "_seamless/"
+		candidates.append(seamless_dir.path_join(tile_id + ".png"))
+	candidates.append(dir.path_join(tile_id + ".png"))
+	for path: String in candidates:
+		if ResourceLoader.exists(path):
+			return load(path) as Texture2D
+	return null
 
 
-## BaseMaterial3D texture filter from data. Ross's pixel-art filtering call is pending (R40), so the
-## profile can decide ("nearest" / "linear") and sandbox.json is the fallback.
-func _filter_mode() -> BaseMaterial3D.TextureFilter:
-	var mode: String = str(_block("arena").get("texture_filter", "linear"))
-	var from_profile: Variant = LookProfiles.value(LookProfiles.active_id(), "texture_filter.mode", null)
-	if from_profile is String and not (from_profile as String).is_empty():
-		mode = from_profile
-	match mode:
-		"nearest":
-			return BaseMaterial3D.TEXTURE_FILTER_NEAREST
-		"nearest_mipmap":
-			return BaseMaterial3D.TEXTURE_FILTER_NEAREST_WITH_MIPMAPS
-		_:
-			return BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+func _atlas_entry(db: Node, tile_id: String) -> Dictionary:
+	for raw: Variant in db.call("get_value", ATLAS_ID, "tiles", []) as Array:
+		if (raw as Dictionary).get("id", "") == tile_id:
+			return raw as Dictionary
+	return {}
 
 
 func _build_lighting() -> void:
@@ -459,6 +502,10 @@ func _build_lighting() -> void:
 	_world_environment.name = "WorldEnvironment"
 	_world_environment.environment = environment
 	add_child(_world_environment)
+	# The PS2 look: smooth 640x360 picture, retro effects off, glow and the key light's shadow, all from the profile.
+	var ps2: Ps2Look = Ps2Look.new()
+	ps2.name = "Ps2Look"
+	add_child(ps2)
 	var look: PsxRoomLook = PsxRoomLook.new()
 	look.name = "RoomLook"
 	look.fog_color = environment.fog_light_color if environment.fog_enabled else environment.background_color
@@ -666,7 +713,9 @@ func _make_relay() -> void:
 ## camera while the mouse is captured.
 func handle_input_event(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
-		if _mouse_captured and _camera != null:
+		# Only while the mouse really is captured: the pause menu and feel panel free it (SandboxPauseGate
+		# remembers CAPTURED and gives it back), and then the camera must not turn.
+		if _mouse_captured and _current_mouse_mode() == Input.MOUSE_MODE_CAPTURED and _camera != null:
 			_camera.add_mouse_motion((event as InputEventMouseMotion).relative)
 		return
 	if _player == null or not _player.has_method("handle_input_event"):

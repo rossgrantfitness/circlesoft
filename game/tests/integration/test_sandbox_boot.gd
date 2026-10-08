@@ -177,22 +177,23 @@ func test_the_floor_and_walls_are_on_the_world_layer() -> void:
 func test_tiles_come_from_the_atlas_or_fall_back_to_grey() -> void:
 	var arena: CombatSandbox = _arena()
 	var floor_body: StaticBody3D = arena.get_node("Level/Floor") as StaticBody3D
-	var material: StandardMaterial3D = (floor_body.get_child(0) as MeshInstance3D).material_override as StandardMaterial3D
-	var tile_there: bool = ResourceLoader.exists("res://art/final/textures/city/tiles_busted/floor_diamond_plate_rust.png")
+	var material: Material = (floor_body.get_child(0) as MeshInstance3D).material_override
+	var tile_there: bool = ResourceLoader.exists("res://art/final/textures/city/tiles/floor_plate_diamond_cross_a.png")
 	if tile_there:
-		assert_not_null(material.albedo_texture, "Ross's city tile is on the floor")
+		assert_true(material is ShaderMaterial, "Ross's city tile is on the floor, on the PS2 material")
+		assert_not_null((material as ShaderMaterial).get_shader_parameter(&"albedo_texture"))
 	else:
-		assert_null(material.albedo_texture, "plain grey when the tile is not there")
+		assert_true(material is StandardMaterial3D, "plain grey when the tile is not there")
 
 
 func test_the_texture_filter_comes_from_data() -> void:
 	var arena: CombatSandbox = _arena()
-	var wanted: String = str((arena.get_data()["arena"] as Dictionary)["texture_filter"])
 	var floor_body: StaticBody3D = arena.get_node("Level/Floor") as StaticBody3D
-	var material: StandardMaterial3D = (floor_body.get_child(0) as MeshInstance3D).material_override as StandardMaterial3D
-	if material.albedo_texture != null and wanted == "linear":
-		assert_eq(material.texture_filter, BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS)
-	assert_true(arena.get_data().has("look_profile"), "the look profile is data too")
+	var material: ShaderMaterial = (floor_body.get_child(0) as MeshInstance3D).material_override as ShaderMaterial
+	assert_not_null(material)
+	var wanted: String = Ps2Look.filter_for(LookProfiles.active(), "city_tiles")
+	var crisp: bool = material.shader.resource_path == Ps2Look.CRISP_SHADER_PATH
+	assert_eq(crisp, wanted == Ps2Look.NEAREST, "nearest in the profile = the crisp shader, and nothing in code decides it")
 
 
 func test_screen_pos_of_gives_stage_pixels_and_zero_for_unknown() -> void:
@@ -302,3 +303,58 @@ func test_reset_respawns_every_enemy_the_data_lists() -> void:
 	arena.reset_arena()
 	await tree.process_frame
 	assert_eq(arena.get_enemies().size(), expected, "all of them are back")
+
+
+func test_the_mouse_turns_the_camera_only_while_it_is_captured_and_the_pause_gate_round_trip_is_safe() -> void:
+	var arena: CombatSandbox = _arena()
+	var camera: OrbitCamera = arena.get_camera()
+	camera.read_engine_input = false
+	var motion: InputEventMouseMotion = InputEventMouseMotion.new()
+	motion.relative = Vector2(80, 0)
+	arena.set_mouse_captured(true)
+	assert_true(arena.is_mouse_captured())
+	arena.mouse_mode_override = Input.MOUSE_MODE_CAPTURED   # what the arena sets in a real window
+	var yaw0: float = camera.get_yaw()
+	arena.handle_input_event(motion)
+	camera.tick(1.0 / 60.0)
+	assert_lt(camera.get_yaw(), yaw0, "captured: the mouse turns the view")
+	# The pause gate frees the mouse while a menu is open...
+	arena.mouse_mode_override = Input.MOUSE_MODE_VISIBLE
+	var yaw1: float = camera.get_yaw()
+	arena.handle_input_event(motion)
+	camera.tick(1.0 / 60.0)
+	assert_almost_eq(camera.get_yaw(), yaw1, 0.0001, "menu open: moving the pointer does not spin the camera")
+	# ...and gives it back afterwards: the camera picks up again with no extra step.
+	arena.mouse_mode_override = Input.MOUSE_MODE_CAPTURED
+	arena.handle_input_event(motion)
+	camera.tick(1.0 / 60.0)
+	assert_lt(camera.get_yaw(), yaw1, "restored: turning works again")
+
+
+func test_the_arena_wears_the_ps2_look() -> void:
+	var arena: CombatSandbox = _arena()
+	assert_not_null(arena.get_node_or_null("Ps2Look"), "one Ps2Look next to the WorldEnvironment and the key light")
+	assert_eq(LookProfiles.active_id(), "grim_ps2")
+	var floor_mesh: MeshInstance3D = arena.get_node("Level/Floor").get_child(0) as MeshInstance3D
+	var material: ShaderMaterial = floor_mesh.material_override as ShaderMaterial
+	assert_not_null(material, "city tiles use the PS2 shader material")
+	if material != null:
+		var shader_path: String = material.shader.resource_path
+		var wanted: String = Ps2Look.shader_path_for(LookProfiles.active(), "city_tiles")
+		assert_eq(shader_path, wanted, "the filter comes from the profile's texture_filter block")
+	var environment: Environment = (arena.get_node("WorldEnvironment") as WorldEnvironment).environment
+	assert_eq(environment.glow_enabled, bool((LookProfiles.active().get("glow", {}) as Dictionary).get("enabled", false)))
+
+
+func test_the_seam_fixed_tile_copy_is_used_where_the_atlas_has_one() -> void:
+	var arena: CombatSandbox = _arena()
+	var db: Node = tree.root.get_node("DataDB")
+	for raw: Variant in db.call("get_value", "world/city_texture_atlas", "tiles", []) as Array:
+		var entry: Dictionary = raw as Dictionary
+		if str(entry["id"]) == "steel_plate_riveted_grey" and bool(entry.get("seamless_copy", false)):
+			# the clean copy is the one with a fixed seam; the arena may be on busted, so ask the method directly
+			arena.get_data()["arena"]["tile_variant"] = "clean"
+			var texture: Texture2D = arena._tile_texture("steel_plate_riveted_grey")
+			assert_not_null(texture)
+			assert_true(texture.resource_path.contains("_seamless"), "seamless copy: " + texture.resource_path)
+	assert_true(true)
