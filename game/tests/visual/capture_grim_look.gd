@@ -3,7 +3,8 @@ extends SceneTree
 ##   xvfb-run -a -s "-screen 0 1280x720x24" godot --path game --rendering-driver opengl3 \
 ##       -s res://tests/visual/capture_grim_look.gd -- --shot=square --profile=grim --out=/some/dir
 ## Optional: --at=x,z (where Red stands), --fov=45 (a wider camera, as F9 in the overlay does), --tag=_wide.
-## Shots: square, square_east, checkpoint, battle, red (Red old vs grim is done by capture_grim_red.gd).
+## Shots: square, square_east, checkpoint, field, home, courier, store, gear, office, bar, docks, battle.
+## --calm uses the Calm battle camera. Red old vs grim is done by capture_grim_red.gd.
 ## Profiles: classic, grim. Writes <out>/<shot>_<profile>.png (the whole 1280x720 window). The two
 ## profiles of a shot are put side by side by scripts/tools/compose_grim_shots.py.
 ## Names no game classes (compiled before the autoloads exist): everything is load() and call().
@@ -21,11 +22,22 @@ const ROOM_SHOTS: Dictionary = {
 	"square": ["harrow_square", Vector2(4.4, 1.9), 200.0],
 	"square_east": ["harrow_square", Vector2(17.0, 2.4), 200.0],
 	"checkpoint": ["harrow_checkpoint", Vector2(8.0, 4.6), 200.0],
+	# the readability pass: Red standing in the open at in-game scale, and the rest of Harrow in grim
+	"field": ["harrow_square", Vector2(8.6, 4.4), 200.0],
+	"home": ["harrow_home", Vector2(3.0, 2.4), 200.0],
+	"courier": ["harrow_courier", Vector2(4.0, 2.6), 200.0],
+	"store": ["harrow_store", Vector2(3.5, 2.6), 200.0],
+	"gear": ["harrow_gear", Vector2(3.5, 2.6), 200.0],
+	"office": ["harrow_dock_office", Vector2(3.5, 2.6), 200.0],
+	"bar": ["harrow_bar", Vector2(4.5, 2.8), 200.0],
+	"docks": ["harrow_docks", Vector2(12.0, 3.0), 200.0],
+	"road": ["harrow_checkpoint", Vector2(8.0, 4.6), 200.0],
 }
 
 var _look: GDScript = null
 var _at: String = ""
 var _fov: float = 0.0
+var _calm: bool = false
 
 
 func _initialize() -> void:
@@ -44,6 +56,8 @@ func _initialize() -> void:
 			_at = arg.trim_prefix("--at=")
 		elif arg.begins_with("--fov="):
 			_fov = float(arg.trim_prefix("--fov="))
+		elif arg == "--calm":
+			_calm = true
 		elif arg.begins_with("--tag="):
 			tag = arg.trim_prefix("--tag=")
 	await process_frame
@@ -106,6 +120,8 @@ func _battle(out_dir: String, profile: String) -> void:
 	var stage: Node = screen.call("load_world", load(STAGE_SCENE) as PackedScene)
 	stage.set("transitions_enabled", false)
 	stage.set("camera_intro_enabled", false)
+	if _calm:
+		stage.call("set_dynamic_camera", false)
 	var stub: RefCounted = (load(STUB) as GDScript).new() as RefCounted
 	stub.set("tree", self)
 	stage.call("attach_controller", stub)

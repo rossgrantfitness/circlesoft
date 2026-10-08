@@ -5,7 +5,7 @@
 **Status (2026-10-08)**
 - **Decisions needed from Ross:** none right now.
 - **Done:** battle system (M2-1 to M2-9), Harrow systems and graybox (M3-1 to M3-10), the dynamic battle camera, the grim look test. Ross approved the grim package (look, tone, structure).
-- **In progress:** A-pose reference sheets for Ross (G-0).
+- **In progress:** A-pose reference sheets for Ross (G-0); art and audio request lists (G-2, Creative Director).
 - **Next:** edge light and grim look everywhere, Harrow slum re-dress, re-toned lines, stencil rating lettering, structure docs made official; then the train opening and M4 (the Spillway and the jammer factory).
 - **Waiting on Ross:** his art for the party (M2-10, art rows 1–6; best next, using the A-pose sheets) and Harrow (M3-11, rows 7–18). Later sign-offs: dialogue (M6-2) and every art drop.
 
@@ -34,7 +34,7 @@
 | ID | Task | Assigned to | Depends on | Ross sign-off | Notes |
 |---|---|---|---|---|---|
 | G-1 | Make the tone pass and structure pass official: story bible (Act 1 beats 1 and 7, Act 2 beat 2), design doc (10-hour structure, slice paragraph and list), maps (new docs/maps/train.md for the 3 car rooms + the jump; docs/maps/road_and_tower.md recast as the Spillway, the Works gate and the jammer works; Harrow map's New Game start), style guide environment table | Creative Director | | No (approved 2026-10-08) | Same room ids, flags, encounters and approved map choices. Twist section stays Creative Director + Writer only. |
-| G-2 | Update docs/art_requests.md and docs/audio_requests.md: row 19 becomes the Spillway and the Works gate, the tower kit becomes the Works kit around the mast, new row 42 train-car kit (one car module re-dressed as flatcar, hopper, boxcar), row 37 rating lettering becomes spray-paint stencil, grim palette notes on character and set rows; audio: train and undercity ambience | Producer | G-1 | No | Slice art list goes from 41 to 42. |
+| G-2 | Update docs/art_requests.md and docs/audio_requests.md: row 19 becomes the Spillway and the Works gate, the tower kit becomes the Works kit around the mast, new row 42 train-car kit (one car module re-dressed as flatcar, hopper, boxcar), row 37 rating lettering becomes spray-paint stencil, grim palette notes on character and set rows; audio: train and undercity ambience | Creative Director | G-1 | No | Already underway. Slice art list goes from 41 to 42. Also update the locked budgets from M1-5 if they aren't in yet. |
 | G-3 | Edge-light readability pass: characters and enemies a bit brighter than the grim background, "not too bright", with an edge light (Look A); field and battle | Technical Artist | Grim look test (Done) | No (direction approved; show Ross screenshots in docs/screenshots/) | Clutch cues and ratings must still read at a glance. |
 | G-4 | Grim look everywhere: make the grim look profile the default in every room and the battle stage (classic stays switchable in the F1 overlay for comparison) | Technical Artist | G-3 | No | Applies the 2026-10-08 visual direction (desaturate, darken, grime). UI unchanged. |
 | G-5 | Harrow slum re-dress across all 9 rooms: taller stacked facades and cable nests above the walkable floor, neon over grime, propaganda; scenery only, no layout, door, shop or spawn changes | Technical Artist | G-4 | No | Placeholders in game/art/placeholder/ only. Same camera. |
@@ -90,10 +90,6 @@
 | Task | Assigned to | Started | Notes |
 |---|---|---|---|
 | G-0 A-pose reference sheets for Ross: the current characters in an A-pose on a white background, so he can create art assets | Technical Artist | 2026-10-08 | Ross's request with the grim package approval. Feeds M2-10 (party, art rows 1–6) and his other character rows. |
-| Red style prototypes A–E (static 3D, PSX turntables, in-game scale shots, contact sheet) per docs/red_style_prototypes.md | Technical Artist ×2 | 2026-10-06 | Ross's art-style gate; animation paused until he picks. |
-| Style guide (full draft): visual pillars, palette, proportions, PSX rendering rules, UI windows, fonts | Technical Artist (with Creative Director) | 2026-10-06 | References: Mega Man Legends, Tail Concerto, MGS1, FF7. Goes to Ross as M0-1. Must be approved before Ross's final art. |
-| Technical plan (docs/tech_plan.md) | Technical Director | 2026-10-06 | Feeds M1-1 (project skeleton) and all programming tasks. |
-| Set up the lights-left-on repository | Ross (GitHub clicks), then studio floor moves game files over | 2026-10-05 | Merge PR #1 → mark circlesoft as template → create lights-left-on from it. |
 
 ## Done
 | Task | Done by | Finished | Notes |
@@ -119,6 +115,16 @@
 | M2-3 Clutch engine | Battle Programmer | 2026-10-06 | In v0.2.0. |
 | M2-2 Battle core | Battle Programmer | 2026-10-06 | In v0.2.0. |
 | M2-1 Slice battle data | Battle Programmer | 2026-10-06 | 889 tests at v0.2.0 delivery. |
+| M1-5 Pipeline test: placeholder Red through to the test room; budgets and export checklist in the style guide | Technical Artist | 2026-10-06 | Budgets per the approved style guide (~700 tris target, 900 cap). |
+| M1-4 Windows and Mac export of the test room | Gameplay Programmer | 2026-10-06 | First playable build delivered to Ross (162 tests). Mac build unsigned. |
+| M1-3b Demo start screen | UI Programmer | 2026-10-06 | Screenshot: docs/screenshots/m1_title_screen.png. |
+| M1-3 Diorama camera test room | Gameplay Programmer | 2026-10-06 | Playable; screenshot docs/screenshots/m1_room_playable.png. |
+| M1-2 PSX shader set and low-res screen | Technical Artist | 2026-10-06 | Screenshot: docs/screenshots/m1_test_room.png. |
+| M0-1 Full style guide presented to Ross | Technical Artist + Creative Director | 2026-10-06 | Approved: 384×216, 96×96 portraits, one model per character. |
+| Style guide (full draft) | Technical Artist (with Creative Director) | 2026-10-06 | Went to Ross as M0-1; approved. |
+| Technical plan (docs/tech_plan.md) | Technical Director | 2026-10-06 | Approved; Compatibility renderer. |
+| Red style prototypes A–E | Technical Artist ×2 | 2026-10-06 | Ross picked a mix; Red locked as the polished shiba (prototype F). |
+| Set up the lights-left-on repository | Ross, then studio floor | Not in studio log | Started 2026-10-05; the studio log has no finish date. |
 | M1-1 Project skeleton (tech plan steps 1-3): project settings, autoload stubs, DataDB, headless test runner | Gameplay Programmer | 2026-10-06 | 28 headless tests pass (`godot --headless --path game -s res://tests/run_all.gd`). Awaiting Technical Director review and the studio-floor commit. |
 | Slice task board, art requests (41 assets) and audio requests drawn up | Producer | 2026-10-06 | Includes the weapon-model art requests (Red sword, Otis hammer, Mox wrench-mace); Vela's and Ruo's weapons are Later. |
 | Studio setup (Phases 0–4) | Studio floor | 2026-10-05 | Waiting on Ross to merge pull request #1. |
