@@ -25,7 +25,7 @@
     "dodge":         {"color": "#ffcf80", "core": "#ffffff", "count": 8,  "speed": [2.0, 5.0], "life_s": 0.26, "length_m": 0.3,  "width_m": 0.03,  "gravity": 0.0, "cone_deg": 180.0, "glow": 2.0, "flash": {"size_m": 0.6, "life_s": 0.12, "intensity": 2.0}, "ring": {"max_m": 1.2, "life_s": 0.22}},
     "death":         {"color": "#cfe8f2", "core": "#ffffff", "count": 20, "speed": [2.0, 7.0], "life_s": 0.4,  "length_m": 0.35, "width_m": 0.04,  "gravity": 4.0, "cone_deg": 180.0, "glow": 2.2, "flash": {"size_m": 1.1, "life_s": 0.14, "intensity": 2.6}, "ring": {"max_m": 1.4, "life_s": 0.28}}
   },
-  "spark_by_outcome": {"armored": "guard", "guarded": "guard", "parried": "parry", "perfect_parry": "perfect_parry"},
+  "spark_by_outcome": {"armored": "guard", "guarded": "guard", "blocked": "guard", "guard_broken": "heavy", "parried": "parry", "perfect_parry": "perfect_parry"},
   "spark_aliases": {"slash": "slash", "slash_big": "heavy", "slash_up": "launch", "heavy": "heavy", "launch": "launch", "air": "air", "slam": "heavy"},
   "telegraph": {
     "_note": "the wind-up flash and the converging ring that lands exactly on impact: a parry cue. kinds are picked by info.telegraph_kind, else 'parryable' / 'unparryable' from the signal; add kinds freely (dodge_only, unblockable ...) and the cue appears with no code change.",
