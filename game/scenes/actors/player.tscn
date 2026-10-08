@@ -25,7 +25,7 @@ size = Vector3(0.15, 0.15, 0.2)
 collision_layer = 2
 collision_mask = 1
 script = ExtResource("1_player")
-model_path = "res://art/placeholder/characters/red/red_shiba.glb"
+model_path = "res://art/placeholder/characters/red/red_shiba_grim.glb"
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)

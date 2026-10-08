@@ -18,8 +18,9 @@ extends CharacterBody3D
 ## Blink: after a fight Red flickers for blink_time_s and cannot be caught (start_blink / is_blinking).
 ## Scripted: a climb, a hop or a cutscene moves her directly; physics and input are skipped meanwhile.
 
-## The playable Red: the placeholder shiba (Ross's locked look). The first blockout stays as a fallback.
-const MODEL_PATH: String = "res://art/placeholder/characters/red/red_shiba.glb"
+## The playable Red: the grim shiba (the default look since Ross approved it, 2026-10-08). The classic shiba and the
+## first blockout stay as fallbacks, and the look profile swaps between them (F11).
+const MODEL_PATH: String = "res://art/placeholder/characters/red/red_shiba_grim.glb"
 const FALLBACK_MODEL_PATH: String = "res://art/placeholder/characters/red/red_blockout.glb"
 const ACTION_LEFT: StringName = &"move_left"
 const ACTION_RIGHT: StringName = &"move_right"
@@ -374,7 +375,7 @@ func attach_model(model_scene: PackedScene, source_path: String = "") -> Node3D:
 		return null
 	model.name = "Model"
 	_visual.add_child(model)
-	LookProfiles.dress_model(model, source_path)
+	LookProfiles.dress_model(model, source_path, "party")
 	_animation_player = _find_animation_player(model)
 	_current_animation = &""
 	_play_animation(PlayerMotion.ANIM_IDLE)

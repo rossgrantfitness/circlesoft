@@ -626,7 +626,7 @@ func _load_model(wanted: String) -> Node3D:
 	var resource: Resource = load(path)
 	if resource is PackedScene:
 		var instance: Node3D = (resource as PackedScene).instantiate() as Node3D
-		LookProfiles.dress_model(instance, path)
+		LookProfiles.dress_model(instance, path, side)
 		return instance
 	return null
 

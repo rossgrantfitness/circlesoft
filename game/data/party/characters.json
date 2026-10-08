@@ -7,7 +7,7 @@
   "characters": [
     {
       "id": "red", "name": "Red", "role": "Quick front-line hitter",
-      "model": "res://art/placeholder/characters/red/red_shiba.glb",
+      "model": "res://art/placeholder/characters/red/red_shiba_grim.glb",
       "attack_skill": "red_attack", "signature_skill": "porch_light",
       "skills_by_level": [
         {"level": 1, "skill": "porch_light"},

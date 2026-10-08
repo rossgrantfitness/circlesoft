@@ -189,7 +189,7 @@ func _load_model(root: Node3D) -> bool:
 	root.scale = Vector3.ONE * height_scale
 	root.add_child(_model)
 	apply_light_compensation(_model, light_compensation)
-	LookProfiles.dress_model(_model, resolved_path)
+	LookProfiles.dress_model(_model, resolved_path, "npc")
 	_model_head_top = measure_head_top(root, _model)
 	for node: Node in _model.find_children("*", "AnimationPlayer", true, false):
 		_player = node as AnimationPlayer

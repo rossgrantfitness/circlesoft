@@ -1,11 +1,8 @@
 {
- "_about": "Look profiles (Technical Artist, 2026-10-08, the grim look test). Switch with F11 in the PSX options overlay (auto, classic, grim). A scene picks its own profile from scene_defaults unless the overlay forced one. 'classic' is the toy-box look Ross approved first and is never changed. 'grim' is the greasy, desaturated, oppressive look from Ross's 2026-10-08 tone decision ('desaturate, darken, grime things up a bit'). Read by scripts/core/look_profiles.gd; every key has a test. grade.* feed the PSX post shader (shaders/psx_post.gdshader); post.* are its color levels and dither size; lighting.* are multipliers on a room's own ambient and lights (PsxRoomLook); fog.* tint and shorten the fog; materials.* drain and darken room material tints (GrimDressing); grime.* are the code-painted grime colors and amounts (GrimePaint); characters.* is the dull, matte, scuffed pass on character textures; models maps a classic model path to this profile's variant; backdrop.* replaces keys of the battle set (BattleBackdrop).",
- "default": "classic",
+ "_about": "Look profiles (Technical Artist, 2026-10-08, the grim look test). Switch with F11 in the PSX options overlay (auto, classic, grim). A scene picks its own profile from scene_defaults unless the overlay forced one. 'classic' is the toy-box look Ross approved first and is never changed; it stays one F11 press away. GRIM IS THE DEFAULT EVERYWHERE since Ross approved the look test (2026-10-08). 'grim' is the greasy, desaturated, oppressive look from Ross's 2026-10-08 tone decision ('desaturate, darken, grime things up a bit'). Read by scripts/core/look_profiles.gd; every key has a test. grade.* feed the PSX post shader (shaders/psx_post.gdshader); post.* are its color levels and dither size; lighting.* are multipliers on a room's own ambient and lights (PsxRoomLook); fog.* tint and shorten the fog; materials.* drain and darken room material tints (GrimDressing); grime.* are the code-painted grime colors and amounts (GrimePaint); characters.* is the dull, matte, scuffed pass on character textures; models maps a classic model path to this profile's variant; backdrop.* replaces keys of the battle set (BattleBackdrop).",
+ "default": "grim",
  "scene_defaults": {
-  "_note": "Which profile a scene gets on its own. Keys are room ids (data/world/rooms.json) or 'battle'. Only the look-test scenes are grim for now; everything else stays classic until Ross signs off.",
-  "harrow_square": "grim",
-  "harrow_checkpoint": "grim",
-  "battle": "grim"
+  "_note": "Which profile a scene gets on its own, if it should differ from 'default'. Keys are room ids (data/world/rooms.json) or 'battle'. Empty: grim everywhere since Ross approved it (2026-10-08). F11 in the overlay forces any profile on every scene."
  },
  "profiles": {
   "classic": {
@@ -41,7 +38,9 @@
    "characters": {
     "dull": false
    },
-   "models": {}
+   "models": {
+    "res://art/placeholder/characters/red/red_shiba_grim.glb": "res://art/placeholder/characters/red/red_shiba.glb"
+   }
   },
   "grim": {
    "name": "Grim (greasy, oppressive)",
@@ -103,16 +102,43 @@
    },
    "dressing": true,
    "characters": {
+    "_note": "Characters and enemies: dulled (unless prepainted), then lifted so they read against the dark set, plus an edge light (rim_*, psx_lit.gdshader). roles.<party|enemy|npc> lay over the base block. Ross, 2026-10-08: brighter to stand out, 'not too bright though - edgelight'.",
     "dull": true,
-    "saturation": 0.5,
-    "value": 0.85,
+    "saturation": 0.62,
+    "value": 0.9,
     "gloss_ceiling": 0.62,
     "scuff": 0.35,
     "dirt_color": "#1b1812",
     "warm_cast": "#d8c9a8",
-    "warm_cast_amount": 0.25,
-    "tint_saturation": 0.6,
-    "tint_value": 1.0
+    "warm_cast_amount": 0.2,
+    "tint_saturation": 1.0,
+    "tint_value": 1.35,
+    "rim_color": "#cfe6ee",
+    "rim_strength": 0.55,
+    "rim_power": 2.0,
+    "rim_top_bias": 0.3,
+    "rim_bands": 3,
+    "prepainted": [
+     "res://art/placeholder/characters/red/red_shiba_grim.glb"
+    ],
+    "roles": {
+     "party": {
+      "rim_color": "#ffe2b0",
+      "rim_strength": 0.6,
+      "tint_value": 1.4
+     },
+     "enemy": {
+      "saturation": 0.8,
+      "value": 0.62,
+      "tint_value": 1.0,
+      "rim_color": "#bfe0ee",
+      "rim_strength": 0.5
+     },
+     "npc": {
+      "tint_value": 1.25,
+      "rim_strength": 0.4
+     }
+    }
    },
    "models": {
     "res://art/placeholder/characters/red/red_shiba.glb": "res://art/placeholder/characters/red/red_shiba_grim.glb"

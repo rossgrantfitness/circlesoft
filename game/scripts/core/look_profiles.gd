@@ -264,24 +264,32 @@ static func resolve_model_for(path: String, id: String) -> String:
 	return path
 
 
-## True when a model path is itself a profile variant (so the character texture pass leaves it alone).
+## True when a model's textures are already painted for a look (the profile's characters.prepainted list), so
+## the dull pass leaves them alone.
 static func is_variant_path(path: String) -> bool:
 	for id: String in profile_ids():
-		var variants: Dictionary = _dict(profile(id).get("models", {}))
-		for source: Variant in variants:
-			if str(variants[source]) == path:
-				return true
+		var listed: Variant = _dict(profile(id).get("characters", {})).get("prepainted", [])
+		if listed is Array and (listed as Array).has(path):
+			return true
 	return false
 
 
-## Dulls a freshly loaded character model for the active profile: every textured surface gets its own copy
-## of the material with a drained, darkened, scuffed, gloss-free texture (GrimePaint.dull_character_*).
-## Models that are themselves a profile variant (Red's grim shiba) are already painted dull, so they are left
-## alone. Nothing shared is edited: the copies are surface overrides on this model's own meshes.
-static func dress_model(model: Node, source_path: String = "") -> void:
-	if model == null or not dulls_characters() or is_variant_path(source_path):
+## Dresses a freshly loaded character model for the active profile (Ross, 2026-10-08: characters and enemies
+## brighter than the world, with an edge light). Every textured surface gets its own copy of the material with
+##   - a drained, darkened, scuffed, gloss-free texture (GrimePaint.dull_character_*), unless the model is
+##     already painted dull (the profile's "prepainted" list: Red's grim shiba),
+##   - the profile's tint lift (tint_value: how bright she reads against the set), and
+##   - the edge light (rim_* in psx_lit.gdshader).
+## `role` is "party", "enemy" or "npc": the profile's characters.roles.<role> block lays over the base block, so
+## the Signals grunts can read as dark solid blue-grey figures while the crew stays warm and bright.
+## Nothing shared is edited: the copies are surface overrides on this model's own meshes.
+static func dress_model(model: Node, source_path: String = "", role: String = "") -> void:
+	if model == null:
 		return
-	var cfg: Dictionary = _dict(active().get("characters", {}))
+	var cfg: Dictionary = character_config(active_id(), role)
+	if not dresses_characters_for(active_id()):
+		return
+	var repaint: bool = bool(cfg.get("dull", false)) and not is_variant_path(source_path)
 	for node: Node in model.find_children("*", "MeshInstance3D", true, false):
 		var mesh_instance: MeshInstance3D = node as MeshInstance3D
 		if mesh_instance.mesh == null:
@@ -292,12 +300,37 @@ static func dress_model(model: Node, source_path: String = "") -> void:
 				continue
 			var copy: ShaderMaterial = source.duplicate() as ShaderMaterial
 			var texture: Texture2D = copy.get_shader_parameter("albedo_texture") as Texture2D
-			if texture != null:
+			if repaint and texture != null:
 				copy.set_shader_parameter("albedo_texture", GrimePaint.dull_character_texture(texture, cfg))
 			var tint: Variant = copy.get_shader_parameter("albedo_tint")
 			if tint is Color:
-				copy.set_shader_parameter("albedo_tint", drain(tint, float(cfg.get("tint_saturation", 0.6)), float(cfg.get("tint_value", 0.9))))
+				var lifted: Color = drain(tint, float(cfg.get("tint_saturation", 1.0)), float(cfg.get("tint_value", 1.0)))
+				copy.set_shader_parameter("albedo_tint", lifted)
+			apply_rim(copy, cfg)
 			mesh_instance.set_surface_override_material(surface, copy)
+
+
+## Writes the edge-light settings of a character config into a psx_lit material.
+static func apply_rim(material: ShaderMaterial, cfg: Dictionary) -> void:
+	material.set_shader_parameter("rim_strength", float(cfg.get("rim_strength", 0.0)))
+	if float(cfg.get("rim_strength", 0.0)) <= 0.0:
+		return
+	var color_value: Variant = cfg.get("rim_color", "#c4e0e8")
+	material.set_shader_parameter("rim_color", Color.html(str(color_value)) if color_value is String else Color(0.77, 0.88, 0.91))
+	material.set_shader_parameter("rim_power", float(cfg.get("rim_power", 2.2)))
+	material.set_shader_parameter("rim_top_bias", float(cfg.get("rim_top_bias", 0.3)))
+	material.set_shader_parameter("rim_bands", float(cfg.get("rim_bands", 3.0)))
+
+
+## The characters block of a profile with one role's block laid over it.
+static func character_config(id: String, role: String = "") -> Dictionary:
+	var base: Dictionary = _dict(profile(id).get("characters", {})).duplicate()
+	var roles: Dictionary = _dict(base.get("roles", {}))
+	if not role.is_empty() and roles.has(role):
+		for key: Variant in _dict(roles[role]):
+			base[key] = (roles[role] as Dictionary)[key]
+	base.erase("roles")
+	return base
 
 
 static func dulls_characters() -> bool:
@@ -308,11 +341,17 @@ static func dulls_characters_for(id: String) -> bool:
 	return bool(_dict(profile(id).get("characters", {})).get("dull", false))
 
 
+## True when the profile changes character materials at all (dulling, a tint lift or an edge light).
+static func dresses_characters_for(id: String) -> bool:
+	var cfg: Dictionary = _dict(profile(id).get("characters", {}))
+	return bool(cfg.get("dull", false)) or float(cfg.get("rim_strength", 0.0)) > 0.0 or float(cfg.get("tint_value", 1.0)) != 1.0 or cfg.has("roles")
+
+
 ## A short key for "which look a model of this path gets right now": changes when the variant path or the
-## dull flag changes, so a model that is already right does not reload.
+## dressing changes, so a model that is already right does not reload.
 static func model_look_key(path: String) -> String:
 	var resolved: String = resolve_model(path)
-	return "%s|%s" % [resolved, "dull" if (dulls_characters() and not is_variant_path(resolved)) else "plain"]
+	return "%s|%s" % [resolved, "dressed" if dresses_characters_for(active_id()) else "plain"]
 
 
 # ---- internals ----

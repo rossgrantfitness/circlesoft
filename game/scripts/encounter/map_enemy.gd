@@ -352,7 +352,8 @@ func _animate(moving: bool) -> void:
 	_visual.scale = Vector3.ONE * pop
 
 
-func _load_model(path: String) -> void:
+func _load_model(wanted: String) -> void:
+	var path: String = LookProfiles.resolve_model(wanted)
 	if _visual == null or path.is_empty() or not ResourceLoader.exists(path):
 		return
 	var packed: PackedScene = load(path) as PackedScene
@@ -363,6 +364,7 @@ func _load_model(path: String) -> void:
 		return
 	_visual.add_child(_model)
 	Npc.apply_light_compensation(_model, LIGHT_COMPENSATION)
+	LookProfiles.dress_model(_model, path, "enemy")
 	for node: Node in _model.find_children("*", "AnimationPlayer", true, false):
 		var clips: AnimationPlayer = node as AnimationPlayer
 		if clips.has_animation(&"idle"):

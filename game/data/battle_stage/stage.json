@@ -39,7 +39,7 @@
     "tint": [1.18, 1.08, 0.95],
     "idle_clip": "idle",
     "party_models": {
-      "red": "res://art/placeholder/characters/red/red_shiba.glb",
+      "red": "res://art/placeholder/characters/red/red_shiba_grim.glb",
       "otis": "res://art/placeholder/characters/otis/chr_otis.glb",
       "mox": "res://art/placeholder/characters/mox/chr_mox.glb"
     },

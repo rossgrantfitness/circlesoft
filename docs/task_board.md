@@ -2,6 +2,13 @@
 
 > Owner: Producer. Current milestone: **VERTICAL SLICE**. Anything beyond the slice goes in Later.
 
+**Status (2026-10-08)**
+- **Decisions needed from Ross:** none right now.
+- **Done:** battle system (M2-1 to M2-9), Harrow systems and graybox (M3-1 to M3-10), the dynamic battle camera, the grim look test. Ross approved the grim package (look, tone, structure).
+- **In progress:** A-pose reference sheets for Ross (G-0).
+- **Next:** edge light and grim look everywhere, Harrow slum re-dress, re-toned lines, stencil rating lettering, structure docs made official; then the train opening and M4 (the Spillway and the jammer factory).
+- **Waiting on Ross:** his art for the party (M2-10, art rows 1–6; best next, using the A-pose sheets) and Harrow (M3-11, rows 7–18). Later sign-offs: dialogue (M6-2) and every art drop.
+
 ## To Do
 
 > Slice tasks follow the approved build order (docs/design_doc.md, "Vertical slice scope"; docs/decisions.md, 2026-10-06). Each task is sized for one agent in one go.
