@@ -37,6 +37,7 @@ var _min_fill: float = 1.0
 func _ready() -> void:
 	add_to_group(GROUP_NAME)
 	_load_settings()
+	LookProfiles.apply_grade(_display.material as ShaderMaterial, LookProfiles.active_id())
 	resized.connect(_apply_layout)
 	get_window().size_changed.connect(_apply_layout)
 	set_resolution(_default_resolution())

@@ -6,6 +6,7 @@ extends Control
 ##   F5  15-bit color       F6  fog              F7  vertex lighting
 ##   F8  cycle the internal resolution
 ##   F9  cycle the camera: perspective FOV 30, FOV 45, orthographic
+##   F11 cycle the look profile: auto (each scene's own), classic, grim (data/world/look_profiles.json)
 ## Effects go through PsxLook, the resolution through the PsxScreen (group "psx_screen") and the
 ## camera through the room's DioramaCamera (group "diorama_camera"). Keys are the input-map
 ## actions debug_overlay, debug_jitter, ... so they can be rebound in project.godot.
@@ -13,6 +14,7 @@ extends Control
 const ACTION_TOGGLE_PANEL: StringName = &"debug_overlay"
 const ACTION_RESOLUTION: StringName = &"debug_resolution"
 const ACTION_CAMERA: StringName = &"debug_camera_mode"
+const ACTION_LOOK: StringName = &"debug_look_profile"
 const FOV_OPTIONS_PATH: String = "camera.debug_fov_options"
 const TUNING_ID: String = "world/field_tuning"
 const HINT_TEXT: String = "F1: PSX options"
@@ -63,6 +65,9 @@ func _input(event: InputEvent) -> void:
 		return
 	if event.is_action_pressed(ACTION_CAMERA):
 		cycle_camera_mode()
+		return
+	if event.is_action_pressed(ACTION_LOOK):
+		cycle_look_profile()
 		return
 	for entry: Dictionary in EFFECT_ACTIONS:
 		if event.is_action_pressed(entry["action"]):
@@ -119,6 +124,22 @@ func cycle_camera_mode() -> String:
 	return camera_description(rig)
 
 
+## Look profile switch: auto (the scene's own) -> classic -> grim -> auto. Returns the forced id ("" = auto).
+func cycle_look_profile() -> String:
+	var forced: String = LookProfiles.cycle_forced()
+	if is_panel_visible():
+		_panel_label.text = build_text()
+	return forced
+
+
+static func look_description() -> String:
+	var forced: String = LookProfiles.forced_id()
+	var shown: String = LookProfiles.name_of(LookProfiles.active_id())
+	if forced.is_empty():
+		return "auto (this scene: %s)" % shown
+	return "%s (forced)" % shown
+
+
 ## What the panel says right now.
 func build_text() -> String:
 	var lines: Array[String] = []
@@ -136,6 +157,7 @@ func build_text() -> String:
 	var rig: DioramaCamera = _find_camera()
 	if rig != null:
 		lines.append("F9  Camera: %s" % camera_description(rig))
+	lines.append("F11 Look: %s" % look_description())
 	lines.append("Esc: back to title")
 	return "\n".join(lines)
 
