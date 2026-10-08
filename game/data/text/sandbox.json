@@ -255,6 +255,7 @@
         "off": "Parries never start a flare. Only dodges do."
       }
     },
-    "info_label": "Information"
+    "info_label": "Information",
+    "knob_count": "Knob"
   }
 }

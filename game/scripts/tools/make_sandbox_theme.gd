@@ -20,7 +20,8 @@ const FONT_DIR: String = "res://art/final/ui/fonts/"
 ## the most character), Handjet-Variable.ttf (loses its i-dots at menu sizes), Jersey15-Regular.ttf (clean;
 ## used here for numerals because Pixelify's 5, 2 and 8 read alike), Micro5-Regular.ttf, JacquardaBastarda9-Regular.ttf.
 ## Ross picked (2026-10-08) "Pixelify + slant": body in Pixelify Sans leaning by slant_pct, numerals in Jersey 15
-## with the same lean; second place Jersey 15 alone (use_fallback_font = 1, no slant). slant_pct = 0 turns the lean off.
+## with the same lean; second place Jersey 15 alone (use_fallback_font = 1, no slant). slant_pct is the lean
+## switch: 0 = upright (the default until Ross says whether he wants the lean), 22 = the sample he liked.
 ## Round one (Vagrant Story reference): docs/screenshots/ui_font_options.png.
 const BODY_FONT: String = "PixelifySans-VariableFont_wght.ttf"
 const BODY_WEIGHT: int = 500
@@ -32,6 +33,11 @@ const TITLE_SIZE: int = 20
 const DIGITS_FONT: String = "Jersey15-Regular.ttf"
 const DIGITS_SIZE: int = 16
 const DIGITS_SPACING: int = 1
+## The staggered "OffsetStat" readout (Hp 78 /120): small label raised, big current value on the baseline,
+## smaller slash + max dropped lower. Sizes here, offsets in the constants stat_label_raise, stat_slash_drop, stat_gap.
+const STAT_LABEL_SIZE: int = 12
+const STAT_BIG_SIZE: int = 20
+const STAT_SMALL_SIZE: int = 14
 const LABEL_FONT: String = "Silkscreen-Regular.ttf"
 const LABEL_SIZE: int = 8
 const LABEL_SPACING: int = 1
@@ -89,7 +95,7 @@ const CONSTANTS: Dictionary = {
 	"shadow_x": 1,
 	"shadow_y": 1,
 	"top_light": 0,
-	"slant_pct": 22,
+	"slant_pct": 0,
 	"use_fallback_font": 0,
 	"stack_offset": 3,
 	"edge_light_pct": 30,
@@ -97,6 +103,9 @@ const CONSTANTS: Dictionary = {
 	"cursor_w": 5,
 	"cursor_h": 9,
 	"arrow_size": 3,
+	"stat_label_raise": 3,
+	"stat_slash_drop": 4,
+	"stat_gap": 2,
 	"frame_border": 3,
 	"rivet_size": 2,
 }
@@ -112,10 +121,17 @@ func _initialize() -> void:
 	theme.set_font_size("title", TYPE, TITLE_SIZE)
 	theme.set_font("digits", TYPE, _font(DIGITS_FONT, DIGITS_SPACING, 0))
 	theme.set_font_size("digits", TYPE, DIGITS_SIZE)
+	theme.set_font("stat_label", TYPE, _font(BODY_FONT, BODY_SPACING, BODY_WEIGHT))
+	theme.set_font_size("stat_label", TYPE, STAT_LABEL_SIZE)
+	theme.set_font("stat_big", TYPE, _font(DIGITS_FONT, DIGITS_SPACING, 0))
+	theme.set_font_size("stat_big", TYPE, STAT_BIG_SIZE)
+	theme.set_font("stat_small", TYPE, _font(DIGITS_FONT, DIGITS_SPACING, 0))
+	theme.set_font_size("stat_small", TYPE, STAT_SMALL_SIZE)
 	# Ross's second choice (Jersey 15 for everything, upright): set the constant use_fallback_font to 1.
-	for role: String in ["body", "title", "digits"]:
+	var fallback_sizes: Dictionary = {"body": DIGITS_SIZE, "title": DIGITS_SIZE + 4, "digits": DIGITS_SIZE, "stat_label": STAT_LABEL_SIZE, "stat_big": STAT_BIG_SIZE, "stat_small": STAT_SMALL_SIZE}
+	for role: String in fallback_sizes:
 		theme.set_font("%s_fallback" % role, TYPE, _font(DIGITS_FONT, DIGITS_SPACING, 0))
-		theme.set_font_size("%s_fallback" % role, TYPE, DIGITS_SIZE + (4 if role == "title" else 0))
+		theme.set_font_size("%s_fallback" % role, TYPE, int(fallback_sizes[role]))
 	theme.set_font("label", TYPE, _font(LABEL_FONT, LABEL_SPACING, 0))
 	theme.set_font_size("label", TYPE, LABEL_SIZE)
 	for name: String in COLORS:

@@ -136,8 +136,8 @@
     },
     "defend": {
      "reaction_ms": [
-      150,
-      230
+      80,
+      150
      ],
      "threat_range_m": 3.2,
      "read_weight": {
@@ -376,8 +376,8 @@
     },
     "defend": {
      "reaction_ms": [
-      220,
-      320
+      160,
+      260
      ],
      "threat_range_m": 3.6,
      "read_weight": {

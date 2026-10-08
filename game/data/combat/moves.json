@@ -997,7 +997,7 @@
      "name": "Dodge",
      "state": "ground",
      "kind": "reaction",
-     "startup_ms": 60,
+     "startup_ms": 40,
      "active_ms": 220,
      "recovery_ms": 300,
      "cancels": {},
@@ -1012,23 +1012,23 @@
       "fallback": "dash_lean"
      },
      "iframes": {
-      "from_ms": 60,
-      "to_ms": 280
+      "from_ms": 40,
+      "to_ms": 260
      },
      "motion": {
       "travel_m": 2.4,
-      "from_ms": 60,
-      "to_ms": 280,
+      "from_ms": 40,
+      "to_ms": 260,
       "direction": "set_by_brain"
      },
      "tell": {
       "flash": "edge_cyan",
       "from_ms": 0,
-      "to_ms": 60
+      "to_ms": 40
      },
      "punish": {
-      "from_ms": 280,
-      "to_ms": 580
+      "from_ms": 260,
+      "to_ms": 560
      },
      "sfx": "combat_dash"
     },
@@ -1065,7 +1065,7 @@
      "name": "Guard up",
      "state": "ground",
      "kind": "reaction",
-     "startup_ms": 80,
+     "startup_ms": 60,
      "active_ms": 40,
      "recovery_ms": 0,
      "cancels": {},
@@ -1079,8 +1079,8 @@
       "fallback": "brace"
      },
      "guard": {
-      "from_ms": 80,
-      "to_ms": 120
+      "from_ms": 60,
+      "to_ms": 100
      }
     },
     "block_hold": {
@@ -1394,7 +1394,7 @@
      "name": "Guard up",
      "state": "ground",
      "kind": "reaction",
-     "startup_ms": 140,
+     "startup_ms": 100,
      "active_ms": 60,
      "recovery_ms": 0,
      "cancels": {},
@@ -1408,8 +1408,8 @@
       "fallback": "brace"
      },
      "guard": {
-      "from_ms": 140,
-      "to_ms": 200
+      "from_ms": 100,
+      "to_ms": 160
      }
     },
     "block_hold": {

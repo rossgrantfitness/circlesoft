@@ -850,7 +850,11 @@ func _draw_overlay() -> void:
 		return
 	var head_base: float = header.position.y + 12.0
 	SandboxStyle.text(_overlay, "body", Vector2(_left() + 8.0, head_base), SandboxUiData.text("feel.title"), SandboxStyle.color("text_on_header"))
-	SandboxStyle.text_right(_overlay, "body", _left() + _width() - 8.0, head_base, SandboxUiData.text("feel.paused"), SandboxStyle.color("text_on_header"), 120.0)
+	var count: int = get_rows().size()
+	if count > 0 and _zone == Zone.ROWS:
+		OffsetStat.draw(_overlay, Vector2(_left() + _width() - 8.0, head_base), SandboxUiData.text("feel.knob_count"), str(_row + 1), str(count), SandboxStyle.color("text_on_header"), true)
+	else:
+		SandboxStyle.text_right(_overlay, "body", _left() + _width() - 8.0, head_base, SandboxUiData.text("feel.paused"), SandboxStyle.color("text_on_header"), 120.0)
 	_draw_tabs()
 	_draw_rows()
 	_draw_info()

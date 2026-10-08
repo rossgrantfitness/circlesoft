@@ -20,7 +20,7 @@ const SHOTS: Dictionary = {
 		"sword": true,
 		"height": 0.95,
 		"poses": [["idle", "0.5"], ["run", "0.1"], ["light_1", "contact"], ["light_2", "contact"], ["light_3", "contact"],
-				["parry", "contact"], ["hurt", "contact"], ["dash", "contact"], ["heavy", "contact"], ["knockdown", "0.4"]],
+				["parry", "contact"], ["hurt", "contact"], ["dash", "0.2"], ["heavy", "contact"], ["knockdown", "0.4"]],
 	},
 	"wolf": {
 		"model": "res://art/final/enemies/cyberwolf_sentinel_rigged_ual.glb",
@@ -186,7 +186,7 @@ func _build_stage() -> void:
 	_label.add_theme_color_override(&"font_color", Color("#f3e9d0"))
 	_label.add_theme_color_override(&"font_outline_color", Color("#14121f"))
 	_label.add_theme_constant_override(&"outline_size", 6)
-	_label.position = Vector2(560.0, 560.0)
+	_label.position = Vector2(500.0, 512.0)
 	(_screen.call("get_ui_layer") as CanvasLayer).add_child(_label)
 
 

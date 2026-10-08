@@ -1,0 +1,9 @@
+red_ross_v1_rigged_ual.glb : animation credits and license
+
+Animations in this file come from the Universal Animation Library 1 and 2 (Standard) by Quaternius, CC0 1.0 (public domain),
+https://quaternius.itch.io/universal-animation-library and https://quaternius.itch.io/universal-animation-library-2
+No credit is required; it is given anyway. License texts: art/placeholder/animations/quaternius_ual/LICENSE_UAL1.txt and LICENSE_UAL2.txt.
+
+They were retargeted onto Red offline (bone names kept) by scripts/tools/retarget_ual.py from the settings in
+data/animation/retarget_*.json. The mesh, skeleton and textures are the rigged copy beside this file; the clips are placeholders
+(Ross, 2026-10-08: everything is placeholder for now). The only exceptions are air_1, air_2, air_3 and parry_success: the Technical Artist's earlier hand-posed stand-ins, kept because no free clip fits them.

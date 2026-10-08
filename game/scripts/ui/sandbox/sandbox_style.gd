@@ -50,7 +50,7 @@ static func uses_fallback_font() -> bool:
 
 ## The role as asked, or its "_fallback" twin when the fallback switch is on (the label font never changes).
 static func _role(role: String) -> String:
-	if role != "label" and uses_fallback_font():
+	if role != "label" and uses_fallback_font() and theme().has_font(StringName(role + "_fallback"), TYPE):
 		return role + "_fallback"
 	return role
 

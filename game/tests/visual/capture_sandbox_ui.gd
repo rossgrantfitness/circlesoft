@@ -76,6 +76,14 @@ func _fight_shot() -> void:
 		await process_frame
 	_hud.call("tick", 0.0001)
 	await _grab("sandbox_hud.png")
+	await _grab("sandbox_hud_offset_upright.png")
+	# The same moment with the leaning letters (the theme's slant_pct switch), for Ross to compare.
+	var theme: Object = load("res://art/placeholder/ui/sandbox_theme.tres") as Object
+	theme.call("set_constant", "slant_pct", "SandboxUi", 22)
+	_hud.call("tick", 0.0001)
+	await _grab("sandbox_hud_offset_slant.png")
+	theme.call("set_constant", "slant_pct", "SandboxUi", 0)
+	_hud.call("tick", 0.0001)
 
 
 func _panel_shot() -> void:
