@@ -125,31 +125,27 @@ class Retargeter:
     def _build_ground(self):
         g = self.ground
         self.k = float(g["scale"])
-        self.t_soles = []      # (foot node, offset vector in rest world frame)
-        for foot, pts in g["target_soles"].items():
-            for off in pts.values():
-                self.t_soles.append((self.t.bone(foot), np.array(off, dtype=float)))
-        self.s_soles = []
-        for foot, pts in g["source_soles"].items():
-            for off in pts.values():
-                self.s_soles.append((self.s.bone(foot), np.array(off, dtype=float)))
+        # contact points: (bone node, offset vector in the rest world frame, lift). The lowest point of a pose is
+        # min(joint y + rotated offset y - lift): soles have lift 0, body points (hips, chest, head, hands) a radius, so a
+        # character lying on the floor lies ON it.
+        self.t_soles = [(self.t.bone(p["bone"]), np.array(p["offset"], dtype=float), float(p.get("lift", 0.0))) for p in g["target_points"]]
+        self.s_soles = [(self.s.bone(p["bone"]), np.array(p["offset"], dtype=float), float(p.get("lift", 0.0))) for p in g["source_points"]]
         self.t_hips = self.t.bone(self.cfg["hips"]["target"])
         self.s_pelvis = self.s.bone(self.cfg["hips"]["source"])
         self.hips_k = float(self.cfg["hips"].get("scale", self.k))
         # soles sit on the floor at rest on both skeletons: check
-        self.t_floor_err = max(abs(self.t.rest_world_p[f][1] + o[1]) for f, o in self.t_soles)
+        self.t_floor_err = max(abs(self.t.rest_world_p[f][1] + o[1]) for f, o, lift in self.t_soles if lift == 0.0)
 
     # ------------------------------------------------------------ one frame
-    def frame(self, src_sk, src_clip, t):
+    def frame(self, src_sk, src_clip, t, ground="lock"):
         """The target's mapped bones at source time t: ({bone idx: local rotation matrix}, hips local translation, source info)."""
         lr, lp = src_clip.pose(src_sk, t)
         wr, wp = src_sk.fk(lr, lp)
         # source lowest sole point
         s_low = np.inf
-        for f, off in self.s_soles:
+        for f, off, lift in self.s_soles:
             d = wr[f] @ src_sk.rest_world_r[f].T
-            y = wp[f][1] + (d @ off)[1]
-            s_low = min(s_low, y)
+            s_low = min(s_low, wp[f][1] + (d @ off)[1] - lift)
         pelvis_delta = wp[self.s_pelvis] - src_sk.rest_world_p[self.s_pelvis]
 
         world = {}
@@ -175,10 +171,14 @@ class Retargeter:
         lr_t = np.array([local.get(i, self.t.rest_r[i]) for i in range(n)])
         twr, twp = self.t.fk(lr_t, lt)
         low = np.inf
-        for f, off in self.t_soles:
+        for f, off, lift in self.t_soles:
             d = twr[f] @ self.t.rest_world_r[f].T
-            low = min(low, twp[f][1] + (d @ off)[1])
-        dy = self.k * s_low - low
+            low = min(low, twp[f][1] + (d @ off)[1] - lift)
+        if ground == "lock":
+            dy = self.k * s_low - low
+        else:     # "free": airborne clips; the game moves the body, the pose keeps the source's hips height change (scaled)
+            dy = pelvis_delta[1] * self.hips_k
+            dy = (hips_rest[1] + dy) - twp[self.t_hips][1]
         want[1] += dy
         lt[self.t_hips] = wr_t[par].T @ (want - self.t.rest_world_p[par]) if par is not None else want
         return local, lt[self.t_hips], {"s_low": s_low, "dy": dy, "wr_s": wr, "wp_s": wp}
@@ -191,8 +191,11 @@ class Retargeter:
             key, name = p["source"].split(":")
             sk, clips = self.src_docs[key]
             clip = clips[name]
-            out.append((sk, clip, float(p.get("from_s", 0.0)), float(p["to_s"]) if p.get("to_s") is not None else clip.length,
-                        float(p.get("speed", 1.0))))
+            a = float(p.get("from_s", 0.0))
+            b = float(p["to_s"]) if p.get("to_s") is not None else clip.length
+            if p.get("reverse"):
+                a, b = b, a
+            out.append((sk, clip, a, b, float(p.get("speed", 1.0))))
         return out
 
     def bake(self, spec):
@@ -200,13 +203,13 @@ class Retargeter:
         times, rots, hips, info = [], {b: [] for b in self.mapped}, [], []
         t_out = 0.0
         for sk, clip, a, b, speed in self._parts(spec):
-            span = (b - a) / speed
+            span = abs(b - a) / speed
             count = int(round(span * self.fps))
             for k in range(count + 1):
                 if times and k == 0:
                     continue                                   # the joint between two parts is one frame
                 ts = a + (b - a) * (k / max(count, 1))
-                local, ht, inf = self.frame(sk, clip, ts)
+                local, ht, inf = self.frame(sk, clip, ts, spec.get("ground", "lock"))
                 times.append(t_out + (k / self.fps))
                 for bone in self.mapped:
                     rots[bone].append(mat_to_quat(local[bone]))
