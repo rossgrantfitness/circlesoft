@@ -181,6 +181,27 @@ def fix_weights(obj, arm):
     write_weights(obj, out)
 
 
+# Ross approved swappable faces for later (not built here): the face area is its own surface (material "red_ross_face",
+# the same textures as the body for now), so a later system can swap that one material's texture without touching the rest.
+FACE_BOX = {"z": (0.70, 0.845), "y_max": -0.035, "x_abs": 0.17}
+
+
+def in_face(c):
+    return FACE_BOX["z"][0] <= c.z <= FACE_BOX["z"][1] and c.y <= FACE_BOX["y_max"] and abs(c.x) <= FACE_BOX["x_abs"]
+
+
+def split_face(obj, body_mat):
+    face_mat = body_mat.copy()
+    face_mat.name = "red_ross_face"
+    obj.data.materials.append(face_mat)
+    n = 0
+    for p in obj.data.polygons:
+        if in_face(p.center):
+            p.material_index = 1
+            n += 1
+    print("face surface: %d of %d triangles" % (n, len(obj.data.polygons)))
+
+
 def main():
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else sys.argv[1:]
     debug = argv[argv.index("--debug-weights") + 1] if "--debug-weights" in argv else None
@@ -203,9 +224,25 @@ def main():
     bpy.ops.object.mode_set(mode="OBJECT")
     bind_auto(obj, arm)
     fix_weights(obj, arm)
+    split_face(obj, mat)
 
     if debug:
         dbg_render(obj, arm, debug)
+        return
+    if "--face-debug" in argv:
+        show_materials_unlit([obj])
+        face = obj.data.materials[1]
+        for n in face.node_tree.nodes:
+            if n.type == "EMISSION":
+                n.inputs["Color"].default_value = (1, 0, 1, 1)
+                for l in list(face.node_tree.links):
+                    if l.to_node == n:
+                        face.node_tree.links.remove(l)
+        cam = setup_render(500, 500, 0.6)
+        aim_ortho(cam, 0, (0, 0, 0.8))
+        render_to(argv[argv.index("--face-debug") + 1] + "_front.png")
+        aim_ortho(cam, 90, (0, 0, 0.8))
+        render_to(argv[argv.index("--face-debug") + 1] + "_side.png")
         return
     if "--sheet" in argv:
         i = argv.index("--sheet")

@@ -121,3 +121,14 @@ func test_the_blockout_grunt_and_brute_exist_and_the_brute_is_bigger() -> void:
 		for clip: String in BLOCKOUT_CLIPS:
 			assert_true(player.has_animation(clip), clip)
 		assert_ge(_skeleton(model).find_bone("weapon_socket"), 0)
+
+
+func test_the_wolf_bone_map_is_clean() -> void:
+	var map: BoneMap = load("res://art/final/enemies/cyberwolf_sentinel_bone_map.tres") as BoneMap
+	assert_not_null(map)
+	var skeleton: Skeleton3D = _skeleton(_load(WOLF_PATH))
+	for humanoid: String in ["Hips", "Spine", "Chest", "Neck", "Head", "LeftUpperArm", "RightUpperArm", "LeftLowerArm", "LeftHand",
+			"RightHand", "LeftUpperLeg", "RightUpperLeg", "LeftLowerLeg", "LeftFoot", "RightFoot", "LeftShoulder", "RightShoulder"]:
+		var ours: StringName = map.get_skeleton_bone_name(humanoid)
+		assert_ne(ours, &"", humanoid + " is mapped")
+		assert_ge(skeleton.find_bone(ours), 0, "%s -> %s exists" % [humanoid, ours])

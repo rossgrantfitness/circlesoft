@@ -173,3 +173,41 @@ func test_ears_and_tail_have_their_own_weights_so_they_can_swing() -> void:
 				wanted[bones[index]] += 1
 	for bone: int in wanted:
 		assert_gt(float(wanted[bone]), 5.0, "vertices follow " + skeleton.get_bone_name(bone))
+
+
+func test_the_face_is_its_own_surface_for_swappable_faces_later() -> void:
+	# Ross approved swappable faces for later: only the surface exists now, nothing swaps yet.
+	var meshes: Array[MeshInstance3D] = _meshes(_red())
+	assert_eq(meshes.size(), 1)
+	var mesh: Mesh = meshes[0].mesh
+	assert_eq(mesh.get_surface_count(), 2, "body and face")
+	var face: ShaderMaterial = mesh.surface_get_material(1) as ShaderMaterial
+	assert_not_null(face)
+	assert_eq(face.resource_name, "red_ross_face", "the face material is named so a later system can find it")
+	var face_tris: int = (mesh.surface_get_arrays(1)[Mesh.ARRAY_INDEX] as PackedInt32Array).size() / 3
+	assert_gt(face_tris, 20, "the face has triangles")
+	assert_lt(face_tris, 200, "and is only the face")
+
+
+func test_the_bone_map_maps_every_humanoid_bone_that_exists() -> void:
+	# the plan: retarget the free Quaternius Universal Animation Library onto this skeleton (Godot SkeletonProfileHumanoid)
+	var map: BoneMap = load("res://art/final/characters/red/red_ross_bone_map.tres") as BoneMap
+	assert_not_null(map, "red_ross_bone_map.tres (made by scripts/tools/make_bone_maps.gd)")
+	var skeleton: Skeleton3D = _skeleton(_red())
+	var profile: SkeletonProfile = map.profile
+	assert_not_null(profile)
+	var mapped: int = 0
+	for index: int in profile.get_bone_count():
+		var humanoid: StringName = profile.get_bone_name(index)
+		var ours: StringName = map.get_skeleton_bone_name(humanoid)
+		if ours == &"":
+			continue
+		mapped += 1
+		assert_ge(skeleton.find_bone(ours), 0, "%s -> %s exists" % [humanoid, ours])
+	assert_ge(mapped, 20, "root, hips, spine, chest, neck, head and both arms and legs")
+	for humanoid: String in ["Hips", "Spine", "Chest", "Neck", "Head", "LeftUpperArm", "RightUpperArm", "LeftHand", "RightHand", "LeftFoot", "RightFoot"]:
+		assert_ne(map.get_skeleton_bone_name(humanoid), &"", humanoid + " is mapped")
+	# the parent chain matches the humanoid profile's (hips -> spine -> chest -> neck -> head; chest -> shoulder -> arm)
+	for pair: Array in [["spine", "hips"], ["chest", "spine"], ["neck", "chest"], ["head", "neck"], ["shoulder_l", "chest"],
+			["upper_arm_l", "shoulder_l"], ["forearm_l", "upper_arm_l"], ["hand_l", "forearm_l"], ["thigh_r", "hips"], ["shin_r", "thigh_r"], ["foot_r", "shin_r"]]:
+		assert_eq(skeleton.get_bone_name(skeleton.get_bone_parent(skeleton.find_bone(pair[0]))), pair[1], "%s hangs from %s" % pair)
