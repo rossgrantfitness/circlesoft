@@ -4,6 +4,8 @@ extends SceneTree
 ##   swords  all six swords, split and labelled (docs/screenshots/sandbox_swords.png)
 ##   wolf    Red and the Cyberwolf Sentinel side by side, the wolf mid wind-up (docs/screenshots/sandbox_cyberwolf_rigged.png)
 ##   enemies the placeholder Grunt and Brute next to Red (a fallback check)
+##   arena   the real combat sandbox as the game boots it (the look check for fog, walls and floor): sandbox_arena_ps2.png
+##   fx      the real sandbox mid-fight: a sword trail, a hit spark and a Lamp Flare at once: sandbox_fx.png
 ##
 ##   xvfb-run -a -s "-screen 0 1280x720x24" godot --path game --rendering-driver opengl3 \
 ##       -s res://tests/visual/capture_sandbox.gd -- --shot=red --out=/some/dir [--profile=grim_ps2|grim]
@@ -72,6 +74,10 @@ func _initialize() -> void:
 	await _settle(2)
 	_world = _screen.call("get_world_root") as Node3D
 	_build_stage()
+	if _shot == "arena" or _shot == "fx":
+		await _real_sandbox_shot(_shot)
+		quit(0)
+		return
 	var shots: Array[String] = []
 	if _shot == "all":
 		shots.append_array(["red", "swords", "wolf", "enemies"])
@@ -297,6 +303,77 @@ func _settle(frames: int) -> void:
 	for i: int in frames:
 		await process_frame
 		_place_labels()
+
+
+const SANDBOX_SCENE: String = "res://scenes/sandbox/combat_sandbox.tscn"
+
+
+## Boots the real sandbox into the PSX screen exactly as Main.start_sandbox() does.
+func _real_sandbox_shot(shot: String) -> void:
+	var packed: PackedScene = load(SANDBOX_SCENE) as PackedScene
+	var sandbox: Node = _screen.call("load_world", packed) as Node
+	await _settle(40)
+	var director: Node = sandbox.call("get_director") as Node
+	var player: Node3D = sandbox.call("get_player") as Node3D
+	var out_name: String = "sandbox_arena_ps2" if shot == "arena" else "sandbox_fx"
+	if shot == "fx":
+		await _stage_fx(sandbox, director, player)
+	else:
+		await _settle(20)
+	_stats(shot)
+	var image: Image = root.get_viewport().get_texture().get_image()
+	print("saved ", "%s/%s.png" % [_out, out_name], " ", image.get_size(), " error ", image.save_png("%s/%s.png" % [_out, out_name]))
+
+
+## A trail, a spark and a flare in one frame, driven through the director's own signals so it is the real FX code that draws them.
+func _stage_fx(sandbox: Node, director: Node, player: Node3D) -> void:
+	var enemies: Array = sandbox.call("get_enemies") as Array
+	var wolf: Node3D = enemies[0] as Node3D
+	for enemy: Variant in enemies:
+		(enemy as Node3D).set_physics_process(false)
+		(enemy as Node3D).set_process(false)
+	player.set_physics_process(false)
+	player.set_process(false)
+	var offset: Vector3 = Vector3(1.55, 0.0, -0.55)
+	wolf.global_position = player.global_position + offset
+	for enemy: Variant in enemies:
+		if enemy != wolf:
+			(enemy as Node3D).global_position = player.global_position + Vector3(-7.0, 0.0, -9.0)
+	wolf.rotation = Vector3(0.0, atan2(-offset.x, -offset.z), 0.0)
+	player.rotation = Vector3(0.0, atan2(offset.x, offset.z), 0.0)
+	var camera: Node = sandbox.call("get_camera")
+	var animation: AnimationPlayer = player.call("get_animation_player") as AnimationPlayer
+	await _settle(10)
+	director.emit_signal("flare_started", {"source": "dodge", "duration_s": 3.0, "enemy_scale": 0.3})
+	# The software renderer is slow, so slow the game's clock down: the FX see small steps, the way they do at 60 fps.
+	Engine.time_scale = 0.2
+	var t: float = 0.0
+	var last_us: int = Time.get_ticks_usec()
+	var emitted: bool = false
+	var hit: bool = false
+	for frame: int in 600:
+		await process_frame
+		var now_us: int = Time.get_ticks_usec()
+		t += float(now_us - last_us) / 1000000.0 * Engine.time_scale
+		last_us = now_us
+		if t > 0.06 and not emitted:
+			emitted = true
+			director.emit_signal("move_started", {"actor": &"red", "move_id": &"light_1", "swing_sfx": "combat_swing_light", "trail": true})
+		if emitted and animation != null:
+			animation.play("light_1")
+			animation.seek(clampf(t - 0.06, 0.0, 0.5), true)
+			animation.pause()
+		if t > 0.19 and not hit:
+			hit = true
+			var point: Vector3 = wolf.global_position + Vector3(0.0, 0.7, 0.0)
+			director.emit_signal("hit_landed", {"attacker": &"red", "target": wolf.get("actor_id"), "move_id": &"light_1", "outcome": "hit", "damage": 8,
+					"launch": false, "knockdown": false, "airborne": false, "hit_stop_ms": 50, "shake": "light", "spark": "slash_big", "sfx": "combat_hit_light", "position": point})
+		if t > 0.265:
+			break
+	Engine.time_scale = 1.0
+	_place_labels()
+	if camera != null and camera.has_method("tick"):
+		pass
 
 
 func _stats(label: String) -> void:

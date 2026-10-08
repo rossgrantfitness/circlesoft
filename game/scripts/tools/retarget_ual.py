@@ -73,6 +73,8 @@ class Retargeter:
                     d = json.loads(json.dumps(e).replace("{s}", side))
                     if side == "r" and "fix_deg" in d:
                         d["fix_deg"] = mirror_deg(d["fix_deg"])
+                    if side == "r" and "to" in d:
+                        d["to"] = [-d["to"][0], d["to"][1], d["to"][2]]
                     if side == "r" and "blade_roll_deg" in d:
                         d["blade_roll_deg"] = -d["blade_roll_deg"]
                     if "only_side" in d and d["only_side"] != side:
@@ -239,44 +241,59 @@ class Retargeter:
             worst = max(worst, np.degrees(2 * np.arccos(min(1.0, d))))
         return worst
 
+    def contact_out_time(self, spec):
+        """Where the strike lands in the OUTPUT clip: spec['contact_src_s'] is a time in the source clip (of part
+        spec['contact_part'], default 0); None when the clip has no contact."""
+        c = spec.get("contact_src_s")
+        if c is None:
+            return None
+        part = int(spec.get("contact_part", 0))
+        offset = 0.0
+        for i, (sk, clip, a, b, speed) in enumerate(self._parts(spec)):
+            if i == part:
+                return offset + abs(float(c) - a) / speed
+            offset += round(abs(b - a) / speed * self.fps) / self.fps
+        raise ValueError("contact_part out of range")
+
     # ------------------------------------------------------------ report
     def quality(self, res, spec):
-        """Clipping and sliding numbers for a baked clip (proxy shapes from the target's skin, in the config)."""
+        """Clipping numbers for a baked clip: how many frames an arm segment is inside the head sphere or the torso
+        ellipsoid (proxy shapes from the target's skin, in the config) and the deepest penetration in metres."""
         q = {"head": 0, "torso": 0, "frames": len(res["times"]), "head_pen_max": 0.0, "torso_pen_max": 0.0}
         px = self.cfg.get("proxies")
         if not px:
             return q
-        n = len(self.t.nodes)
+        t = self.t
+        n = len(t.nodes)
+        head_b = t.bone(px["head"]["bone"])
+        torso = px["torso"]
         for k in range(len(res["times"])):
-            lr = np.array([quat_to_mat(res["rot"][i][k]) if i in res["rot"] else self.t.rest_r[i] for i in range(n)])
-            lt = self.t.rest_t.copy()
+            lr = np.array([quat_to_mat(res["rot"][i][k]) if i in res["rot"] else t.rest_r[i] for i in range(n)])
+            lt = t.rest_t.copy()
             lt[self.t_hips] = res["hips"][k]
-            wr, wp = self.t.fk(lr, lt)
-            head = wp[self.t.bone(px["head"]["bone"])] + wr[self.t.bone(px["head"]["bone"])] @ self.t.rest_world_r[self.t.bone(px["head"]["bone"])].T @ np.array(px["head"]["center_offset"])
+            wr, wp = t.fk(lr, lt)
+            head = wp[head_b] + (wr[head_b] @ t.rest_world_r[head_b].T) @ np.array(px["head"]["center_offset"])
+            c0, c1 = wp[t.bone(torso["from"])], wp[t.bone(torso["to"])]
+            axis = c1 - c0
+            length = np.linalg.norm(axis)
+            axis = axis / length
             hit_h = hit_t = False
-            for arm in px["arm_segments"]:
-                a = wp[self.t.bone(arm[0])]
-                b = wp[self.t.bone(arm[1])]
-                for f in np.linspace(0, 1, 6):
+            for seg in px["arm_segments"]:
+                a, b = wp[t.bone(seg[0])], wp[t.bone(seg[1])]
+                for f in np.linspace(seg[2] if len(seg) > 2 else 0.0, 1.0, 6):
                     pt = a + (b - a) * f
                     pen = px["head"]["radius"] + px["arm_radius"] - np.linalg.norm(pt - head)
                     if pen > 0.0:
                         hit_h = True
                         q["head_pen_max"] = max(q["head_pen_max"], pen)
-                    # torso: ellipsoid around the spine line
-                    c0 = wp[self.t.bone(px["torso"]["from"])]
-                    c1 = wp[self.t.bone(px["torso"]["to"])]
-                    axis = (c1 - c0)
-                    L = np.linalg.norm(axis)
-                    axis = axis / L
-                    s = np.clip(np.dot(pt - c0, axis), -0.05, L + 0.05)
-                    rel = pt - (c0 + axis * s)
-                    # half width and depth from the config (x, z of the character)
-                    wx, wz = px["torso"]["half_width"] + px["arm_radius"], px["torso"]["half_depth"] + px["arm_radius"]
-                    e = np.sqrt((rel[0] / wx) ** 2 + (rel[2] / wz) ** 2)
-                    if e < 1.0 and -0.0 <= s <= L and arm[1] not in px.get("torso_ignore", []):
-                        hit_t = True
-                        q["torso_pen_max"] = max(q["torso_pen_max"], (1.0 - e) * min(wx, wz))
+                    s_ = float(np.dot(pt - c0, axis))
+                    if 0.0 <= s_ <= length:
+                        rel = pt - (c0 + axis * s_)
+                        wx, wz = torso["half_width"] + px["arm_radius"], torso["half_depth"] + px["arm_radius"]
+                        e = np.sqrt((rel[0] / wx) ** 2 + (rel[2] / wz) ** 2)
+                        if e < 1.0:
+                            hit_t = True
+                            q["torso_pen_max"] = max(q["torso_pen_max"], (1.0 - e) * min(wx, wz))
             q["head"] += hit_h
             q["torso"] += hit_t
         return q
@@ -335,13 +352,11 @@ def main():
         new_anims.append({"name": name, "times": times, "channels": channels})
         length = float(times[-1])
         entry = {"length_s": round(length, 4), "loop": bool(spec.get("loop")), "source": spec.get("source") or " + ".join(p["source"] for p in spec["parts"])}
-        contact = spec.get("contact_s")
-        if "parts" in spec and spec.get("contact_part") is not None:
-            contact = spec["contact_s"]
-        entry["keys"] = _keys_for(spec, length, rt.fps)
+        contact = rt.contact_out_time(spec)
+        entry["keys"] = _keys_for(spec, length, rt.fps, contact)
         if contact is not None:
-            entry["contact_s"] = round(float(contact), 4)
-            entry["contact_frame"] = int(round(float(contact) * rt.fps))
+            entry["contact_s"] = round(contact, 4)
+            entry["contact_frame"] = int(round(contact * rt.fps))
         if spec.get("note"):
             entry["note"] = spec["note"]
         keys_doc[name] = entry
@@ -386,10 +401,10 @@ def main():
     print("wrote", os.path.relpath(kd_path, ROOT))
 
 
-def _keys_for(spec, length, fps):
+def _keys_for(spec, length, fps, contact):
     ks = spec.get("keys")
     if ks is None:
-        ks = [0.0, length]
+        ks = [0.0, length] if contact is None else [0.0, contact, length]
     out = []
     for s in ks:
         s = max(0.0, min(length, float(s)))

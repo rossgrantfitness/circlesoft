@@ -103,7 +103,7 @@ func _initialize() -> void:
 		player.seek(seconds, true)
 		player.pause()
 		_label.text = "%s  %.2fs" % [clip, seconds]
-		_camera.position = Vector3(0.0, height * 0.62, height * 2.9)
+		_camera.position = Vector3(0.0, height * 0.62, height * 3.3)
 		_camera.look_at(Vector3(0.0, height * 0.5, 0.0), Vector3.UP)
 		await _settle(SETTLE_FRAMES)
 		var image: Image = root.get_viewport().get_texture().get_image()

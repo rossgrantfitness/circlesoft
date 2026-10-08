@@ -246,13 +246,14 @@
     "dressing_key_scale": 0.9
    },
    "fog": {
-    "color": "#2a2c24",
+    "color": "#262d33",
     "mix": 1.0,
-    "near_mul": 1.0,
-    "far_mul": 1.0,
-    "near_m": 18.0,
-    "far_m": 75.0,
-    "smooth": true
+    "near_mul": 1.6,
+    "far_mul": 3.2,
+    "near_m": 19.0,
+    "far_m": 77.0,
+    "smooth": true,
+    "_note": "Gentle, smooth fog. PsxRoomLook (the sandbox's room look) scales its own 12 m / 24 m by near_mul and far_mul, which makes 19 m to 77 m; near_m and far_m are the same numbers for scenes without one (Ps2Look). Tuned so walls 15 to 25 m away keep their tiles and the gloom comes from the ambient light and the far haze (2026-10-08)."
    },
    "materials": {
     "saturation": 0.5,
