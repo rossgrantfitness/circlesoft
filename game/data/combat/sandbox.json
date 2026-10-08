@@ -13,11 +13,9 @@
   "attachments": [
     {"id": "director", "script": "res://scripts/combat/combat_director.gd", "bind": false},
     {"id": "fx", "script": "res://scripts/combat/fx/combat_fx.gd", "bind": true},
-    {"id": "hud", "scene": "res://scenes/ui/sandbox/sandbox_hud.tscn", "layer": "ui", "bind": true},
-    {"id": "controls_card", "scene": "res://scenes/ui/sandbox/controls_card.tscn", "layer": "ui", "bind": true},
-    {"id": "feel_panel", "scene": "res://scenes/ui/sandbox/feel_panel.tscn", "layer": "ui", "bind": true},
-    {"id": "pause", "scene": "res://scenes/ui/sandbox/sandbox_pause.tscn", "layer": "ui", "bind": true}
+    {"id": "hud", "scene": "res://scenes/ui/sandbox/sandbox_hud.tscn", "layer": "stage", "bind": true}
   ],
+
   "arena": {
     "size_m": [44.0, 44.0],
     "wall_height_m": 7.0,

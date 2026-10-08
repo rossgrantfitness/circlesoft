@@ -580,12 +580,24 @@ func _attach_parts(after_player: bool) -> void:
 		if is_director:
 			_director = node
 		var layer: String = str(entry.get("layer", "world"))
-		if layer == "ui":
+		if layer == "stage":
+			UiStage.get_or_create(get_tree()).get_stage_root().add_child(node)
+		elif layer == "ui":
 			_ui_parent().add_child(node)
 		else:
 			add_child(node)
 		if bool(entry.get("bind", false)) and node.has_method("bind"):
 			node.call("bind", self)
+		_give_feel_to(node)
+
+
+## A HUD whose feel panel found no director knobs gets the sandbox's own, so F12 always has sliders.
+func _give_feel_to(node: Node) -> void:
+	if _feel == null or not node.has_method("get_feel_panel"):
+		return
+	var panel: Object = node.call("get_feel_panel") as Object
+	if panel != null and panel.get("knobs") == null and panel.has_method("bind"):
+		panel.call("bind", _feel)
 
 
 func _make_attachment(entry: Dictionary) -> Node:

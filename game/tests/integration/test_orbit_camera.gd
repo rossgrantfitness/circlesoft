@@ -130,14 +130,15 @@ func test_pitch_stays_inside_the_data_limits() -> void:
 
 func test_sensitivity_knob_scales_the_turn() -> void:
 	_make()
-	var knobs: FakeKnobs = FakeKnobs.new()
-	knobs.values = {"cam_sensitivity": 2.0, "cam_distance_m": 6.0}
+	var knobs: FeelKnobs = FeelKnobs.load_defaults()
+	knobs.set_value("cam_sensitivity", 2.0)
+	knobs.set_value("cam_distance_m", 6.0)
 	_cam.knobs = knobs
 	var start: float = _cam.get_yaw()
 	_cam.add_mouse_motion(Vector2(100, 0))
 	_cam.tick(DT)
 	var fast: float = start - _cam.get_yaw()
-	knobs.values["cam_sensitivity"] = 1.0
+	knobs.set_value("cam_sensitivity", 1.0)
 	start = _cam.get_yaw()
 	_cam.add_mouse_motion(Vector2(100, 0))
 	_cam.tick(DT)
@@ -145,13 +146,6 @@ func test_sensitivity_knob_scales_the_turn() -> void:
 	assert_almost_eq(fast, slow * 2.0, 0.0001)
 	_run(120)
 	assert_almost_eq(_cam.get_camera().global_position.distance_to(_cam.get_focus()), 6.0, 0.1, "the distance knob moves the camera out")
-
-
-class FakeKnobs extends RefCounted:
-	var values: Dictionary = {}
-
-	func get_f(id: String) -> float:
-		return float(values.get(id, 1.0))
 
 
 func test_it_eases_back_behind_red_while_she_runs_and_the_look_input_is_idle() -> void:
