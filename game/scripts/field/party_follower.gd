@@ -72,7 +72,8 @@ func get_head_height() -> float:
 	return _head_top + HEAD_LIFT
 
 
-func _load_model(path: String) -> void:
+func _load_model(wanted: String) -> void:
+	var path: String = LookProfiles.resolve_model(wanted)
 	if path.is_empty() or not ResourceLoader.exists(path):
 		return
 	var packed: PackedScene = load(path) as PackedScene
@@ -81,6 +82,7 @@ func _load_model(path: String) -> void:
 		return
 	_visual.add_child(_model)
 	Npc.apply_light_compensation(_model, LIGHT_COMPENSATION)
+	LookProfiles.dress_model(_model, path)
 	for node: Node in _model.find_children("*", "AnimationPlayer", true, false):
 		var clips: AnimationPlayer = node as AnimationPlayer
 		if clips.has_animation(IDLE_CLIP):

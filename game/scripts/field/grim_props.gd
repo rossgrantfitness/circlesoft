@@ -241,8 +241,8 @@ static func _floodlight(item: Dictionary, grime: Dictionary) -> Node3D:
 	head.position = Vector3(0.0, height, 0.12)
 	head.rotation_degrees = Vector3(float(item.get("pitch_deg", 28.0)), float(item.get("aim_deg", 0.0)), 0.0)
 	head.add_child(_box("Housing", Vector3(0.62, 0.34, 0.26), metal, Vector3(0.0, 0.0, 0.0)))
-	var lens_color: Color = color(item.get("color"), "#dcebe4")
-	head.add_child(_quad("Lens", Vector2(0.54, 0.26), unlit(null, lens_color, 1.7), Vector3(0.0, 0.0, 0.135), Vector3.ZERO))
+	var lens_color: Color = color(item.get("color"), "#4fb8a4")
+	head.add_child(_quad("Lens", Vector2(0.54, 0.26), unlit(null, lens_color, 1.25), Vector3(0.0, 0.0, 0.135), Vector3.ZERO))
 	var light: OmniLight3D = OmniLight3D.new()
 	light.name = "Light"
 	light.light_color = lens_color
@@ -319,13 +319,13 @@ static func _smear(item: Dictionary) -> Node3D:
 	var root: Node3D = Node3D.new()
 	var size: Vector2 = vec2(item.get("size"), Vector2(0.8, 1.6))
 	var tint: Color = color(item.get("color"), "#5fe0c8")
-	var img: Image = Image.create(16, 32, false, Image.FORMAT_RGBA8)
+	var img: Image = Image.create(8, 32, false, Image.FORMAT_RGBA8)
 	img.fill(Color(0, 0, 0, 0))
 	for y: int in 32:
-		for x: int in 16:
-			var centre: float = absf(float(x) - 7.5) / 8.0
+		for x: int in 8:
 			var fade: float = 1.0 - float(y) / 32.0
-			if centre < fade * 0.9 and (x + y) % 2 == 0 and BattleTextures.noise(x, y, 5) > 0.25:
+			var across: float = 1.0 - absf(float(x) - 3.5) / 4.5
+			if across * fade > GrimePaint._bayer(x, y) * 0.9:
 				img.set_pixel(x, y, Color(1, 1, 1, 1))
 	var texture: ImageTexture = ImageTexture.create_from_image(img)
 	root.add_child(_quad("Smear", size, unlit(texture, Color(tint.r, tint.g, tint.b, 1.0), 0.8), Vector3(0.0, 0.025, 0.0), Vector3(-90.0, 0.0, 0.0)))
@@ -428,14 +428,14 @@ static func _cable(item: Dictionary) -> Node3D:
 	var b: Vector3 = vec3(item.get("to", [4.0, 3.0, 0.0]))
 	var sag: float = float(item.get("sag", 0.4))
 	var strands: int = int(item.get("strands", 2))
-	var radius: float = float(item.get("radius", 0.025))
+	var radius: float = float(item.get("radius", 0.016))
 	var segments: int = int(item.get("segments", 6))
 	var tool: SurfaceTool = SurfaceTool.new()
 	tool.begin(Mesh.PRIMITIVE_TRIANGLES)
 	for strand: int in strands:
 		var offset: Vector3 = Vector3(0.0, 0.0, 0.0)
 		if strand > 0:
-			offset = Vector3(0.0, -0.09 * float(strand), 0.07 * float(strand % 2 * 2 - 1))
+			offset = Vector3(0.0, -0.06 * float(strand), 0.05 * float(strand % 2 * 2 - 1))
 		var previous: Vector3 = a + offset
 		for i: int in range(1, segments + 1):
 			var t: float = float(i) / float(segments)
@@ -563,7 +563,7 @@ static func _rain(item: Dictionary) -> Node3D:
 	streak.cap_bottom = false
 	var material: StandardMaterial3D = StandardMaterial3D.new()
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	material.albedo_color = color(item.get("color"), "#9fb4ae")
+	material.albedo_color = color(item.get("color"), "#56706e")
 	material.disable_fog = true
 	streak.material = material
 	particles.mesh = streak

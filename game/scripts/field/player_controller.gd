@@ -64,6 +64,9 @@ var _was_airborne: bool = false
 var _ground_y: float = 0.0
 var _has_ground_y: bool = false
 var _visual: Node3D = null
+var _lamp: OmniLight3D = null
+var _loaded_model_path: String = ""
+var _loaded_look_key: String = ""
 var _animation_player: AnimationPlayer = null
 var _current_animation: StringName = &""
 var _moving: bool = false
@@ -75,13 +78,60 @@ var _blink_left: float = 0.0
 func _ready() -> void:
 	_tuning = FieldTuning.from_db(get_node_or_null("/root/DataDB"))
 	_visual = get_node_or_null(NODE_VISUAL) as Node3D
-	for path: String in [model_path, FALLBACK_MODEL_PATH]:
-		if ResourceLoader.exists(path):
-			var model_scene: PackedScene = load(path) as PackedScene
-			if model_scene != null:
-				attach_model(model_scene)
-				break
+	add_to_group(LookProfiles.GROUP_AWARE)
+	_load_look_model()
+	_sync_lamp(LookProfiles.active())
 	_play_animation(PlayerMotion.ANIM_IDLE)
+
+
+## The look profile changed (F11 in the overlay, or a new scene): swap to that profile's model of Red
+## (the grim shiba) if the one on screen is not the right one.
+func apply_look(_id: String, profile: Dictionary) -> void:
+	_sync_lamp(profile)
+	if _visual == null or _loaded_look_key == "":
+		return
+	if _loaded_look_key == LookProfiles.model_look_key(_loaded_model_path):
+		return
+	var old: Node = _visual.get_node_or_null("Model")
+	if old != null:
+		_visual.remove_child(old)
+		old.queue_free()
+	_load_look_model()
+	_play_animation(PlayerMotion.ANIM_IDLE)
+
+
+## Red's own lamp: in a profile with a "player_lamp" block (the grim look) a small warm light rides with her,
+## so the stubborn light in the dark is hers. Classic has no block, so there is no extra light.
+func _sync_lamp(profile: Dictionary) -> void:
+	var cfg: Variant = profile.get("player_lamp", null)
+	if not (cfg is Dictionary):
+		if _lamp != null:
+			_lamp.queue_free()
+			remove_child(_lamp)
+			_lamp = null
+		return
+	var block: Dictionary = cfg
+	if _lamp == null:
+		_lamp = OmniLight3D.new()
+		_lamp.name = "RedLamp"
+		add_child(_lamp)
+	_lamp.light_color = Color.html(str(block.get("color", "#ffb347")))
+	_lamp.light_energy = float(block.get("energy", 1.6))
+	_lamp.omni_range = float(block.get("range", 3.0))
+	_lamp.position = Vector3(0.0, float(block.get("height", 0.7)), float(block.get("forward", 0.25)))
+
+
+## Loads the first model that exists from [model_path, the fallback], through the look profile.
+func _load_look_model() -> void:
+	for path: String in [model_path, FALLBACK_MODEL_PATH]:
+		var resolved: String = LookProfiles.resolve_model(path)
+		if ResourceLoader.exists(resolved):
+			var model_scene: PackedScene = load(resolved) as PackedScene
+			if model_scene != null:
+				attach_model(model_scene, resolved)
+				_loaded_model_path = path
+				_loaded_look_key = LookProfiles.model_look_key(path)
+				break
 
 
 func _physics_process(delta: float) -> void:
@@ -308,7 +358,7 @@ func step(delta: float) -> void:
 
 ## Puts a model scene in the Visual slot and drops the capsule stand-in. Called automatically when
 ## the placeholder Red .glb exists.
-func attach_model(model_scene: PackedScene) -> Node3D:
+func attach_model(model_scene: PackedScene, source_path: String = "") -> Node3D:
 	if _visual == null:
 		_visual = get_node_or_null(NODE_VISUAL) as Node3D
 	if _visual == null:
@@ -324,6 +374,7 @@ func attach_model(model_scene: PackedScene) -> Node3D:
 		return null
 	model.name = "Model"
 	_visual.add_child(model)
+	LookProfiles.dress_model(model, source_path)
 	_animation_player = _find_animation_player(model)
 	_current_animation = &""
 	_play_animation(PlayerMotion.ANIM_IDLE)

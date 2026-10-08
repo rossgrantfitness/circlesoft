@@ -104,6 +104,7 @@ class PartMesh:
         self.deform = self.bm.verts.layers.deform.new()
         self.groups = {}
         self.group_xf = Matrix.Identity(4)  # applied to everything built while set
+        self.warp = None                    # optional function(Vector) -> Vector run on every vertex at the end
 
     def set_group_transform(self, matrix):
         self.group_xf = matrix
@@ -225,6 +226,9 @@ class PartMesh:
                     loop[self.uv].uv = call_uv(uv, loop.vert.co.copy(), f.normal.copy(), bb)
 
     def to_object(self):
+        if self.warp is not None:           # e.g. the grim Red's taller, leaner proportions (red_proto_f.py)
+            for v in self.bm.verts:
+                v.co = self.warp(v.co)
         bmesh.ops.triangulate(self.bm, faces=self.bm.faces[:])
         mesh = bpy.data.meshes.new(self.name)
         self.bm.to_mesh(mesh)

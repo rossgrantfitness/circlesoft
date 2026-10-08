@@ -75,6 +75,7 @@ func _run_file(path: String) -> void:
 			continue
 		test_case.tree = self
 		test_case.reset_results()
+		LookProfiles.reset()       # every test starts on the default look profile (classic)
 		test_case.before_each()
 		await test_case.call(method_name)
 		test_case.after_each()

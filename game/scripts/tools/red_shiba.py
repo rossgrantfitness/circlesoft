@@ -19,6 +19,13 @@ Run (Blender as a Python module; Python 3.11):
     /tmp/blockout_venv/bin/pip install bpy==5.0.1 pillow numpy
     /tmp/blockout_venv/bin/python game/scripts/tools/red_shiba.py
 Output: game/art/placeholder/characters/red/red_shiba.glb (model, 17-bone rig, sword, textures, clips)
+
+Variant (the grim look test, 2026-10-08):
+    /tmp/blockout_venv/bin/python game/scripts/tools/red_shiba.py --variant grim
+Output: game/art/placeholder/characters/red/red_shiba_grim.glb (+ red_shiba_grim_body.png / _face.png).
+Same 17-bone rig, same six clip names and frame counts, same triangle count, so it drops in through a
+`model_path` (the look profile does it for the look-test scenes: data/world/look_profiles.json "models").
+Taller, leaner, smaller head, matte and scuffed: see red_proto_f.py "VARIANTS". The classic run is unchanged.
 """
 
 import math
@@ -32,9 +39,12 @@ from red_proto_de_kit import bpy, export_glb, Euler, Quaternion, Vector  # noqa:
 
 GAME_DIR = os.path.abspath(os.path.join(HERE, "..", ".."))
 OUT_DIR = os.path.join(GAME_DIR, "art", "placeholder", "characters", "red")
-GLB_PATH = os.path.join(OUT_DIR, "red_shiba.glb")
+VARIANT = sys.argv[sys.argv.index("--variant") + 1] if "--variant" in sys.argv else "classic"
+MODEL_NAME = shiba.configure(VARIANT) if VARIANT != "classic" else "red_shiba"
+GLB_PATH = os.path.join(OUT_DIR, MODEL_NAME + ".glb")
 FPS = 15
-BOOT_Z = 0.12          # shin tip height at rest (feet planted); the boots hang below it
+# shin tip height at rest (feet planted); the boots hang below it. The grim proportions move it a little.
+BOOT_Z = 0.12 if VARIANT == "classic" else shiba.WARP_Z_OF_FOOT
 
 
 class Rig:

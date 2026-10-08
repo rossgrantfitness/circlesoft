@@ -223,6 +223,31 @@ static func drain(color: Color, saturation: float, brightness: float) -> Color:
 	return Color(out.r * brightness, out.g * brightness, out.b * brightness, color.a)
 
 
+# ---- the battle set ----
+
+## A battle backdrop's settings with the profile's "backdrop" block laid over them. Every key in the block
+## replaces the same key of the backdrop (colors, ambient, key light, fog); "lamp_energy_mul" and
+## "lamp_color" adjust the set's lamps. Classic has no block, so the backdrop comes back unchanged.
+static func backdrop_look(base: Dictionary, id: String) -> Dictionary:
+	var out: Dictionary = base.duplicate(true)
+	var block: Dictionary = _dict(profile(id).get("backdrop", {}))
+	for key: Variant in block:
+		var name: String = str(key)
+		if name.begins_with("_") or name == "lamp_energy_mul" or name == "lamp_color":
+			continue
+		out[name] = block[key]
+	if block.has("lamp_energy_mul") or block.has("lamp_color"):
+		var lamps: Array = []
+		for entry: Variant in out.get("lamps", []):
+			var lamp: Dictionary = (entry as Dictionary).duplicate()
+			lamp["energy"] = float(lamp.get("energy", 1.0)) * float(block.get("lamp_energy_mul", 1.0))
+			if block.has("lamp_color"):
+				lamp["color"] = block["lamp_color"]
+			lamps.append(lamp)
+		out["lamps"] = lamps
+	return out
+
+
 # ---- models ----
 
 ## The path to actually load for a model: the profile's variant when it has one that exists.
@@ -247,6 +272,47 @@ static func is_variant_path(path: String) -> bool:
 			if str(variants[source]) == path:
 				return true
 	return false
+
+
+## Dulls a freshly loaded character model for the active profile: every textured surface gets its own copy
+## of the material with a drained, darkened, scuffed, gloss-free texture (GrimePaint.dull_character_*).
+## Models that are themselves a profile variant (Red's grim shiba) are already painted dull, so they are left
+## alone. Nothing shared is edited: the copies are surface overrides on this model's own meshes.
+static func dress_model(model: Node, source_path: String = "") -> void:
+	if model == null or not dulls_characters() or is_variant_path(source_path):
+		return
+	var cfg: Dictionary = _dict(active().get("characters", {}))
+	for node: Node in model.find_children("*", "MeshInstance3D", true, false):
+		var mesh_instance: MeshInstance3D = node as MeshInstance3D
+		if mesh_instance.mesh == null:
+			continue
+		for surface: int in mesh_instance.mesh.get_surface_count():
+			var source: ShaderMaterial = mesh_instance.get_active_material(surface) as ShaderMaterial
+			if source == null:
+				continue
+			var copy: ShaderMaterial = source.duplicate() as ShaderMaterial
+			var texture: Texture2D = copy.get_shader_parameter("albedo_texture") as Texture2D
+			if texture != null:
+				copy.set_shader_parameter("albedo_texture", GrimePaint.dull_character_texture(texture, cfg))
+			var tint: Variant = copy.get_shader_parameter("albedo_tint")
+			if tint is Color:
+				copy.set_shader_parameter("albedo_tint", drain(tint, float(cfg.get("tint_saturation", 0.6)), float(cfg.get("tint_value", 0.9))))
+			mesh_instance.set_surface_override_material(surface, copy)
+
+
+static func dulls_characters() -> bool:
+	return dulls_characters_for(active_id())
+
+
+static func dulls_characters_for(id: String) -> bool:
+	return bool(_dict(profile(id).get("characters", {})).get("dull", false))
+
+
+## A short key for "which look a model of this path gets right now": changes when the variant path or the
+## dull flag changes, so a model that is already right does not reload.
+static func model_look_key(path: String) -> String:
+	var resolved: String = resolve_model(path)
+	return "%s|%s" % [resolved, "dull" if (dulls_characters() and not is_variant_path(resolved)) else "plain"]
 
 
 # ---- internals ----

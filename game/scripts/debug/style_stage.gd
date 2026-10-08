@@ -57,6 +57,8 @@ const TURN_SPEED_DEG: float = 60.0
 
 var current_letter: String = ""
 
+var _loaded_path: String = ""
+
 var _world: Node3D = null
 var _model: Node3D = null
 var _light_rig: Node3D = null
@@ -164,6 +166,7 @@ func load_model_file(path: String, label: String) -> bool:
 		_model.queue_free()
 	_model = scene.instantiate() as Node3D
 	_pivot.add_child(_model)
+	_loaded_path = path
 	current_letter = label
 	set_expression(_grin)
 	set_silhouette(_silhouette)
@@ -196,6 +199,32 @@ func frame_for(letters: Array[String]) -> void:
 	reach = maxf(reach, maxf(absf(box.position.z), absf(box.end.z)))
 	var aspect: float = 16.0 / 9.0
 	_frame_distance = maxf(_frame_distance, reach * CLOSE_MARGIN / (tan(half_fov) * aspect))
+
+
+## Like frame_for, but for model files by path (the grim Red next to the classic one). Both are measured,
+## and the close camera is fitted to the taller, so the two stay comparable.
+func frame_for_models(paths: Array[String]) -> void:
+	var keep: String = current_letter
+	var keep_path: String = _loaded_path
+	var box: AABB = AABB()
+	var first: bool = true
+	for path: String in paths:
+		if not load_model_file(path, "measure"):
+			continue
+		var b: AABB = model_bounds(_model)
+		box = b if first else box.merge(b)
+		first = false
+	if keep_path != "":
+		load_model_file(keep_path, keep)
+	if first:
+		return
+	_frame_center = box.get_center()
+	_frame_center.x = 0.0
+	_frame_center.z = 0.0
+	var half_fov: float = deg_to_rad(CLOSE_FOV_DEG) * 0.5
+	_frame_distance = (box.size.y * CLOSE_MARGIN * 0.5) / tan(half_fov)
+	var reach: float = maxf(maxf(absf(box.position.x), absf(box.end.x)), maxf(absf(box.position.z), absf(box.end.z)))
+	_frame_distance = maxf(_frame_distance, reach * CLOSE_MARGIN / (tan(half_fov) * (16.0 / 9.0)))
 
 
 ## Bounds of every mesh under a model, in world space (the model sits at the stage origin).

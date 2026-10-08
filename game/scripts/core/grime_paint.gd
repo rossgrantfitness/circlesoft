@@ -8,7 +8,7 @@ extends RefCounted
 ## tint still multiplies them; the profile drains that tint separately. Decals (posters, warning stripes,
 ## fence, puddle) are small and shared by every room, so a prop costs one cached texture.
 
-const FLOOR_PX: int = 128
+const FLOOR_PX: int = 64
 const WALL_PX: int = 128
 const BAYER: Array[int] = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5]
 
@@ -113,10 +113,10 @@ static func surface_texture(kind: String, grime: Dictionary) -> ImageTexture:
 ## sheet metal, rust streaks, seams) or "panel" (flat welded plate with stains).
 static func surface_image(kind: String, grime: Dictionary) -> Image:
 	var size: int = FLOOR_PX if kind == "floor" else WALL_PX
-	var base: Color = Color(0.56, 0.55, 0.52)
+	var base: Color = Color(0.52, 0.51, 0.48)
 	var dirt: Color = _color(grime, "dirt_color", "#17140f")
 	var rust: Color = _color(grime, "rust_color", "#6a3a1c")
-	var oil: Color = _color(grime, "oil_color", "#0a0b09")
+	var oil: Color = _color(grime, "oil_color", "#161815")
 	var dirt_amount: float = float(grime.get("dirt", 0.7))
 	var rust_amount: float = float(grime.get("rust", 0.6))
 	var stain_amount: float = float(grime.get("stain", 0.6))
@@ -139,9 +139,7 @@ static func surface_image(kind: String, grime: Dictionary) -> Image:
 			elif kind == "floor":
 				var plate: int = 32
 				if x % plate == 0 or y % plate == 0:
-					c = c.darkened(0.45)
-				elif x % plate == 1 or y % plate == 1:
-					c = c.lightened(0.06)
+					c = c.darkened(0.4)
 			else:
 				if x % 32 == 0 or y % 32 == 0:
 					c = c.darkened(0.4)
@@ -152,18 +150,27 @@ static func surface_image(kind: String, grime: Dictionary) -> Image:
 			for ry: int in [3, size - 4]:
 				_rect(img, rx, ry, 2, 2, base.darkened(0.5))
 				img.set_pixel(rx, ry, base.lightened(0.18))
-	# big dirty blotches: two tones, dithered edges
+	# big dirty blotches in posterized tones (never a soft blend): light dirt, heavy dirt, oil, rust.
+	# Only the border between two tones is dithered, so the stains stay readable at 384x216.
 	for y: int in size:
 		for x: int in size:
-			var n: float = _blotch(x, y, size, salt + 100)
-			_splat(img, x, y, dirt, clampf((n - 0.38) * 3.2, 0.0, 1.0) * dirt_amount)
-			var m: float = _blotch(x, y, size, salt + 200)
-			_splat(img, x, y, oil, clampf((m - 0.62) * 5.0, 0.0, 1.0) * stain_amount)
-	# rust patches
-	for y: int in size:
-		for x: int in size:
-			var r: float = _blotch(x, y, size, salt + 300)
-			_splat(img, x, y, rust, clampf((r - 0.55) * 4.0, 0.0, 1.0) * rust_amount)
+			var jitter: float = (_bayer(x, y) - 0.5) * 0.07
+			var n: float = _blotch(x, y, size, salt + 100) + jitter
+			var dirt_cut: float = 0.62 - 0.22 * dirt_amount
+			var c: Color = img.get_pixel(x, y)
+			if n > dirt_cut + 0.16:
+				c = c.lerp(dirt, 0.5)
+			elif n > dirt_cut:
+				c = c.lerp(dirt, 0.24)
+			var m: float = _blotch(x, y, size, salt + 200) + jitter
+			if m > 0.86 - 0.2 * stain_amount:
+				c = c.lerp(oil, 0.6)
+			var r: float = _blotch(x, y, size, salt + 300) + jitter
+			if r > 0.9 - 0.25 * rust_amount:
+				c = c.lerp(rust, 0.75)
+			elif r > 0.82 - 0.25 * rust_amount:
+				c = c.lerp(rust, 0.4)
+			img.set_pixel(x, y, c)
 	# streaks: long vertical drips on walls and panels, scuff lines on floors
 	for i: int in 9:
 		var sx: int = int(_hash(i, 1, salt + 400) * float(size))
@@ -188,8 +195,11 @@ static func surface_image(kind: String, grime: Dictionary) -> Image:
 	for y: int in size:
 		for x: int in size:
 			var edge: int = mini(mini(x, size - 1 - x), mini(y, size - 1 - y))
-			if edge < 6:
-				_splat(img, x, y, dirt, (1.0 - float(edge) / 6.0) * 0.55 * dirt_amount)
+			if edge < 2:
+				var c: Color = img.get_pixel(x, y)
+				img.set_pixel(x, y, Color(c.r * 0.55 + dirt.r * 0.45, c.g * 0.55 + dirt.g * 0.45, c.b * 0.55 + dirt.b * 0.45, c.a))
+			elif edge < 5:
+				_splat(img, x, y, dirt, 0.3 * dirt_amount)
 	return img
 
 
@@ -447,7 +457,10 @@ static func dull_character_image(src: Image, cfg: Dictionary, salt: int = 0) -> 
 static func dull_character_texture(src: Texture2D, cfg: Dictionary) -> Texture2D:
 	if src == null:
 		return null
-	var key: String = "char:%d:%s" % [src.get_instance_id(), str(cfg)]
+	# Keyed by where the texture came from (a model's textures reload under a new instance id when its scene
+	# was freed), so a battle that starts again does not repaint every character.
+	var origin: String = src.resource_path if not src.resource_path.is_empty() else str(src.get_instance_id())
+	var key: String = "char:%s:%dx%d:%s" % [origin, src.get_width(), src.get_height(), str(cfg)]
 	if _char_cache.has(key):
 		return _char_cache[key]
 	var image: Image = src.get_image()

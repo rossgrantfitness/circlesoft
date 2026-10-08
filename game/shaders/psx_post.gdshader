@@ -57,7 +57,7 @@ vec3 world_grade(vec3 color, vec2 uv, vec2 internal_pixel) {
 	float hi = max(color.r, max(color.g, color.b));
 	float lo = min(color.r, min(color.g, color.b));
 	float sat = hi > 0.0001 ? (hi - lo) / hi : 0.0;
-	float accent = grade_accent_keep * smoothstep(0.55, 0.9, hi) * smoothstep(0.35, 0.7, sat);
+	float accent = grade_accent_keep * smoothstep(0.72, 0.96, hi) * smoothstep(0.5, 0.8, sat);
 	color = mix(color, vec3(luma), grade_desat * (1.0 - accent));
 	float tone_luma = dot(color, vec3(0.299, 0.587, 0.114));
 	vec3 tone = mix(grade_shadow_tint, grade_highlight_tint, smoothstep(0.08, 0.7, tone_luma));

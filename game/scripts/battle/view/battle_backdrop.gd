@@ -27,17 +27,43 @@ var look: Dictionary = {}
 
 var _lit_shader: Shader = null
 var _unlit_shader: Shader = null
+var _tuning: BattleStageTuning = null
+var _building: bool = false
+## The look profile the set was built for ("classic", "grim"); a different one rebuilds it.
+var built_profile: String = ""
+var dressing: GrimDressing = null
+var _grime: Dictionary = {}
+var _surface_tints: Dictionary = {}
+
+
+func _ready() -> void:
+	add_to_group(LookProfiles.GROUP_AWARE)
+
+
+## The look profile changed (F11): rebuild the set in the new look. A build asks for the profile itself,
+## so while building this ignores the notice.
+func apply_look(profile_id: String, _profile: Dictionary) -> void:
+	if _building or _tuning == null or profile_id == built_profile:
+		return
+	build(_tuning, backdrop_id)
 
 
 ## Builds (or rebuilds) the set for a backdrop id.
 func build(tuning: BattleStageTuning, id: String) -> void:
+	_building = true
 	for child: Node in get_children():
 		remove_child(child)
 		child.queue_free()
 	lamps.clear()
 	lights.clear()
+	dressing = null
+	_tuning = tuning
 	backdrop_id = id
-	look = tuning.backdrop(id)
+	built_profile = LookProfiles.enter_scene("battle")
+	look = LookProfiles.backdrop_look(tuning.backdrop(id), built_profile)
+	var profile: Dictionary = LookProfiles.profile(built_profile)
+	_grime = profile.get("grime", {}) if profile.get("grime", {}) is Dictionary else {}
+	_surface_tints = look.get("surface_tint", {}) if look.get("surface_tint", {}) is Dictionary else {}
 	_lit_shader = load(LIT_SHADER) as Shader
 	_unlit_shader = load(UNLIT_SHADER) as Shader
 	_build_environment()
@@ -45,8 +71,15 @@ func build(tuning: BattleStageTuning, id: String) -> void:
 	_build_crates()
 	_build_lamps()
 	_build_key_light()
+	if bool(profile.get("dressing", false)):
+		dressing = GrimDressing.new()
+		dressing.name = "GrimDressing"
+		dressing.dressing_id = "battle"
+		dressing.restyle_materials = false
+		add_child(dressing)
 	var void_color: Color = Color.html(str(look["void"]))
 	PsxLook.set_fog(void_color, float(look["fog_near"]), float(look["fog_far"]))
+	_building = false
 
 
 ## Triangles in the set (for the room budget test).
@@ -93,9 +126,9 @@ func _build_surfaces() -> void:
 	floor_instance.name = "Floor"
 	floor_instance.mesh = floor_mesh
 	floor_instance.position = Vector3(left_x + floor_size.x / 2.0, 0.0, back_z + floor_size.y / 2.0)
-	floor_instance.set_surface_override_material(0, _lit(BattleTextures.floor_texture(look), floor_size / FLOOR_TILE_UNITS, Color.WHITE, AFFINE_FLOOR))
+	floor_instance.set_surface_override_material(0, _lit(_floor_texture(), floor_size / FLOOR_TILE_UNITS, _tint_for("floor"), AFFINE_FLOOR))
 	add_child(floor_instance)
-	var wall_texture: ImageTexture = BattleTextures.wall_texture(look)
+	var wall_texture: ImageTexture = _wall_texture()
 	var back_len: float = floor_size.x + WALL_LENGTH_MARGIN
 	var back_mesh: PlaneMesh = PlaneMesh.new()
 	back_mesh.size = Vector2(back_len, wall_h)
@@ -106,7 +139,7 @@ func _build_surfaces() -> void:
 	back.name = "WallBack"
 	back.mesh = back_mesh
 	back.position = Vector3(left_x + back_len / 2.0, wall_h / 2.0, back_z)
-	back.set_surface_override_material(0, _lit(wall_texture, Vector2(back_len, wall_h) / WALL_TILE_UNITS, Color.WHITE, AFFINE_FLOOR))
+	back.set_surface_override_material(0, _lit(wall_texture, Vector2(back_len, wall_h) / WALL_TILE_UNITS, _tint_for("wall"), AFFINE_FLOOR))
 	add_child(back)
 	var left_len: float = floor_size.y + 2.0
 	var left_mesh: PlaneMesh = PlaneMesh.new()
@@ -118,12 +151,29 @@ func _build_surfaces() -> void:
 	left.name = "WallLeft"
 	left.mesh = left_mesh
 	left.position = Vector3(left_x, wall_h / 2.0, back_z + left_len / 2.0)
-	left.set_surface_override_material(0, _lit(wall_texture, Vector2(left_len, wall_h) / WALL_TILE_UNITS, Color.WHITE, AFFINE_FLOOR))
+	left.set_surface_override_material(0, _lit(wall_texture, Vector2(left_len, wall_h) / WALL_TILE_UNITS, _tint_for("wall"), AFFINE_FLOOR))
 	add_child(left)
 
 
+## The grim look paints its own grimy floor and walls (GrimePaint) in place of the toy-box ones.
+func _floor_texture() -> ImageTexture:
+	if _surface_tints.has("floor"):
+		return GrimePaint.surface_texture("floor", _grime)
+	return BattleTextures.floor_texture(look)
+
+
+func _wall_texture() -> ImageTexture:
+	if _surface_tints.has("wall"):
+		return GrimePaint.surface_texture("wall", _grime)
+	return BattleTextures.wall_texture(look)
+
+
+func _tint_for(part: String) -> Color:
+	return Color.html(str(_surface_tints[part])) if _surface_tints.has(part) else Color.WHITE
+
+
 func _build_crates() -> void:
-	var crate_material: ShaderMaterial = _lit(BattleTextures.crate_texture(look), Vector2.ONE, Color.WHITE, AFFINE_PROP)
+	var crate_material: ShaderMaterial = _lit(BattleTextures.crate_texture(look), Vector2.ONE, _tint_for("crate"), AFFINE_PROP)
 	var index: int = 0
 	for entry: Variant in (look["crates"] as Array):
 		var crate: Dictionary = entry

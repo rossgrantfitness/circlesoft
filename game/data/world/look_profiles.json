@@ -1,0 +1,162 @@
+{
+ "_about": "Look profiles (Technical Artist, 2026-10-08, the grim look test). Switch with F11 in the PSX options overlay (auto, classic, grim). A scene picks its own profile from scene_defaults unless the overlay forced one. 'classic' is the toy-box look Ross approved first and is never changed. 'grim' is the greasy, desaturated, oppressive look from Ross's 2026-10-08 tone decision ('desaturate, darken, grime things up a bit'). Read by scripts/core/look_profiles.gd; every key has a test. grade.* feed the PSX post shader (shaders/psx_post.gdshader); post.* are its color levels and dither size; lighting.* are multipliers on a room's own ambient and lights (PsxRoomLook); fog.* tint and shorten the fog; materials.* drain and darken room material tints (GrimDressing); grime.* are the code-painted grime colors and amounts (GrimePaint); characters.* is the dull, matte, scuffed pass on character textures; models maps a classic model path to this profile's variant; backdrop.* replaces keys of the battle set (BattleBackdrop).",
+ "default": "classic",
+ "scene_defaults": {
+  "_note": "Which profile a scene gets on its own. Keys are room ids (data/world/rooms.json) or 'battle'. Only the look-test scenes are grim for now; everything else stays classic until Ross signs off.",
+  "harrow_square": "grim",
+  "harrow_checkpoint": "grim",
+  "battle": "grim"
+ },
+ "profiles": {
+  "classic": {
+   "name": "Classic (toy-box)",
+   "grade": {
+    "amount": 0.0
+   },
+   "post": {
+    "color_levels": 32,
+    "dither_amount": 1.0
+   },
+   "lighting": {
+    "ambient_color_mul": [
+     1,
+     1,
+     1
+    ],
+    "ambient_energy_mul": 1.0,
+    "point_energy_mul": 1.0,
+    "key_energy_mul": 1.0
+   },
+   "fog": {
+    "color": "",
+    "mix": 0.0,
+    "near_mul": 1.0,
+    "far_mul": 1.0
+   },
+   "materials": {
+    "saturation": 1.0,
+    "value": 1.0
+   },
+   "dressing": false,
+   "characters": {
+    "dull": false
+   },
+   "models": {}
+  },
+  "grim": {
+   "name": "Grim (greasy, oppressive)",
+   "grade": {
+    "_note": "amount 1 = fully on. desat drains colour (accent_keep spares bright saturated pixels: lamps, warning stripes, the call's teal). crush/gamma/gain darken. The split tone pushes shadows teal and highlights sodium orange.",
+    "amount": 1.0,
+    "desat": 0.75,
+    "accent_keep": 0.8,
+    "gain": 1.0,
+    "gamma": 1.1,
+    "crush": 0.03,
+    "shadow_tint": [
+     0.55,
+     0.78,
+     0.74
+    ],
+    "highlight_tint": [
+     0.96,
+     0.84,
+     0.66
+    ],
+    "tint_amount": 0.6,
+    "grain": 0.075,
+    "grain_fps": 12.0,
+    "vignette": 0.4
+   },
+   "post": {
+    "color_levels": 24,
+    "dither_amount": 1.7
+   },
+   "lighting": {
+    "ambient_color_mul": [
+     0.85,
+     0.95,
+     0.95
+    ],
+    "ambient_energy_mul": 1.1,
+    "point_energy_mul": 1.0,
+    "key_energy_mul": 1.6,
+    "dressing_key_scale": 0.9
+   },
+   "fog": {
+    "color": "#2a2c24",
+    "mix": 1.0,
+    "near_mul": 0.92,
+    "far_mul": 1.0
+   },
+   "materials": {
+    "saturation": 0.5,
+    "value": 1.25
+   },
+   "grime": {
+    "dirt": 0.8,
+    "rust": 0.7,
+    "stain": 0.7,
+    "dirt_color": "#17140f",
+    "rust_color": "#6a3a1c",
+    "oil_color": "#161815"
+   },
+   "dressing": true,
+   "characters": {
+    "dull": true,
+    "saturation": 0.5,
+    "value": 0.85,
+    "gloss_ceiling": 0.62,
+    "scuff": 0.35,
+    "dirt_color": "#1b1812",
+    "warm_cast": "#d8c9a8",
+    "warm_cast_amount": 0.25,
+    "tint_saturation": 0.6,
+    "tint_value": 1.0
+   },
+   "models": {
+    "res://art/placeholder/characters/red/red_shiba.glb": "res://art/placeholder/characters/red/red_shiba_grim.glb"
+   },
+   "backdrop": {
+    "floor_a": "#2e2b28",
+    "floor_b": "#232220",
+    "floor_trim": "#46433d",
+    "wall_a": "#4a4540",
+    "wall_b": "#38342f",
+    "wall_rust": "#6a3a1c",
+    "wall_rivet": "#7c776c",
+    "patches": [
+     "#4a4036",
+     "#3f433a",
+     "#4b3a34"
+    ],
+    "void": "#14160f",
+    "ambient": "#9fb0aa",
+    "ambient_energy": 1.15,
+    "key_color": "#dfe8ea",
+    "key_energy": 1.5,
+    "key_dir_deg": [
+     -38.0,
+     52.0
+    ],
+    "fog_near": 14.0,
+    "fog_far": 26.0,
+    "lamp_energy_mul": 0.9,
+    "lamp_color": "#ff9a3c",
+    "surface_tint": {
+     "floor": "#9c978c",
+     "wall": "#8f8a7e",
+     "crate": "#5a5047"
+    }
+   },
+   "player_lamp": {
+    "_note": "Red carries her lamp: a small warm light that rides with her in the grim look.",
+    "color": "#ffb347",
+    "energy": 1.7,
+    "range": 3.2,
+    "height": 0.7,
+    "forward": 0.25
+   }
+  }
+ }
+}

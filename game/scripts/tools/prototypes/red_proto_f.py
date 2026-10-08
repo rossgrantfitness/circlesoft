@@ -19,12 +19,23 @@ Materials (psx_post_import.gd gives both the standard psx_lit):
     mat_red_proto_f_face   128x64 face sheet: two 64x64 expressions, neutral (left) and grin (right).
                            Swap them with uv_offset.x = 0.5 on this material.
 
+VARIANTS (2026-10-08, the grim look test): configure("grim") re-skins and re-proportions the same model,
+same 17-bone rig, same primitives, same triangle count, for Ross's "world goes grim, heroes stay loud"
+decision. Nothing about the classic F changes (configure() is never called for it). The grim variant:
+  - proportions: a smaller head (80%), a taller leaner body (legs x1.7, torso x1.2, slimmer), about 3.4 heads
+    instead of 2.4, set by GRIM_WARP below (one smooth warp on every vertex and every bone, so the rig is the
+    same and every clip still fits);
+  - material: matte (no Chalk gloss spots, no catch-lights), a darker scuffed jacket, dull dirty fur;
+  - kept: wide-set short pointy ears, the bean head, cream urajiro, curled tail, goggles, lamp, sword.
+Build it with red_shiba.py --variant grim.
+
 Run (see red_proto_de_kit.py):  /tmp/blockout_venv/bin/python game/scripts/tools/prototypes/red_proto_f.py
 Output: game/art/placeholder/characters/red_prototypes/red_proto_f.glb (+ _body.png, _face.png)
 """
 
 import math
 import os
+import random
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -57,6 +68,73 @@ COL = {
 }
 RGB = {k: (hex_rgb(a), hex_rgb(b)) for k, (a, b) in COL.items()}
 CHALK = hex_rgb("#EDEAD8")
+PALETTE = dict(PAL)         # the kit's palette; configure() swaps colors in here
+GLOSS = True                # Chalk gloss spots on boots, mitts and the lamp (off for the grim variant)
+SCUFF = 0.0                 # 0..1: how much wear is painted over every cell (0 = the clean classic)
+WARP = None                 # function(Vector) -> Vector: the grim proportions (None = classic)
+WARP_Z_OF_FOOT = 0.12       # where the shin tips end up (red_shiba.py plants the feet there)
+
+# ---- the grim variant: a duller, dirtier palette (muted grey-browns; only the lamp stays bright) ----
+GRIM_COL = {
+    "tawny": ("#8A7358", "#5C4A3E"),     # dull, dusty fur
+    "cream": ("#C2B596", "#968970"),     # still warm, just dirty
+    "jacket": ("#693A36", "#412523"),    # faded oxblood: still Red's colour, no toy red
+    "tan": ("#85775F", "#5F5444"),
+    "brass": ("#7F6A40", "#54442A"),     # tarnished
+    "glow": ("#E8B45A", "#B9822F"),      # the lamp is the one warm light she carries
+    "rust": ("#43302A", "#2A1D1A"),      # scuffed boot leather
+    "blade": ("#9A9889", "#62615C"),     # dull steel
+    "ink": ("#14121F", "#14121F"),
+    "dusk": ("#2A2745", "#1E1B33"),
+}
+GRIM_PALETTE = {"ink": "#14121F", "chalk": "#B3AD98", "glow": "#E8B45A", "brass": "#8F7440",
+                "terracotta": "#7A4A36", "mustard": "#8A7436", "patch_green": "#52623F"}
+# Piecewise-linear maps over height (z): (input z, output z) and (input z, width scale), applied after the lean.
+GRIM_Z_KNOTS = [(0.0, 0.0), (0.12, 0.12), (0.27, 0.375), (0.62, 0.795), (1.40, 1.419)]
+GRIM_XY_KNOTS = [(0.0, 0.95), (0.12, 0.95), (0.27, 0.84), (0.62, 0.80), (1.40, 0.80)]
+
+
+def _piecewise(knots, z):
+    if z <= knots[0][0]:
+        (a, va), (b, vb) = knots[0], knots[1]
+    elif z >= knots[-1][0]:
+        (a, va), (b, vb) = knots[-2], knots[-1]
+    else:
+        for i in range(len(knots) - 1):
+            if knots[i][0] <= z <= knots[i + 1][0]:
+                (a, va), (b, vb) = knots[i], knots[i + 1]
+                break
+    return va + (vb - va) * (z - a) / (b - a)
+
+
+def grim_warp(p):
+    """Smaller head, taller leaner body: z is remapped piecewise (legs x1.7, torso x1.2, head x0.8) and
+    x / y shrink toward the body axis (the head scales evenly, so it stays a bean, never stretched)."""
+    k = _piecewise(GRIM_XY_KNOTS, p.z)
+    return Vector((p.x * k, p.y * k, _piecewise(GRIM_Z_KNOTS, p.z)))
+
+
+def configure(variant):
+    """Switches this module to a variant ("classic" = as Ross approved it, "grim" = the look test). Call
+    before build(). Returns the model name (also the armature, mesh and material prefix)."""
+    global NAME, MAT_BODY, MAT_FACE, BODY_PATH, FACE_PATH, COL, RGB, CHALK, PALETTE, GLOSS, SCUFF, WARP, WARP_Z_OF_FOOT
+    if variant == "classic":
+        return NAME
+    assert variant == "grim", variant
+    NAME = "red_shiba_grim"
+    MAT_BODY, MAT_FACE = "mat_%s_body" % NAME, "mat_%s_face" % NAME
+    out = os.path.join(GAME_DIR, "art", "placeholder", "characters", "red")
+    BODY_PATH, FACE_PATH = os.path.join(out, NAME + "_body.png"), os.path.join(out, NAME + "_face.png")
+    COL = GRIM_COL
+    RGB = {k: (hex_rgb(a), hex_rgb(b)) for k, (a, b) in COL.items()}
+    PALETTE = dict(PAL)
+    PALETTE.update(GRIM_PALETTE)
+    CHALK = hex_rgb(GRIM_PALETTE["chalk"])
+    GLOSS = False
+    SCUFF = 0.35
+    WARP = grim_warp
+    WARP_Z_OF_FOOT = grim_warp(Vector((0.0, 0.0, 0.12))).z
+    return NAME
 
 CELLS = {
     "tawny": (0, 0, False), "tawny_gloss": (1, 0, True), "cream": (2, 0, False),
@@ -69,6 +147,23 @@ ART_ORIGIN = (64, 32)       # 32x32 painted jacket back (cells 4-5, 2-3)
 PLACKET_ORIGIN = (96, 32)   # 16x32: upper half lit, lower half shade (the jacket's shade step)
 PATCH_ORIGIN = (112, 32)    # 16x16 chest patch
 SHADE_FROM = 0.58
+
+
+def scuff_cell(img, x0, y0, name):
+    """Wear over one 16x16 cell: dark dirt flecks, a few worn-light scratches, grime creeping up from the
+    bottom. Deterministic (seeded by the cell's name), so the texture is the same every build."""
+    rng = random.Random(name)
+    px = img.load()
+    for y in range(CELL):
+        for x in range(CELL):
+            r = rng.random()
+            base = px[x0 + x, y0 + y]
+            if r < 0.16 * SCUFF * 2:
+                px[x0 + x, y0 + y] = lerp_rgb(base, (20, 18, 15), 0.45)
+            elif r > 1.0 - 0.05 * SCUFF * 2:
+                px[x0 + x, y0 + y] = lerp_rgb(base, (214, 200, 168), 0.18)
+            elif y >= 12 and (x + y) % 2 == 0 and rng.random() < 0.5 * SCUFF * 2:
+                px[x0 + x, y0 + y] = lerp_rgb(base, (20, 18, 15), 0.35)
 
 
 def paint_cell(img, name):
@@ -85,7 +180,9 @@ def paint_cell(img, name):
             else:
                 c = shade
             px[x0 + x, y0 + y] = c
-    if gloss:
+    if SCUFF > 0.0:
+        scuff_cell(img, x0, y0, name)
+    if gloss and GLOSS:
         d = ImageDraw.Draw(img)
         d.rectangle([x0 + 3, y0 + 2, x0 + 6, y0 + 3], fill=CHALK)
         d.rectangle([x0 + 3, y0 + 4, x0 + 4, y0 + 6], fill=CHALK)
@@ -93,13 +190,13 @@ def paint_cell(img, name):
 
 
 def paint_body():
-    img = Image.new("RGB", (BODY_PX, BODY_PX), hex_rgb(PAL["ink"]))
+    img = Image.new("RGB", (BODY_PX, BODY_PX), hex_rgb(PALETTE["ink"]))
     for name in CELLS:
         paint_cell(img, name)
     d = ImageDraw.Draw(img)
     lit_j, shade_j = RGB["jacket"]
-    ink, brass, glow, chalk = (hex_rgb(PAL[k]) for k in ("ink", "brass", "glow", "chalk"))
-    terracotta, mustard, green = (hex_rgb(PAL[k]) for k in ("terracotta", "mustard", "patch_green"))
+    ink, brass, glow, chalk = (hex_rgb(PALETTE[k]) for k in ("ink", "brass", "glow", "chalk"))
+    terracotta, mustard, green = (hex_rgb(PALETTE[k]) for k in ("terracotta", "mustard", "patch_green"))
 
     # Jacket back with the hand-painted lamp (the tail curls over the left of it, so the lamp sits a
     # little right of center in the art).
@@ -141,7 +238,34 @@ def paint_body():
     d.rectangle([px_ + 3, py_ + 3, px_ + 12, py_ + 12], fill=mustard)
     d.rectangle([px_ + 6, py_ + 5, px_ + 9, py_ + 6], fill=ink)
     d.rectangle([px_ + 6, py_ + 7, px_ + 9, py_ + 10], fill=glow)
+    if SCUFF > 0.0:
+        wear_jacket(img, d)
     img.save(BODY_PATH)
+
+
+def wear_jacket(img, d):
+    """Grim only: the painted jacket pieces (back, zip placket, chest patch) get worn through, creased and
+    dirty: dark smears, pale scratches and a couple of stitched-up tears."""
+    rng = random.Random("jacket")
+    px = img.load()
+    for ox, oy, w, h in ((ART_ORIGIN[0], ART_ORIGIN[1], 32, 32), (PLACKET_ORIGIN[0], PLACKET_ORIGIN[1], 16, 32), (PATCH_ORIGIN[0], PATCH_ORIGIN[1], 16, 16)):
+        for y in range(h):
+            for x in range(w):
+                base = px[ox + x, oy + y]
+                r = rng.random()
+                if r < 0.12:
+                    px[ox + x, oy + y] = lerp_rgb(base, (18, 15, 13), 0.5)
+                elif r > 0.975:
+                    px[ox + x, oy + y] = lerp_rgb(base, (190, 170, 140), 0.22)
+        for _ in range(3):
+            sx, sy = rng.randrange(w), rng.randrange(max(h - 8, 1))
+            for k in range(rng.randrange(5, 9)):
+                if sx + k < w and sy + k // 2 < h:
+                    px[ox + sx + k, oy + sy + k // 2] = lerp_rgb(px[ox + sx + k, oy + sy + k // 2], (190, 170, 140), 0.3)
+    ox, oy = ART_ORIGIN
+    d.line([(ox + 8, oy + 14), (ox + 20, oy + 18)], fill=hex_rgb("#1A1512"), width=1)     # a stitched tear
+    for k in range(0, 12, 3):
+        d.point([(ox + 8 + k, oy + 13 + k // 3 * 1)], fill=hex_rgb("#A89A7C"))
 
 
 # ---------------------------------------------------------------- layout (C's body, E's head)
@@ -499,10 +623,15 @@ def build():
     probe = PartMesh("jacket_probe", [MAT_BODY])
     add_jacket(probe)
     jacket_obj = probe.to_object()
-    arm_obj = build_armature(NAME, JOINTS)
-    body_obj = build_body(jacket_obj).to_object()
+    joints = JOINTS if WARP is None else {k: (tuple(WARP(Vector(h))), tuple(WARP(Vector(t)))) for k, (h, t) in JOINTS.items()}
+    arm_obj = build_armature(NAME, joints)
+    body_pm = build_body(jacket_obj)
+    body_pm.warp = WARP
+    body_obj = body_pm.to_object()
     bpy.data.objects.remove(jacket_obj)
-    sword_obj = build_sword().to_object()
+    sword_pm = build_sword()
+    sword_pm.warp = WARP
+    sword_obj = sword_pm.to_object()
     mats = [make_material(MAT_BODY, BODY_PATH), make_material(MAT_FACE, FACE_PATH)]
     attach(body_obj, arm_obj, mats)
     attach(sword_obj, arm_obj, [mats[0]])

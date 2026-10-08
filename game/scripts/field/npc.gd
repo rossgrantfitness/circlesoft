@@ -178,7 +178,8 @@ func get_animation_player() -> AnimationPlayer:
 func _load_model(root: Node3D) -> bool:
 	if model_path == "":
 		return false
-	var packed: PackedScene = load(model_path) as PackedScene
+	var resolved_path: String = LookProfiles.resolve_model(model_path)
+	var packed: PackedScene = load(resolved_path) as PackedScene
 	if packed == null:
 		push_warning("Npc %s: cannot load model %s, using the placeholder" % [speaker_id, model_path])
 		return false
@@ -188,6 +189,7 @@ func _load_model(root: Node3D) -> bool:
 	root.scale = Vector3.ONE * height_scale
 	root.add_child(_model)
 	apply_light_compensation(_model, light_compensation)
+	LookProfiles.dress_model(_model, resolved_path)
 	_model_head_top = measure_head_top(root, _model)
 	for node: Node in _model.find_children("*", "AnimationPlayer", true, false):
 		_player = node as AnimationPlayer

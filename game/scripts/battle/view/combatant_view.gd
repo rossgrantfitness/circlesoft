@@ -619,12 +619,15 @@ func _pose_bone(bone_name: String, axis: Vector3, angle: float) -> void:
 
 # ---- building ----
 
-func _load_model(path: String) -> Node3D:
+func _load_model(wanted: String) -> Node3D:
+	var path: String = LookProfiles.resolve_model(wanted)
 	if path.is_empty() or not ResourceLoader.exists(path):
 		return null
 	var resource: Resource = load(path)
 	if resource is PackedScene:
-		return (resource as PackedScene).instantiate() as Node3D
+		var instance: Node3D = (resource as PackedScene).instantiate() as Node3D
+		LookProfiles.dress_model(instance, path)
+		return instance
 	return null
 
 
