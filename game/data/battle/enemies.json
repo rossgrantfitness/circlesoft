@@ -92,7 +92,7 @@
         {"skill": "kasp_whistle", "weight": 3, "if": {"phase_is": "on_foot"}},
         {"skill": "kasp_clipboard_smack", "weight": 4, "if": {"phase_is": "on_foot"}}
       ],
-      "field": {"walk_speed": 0.0, "chase_speed": 0.0, "sight_m": 0.0, "give_up_s": 0.0},
+      "field": {"walk_speed": 0.5, "chase_speed": 0.5, "sight_m": 1.0, "give_up_s": 1.0},
       "model": "res://art/placeholder/enemies/grunt_variant/enm_grunt_variant.glb"
     }
   ]

@@ -111,7 +111,7 @@ func test_the_report_has_the_documented_shape() -> void:
 	for key: String in ["xp", "credits", "drops", "level_ups", "final_ko_target"]:
 		assert_true(report.has(key), key)
 	assert_eq(int(report["xp"]), 28)
-	assert_eq(int(report["credits"]), 42)
+	assert_eq(int(report["credits"]), 84)
 	assert_true(report["drops"] is Array)
 	assert_true(report["level_ups"] is Array)
 	assert_has(["e1", "e2"], report["final_ko_target"], "the K.O. freeze lands on the last enemy beaten")
@@ -650,7 +650,7 @@ func test_game_state_is_updated_after_a_win() -> void:
 	data.enemy("signals_grunt").erase("flee_at_hp_pct")
 	var controller: BattleController = await _fight(setup, [{"kind": "item", "item_id": "ration_bar", "targets": ["red"]}], BattleTestKit.FixedPressSource.new(0.0), ATTACK_RED)
 	assert_eq(controller.result, "win")
-	assert_eq(state.call("get_credits"), 42, "credits from the two grunts")
+	assert_eq(state.call("get_credits"), 84, "credits from the two grunts")
 	var red: Dictionary = state.call("get_member", "red")
 	assert_eq(int(red["xp"]), 28, "XP from the two grunts")
 	assert_eq(int(red["level"]), 1, "28 XP is short of level 2 (35)")

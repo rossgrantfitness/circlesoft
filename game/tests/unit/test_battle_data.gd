@@ -51,7 +51,7 @@ func test_every_press_type_is_used_by_the_party() -> void:
 
 func test_four_enemy_types_each_with_a_tell_and_a_block_press() -> void:
 	var data: BattleData = _data()
-	assert_eq(data.enemies.size(), 4)
+	assert_eq(data.enemies.size(), 5, "four slice enemy types plus the Kasp boss")
 	for enemy_id: String in SLICE_ENEMIES:
 		assert_true(data.enemies.has(enemy_id), enemy_id)
 		for entry: Dictionary in data.enemy(enemy_id)["ai"]:

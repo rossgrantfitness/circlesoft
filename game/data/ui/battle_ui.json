@@ -68,7 +68,7 @@
     "stunned": {"letter": "S", "color": "#FFD23F"},
     "default": {"letter": "?", "color": "#8D97A5"}
   },
-  "tiers": {"_note": "Battle Test picker tier tags (placeholder colors; no teal, that is the call).", "tutorial": "#9BE35A", "regular": "#FFB347", "tough": "#FF7A59"},
+  "tiers": {"_note": "Battle Test picker tier tags (placeholder colors; no teal, that is the call).", "tutorial": "#9BE35A", "regular": "#FFB347", "tough": "#FF7A59", "boss": "#FF5A36"},
   "bars": {"hp": "#FF7A59", "juice": "#9BE35A", "empty": "#3A3566", "low_hp_pct": 25, "low_hp_text": "#FF7A59"},
   "ratings": {
     "_note": "sfx: the HUD plays the attack ratings' sounds; the stage already plays battle_block / battle_perfect_block / battle_payback from the hit signal, so those three stay empty here to avoid doubling. Placeholder lettering drawn from the UI font. 'colors' are the style guide's rating colors; more than one color cycles every cycle_steps steps. ink/white are the outline radii in pixels (2px Ink + 1px white inner = 3 / 1).",
