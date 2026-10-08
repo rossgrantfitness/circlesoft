@@ -70,6 +70,13 @@ func anchor_real(real_usec: int) -> void:
 	_scales = PackedFloat64Array()
 
 
+## Nudge the real axis to the engine clock after a step (the director does this every tick so a press
+## stamped by `_input` lines up). Local time is not changed.
+func sync_real(real_usec: int) -> void:
+	if real_usec > _real_usec:
+		_real_usec = real_usec
+
+
 ## Turns a real timestamp into this clock's time. Works for the recent past (through freezes and slow-mo)
 ## and, for a stamp newer than the last step, carries on at the current scale.
 func local_at_real(real_usec: int) -> int:
@@ -81,7 +88,9 @@ func local_at_real(real_usec: int) -> int:
 	if index < 0:
 		return _local_usec + int(roundf(float(real_usec - _real_usec) * _scale))
 	var seg_scale: float = _scales[index]
-	return _local_starts[index] + int(roundf(float(real_usec - _real_starts[index]) * seg_scale))
+	var local: int = _local_starts[index] + int(roundf(float(real_usec - _real_starts[index]) * seg_scale))
+	var upper: int = _local_starts[index + 1] if index + 1 < _local_starts.size() else _local_usec
+	return clampi(local, _local_starts[index], upper)
 
 
 func poll_usec() -> int:
