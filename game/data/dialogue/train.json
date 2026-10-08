@@ -1,0 +1,153 @@
+{
+  "_about": "PLACEHOLDER lines for the ore-train opening (docs/maps/ore_train.md) and the crate scene stand-in, in the grim tone (docs/tone_guide.md): dry, short, tired; the heroes stay loud. Written by the Gameplay Programmer as stand-ins until the Writer's M6-2 pass.",
+  "conversations": {
+    "train_open_1": [
+      {
+        "speaker": "narrator",
+        "text": "Night on the Harrow ore line. Black harbor water on one side, ore stacks on the other."
+      },
+      {
+        "speaker": "narrator",
+        "text": "Ahead, the stacked slums of Harrow Landing glow like a held breath."
+      }
+    ],
+    "train_open_2": [
+      {
+        "speaker": "narrator",
+        "text": "Red sits on a crate with a chalked lantern on the lid. Watch Zero's order: thermoses, cushions, sleeve bells."
+      },
+      {
+        "speaker": "narrator",
+        "text": "The bells are the problem."
+      }
+    ],
+    "train_open_3": [
+      {
+        "speaker": "sign",
+        "text": "SIGNALS INSPECTION. REMAIN WHERE YOU ARE."
+      },
+      {
+        "speaker": "narrator",
+        "text": "Flashlights at the rear of the train. Red is already on her feet."
+      }
+    ],
+    "train_hut_idle": [
+      {
+        "speaker": "crowd_inspector",
+        "text": "Scanner says you're contraband."
+      }
+    ],
+    "train_hut_1": [
+      {
+        "speaker": "crowd_inspector",
+        "text": "Scanner says you're contraband. ...Don't look at the crate."
+      },
+      {
+        "speaker": "crowd_inspector",
+        "text": "The paperwork is a formality. So is this fight. Hold still."
+      }
+    ],
+    "train_hut_2": [
+      {
+        "speaker": "narrator",
+        "text": "The inspector holds up a white flag. Then, slowly, a form for the white flag."
+      },
+      {
+        "speaker": "crowd_inspector",
+        "text": "...I didn't see a courier."
+      }
+    ],
+    "train_box_1": [
+      {
+        "speaker": "narrator",
+        "text": "Red hauls the boxcar door shut behind her. A beat of dark and wheel clatter."
+      },
+      {
+        "speaker": "narrator",
+        "text": "The door rolls open again. Two scanners come through, cones first."
+      }
+    ],
+    "train_box_2": [
+      {
+        "speaker": "crowd_inspector",
+        "text": "Contraband has a heat signature."
+      },
+      {
+        "speaker": "crowd_inspector_b",
+        "text": "So does everybody. Sweep it anyway."
+      }
+    ],
+    "train_ditch_1": [
+      {
+        "speaker": "narrator",
+        "text": "The scanners are beeping at the crate. Red looks at it. At the cones. At the open door."
+      },
+      {
+        "speaker": "narrator",
+        "text": "Watch Zero's bells will have to find their own way home. She shoves."
+      }
+    ],
+    "train_ditch_2": [
+      {
+        "speaker": "narrator",
+        "text": "A splash, and the harbor takes it. The freight platform's lights slide into view, one at a time."
+      }
+    ],
+    "train_land": [
+      {
+        "speaker": "narrator",
+        "text": "Red hits the freight platform rolling. Over the Landing, the Quiet Hours siren starts up: eight bright notes at a dark town."
+      },
+      {
+        "speaker": "narrator",
+        "text": "She runs."
+      }
+    ],
+    "train_ditch_after": [
+      {
+        "speaker": "narrator",
+        "text": "The harbor is where the crate is now."
+      }
+    ],
+    "train_ditch_empty": [
+      {
+        "speaker": "narrator",
+        "text": "The open door. Cold air, black water, the platform lights. Nothing here to throw."
+      }
+    ],
+    "train_ex_crate": [
+      {
+        "speaker": "narrator",
+        "text": "Watch Zero's order. Thermoses, cushions, sleeve bells. The bells are the problem."
+      }
+    ],
+    "train_ex_lights": [
+      {
+        "speaker": "narrator",
+        "text": "The slums of Harrow Landing, stacked up the hillside. About half the windows are lit."
+      }
+    ],
+    "train_ex_ore": [
+      {
+        "speaker": "narrator",
+        "text": "Ore, heaped past a man's head. Harrow's quota, headed off-moon."
+      }
+    ],
+    "train_ex_stencil": [
+      {
+        "speaker": "narrator",
+        "text": "A quota stencil on the bin wall. Someone has crossed out the number and written a smaller one."
+      }
+    ],
+    "harrow_home_arrival": [
+      {
+        "speaker": "narrator",
+        "text": "The siren is still going. Red runs in, crosses the room, and lights the lamp anyway."
+      },
+      {
+        "speaker": "narrator",
+        "text": "She has never missed a night."
+      }
+    ]
+  }
+}

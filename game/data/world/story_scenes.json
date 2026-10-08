@@ -1,27 +1,6 @@
 {
-  "_about": "Placeholder story scenes for Harrow Landing (played by StoryDirector, scripts/field/story_director.gd; the real cutscene system is M6-3). A scene: room, trigger {on: enter, spawn?, area?}, if, once (flag set when it starts), freeze (default true), steps. Steps: say, move {actor, to [x, z], speed, wait}, face, wait {s}, show, hide, set_flag, clear_flag, give_item, take_item, credits, beat, battle {encounter, first_turn}, join {member, at}. Every step may carry its own 'if'. Beats: b1_night, b2_otis_joined, b3_home_again.",
+  "_about": "Placeholder story scenes for Harrow Landing (played by StoryDirector, scripts/field/story_director.gd; the real cutscene system is M6-3). A scene: room, trigger {on: enter, spawn?, area?}, if, once (flag set when it starts), freeze (default true), steps. Steps: say, move {actor, to [x, z], speed, wait}, face, wait {s}, show, hide, set_flag, clear_flag, give_item, take_item, credits, beat, battle {encounter, first_turn}, join {member, at}. Every step may carry its own 'if'. Beats: b1_night, b2_otis_joined, b3_home_again. Added with the ore train: wait_action {action, prompt} (waits for a button, the prompt text is a key of data/text/train.json), goto {room, spawn}, run {scene} (plays another scene's steps here), and join now also joins the party (GameState.join_party).",
   "scenes": {
-    "intro_home": {
-      "room": "harrow_home",
-      "steps": [
-        {
-          "do": "say",
-          "conversation": "harrow_intro"
-        }
-      ],
-      "trigger": {
-        "on": "enter",
-        "spawn": [
-          "start"
-        ]
-      },
-      "if": {
-        "beat": [
-          "b1_night"
-        ]
-      },
-      "once": "intro_seen"
-    },
     "home_again": {
       "room": "harrow_home",
       "steps": [
@@ -135,6 +114,15 @@
           "conversation": "harrow_dock_2"
         },
         {
+          "do": "join",
+          "member": "otis",
+          "at": "dk_otis"
+        },
+        {
+          "do": "hide",
+          "actor": "dk_otis"
+        },
+        {
           "do": "battle",
           "encounter": "dock_ambush",
           "first_turn": "party"
@@ -195,15 +183,6 @@
         {
           "do": "hide",
           "actor": "dk_grunt_b"
-        },
-        {
-          "do": "join",
-          "member": "otis",
-          "at": "dk_otis"
-        },
-        {
-          "do": "hide",
-          "actor": "dk_otis"
         }
       ],
       "trigger": {
@@ -351,6 +330,475 @@
         {
           "do": "say",
           "conversation": "harrow_legend_square"
+        }
+      ]
+    },
+    "train_open": {
+      "room": "train_flatcar",
+      "steps": [
+        {
+          "do": "say",
+          "conversation": "train_open_1"
+        },
+        {
+          "do": "say",
+          "conversation": "train_open_2"
+        },
+        {
+          "do": "say",
+          "conversation": "train_open_3"
+        }
+      ],
+      "trigger": {
+        "on": "enter",
+        "spawn": [
+          "start"
+        ]
+      },
+      "if": {
+        "beat": [
+          "b0_train"
+        ]
+      },
+      "once": "train_open_seen"
+    },
+    "flatcar_inspector": {
+      "room": "train_flatcar",
+      "steps": [
+        {
+          "do": "wait",
+          "s": 10.0
+        },
+        {
+          "do": "show",
+          "actor": "tr_insp_fc"
+        }
+      ],
+      "trigger": {
+        "on": "enter"
+      },
+      "if": {
+        "beat": [
+          "b0_train"
+        ],
+        "flag": "train_open_seen"
+      },
+      "once": "flatcar_insp_seen",
+      "freeze": false
+    },
+    "hopper_tutorial": {
+      "room": "train_hopper",
+      "steps": [
+        {
+          "do": "show",
+          "actor": "tr_hut_inspector"
+        },
+        {
+          "do": "move",
+          "actor": "tr_hut_inspector",
+          "to": [
+            20.5,
+            3.5
+          ],
+          "speed": 2.5
+        },
+        {
+          "do": "face",
+          "actor": "tr_hut_inspector",
+          "toward": [
+            10.0,
+            3.5
+          ]
+        },
+        {
+          "do": "say",
+          "conversation": "train_hut_1"
+        },
+        {
+          "do": "battle",
+          "encounter": "train_tutorial",
+          "first_turn": "normal"
+        },
+        {
+          "do": "set_flag",
+          "flag": "train_tutorial_won"
+        },
+        {
+          "do": "say",
+          "conversation": "train_hut_2"
+        },
+        {
+          "do": "hide",
+          "actor": "tr_hut_inspector"
+        }
+      ],
+      "trigger": {
+        "on": "enter",
+        "area": {
+          "min": [
+            18.5,
+            0.0
+          ],
+          "max": [
+            22.0,
+            7.0
+          ]
+        }
+      },
+      "if": {
+        "not_flag": "train_tutorial_won"
+      },
+      "once": "train_tutorial_seen"
+    },
+    "boxcar_entry": {
+      "room": "train_boxcar",
+      "steps": [
+        {
+          "do": "say",
+          "conversation": "train_box_1"
+        },
+        {
+          "do": "show",
+          "actor": "tr_insp_bx_a"
+        },
+        {
+          "do": "show",
+          "actor": "tr_insp_bx_b"
+        },
+        {
+          "do": "say",
+          "conversation": "train_box_2"
+        }
+      ],
+      "trigger": {
+        "on": "enter",
+        "spawn": [
+          "from_hopper"
+        ]
+      },
+      "if": {
+        "beat": [
+          "b0_train"
+        ]
+      },
+      "once": "boxcar_entry_seen"
+    },
+    "ditch_crate": {
+      "room": "train_boxcar",
+      "steps": [
+        {
+          "do": "say",
+          "conversation": "train_ditch_1"
+        },
+        {
+          "do": "take_item",
+          "item": "delivery_crate",
+          "count": 1
+        },
+        {
+          "do": "set_flag",
+          "flag": "crate_ditched"
+        },
+        {
+          "do": "say",
+          "conversation": "train_ditch_2"
+        },
+        {
+          "do": "wait_action",
+          "action": "jump",
+          "prompt": "train_jump_prompt"
+        },
+        {
+          "do": "run",
+          "scene": "train_jump"
+        }
+      ]
+    },
+    "train_jump": {
+      "room": "train_boxcar",
+      "steps": [
+        {
+          "do": "move",
+          "actor": "red",
+          "to": [
+            11.5,
+            7.4
+          ],
+          "speed": 7.0
+        },
+        {
+          "do": "say",
+          "conversation": "train_land"
+        },
+        {
+          "do": "set_flag",
+          "flag": "train_done"
+        },
+        {
+          "do": "beat",
+          "beat": "b1_night"
+        },
+        {
+          "do": "goto",
+          "room": "harrow_home",
+          "spawn": "from_square"
+        }
+      ]
+    },
+    "home_arrival": {
+      "room": "harrow_home",
+      "steps": [
+        {
+          "do": "move",
+          "actor": "red",
+          "to": [
+            3.0,
+            1.7
+          ],
+          "speed": 5.0
+        },
+        {
+          "do": "face",
+          "actor": "red",
+          "toward": [
+            3.0,
+            0.0
+          ]
+        },
+        {
+          "do": "say",
+          "conversation": "harrow_home_arrival"
+        }
+      ],
+      "trigger": {
+        "on": "enter",
+        "spawn": [
+          "from_square"
+        ]
+      },
+      "if": {
+        "beat": [
+          "b1_night"
+        ],
+        "not_flag": "home_run_in"
+      },
+      "once": "home_run_in"
+    },
+    "relight_win_02": {
+      "room": "harrow_square",
+      "steps": [
+        {
+          "do": "set_flag",
+          "flag": "win_02_lit"
+        }
+      ],
+      "trigger": {
+        "on": "enter",
+        "area": {
+          "min": [
+            7.0,
+            0.0
+          ],
+          "max": [
+            9.0,
+            12.0
+          ]
+        }
+      },
+      "if": {
+        "beat": [
+          "b3_home_again"
+        ]
+      },
+      "once": "win_02_lit",
+      "freeze": false
+    },
+    "relight_win_07": {
+      "room": "harrow_square",
+      "steps": [
+        {
+          "do": "set_flag",
+          "flag": "win_07_lit"
+        }
+      ],
+      "trigger": {
+        "on": "enter",
+        "area": {
+          "min": [
+            13.0,
+            0.0
+          ],
+          "max": [
+            15.0,
+            12.0
+          ]
+        }
+      },
+      "if": {
+        "beat": [
+          "b3_home_again"
+        ]
+      },
+      "once": "win_07_lit",
+      "freeze": false
+    },
+    "relight_win_11": {
+      "room": "harrow_square",
+      "steps": [
+        {
+          "do": "set_flag",
+          "flag": "win_11_lit"
+        }
+      ],
+      "trigger": {
+        "on": "enter",
+        "area": {
+          "min": [
+            17.0,
+            0.0
+          ],
+          "max": [
+            19.0,
+            12.0
+          ]
+        }
+      },
+      "if": {
+        "beat": [
+          "b3_home_again"
+        ]
+      },
+      "once": "win_11_lit",
+      "freeze": false
+    },
+    "works_rd_crate": {
+      "room": "road_mast_road",
+      "trigger": {
+        "on": "enter",
+        "area": {
+          "min": [
+            11,
+            0
+          ],
+          "max": [
+            34,
+            8
+          ]
+        }
+      },
+      "if": {
+        "beat": [
+          "b2_otis_joined",
+          "b2_road"
+        ]
+      },
+      "once": "mox_crate_scene",
+      "steps": [
+        {
+          "do": "beat",
+          "beat": "b2_road"
+        },
+        {
+          "do": "say",
+          "conversation": "works_rd_crate_1"
+        },
+        {
+          "do": "show",
+          "actor": "rd_mox"
+        },
+        {
+          "do": "say",
+          "conversation": "works_rd_crate_2"
+        },
+        {
+          "do": "move",
+          "actor": "rd_mox",
+          "to": [
+            1.2,
+            4.0
+          ],
+          "speed": 3.5
+        },
+        {
+          "do": "hide",
+          "actor": "rd_mox"
+        }
+      ]
+    },
+    "works_fo_sitin": {
+      "room": "road_mast_foot",
+      "trigger": {
+        "on": "enter"
+      },
+      "if": {
+        "not_flag": "zeroes_back_way"
+      },
+      "once": "works_gate_scene",
+      "steps": [
+        {
+          "do": "say",
+          "conversation": "works_fo_sitin_1"
+        },
+        {
+          "do": "show",
+          "actor": "fo_mox"
+        },
+        {
+          "do": "join",
+          "member": "mox",
+          "at": "fo_mox"
+        },
+        {
+          "do": "set_flag",
+          "flag": "mox_joined"
+        },
+        {
+          "do": "say",
+          "conversation": "works_fo_sitin_2"
+        },
+        {
+          "do": "hide",
+          "actor": "fo_mox"
+        },
+        {
+          "do": "set_flag",
+          "flag": "zeroes_back_way"
+        }
+      ]
+    },
+    "works_ts_enter": {
+      "room": "tower_sump",
+      "trigger": {
+        "on": "enter",
+        "spawn": [
+          "from_tunnel"
+        ]
+      },
+      "once": "works_sump_seen",
+      "steps": [
+        {
+          "do": "beat",
+          "beat": "b3_tower"
+        },
+        {
+          "do": "say",
+          "conversation": "works_ts_enter"
+        }
+      ]
+    },
+    "works_tl_thermos": {
+      "room": "tower_landing",
+      "steps": [
+        {
+          "do": "say",
+          "conversation": "works_tl_zero_pour"
+        },
+        {
+          "do": "heal_party"
+        },
+        {
+          "do": "set_flag",
+          "flag": "thermos_used"
         }
       ]
     }

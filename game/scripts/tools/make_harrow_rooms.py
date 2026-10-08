@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Writes the nine graybox rooms of Harrow Landing (M3-4) plus the road stub.
+"""Writes the nine graybox rooms of Harrow Landing (M3-4). (The old road stub is gone: make_works_rooms.py builds the Spillway.)
 
 Run from the repo root:  python3 game/scripts/tools/make_harrow_rooms.py
 Blueprint: docs/maps/harrow_landing.md ("Graybox build notes"). Map coordinates: the origin is the floor
@@ -455,5 +455,5 @@ def road_stub():
 
 if __name__ == "__main__":
     os.makedirs(os.path.join(OUT, "harrow"), exist_ok=True)
-    square(); docks(); checkpoint(); home(); courier(); store(); gear(); dock_office(); bar(); road_stub()
-    print("wrote the Harrow rooms and the road stub")
+    square(); docks(); checkpoint(); home(); courier(); store(); gear(); dock_office(); bar()
+    print("wrote the Harrow rooms (the road is make_works_rooms.py now)")

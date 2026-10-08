@@ -65,6 +65,12 @@ var give_up_s: float = 0.0
 var close_notice_m: float = 1.6
 var sight_cone_deg: float = 130.0
 var group_id: String = ""
+## An inspector's hand scanner (placement "scanner": true): its cone is the only way he notices Red.
+var scanner: Scanner = null
+## Placement "patrol_once": walks the route to its last point and stands there (the boxcar inspectors).
+var patrol_once: bool = false
+## Seconds of pause at each patrol point (placement "linger_s"; default map_enemies.json).
+var linger_s: float = 1.0
 
 var _cfg: Dictionary = {}
 var _state: State = State.PATROL
@@ -84,6 +90,9 @@ var _lift: float = 0.0
 var _visual: Node3D = null
 var _model: Node3D = null
 var _gone: bool = false
+var _present: bool = true
+var _route_done: bool = false
+var _step_delta: float = 0.0
 
 
 func _ready() -> void:
@@ -113,12 +122,20 @@ func _ready() -> void:
 	close_notice_m = float(placement.get("close_notice_m", _cfg.get("close_notice_m", 1.6)))
 	sight_cone_deg = float(placement.get("sight_cone_deg", _cfg.get("sight_cone_deg", 130.0)))
 	group_id = str(placement.get("group", ""))
+	walk_speed = float(placement.get("walk_speed", walk_speed))
+	chase_speed = float(placement.get("chase_speed", chase_speed))
+	linger_s = float(placement.get("linger_s", _cfg.get("linger_s", 1.0)))
+	patrol_once = bool(placement.get("patrol_once", false))
 	_visual = get_node_or_null(NODE_VISUAL) as Node3D
 	var path: String = model_path if not model_path.is_empty() else str(enemy_def.get("model", ""))
 	_load_model(path)
 	if bool(placement.get("badge", false)):
 		_add_badge()
 	_clock = float(placement_id.hash() % 1000) * 0.01
+	if bool(placement.get("scanner", false)):
+		_add_scanner()
+	if bool(placement.get("hidden", false)):
+		set_present(false)
 
 
 static func enemy_definition(wanted_enemy_id: String) -> Dictionary:
@@ -169,6 +186,41 @@ func defeat() -> void:
 	queue_free()
 
 
+## In the room (seen, solid to touch, running) or out of it until a scene shows him (an inspector who boards later).
+func set_present(on: bool) -> void:
+	_present = on
+	active = on
+	visible = on
+	collision_layer = LAYER_ENEMY if on else 0
+	if on:
+		_touch_sent = false
+
+
+func is_present() -> bool:
+	return _present
+
+
+func _add_scanner() -> void:
+	scanner = Scanner.new()
+	add_child(scanner)
+	sight_m = scanner.length_m if scanner.is_inside_tree() else float(DataDB.get_value("world/scanner", "length_m", 5.0))
+	# Held prop: a small box "hand scanner" in the right hand (its name carries "_prop_" so it does not count as height).
+	if _visual != null:
+		var prop: MeshInstance3D = MeshInstance3D.new()
+		prop.name = "enm_signals_grunt_prop_scanner"
+		var box: BoxMesh = BoxMesh.new()
+		box.size = Vector3(0.14, 0.1, 0.26)
+		prop.mesh = box
+		prop.position = Vector3(-0.32, 0.8, 0.22)
+		var material: StandardMaterial3D = StandardMaterial3D.new()
+		material.albedo_color = Color(0.7, 0.8, 0.9)
+		material.emission_enabled = true
+		material.emission = Color(0.5, 0.8, 1.0)
+		material.emission_energy_multiplier = 0.8
+		prop.material_override = material
+		_visual.add_child(prop)
+
+
 ## The fight was run from: it stands there out of breath and leaves Red alone for a moment.
 func on_battle_over() -> void:
 	_touch_sent = false
@@ -186,7 +238,10 @@ func step(delta: float) -> void:
 	_alert_left = maxf(_alert_left - delta, 0.0)
 	_cooldown_left = maxf(_cooldown_left - delta, 0.0)
 	var moving: bool = false
+	_step_delta = delta
 	if active and target != null and is_instance_valid(target) and not target.frozen:
+		if scanner != null:
+			scanner.advance(delta)
 		moving = _think(delta)
 	else:
 		_halt(delta)
@@ -241,15 +296,22 @@ func _chase(delta: float, distance: float) -> bool:
 
 
 func _patrol(delta: float) -> bool:
+	if _route_done:
+		_halt(delta)
+		return false
 	if _linger_left > 0.0:
 		_linger_left -= delta
 		_halt(delta)
 		return false
 	var goal: Vector3 = _route[_next_point] if not _route.is_empty() else _home
 	if _flat(goal - global_position).length() <= float(_cfg.get("waypoint_reach", 0.25)):
+		if patrol_once and not _route.is_empty() and _next_point == _route.size() - 1:
+			_route_done = true
+			_halt(delta)
+			return false
 		if not _route.is_empty():
 			_next_point = (_next_point + 1) % _route.size()
-		_linger_left = float(_cfg.get("linger_s", 1.0))
+		_linger_left = linger_s
 		_halt(delta)
 		return false
 	var moved: bool = _walk_toward(goal, walk_speed, delta)
@@ -267,7 +329,11 @@ func _enter(new_state: State) -> void:
 			_unseen_s = 0.0
 			_stuck_s = 0.0
 			_alert_left = ALERT_S
+			if scanner != null:
+				scanner.set_spotted(true)
 		State.GIVE_UP:
+			if scanner != null:
+				scanner.set_spotted(false)
 			_rest_left = float(_cfg.get("rest_s", 1.4))
 			_cooldown_left = _rest_left + float(_cfg.get("reaggro_cooldown_s", 2.5))
 		State.PATROL:
@@ -287,6 +353,10 @@ func _check_touch(distance: float, height_diff: float) -> void:
 ## Whether the enemy notices Red from where it stands: within sight, in front of it (or very close),
 ## with nothing solid between.
 func _sees_target(distance: float, offset: Vector3) -> bool:
+	if scanner != null:
+		if absf(target.global_position.y - global_position.y) > 2.0:
+			return false
+		return scanner.sees(global_position, get_facing(), target.global_position, _step_delta)
 	if sight_m <= 0.0 or distance > sight_m or absf(target.global_position.y - global_position.y) > 2.0:
 		return false
 	if distance > close_notice_m:

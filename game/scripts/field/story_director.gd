@@ -19,6 +19,7 @@ extends Node
 ##                                         line, standing at an actor's spot
 ##     wait_action {action, prompt}        shows a prompt (a line from data/text/train.json) and waits for that
 ##                                         button (the train's one prompted Jump; it can't be missed, it waits)
+##     run {scene}                         plays another scene's steps right here, then carries on
 ##     goto {room, spawn}                  changes room through the SceneRouter (the scene ends with it)
 ##     heal_party                          full HP and Juice for everyone (the old Zero's thermos)
 ## Red is frozen while a scene plays (unless "freeze": false) and the crew stands still.
@@ -141,12 +142,9 @@ func _play(scene_id: String) -> void:
 	if room.party != null:
 		room.party.active = false
 	scene_started.emit(scene_id)
-	for step: Variant in data.get("steps", []):
-		var entry: Dictionary = step
-		if Conditions.met(entry.get("if", {}), game_state):
-			await _do(entry)
-		if _gone:
-			return
+	await _steps(data.get("steps", []))
+	if _gone:
+		return
 	while _background > 0:
 		await get_tree().physics_frame
 	if room.party != null:
@@ -157,6 +155,25 @@ func _play(scene_id: String) -> void:
 	_running = false
 	current_scene = ""
 	scene_finished.emit(scene_id)
+
+
+func _steps(steps: Array) -> void:
+	for step: Variant in steps:
+		var entry: Dictionary = step
+		if Conditions.met(entry.get("if", {}), game_state):
+			await _do(entry)
+		if _gone:
+			return
+
+
+## Runs another scene's steps inline (no freeze, flags or finish signal of its own): one scene ending in
+## the next, like the ditch scene handing over to the jump.
+func _run(step: Dictionary) -> void:
+	var other: Dictionary = Placements.scene(str(step.get("scene", "")))
+	if other.is_empty():
+		push_warning("StoryDirector: no scene '%s' to run" % step.get("scene", ""))
+		return
+	await _steps(other.get("steps", []))
 
 
 func _do(step: Dictionary) -> void:
@@ -207,6 +224,8 @@ func _do(step: Dictionary) -> void:
 			await _wait_action(step)
 		"goto":
 			_goto(step)
+		"run":
+			await _run(step)
 		"heal_party":
 			var healer: Node = WorldProgress.game_state(game_state)
 			if healer != null:
@@ -289,6 +308,8 @@ func actor(actor_name: String) -> Node3D:
 	for node: Node in room.find_children("*", "Node3D", true, false):
 		if node is PlacedNpc and (node as PlacedNpc).placement_id == actor_name:
 			return node as Node3D
+		if node is MapEnemy and (node as MapEnemy).placement_id == actor_name:
+			return node as Node3D
 	return room.find_child(actor_name, true, false) as Node3D
 
 
@@ -337,7 +358,9 @@ static func _list(value: Variant) -> Array[String]:
 ## Shows a prompt and waits until `action` is pressed. Nothing to miss: the prompt waits as long as it takes.
 func _wait_action(step: Dictionary) -> void:
 	var action: StringName = StringName(str(step.get("action", "jump")))
-	var prompt: Control = ActionPrompt.show_on_stage(get_tree(), str(step.get("prompt", "")))
+	var key: String = str(step.get("prompt", ""))
+	var text: Variant = DataDB.get_value("text/train", key, key)
+	var prompt: Control = ActionPrompt.show_on_stage(get_tree(), str(text))
 	pressed_action = false
 	waiting_for_action = true
 	while not _gone and is_inside_tree():

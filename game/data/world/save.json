@@ -3,9 +3,9 @@
   "slots": 3,
   "file_format": 1,
   "new_game": {
-    "room": "test_room",
-    "spawn": "PlayerSpawn",
-    "story_beat": "b1_night"
+    "room": "train_flatcar",
+    "spawn": "start",
+    "story_beat": "b0_train"
   },
   "lamp_check": {
     "skip_grace_s": 0.25,

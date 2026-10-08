@@ -145,6 +145,7 @@ func snapshot() -> Dictionary:
 		"can_run": _can_run,
 		"is_boss": bool(_encounter.get("is_boss", false)),
 		"backdrop": str(_encounter.get("backdrop", "")),
+		"tutorial": bool(_encounter.get("tutorial", false)),
 		"music": str(_encounter.get("music", "")),
 		"round": round_number,
 		"combatants": state.snapshot_list(),
@@ -1074,7 +1075,7 @@ func _build_report(res: String) -> void:
 	if res == RESULT_WIN:
 		var enemies: Array[BattleCombatant] = state.side_members(BattleCombatant.SIDE_ENEMY)
 		var luck: float = _average_luck()
-		var rewards: Dictionary = BattleRewards.compute(data, enemies, luck, rng)
+		var rewards: Dictionary = BattleRewards.compute(data, enemies, luck, rng, _encounter)
 		report["xp"] = rewards["xp"]
 		report["credits"] = rewards["credits"]
 		report["drops"] = rewards["drops"]

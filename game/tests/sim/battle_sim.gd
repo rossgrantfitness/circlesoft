@@ -245,6 +245,7 @@ func walkthrough(player: String, seed: int, rest_between: bool = true, restock_b
 	var wins: int = 0
 	var fights: int = 0
 	var lost_at: String = ""
+	var levels_after: Array[int] = []
 	for i: int in steps.size():
 		var step: Dictionary = steps[i]
 		var ids: Array[String] = []
@@ -278,13 +279,18 @@ func walkthrough(player: String, seed: int, rest_between: bool = true, restock_b
 			if rest_between:
 				kept["hp"] = kept["hp_max"]
 				kept["juice"] = kept["juice_max"]
+		var level_now: int = 1
+		for kept: Dictionary in members:
+			level_now = maxi(level_now, int(kept["level"]))
+		levels_after.append(level_now)
 	var top: int = 1
 	var xp: int = 0
 	for member: Dictionary in members:
 		top = maxi(top, int(member["level"]))
 		xp = maxi(xp, int(member["xp"]))
 	return {"player": player, "route": route, "fights": fights, "wins": wins, "completed": wins == steps.size(),
-		"level": top, "credits": credits, "xp": xp, "steps": steps.size(), "party": members, "lost_at": lost_at}
+		"level": top, "credits": credits, "xp": xp, "steps": steps.size(), "party": members, "lost_at": lost_at,
+		"levels_after": levels_after}
 
 
 func _has_member(members: Array[Dictionary], id: String) -> bool:

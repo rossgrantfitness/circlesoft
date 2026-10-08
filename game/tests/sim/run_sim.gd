@@ -75,10 +75,11 @@ func _initialize() -> void:
 	problems.append_array(_check_clutch_matters(sim, all_stats))
 	if walk:
 		print("")
-		for player: String in players:
-			var summary: Dictionary = await _walk_summary(sim, player, seed_value)
-			print(_walk_row(summary, markdown))
-			problems.append_array(_check_walk(sim, summary))
+		for route: String in [BattleSim.ROUTE_FULL, BattleSim.ROUTE_MUST_WIN]:
+			for player: String in players:
+				var summary: Dictionary = await _walk_summary(sim, player, seed_value, route)
+				print(_walk_row(summary, markdown))
+				problems.append_array(_check_walk(sim, summary))
 	if walk:
 		var econ: Array[String] = _economy_problems(sim)
 		print(_economy_line(sim))
@@ -140,27 +141,42 @@ func _row(s: Dictionary, markdown: bool) -> String:
 		s["mean_hp_left_pct"], s["mean_xp"], s["mean_credits"]]
 
 
-func _walk_summary(sim: BattleSim, player: String, seed_value: int) -> Dictionary:
+func _walk_summary(sim: BattleSim, player: String, seed_value: int, route: String = BattleSim.ROUTE_FULL) -> Dictionary:
 	var completed: int = 0
+	var step_levels: Array[float] = []
+	var step_counts: Array[int] = []
 	var level_total: float = 0.0
 	var credit_total: float = 0.0
 	var fights_total: float = 0.0
 	for i: int in WALK_REPEATS:
-		var walk: Dictionary = await sim.walkthrough(player, seed_value + i * 100)
+		var walk: Dictionary = await sim.walkthrough(player, seed_value + i * 100, true, true, route)
+		var after: Array = walk["levels_after"]
+		for k: int in after.size():
+			if step_levels.size() <= k:
+				step_levels.append(0.0)
+				step_counts.append(0)
+			step_levels[k] += float(after[k])
+			step_counts[k] += 1
 		if bool(walk["completed"]):
 			completed += 1
 			level_total += float(walk["level"])
 			credit_total += float(walk["credits"])
 		fights_total += float(walk["fights"])
 	var n: float = float(maxi(completed, 1))
-	return {"player": player, "completed_rate": float(completed) / float(WALK_REPEATS), "level": level_total / n,
-		"credits": credit_total / n, "fights": fights_total / float(WALK_REPEATS)}
+	var by_step: Array[float] = []
+	for k: int in step_levels.size():
+		by_step.append(step_levels[k] / float(maxi(step_counts[k], 1)))
+	return {"player": player, "route": route, "completed_rate": float(completed) / float(WALK_REPEATS), "level": level_total / n,
+		"credits": credit_total / n, "fights": fights_total / float(WALK_REPEATS), "level_by_step": by_step}
 
 
 func _walk_row(w: Dictionary, markdown: bool) -> String:
 	if markdown:
-		return "| walkthrough | %s | %.0f%% finish | level %.1f | %.0f credits | %.1f fights |" % [w["player"], 100.0 * float(w["completed_rate"]), w["level"], w["credits"], w["fights"]]
-	return "walkthrough %-8s completed %5.1f%%  final level %.1f  battle credits %.0f  fights %.1f" % [w["player"], 100.0 * float(w["completed_rate"]), w["level"], w["credits"], w["fights"]]
+		return "| walkthrough %s | %s | %.0f%% finish | level %.1f | %.0f credits | %.1f fights |" % [w["route"], w["player"], 100.0 * float(w["completed_rate"]), w["level"], w["credits"], w["fights"]]
+	var by_step: PackedStringArray = PackedStringArray()
+	for level: float in (w["level_by_step"] as Array):
+		by_step.append("%.1f" % level)
+	return "walkthrough %-9s %-8s completed %5.1f%%  final level %.1f  battle credits %.0f  fights %.1f  level after each fight: %s" % [w["route"], w["player"], 100.0 * float(w["completed_rate"]), w["level"], w["credits"], w["fights"], ", ".join(by_step)]
 
 
 func _check_walk(sim: BattleSim, w: Dictionary) -> Array[String]:
@@ -168,13 +184,14 @@ func _check_walk(sim: BattleSim, w: Dictionary) -> Array[String]:
 	var targets: Dictionary = sim.data.feel.get("walkthrough", {})
 	var need: float = float((targets.get("min_completed_rate", {}) as Dictionary).get(str(w["player"]), 0.0))
 	if float(w["completed_rate"]) < need:
-		out.append("walkthrough/%s: finished %.2f of runs, needs %.2f" % [w["player"], w["completed_rate"], need])
+		out.append("walkthrough/%s/%s: finished %.2f of runs, needs %.2f" % [w["route"], w["player"], w["completed_rate"], need])
 	if float(w["completed_rate"]) > 0.0 and str(w["player"]) != "miss":
-		var levels: Array = targets.get("final_level", [1, 99])
+		var must_win: bool = str(w.get("route", "full")) == BattleSim.ROUTE_MUST_WIN
+		var levels: Array = targets.get("must_win_final_level" if must_win else "final_level", [1, 99])
 		if float(w["level"]) < float(levels[0]) or float(w["level"]) > float(levels[1]):
 			out.append("walkthrough/%s: final level %.1f outside %s" % [w["player"], w["level"], levels])
 		var credits: Array = targets.get("battle_credits", [0, 999999])
-		if float(w["credits"]) < float(credits[0]) or float(w["credits"]) > float(credits[1]):
+		if not must_win and (float(w["credits"]) < float(credits[0]) or float(w["credits"]) > float(credits[1])):
 			out.append("walkthrough/%s: battle credits %.0f outside %s" % [w["player"], w["credits"], credits])
 	return out
 

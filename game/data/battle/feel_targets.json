@@ -16,10 +16,21 @@
   "level_at_kasp": 6,
   "credits_at_kasp": 1500,
   "walkthrough": {
-    "order": ["grunt_solo", "grunt_pair", "grunt_pair", "grunt_pair", "drone_flock", "drone_flock", "squad_four",
-      "drone_flock", "squad_four", "drone_flock", "squad_four", "ambush_no_exit", "squad_four", "drone_flock"],
+    "_about": "The slice's fights in the order a player meets them (docs/maps: ore train, Harrow's dock fight, the Spillway, the jammer works), with who is in the party for each. optional = a fight a player can dodge (the route 'must_win' skips them). Fighters join the first time they appear, at the party's top level minus join_level_offset (the studio's call: joiners arrive at the party's level). final_level and battle_credits are checked on the full route before Kasp; must_win_final_level on the dodger's route.",
+    "join_level_offset": 0,
+    "route": [
+      {"encounter": "train_tutorial", "party": ["red"]},
+      {"encounter": "dock_ambush", "party": ["red", "otis"]},
+      {"encounter": "spillway_patrol", "party": ["red", "otis"], "optional": true},
+      {"encounter": "card_solo", "party": ["red", "otis", "mox"]},
+      {"encounter": "drone_flock", "party": ["red", "otis", "mox"], "optional": true},
+      {"encounter": "card_pair", "party": ["red", "otis", "mox"]},
+      {"encounter": "card_squad", "party": ["red", "otis", "mox"]},
+      {"encounter": "ambush_no_exit", "party": ["red", "otis", "mox"], "optional": true}
+    ],
     "final_level": [6, 6],
-    "battle_credits": [800, 1300],
+    "must_win_final_level": [5, 6],
+    "battle_credits": [800, 1100],
     "min_completed_rate": {"perfect": 0.95, "good": 0.8, "auto": 0.5, "miss": 0.0}
   },
   "sim": {

@@ -1,5 +1,5 @@
 {
-  "_about": "What stands in each room besides the scenery: pickups, crates, doors and map enemies. The room scene holds the position and the node (its 'placement_id' is the key here); this file holds the contents and the rules, so loot, locks and patrols can change without touching a scene. 'room' is the room id from rooms.json (a test checks the scene really has the node). Opened crates and taken pickups are remembered by id through GameState (mark_opened / is_opened), so they stay taken after a save and load. pickups: item + count and/or credits. crates: items [{item, count}] and/or credits, 'style' is supply (gray Hegemony), chalk (a Coldrunner stash) or wood. doors: to_room + to_spawn; 'requires' is {item, consume, flag}: an item and/or a flag that must be held, 'consume' takes the item the first time; 'locked_message' is what Red reads when it is locked, 'unlocked_message' plays the first time the key works. enemies: enemy is an id in battle/enemies.json (its model and its 'field' speeds), encounter is an id in battle/encounters.json, kind is regular (comes back when you re-enter the room), story or boss (stay beaten: 'defeat_flag' is set on a win), patrol is a list of [x, y, z] offsets from where the enemy stands in the scene. More sections: npcs (a townsperson: speaker id, look, appear_if / hidden, variants by story beat), spots (examine / use spots with variants). Any pickup may carry show_if (a Conditions dictionary) and message_extra (one more line after 'Got X!'); doors may carry width, style (panel / mat / arch) and label.",
+  "_about": "What stands in each room besides the scenery: pickups, crates, doors and map enemies. The room scene holds the position and the node (its 'placement_id' is the key here); this file holds the contents and the rules, so loot, locks and patrols can change without touching a scene. 'room' is the room id from rooms.json (a test checks the scene really has the node). Opened crates and taken pickups are remembered by id through GameState (mark_opened / is_opened), so they stay taken after a save and load. pickups: item + count and/or credits. crates: items [{item, count}] and/or credits, 'style' is supply (gray Hegemony), chalk (a Coldrunner stash) or wood. doors: to_room + to_spawn; 'requires' is {item, consume, flag}: an item and/or a flag that must be held, 'consume' takes the item the first time; 'locked_message' is what Red reads when it is locked, 'unlocked_message' plays the first time the key works. enemies: enemy is an id in battle/enemies.json (its model and its 'field' speeds), encounter is an id in battle/encounters.json, kind is regular (comes back when you re-enter the room), story or boss (stay beaten: 'defeat_flag' is set on a win), patrol is a list of [x, y, z] offsets from where the enemy stands in the scene. More sections: npcs (a townsperson: speaker id, look, appear_if / hidden, variants by story beat), spots (examine / use spots with variants). Any pickup may carry show_if (a Conditions dictionary) and message_extra (one more line after 'Got X!'); doors may carry width, style (panel / mat / arch) and label. Enemies may also carry: scanner (true = a Signals inspector's hand-scanner cone is his only way to notice Red), hidden (out of the room until a scene shows him), patrol_once (walks the route and stands at its end), walk_speed / chase_speed / linger_s overrides.",
   "pickups": {
     "test_a_ration": {
       "room": "test_a",
@@ -98,6 +98,94 @@
           "count": 1
         }
       ]
+    },
+    "tr_locker": {
+      "room": "train_hopper",
+      "style": "chalk",
+      "items": [
+        {
+          "item": "ration_bar",
+          "count": 2
+        }
+      ]
+    },
+    "rd_tram_stash": {
+      "room": "road_mast_road",
+      "style": "chalk",
+      "items": [
+        {
+          "item": "hot_sauce_bomb",
+          "count": 2
+        }
+      ]
+    },
+    "fo_supply": {
+      "room": "road_mast_foot",
+      "style": "supply",
+      "items": [
+        {
+          "item": "smelling_salts",
+          "count": 1
+        }
+      ]
+    },
+    "ts_supply": {
+      "room": "tower_sump",
+      "style": "supply",
+      "items": [
+        {
+          "item": "ration_bar",
+          "count": 2
+        }
+      ]
+    },
+    "tc_ledge_stash": {
+      "room": "tower_cable_hall",
+      "style": "chalk",
+      "items": [
+        {
+          "item": "camp_stove",
+          "count": 1
+        },
+        {
+          "item": "canned_coffee",
+          "count": 1
+        }
+      ]
+    },
+    "tb_bell_chest": {
+      "room": "tower_bell_gallery",
+      "style": "wood",
+      "items": [
+        {
+          "item": "bread_knife",
+          "count": 1
+        }
+      ],
+      "show_if": {
+        "flag": "bells_solved"
+      }
+    },
+    "tg_girder_crate": {
+      "room": "tower_generator",
+      "style": "supply",
+      "items": [
+        {
+          "item": "protein_shake",
+          "count": 1
+        }
+      ]
+    },
+    "td_quota_crate": {
+      "room": "tower_jammer_deck",
+      "style": "supply",
+      "items": [
+        {
+          "item": "sore_loser_patch",
+          "count": 1
+        }
+      ],
+      "credits": 200
     }
   },
   "doors": {
@@ -265,13 +353,189 @@
       "requires": {
         "flag": "checkpoint_open"
       },
-      "locked_message": "Road's closed. Signals business."
+      "locked_message": "Stair's closed. Signals business."
     },
     "road_to_checkpoint": {
       "room": "road_mast_road",
       "to_room": "harrow_checkpoint",
       "to_spawn": "from_road",
       "label": "HARROW"
+    },
+    "tr_fc_west": {
+      "room": "train_flatcar",
+      "to_room": "train_flatcar",
+      "to_spawn": "start",
+      "requires": {
+        "flag": "train_back_door"
+      },
+      "locked_message": "Inspectors back there.",
+      "label": "REAR"
+    },
+    "tr_fc_east": {
+      "room": "train_flatcar",
+      "to_room": "train_hopper",
+      "to_spawn": "from_flatcar",
+      "width": 1.4,
+      "style": "mat"
+    },
+    "tr_hp_west": {
+      "room": "train_hopper",
+      "to_room": "train_flatcar",
+      "to_spawn": "start",
+      "requires": {
+        "flag": "train_back_door"
+      },
+      "locked_message": "Inspectors back there.",
+      "label": "REAR"
+    },
+    "tr_hp_east": {
+      "room": "train_hopper",
+      "to_room": "train_boxcar",
+      "to_spawn": "from_hopper",
+      "width": 1.4,
+      "style": "mat",
+      "requires": {
+        "flag": "train_tutorial_won"
+      },
+      "locked_message": "Something is waiting by the brake hut.\nThe coupling can't be reached past him."
+    },
+    "tr_bx_west": {
+      "room": "train_boxcar",
+      "to_room": "train_hopper",
+      "to_spawn": "from_flatcar",
+      "requires": {
+        "flag": "train_back_door"
+      },
+      "locked_message": "Inspectors back there.",
+      "label": "REAR"
+    },
+    "rd_to_foot": {
+      "room": "road_mast_road",
+      "to_room": "road_mast_foot",
+      "to_spawn": "from_road",
+      "label": "WORKS GATE",
+      "width": 4.0,
+      "style": "arch"
+    },
+    "fo_to_road": {
+      "room": "road_mast_foot",
+      "to_room": "road_mast_road",
+      "to_spawn": "from_mast_foot",
+      "label": "SPILLWAY",
+      "width": 3.0,
+      "style": "arch"
+    },
+    "fo_to_sump": {
+      "room": "road_mast_foot",
+      "to_room": "tower_sump",
+      "to_spawn": "from_tunnel",
+      "label": "DRAIN",
+      "width": 1.6,
+      "style": "arch",
+      "requires": {
+        "flag": "zeroes_back_way"
+      },
+      "locked_message": "The grate won't budge. The Zeroes are still\narguing about whose turn it is to lift it."
+    },
+    "ts_to_gate": {
+      "room": "tower_sump",
+      "to_room": "road_mast_foot",
+      "to_spawn": "from_tunnel",
+      "label": "GRATE",
+      "width": 1.6,
+      "style": "arch"
+    },
+    "ts_to_cable": {
+      "room": "tower_sump",
+      "to_room": "tower_cable_hall",
+      "to_spawn": "from_below",
+      "label": "UP",
+      "width": 2.0,
+      "style": "arch"
+    },
+    "tc_to_sump": {
+      "room": "tower_cable_hall",
+      "to_room": "tower_sump",
+      "to_spawn": "from_above",
+      "label": "DOWN",
+      "width": 2.0,
+      "style": "arch"
+    },
+    "tc_card_door_1": {
+      "room": "tower_cable_hall",
+      "to_room": "tower_bell_gallery",
+      "to_spawn": "from_below",
+      "label": "CARDS 1",
+      "width": 1.6,
+      "requires": {
+        "item": "kasp_access_card",
+        "count": 1,
+        "consume": false
+      },
+      "locked_message": "SIGNALS ACCESS ONLY.\nCards: {have} of {need}.",
+      "unlocked_message": "The reader blinks green. Kasp's face on\nthe card looks smug about it."
+    },
+    "tb_to_cable": {
+      "room": "tower_bell_gallery",
+      "to_room": "tower_cable_hall",
+      "to_spawn": "from_above",
+      "label": "DOWN",
+      "width": 2.0,
+      "style": "arch"
+    },
+    "tb_to_gen": {
+      "room": "tower_bell_gallery",
+      "to_room": "tower_generator",
+      "to_spawn": "from_below",
+      "label": "UP",
+      "width": 2.0,
+      "style": "arch"
+    },
+    "tg_to_bell": {
+      "room": "tower_generator",
+      "to_room": "tower_bell_gallery",
+      "to_spawn": "from_above",
+      "label": "DOWN",
+      "width": 2.0,
+      "style": "arch"
+    },
+    "td_card_door_3": {
+      "room": "tower_jammer_deck",
+      "to_room": "tower_landing",
+      "to_spawn": "from_below",
+      "label": "CARDS 3",
+      "width": 1.6,
+      "requires": {
+        "item": "kasp_access_card",
+        "count": 3,
+        "consume": false
+      },
+      "locked_message": "SIGNALS ACCESS ONLY.\nCards: {have} of {need}.",
+      "unlocked_message": "The reader blinks green. Kasp's face on\nthe card looks smug about it."
+    },
+    "tl_to_deck": {
+      "room": "tower_landing",
+      "to_room": "tower_jammer_deck",
+      "to_spawn": "from_above",
+      "label": "DOWN",
+      "width": 2.0,
+      "style": "arch"
+    },
+    "tl_to_roof": {
+      "room": "tower_landing",
+      "to_room": "tower_roof",
+      "to_spawn": "from_below",
+      "label": "ROOF",
+      "width": 1.6,
+      "style": "arch"
+    },
+    "rf_to_landing": {
+      "room": "tower_roof",
+      "to_room": "tower_landing",
+      "to_spawn": "from_above",
+      "label": "DOWN",
+      "width": 2.0,
+      "style": "arch"
     }
   },
   "enemies": {
@@ -306,10 +570,276 @@
     "test_b_guard": {
       "room": "test_b",
       "enemy": "whistle_blower",
-      "encounter": "grunt_solo",
+      "encounter": "train_inspector",
       "kind": "story",
       "defeat_flag": "defeated_test_b_guard",
       "patrol": []
+    },
+    "tr_insp_fc": {
+      "room": "train_flatcar",
+      "enemy": "signals_grunt",
+      "encounter": "grunt_solo",
+      "kind": "regular",
+      "scanner": true,
+      "patrol": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          18.2,
+          0,
+          0
+        ]
+      ],
+      "hidden": true,
+      "walk_speed": 1.4,
+      "linger_s": 1.0
+    },
+    "tr_insp_hp": {
+      "room": "train_hopper",
+      "enemy": "signals_grunt",
+      "encounter": "train_inspector",
+      "kind": "regular",
+      "scanner": true,
+      "patrol": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          13,
+          0,
+          0
+        ]
+      ],
+      "walk_speed": 1.4,
+      "linger_s": 1.5
+    },
+    "tr_insp_bx_a": {
+      "room": "train_boxcar",
+      "enemy": "signals_grunt",
+      "encounter": "train_inspector",
+      "kind": "regular",
+      "scanner": true,
+      "patrol": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          12.2,
+          0,
+          0
+        ]
+      ],
+      "hidden": true,
+      "patrol_once": true,
+      "walk_speed": 1.0
+    },
+    "tr_insp_bx_b": {
+      "room": "train_boxcar",
+      "enemy": "signals_grunt",
+      "encounter": "train_inspector",
+      "kind": "regular",
+      "scanner": true,
+      "patrol": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          12.2,
+          0,
+          0
+        ]
+      ],
+      "hidden": true,
+      "patrol_once": true,
+      "walk_speed": 1.0
+    },
+    "rd_patrol": {
+      "room": "road_mast_road",
+      "enemy": "signals_grunt",
+      "encounter": "grunt_pair",
+      "kind": "regular",
+      "patrol": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          9,
+          0,
+          0
+        ],
+        [
+          9,
+          0,
+          3
+        ],
+        [
+          0,
+          0,
+          3
+        ]
+      ]
+    },
+    "ts_card_1": {
+      "room": "tower_sump",
+      "enemy": "signals_grunt",
+      "encounter": "grunt_solo",
+      "kind": "story",
+      "defeat_flag": "card_grunt_1_beaten",
+      "patrol": [],
+      "sight_m": 2.0,
+      "close_notice_m": 0.0,
+      "sight_cone_deg": 80.0,
+      "badge": true,
+      "win_reward": {
+        "items": [
+          {
+            "item": "kasp_access_card",
+            "count": 1
+          }
+        ]
+      }
+    },
+    "tc_drones": {
+      "room": "tower_cable_hall",
+      "enemy": "signals_drone",
+      "encounter": "drone_flock",
+      "kind": "regular",
+      "patrol": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          3
+        ],
+        [
+          0,
+          0,
+          6
+        ],
+        [
+          -3,
+          0,
+          3
+        ]
+      ]
+    },
+    "tb_card_pair": {
+      "room": "tower_bell_gallery",
+      "enemy": "signals_grunt",
+      "encounter": "grunt_pair",
+      "kind": "story",
+      "defeat_flag": "card_grunt_2_beaten",
+      "patrol": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          7,
+          0,
+          0
+        ],
+        [
+          7,
+          0,
+          4
+        ],
+        [
+          0,
+          0,
+          4
+        ]
+      ],
+      "badge": true,
+      "win_reward": {
+        "items": [
+          {
+            "item": "kasp_access_card",
+            "count": 1
+          }
+        ]
+      }
+    },
+    "td_squad": {
+      "room": "tower_jammer_deck",
+      "enemy": "signals_grunt",
+      "encounter": "squad_four",
+      "kind": "story",
+      "defeat_flag": "card_grunt_3_beaten",
+      "patrol": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          8,
+          0,
+          0
+        ],
+        [
+          8,
+          0,
+          4.5
+        ],
+        [
+          0,
+          0,
+          4.5
+        ]
+      ],
+      "badge": true,
+      "win_reward": {
+        "items": [
+          {
+            "item": "kasp_access_card",
+            "count": 1
+          }
+        ]
+      }
+    },
+    "td_quota_a": {
+      "room": "tower_jammer_deck",
+      "enemy": "whistle_blower",
+      "encounter": "ambush_no_exit",
+      "kind": "regular",
+      "patrol": [],
+      "sight_m": 0.0,
+      "group": "quota_pen"
+    },
+    "td_quota_b": {
+      "room": "tower_jammer_deck",
+      "enemy": "buzzkill_drone",
+      "encounter": "ambush_no_exit",
+      "kind": "regular",
+      "patrol": [],
+      "sight_m": 0.0,
+      "group": "quota_pen"
+    },
+    "td_quota_c": {
+      "room": "tower_jammer_deck",
+      "enemy": "whistle_blower",
+      "encounter": "ambush_no_exit",
+      "kind": "regular",
+      "patrol": [],
+      "sight_m": 0.0,
+      "group": "quota_pen"
     }
   },
   "npcs": {
@@ -1264,6 +1794,308 @@
           "conversation": "harrow_old_dark"
         }
       ]
+    },
+    "tr_hut_inspector": {
+      "room": "train_hopper",
+      "speaker": "crowd_inspector",
+      "hidden": true,
+      "look": {
+        "model": "res://art/placeholder/enemies/signals_grunt/enm_signals_grunt.glb",
+        "radius": 0.4,
+        "height": 1.4
+      },
+      "variants": [
+        {
+          "conversation": "train_hut_idle"
+        }
+      ]
+    },
+    "rd_mox": {
+      "room": "road_mast_road",
+      "speaker": "mox",
+      "hidden": true,
+      "look": {
+        "model": "res://art/placeholder/characters/mox/chr_mox.glb",
+        "radius": 0.4,
+        "height": 1.2
+      },
+      "variants": [
+        {
+          "conversation": "works_rd_mox_after"
+        }
+      ]
+    },
+    "fo_old_zero": {
+      "room": "road_mast_foot",
+      "speaker": "zero_old",
+      "look": {
+        "model": "res://art/placeholder/characters/old_zero/npc_old_zero.glb",
+        "radius": 0.4,
+        "height": 1.3
+      },
+      "variants": [
+        {
+          "if": {
+            "flag": "zeroes_back_way",
+            "not_flag": "has_bell_napkin"
+          },
+          "conversation": "works_fo_zero_napkin"
+        },
+        {
+          "if": {
+            "flag": "has_bell_napkin"
+          },
+          "conversation": "works_fo_zero_again"
+        },
+        {
+          "conversation": "works_fo_zero_wait"
+        }
+      ]
+    },
+    "fo_grunt_a": {
+      "room": "road_mast_foot",
+      "speaker": "crowd_grunt",
+      "look": {
+        "model": "res://art/placeholder/enemies/signals_grunt/enm_signals_grunt.glb",
+        "radius": 0.4,
+        "height": 1.4
+      },
+      "variants": [
+        {
+          "conversation": "works_fo_grunt_a"
+        }
+      ]
+    },
+    "fo_grunt_b": {
+      "room": "road_mast_foot",
+      "speaker": "crowd_grunt",
+      "look": {
+        "model": "res://art/placeholder/enemies/signals_grunt/enm_signals_grunt.glb",
+        "radius": 0.4,
+        "height": 1.4
+      },
+      "variants": [
+        {
+          "conversation": "works_fo_grunt_b"
+        }
+      ]
+    },
+    "fo_mox": {
+      "room": "road_mast_foot",
+      "speaker": "mox",
+      "look": {
+        "model": "res://art/placeholder/characters/mox/chr_mox.glb",
+        "radius": 0.4,
+        "height": 1.2
+      },
+      "variants": [
+        {
+          "conversation": "works_fo_mox"
+        }
+      ],
+      "hidden": true
+    },
+    "tl_old_zero": {
+      "room": "tower_landing",
+      "speaker": "zero_old",
+      "look": {
+        "model": "res://art/placeholder/characters/old_zero/npc_old_zero.glb",
+        "radius": 0.4,
+        "height": 1.3
+      },
+      "variants": [
+        {
+          "if": {
+            "not_flag": "thermos_used"
+          },
+          "scene": "works_tl_thermos"
+        },
+        {
+          "conversation": "works_tl_zero_luck"
+        }
+      ]
+    },
+    "fo_zero_1": {
+      "room": "road_mast_foot",
+      "speaker": "crowd_zero",
+      "look": {
+        "body": "#8a7a5a",
+        "head": "#d8c0a0",
+        "scale": 0.95,
+        "accessory": {
+          "shape": "sphere",
+          "color": "#d9c08a",
+          "size": [
+            0.1
+          ],
+          "pos": [
+            0.25,
+            0.7,
+            0.0
+          ]
+        }
+      },
+      "variants": [
+        {
+          "conversation": "works_fo_crowd_a"
+        }
+      ]
+    },
+    "fo_zero_2": {
+      "room": "road_mast_foot",
+      "speaker": "crowd_zero",
+      "look": {
+        "body": "#6a7a8a",
+        "head": "#d8c0a0",
+        "scale": 0.95,
+        "accessory": {
+          "shape": "sphere",
+          "color": "#d9c08a",
+          "size": [
+            0.1
+          ],
+          "pos": [
+            0.25,
+            0.7,
+            0.0
+          ]
+        }
+      },
+      "variants": [
+        {
+          "conversation": "works_fo_crowd_b"
+        }
+      ]
+    },
+    "fo_zero_3": {
+      "room": "road_mast_foot",
+      "speaker": "crowd_zero",
+      "look": {
+        "body": "#7a6a5a",
+        "head": "#d8c0a0",
+        "scale": 0.95,
+        "accessory": {
+          "shape": "sphere",
+          "color": "#d9c08a",
+          "size": [
+            0.1
+          ],
+          "pos": [
+            0.25,
+            0.7,
+            0.0
+          ]
+        }
+      },
+      "variants": [
+        {
+          "conversation": "works_fo_crowd_c"
+        }
+      ]
+    },
+    "fo_zero_4": {
+      "room": "road_mast_foot",
+      "speaker": "crowd_zero",
+      "look": {
+        "body": "#8a6a6a",
+        "head": "#d8c0a0",
+        "scale": 0.95,
+        "accessory": {
+          "shape": "sphere",
+          "color": "#d9c08a",
+          "size": [
+            0.1
+          ],
+          "pos": [
+            0.25,
+            0.7,
+            0.0
+          ]
+        }
+      },
+      "variants": [
+        {
+          "conversation": "works_fo_crowd_a"
+        }
+      ]
+    },
+    "fo_zero_5": {
+      "room": "road_mast_foot",
+      "speaker": "crowd_zero",
+      "look": {
+        "body": "#6a8a7a",
+        "head": "#d8c0a0",
+        "scale": 0.95,
+        "accessory": {
+          "shape": "sphere",
+          "color": "#d9c08a",
+          "size": [
+            0.1
+          ],
+          "pos": [
+            0.25,
+            0.7,
+            0.0
+          ]
+        }
+      },
+      "variants": [
+        {
+          "conversation": "works_fo_crowd_b"
+        }
+      ]
+    },
+    "fo_zero_6": {
+      "room": "road_mast_foot",
+      "speaker": "crowd_zero",
+      "look": {
+        "body": "#7a7a6a",
+        "head": "#d8c0a0",
+        "scale": 0.95,
+        "accessory": {
+          "shape": "sphere",
+          "color": "#d9c08a",
+          "size": [
+            0.1
+          ],
+          "pos": [
+            0.25,
+            0.7,
+            0.0
+          ]
+        }
+      },
+      "variants": [
+        {
+          "conversation": "works_fo_crowd_c"
+        }
+      ]
+    },
+    "fo_zero_7": {
+      "room": "road_mast_foot",
+      "speaker": "crowd_zero",
+      "look": {
+        "body": "#8a8a5a",
+        "head": "#d8c0a0",
+        "scale": 0.95,
+        "accessory": {
+          "shape": "sphere",
+          "color": "#d9c08a",
+          "size": [
+            0.1
+          ],
+          "pos": [
+            0.25,
+            0.7,
+            0.0
+          ]
+        }
+      },
+      "variants": [
+        {
+          "conversation": "works_fo_crowd_a"
+        }
+      ]
     }
   },
   "spots": {
@@ -1503,6 +2335,244 @@
       "room": "harrow_courier",
       "kind": "examine",
       "variants": []
+    },
+    "tr_fc_crate": {
+      "room": "train_flatcar",
+      "kind": "examine",
+      "variants": [
+        {
+          "conversation": "train_ex_crate"
+        }
+      ]
+    },
+    "tr_fc_lights": {
+      "room": "train_flatcar",
+      "kind": "examine",
+      "variants": [
+        {
+          "conversation": "train_ex_lights"
+        }
+      ]
+    },
+    "tr_hp_ore": {
+      "room": "train_hopper",
+      "kind": "examine",
+      "variants": [
+        {
+          "conversation": "train_ex_ore"
+        }
+      ]
+    },
+    "tr_hp_stencil": {
+      "room": "train_hopper",
+      "kind": "examine",
+      "variants": [
+        {
+          "conversation": "train_ex_stencil"
+        }
+      ]
+    },
+    "tr_ditch": {
+      "room": "train_boxcar",
+      "kind": "open",
+      "variants": [
+        {
+          "if": {
+            "flag": "crate_ditched"
+          },
+          "conversation": "train_ditch_after"
+        },
+        {
+          "if": {
+            "item": "delivery_crate"
+          },
+          "scene": "ditch_crate"
+        },
+        {
+          "conversation": "train_ditch_empty"
+        }
+      ],
+      "reach": 1.6
+    },
+    "rd_tram_sign": {
+      "room": "road_mast_road",
+      "kind": "examine",
+      "variants": [
+        {
+          "conversation": "works_rd_tram_sign"
+        }
+      ],
+      "reach": 1.4
+    },
+    "rd_gauge": {
+      "room": "road_mast_road",
+      "kind": "examine",
+      "variants": [
+        {
+          "conversation": "works_rd_gauge"
+        }
+      ],
+      "reach": 1.4
+    },
+    "rd_grate": {
+      "room": "road_mast_road",
+      "kind": "examine",
+      "variants": [
+        {
+          "conversation": "works_rd_grate"
+        }
+      ],
+      "reach": 1.4
+    },
+    "fo_blast_gate": {
+      "room": "road_mast_foot",
+      "kind": "examine",
+      "variants": [
+        {
+          "conversation": "works_fo_gate"
+        }
+      ],
+      "reach": 1.8
+    },
+    "ts_plaque": {
+      "room": "tower_sump",
+      "kind": "examine",
+      "variants": [
+        {
+          "conversation": "works_ts_plaque"
+        }
+      ],
+      "reach": 1.4
+    },
+    "ts_mural": {
+      "room": "tower_sump",
+      "kind": "examine",
+      "variants": [
+        {
+          "conversation": "works_ts_mural"
+        }
+      ],
+      "reach": 1.4
+    },
+    "tc_chart": {
+      "room": "tower_cable_hall",
+      "kind": "examine",
+      "variants": [
+        {
+          "conversation": "works_tc_chart"
+        }
+      ],
+      "reach": 1.4
+    },
+    "tc_spool": {
+      "room": "tower_cable_hall",
+      "kind": "examine",
+      "variants": [
+        {
+          "conversation": "works_tc_spool"
+        }
+      ],
+      "reach": 1.4
+    },
+    "tc_conveyor": {
+      "room": "tower_cable_hall",
+      "kind": "examine",
+      "variants": [
+        {
+          "conversation": "works_tc_conveyor"
+        }
+      ],
+      "reach": 1.4
+    },
+    "tb_window": {
+      "room": "tower_bell_gallery",
+      "kind": "examine",
+      "variants": [
+        {
+          "conversation": "works_tb_window"
+        }
+      ],
+      "reach": 1.4
+    },
+    "tg_rubble": {
+      "room": "tower_generator",
+      "kind": "examine",
+      "variants": [
+        {
+          "conversation": "works_tg_rubble"
+        }
+      ],
+      "reach": 1.8
+    },
+    "tg_plate": {
+      "room": "tower_generator",
+      "kind": "examine",
+      "variants": [
+        {
+          "conversation": "works_tg_plate"
+        }
+      ],
+      "reach": 1.4
+    },
+    "tg_board": {
+      "room": "tower_generator",
+      "kind": "examine",
+      "variants": [
+        {
+          "conversation": "works_tg_board"
+        }
+      ],
+      "reach": 1.4
+    },
+    "td_console": {
+      "room": "tower_jammer_deck",
+      "kind": "examine",
+      "variants": [
+        {
+          "conversation": "works_td_console"
+        }
+      ],
+      "reach": 1.4
+    },
+    "td_line": {
+      "room": "tower_jammer_deck",
+      "kind": "examine",
+      "variants": [
+        {
+          "conversation": "works_td_line"
+        }
+      ],
+      "reach": 1.4
+    },
+    "td_coffee": {
+      "room": "tower_jammer_deck",
+      "kind": "examine",
+      "variants": [
+        {
+          "conversation": "works_td_coffee"
+        }
+      ],
+      "reach": 1.4
+    },
+    "td_pen": {
+      "room": "tower_jammer_deck",
+      "kind": "examine",
+      "variants": [
+        {
+          "conversation": "works_td_pen"
+        }
+      ],
+      "reach": 1.4
+    },
+    "tl_rack": {
+      "room": "tower_landing",
+      "kind": "examine",
+      "variants": [
+        {
+          "conversation": "works_tl_rack"
+        }
+      ],
+      "reach": 1.4
     }
   }
 }

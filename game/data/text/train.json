@@ -1,0 +1,4 @@
+{
+  "_about": "Short prompts for the ore-train opening. The Jump prompt waits for the player as long as it takes.",
+  "train_jump_prompt": "JUMP!"
+}

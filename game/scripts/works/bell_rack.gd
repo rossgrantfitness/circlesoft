@@ -45,6 +45,7 @@ func ring(bell_id: String) -> String:
 		OUTCOME_SOLVED:
 			progress = 0
 			WorldProgress.set_flag(flag_id(), game_state)
+			_reveal_hatch()
 			solved.emit()
 	rang.emit(bell_id, outcome)
 	return outcome
@@ -58,3 +59,10 @@ static func step_tune(tune_order: Array[String], progress_now: int, bell_id: Str
 	if progress_now < tune_order.size() and tune_order[progress_now] == bell_id:
 		return OUTCOME_SOLVED if progress_now + 1 >= tune_order.size() else OUTCOME_NEXT
 	return OUTCOME_WRONG
+
+
+## The hatch chest (a Crate named HatchChest next to the rack) appears.
+func _reveal_hatch() -> void:
+	var chest: Crate = get_parent().get_node_or_null("HatchChest") as Crate if get_parent() != null else null
+	if chest != null:
+		chest.reveal()

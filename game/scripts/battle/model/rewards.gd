@@ -2,11 +2,14 @@ class_name BattleRewards
 extends RefCounted
 ## What a win pays: XP, credits and item drops. Drops are rolled with the party's Luck.
 ## Enemies that waved a white flag and left pay what formulas.json "rewards.flee" says.
+## An encounter may also carry "reward_scale" ({xp, credits} multipliers on the whole fight, so one
+## fight can pay more than its enemies do elsewhere) and "drops" ([{item, count, chance}], chance
+## defaults to 1.0: for example the card fights' Kasp's Access Card, which a white flag cannot take).
 
 
 ## {xp, credits, drops: [{item, count}]}. `enemies` is every enemy of the fight (down or fled).
 static func compute(data: BattleData, enemies: Array[BattleCombatant], party_luck: float,
-		rng: RandomNumberGenerator) -> Dictionary:
+		rng: RandomNumberGenerator, encounter: Dictionary = {}) -> Dictionary:
 	var flee: Dictionary = (data.formulas.get("rewards", {}) as Dictionary).get("flee", {})
 	var xp: float = 0.0
 	var credits: float = 0.0
@@ -34,6 +37,17 @@ static func compute(data: BattleData, enemies: Array[BattleCombatant], party_luc
 					drop_counts[item_id] = 0
 					drop_order.append(item_id)
 				drop_counts[item_id] = int(drop_counts[item_id]) + 1
+	for drop_variant: Variant in encounter.get("drops", []):
+		var fixed: Dictionary = drop_variant
+		if rng.randf() < float(fixed.get("chance", 1.0)):
+			var fixed_id: String = str(fixed.get("item", ""))
+			if not drop_counts.has(fixed_id):
+				drop_counts[fixed_id] = 0
+				drop_order.append(fixed_id)
+			drop_counts[fixed_id] = int(drop_counts[fixed_id]) + int(fixed.get("count", 1))
+	var scale: Dictionary = encounter.get("reward_scale", {})
+	xp *= float(scale.get("xp", 1.0))
+	credits *= float(scale.get("credits", 1.0))
 	var drops: Array[Dictionary] = []
 	for item_id: String in drop_order:
 		drops.append({"item": item_id, "count": int(drop_counts[item_id])})

@@ -9,7 +9,7 @@ extends RoomProp
 signal opened_gate
 
 const OPEN_PREFIX: String = "gate_"
-const SLAB: Vector3 = Vector3(0.2, 2.0, 1.0)
+const SLAB: Vector3 = Vector3(1.0, 2.0, 0.2)
 const SLIDE_UP: float = 2.1
 const SLIDE_S: float = 0.5
 
@@ -84,7 +84,7 @@ func _build() -> void:
 	_slab.position.y = SLAB.y * 0.5
 	add_child(_slab)
 	_reader = PropLook.box(Vector3(0.12, 0.12, 0.06), PropLook.glow(Color(1.0, 0.25, 0.2), 1.6), "Reader")
-	_reader.position = Vector3(0.0, 1.1, 0.5)
+	_reader.position = Vector3(0.0, 1.1, 0.15)
 	add_child(_reader)
 	_solid = PropLook.solid_box(SLAB, Vector3(0.0, SLAB.y * 0.5, 0.0), "Solid")
 	add_child(_solid)

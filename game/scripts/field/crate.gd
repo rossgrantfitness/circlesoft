@@ -23,11 +23,14 @@ func _ready() -> void:
 	if data.is_empty():
 		push_error("Crate %s: no crate '%s' in data/world/placements.json" % [name, placement_id])
 	make_interactable(Interactable.Kind.OPEN, tuning.crate_reach, use)
-	if not Conditions.met(data.get("show_if", {}), game_state):
+	var hidden: bool = not Conditions.met(data.get("show_if", {}), game_state)
+	if hidden:
 		visible = false
 		set_usable(false)
 	if not has_custom_model():
 		_build(str(data.get("style", "wood")))
+	if hidden:
+		_set_solid(false)
 	if WorldProgress.is_opened(placement_id, game_state):
 		_set_open_look()
 
@@ -38,6 +41,22 @@ func crate_data() -> Dictionary:
 
 func is_open() -> bool:
 	return _is_open
+
+
+## A crate with a "show_if" that was hidden when the room loaded appears now (the bell chest once the
+## tune is rung): visible, usable and solid.
+func reveal() -> void:
+	if _is_open:
+		return
+	visible = true
+	set_usable(true)
+	_set_solid(true)
+
+
+func _set_solid(on: bool) -> void:
+	var body: StaticBody3D = get_node_or_null("Solid") as StaticBody3D
+	if body != null:
+		body.collision_layer = 1 if on else 0
 
 
 ## Opens the crate and hands out what is inside. Returns true when Red did something.

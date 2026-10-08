@@ -2,7 +2,7 @@ class_name Bell
 extends RoomProp
 ## One of the Bell Gallery's brass bells. Press the button beside it to ring it; its BellRack parent keeps
 ## the tune. Sizes (big, middle, little, tiny) and every message are in data/world/works.json "bells".
-## Without the Bell Tune Napkin a wrong note gets a hint from Mox.
+## Without the Bell Tune Napkin a wrong note gets a hint from Mox (a second line in the box).
 ## Placeholder look: a brass cylinder on a short chain, sized by `bell_id`.
 
 @export_enum("big", "middle", "little", "tiny") var bell_id: String = "big"
@@ -47,7 +47,7 @@ func use(_player: PlayerController, interactor: PlayerInteractor) -> bool:
 		BellRack.OUTCOME_WRONG:
 			lines.append(str(bells.get("sour", "")))
 			if not bool(state().call("has_item", str(bells.get("napkin_item", "")))):
-				lines.append(str(bells.get("mox_hint", "")))
+				lines.append("Mox: " + str(bells.get("mox_hint", "")))
 		BellRack.OUTCOME_SOLVED:
 			for line: Variant in bells.get("solved", []):
 				lines.append(str(line))
@@ -55,21 +55,8 @@ func use(_player: PlayerController, interactor: PlayerInteractor) -> bool:
 			lines.append(str(bells.get("after", "")))
 		_:
 			lines.append(str(bells.get("ring", {}).get(bell_id, "")))
-	var speaker: String = "mox" if outcome == BellRack.OUTCOME_WRONG and lines.size() > 1 else "narrator"
-	if lines.size() > 1 and speaker == "mox":
-		# The clang is the narrator's; the hint is Mox's.
-		say([lines[0]], interactor)
-		_say_as("mox", [lines[1]], interactor)
-	else:
-		say(lines, interactor)
+	say(lines, interactor)
 	return true
-
-
-func _say_as(speaker: String, lines: Array[String], interactor: PlayerInteractor) -> void:
-	last_messages.append_array(lines)
-	if interactor != null and interactor.runner != null:
-		interactor.runner.conversation_finished.connect(
-				func(_id: String) -> void: interactor.show_messages(lines, interactable, speaker), CONNECT_ONE_SHOT)
 
 
 func _build() -> void:
@@ -79,7 +66,6 @@ func _build() -> void:
 	_body = bell
 	add_child(bell)
 	var chain: MeshInstance3D = PropLook.box(Vector3(0.04, 1.4 - size, 0.04), PropLook.lit(Color(0.4, 0.4, 0.42)), "Chain")
-	chain.position = Vector3(0.0, 1.5 + (1.4 - size) * 0.5 - 0.0, 0.0)
-	chain.position.y = 1.5 - size + (1.4 - size) * 0.5 + 0.0
+	chain.position = Vector3(0.0, 1.5 - size + (1.4 - size) * 0.5, 0.0)
 	add_child(chain)
 	add_child(PropLook.solid_box(Vector3(0.3, 1.0, 0.3), Vector3(0.0, 0.5, 0.0), "Post"))

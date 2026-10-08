@@ -1,0 +1,123 @@
+{
+  "_about": "PLACEHOLDER lines for the Spillway and the jammer works (M4-1), in the grim-world, loud-heroes tone (docs/tone_guide.md). The formal dialogue sign-off is M6-2 and needs Ross. LOCKED, do not reword: the plaque ('Raised so we can hear them') and the mural description (a crew of five waving from a ship heading down the last lane, every window behind them lit). Extra rule: the old Zero's story line about the call and Kasp's loudspeaker lines belong to the Writer; the scene lines here only hold their place. Crowd Zeroes and gate grunts speak as crowd_* ids (plain box).",
+  "conversations": {
+    "works_rd_crate_1": [
+      {"speaker": "narrator", "text": "(The delivery crate in Red's arms thumps. Twice. Then a third time, louder.)"},
+      {"speaker": "otis", "text": "That's not a normal crate noise, friend."}
+    ],
+    "works_rd_crate_2": [
+      {"speaker": "mox", "text": "MOX WUZ HERE! ...In a crate. For about nine hours. Hi."},
+      {"speaker": "otis", "text": "Mox? Little one, this road is not a place for you."},
+      {"speaker": "mox", "text": "A bad road? I LOVE a bad road. ...Okay. Okay! Going home. Going, going."}
+    ],
+    "works_rd_mox_after": [
+      {"speaker": "mox", "text": "I'm going. Look at me going."}
+    ],
+    "works_rd_tram_sign": [
+      {"speaker": "sign", "text": "LAMP SQUARE · RELAY.\nLast stop: nobody remembers. Fares abolished."}
+    ],
+    "works_rd_gauge": [
+      {"speaker": "sign", "text": "FLOOD LEVEL.\nThe marks are in years, not feet. The highest is the year the Signals came."}
+    ],
+    "works_rd_grate": [
+      {"speaker": "narrator", "text": "Through the grate overhead: boots, and a broadcast. 'A QUIET MOON IS A SAFE MOON.' The boots keep walking."}
+    ],
+    "works_fo_sitin_1": [
+      {"speaker": "narrator", "text": "(A row of Zeroes sits on cushions in front of the gate, sleeve bells in their laps. Red sets the thermos down in front of the old one, and the confiscated bells go back on sleeves, one by one.)"},
+      {"speaker": "zero_old", "text": "Watch Zero. SOUND OFF."},
+      {"speaker": "narrator", "text": "(Every bell rings at once. A loudspeaker on the fence coughs.)"},
+      {"speaker": "kasp", "text": "MEMO. Effective immediately, bells are a noise. Disperse. ...Or don't. I have a quota and a very big walker."},
+      {"speaker": "narrator", "text": "(A gray Signals crate beside the gate thumps. A lid pops.)"}
+    ],
+    "works_fo_sitin_2": [
+      {"speaker": "mox", "text": "Told you I'd get here first! MOX WUZ HERE, again, in a better crate."},
+      {"speaker": "zero_old", "text": "The drain grate's loose. It's the back way in. Whose turn is it to lift?"},
+      {"speaker": "narrator", "text": "(The Zeroes put their shoulders to the grate. It comes up with a groan like a very old door.)"}
+    ],
+    "works_fo_zero_wait": [
+      {"speaker": "zero_old", "text": "Sit. Ring. Repeat. It's the only protest they haven't banned yet."}
+    ],
+    "works_fo_zero_napkin": [
+      {"speaker": "zero_old", "text": "You're going up the old mast? Take this. The tune for the shrine bells, on a napkin.", "give_item": "bell_tune_napkin", "set_flag": "has_bell_napkin"},
+      {"speaker": "zero_old", "text": "Ring it right and the floor gives up something of ours. ...Don't tell the Sergeant."}
+    ],
+    "works_fo_zero_again": [
+      {"speaker": "zero_old", "text": "Ring them loud, kid. They were ours before they were his."}
+    ],
+    "works_fo_crowd_a": [
+      {"speaker": "crowd_zero", "text": "They took my bell for a noise. My bell! It barely even rings."}
+    ],
+    "works_fo_crowd_b": [
+      {"speaker": "crowd_zero", "text": "Quiet's been the law for ten years. We're a little late for the protest. We're here anyway."}
+    ],
+    "works_fo_crowd_c": [
+      {"speaker": "crowd_zero", "text": "Don't mind us. We've been sitting since the curfew. We'll sit through the next one."}
+    ],
+    "works_fo_grunt_a": [
+      {"speaker": "crowd_grunt", "text": "Please. Please stop ringing. I have a headache that has a headache."}
+    ],
+    "works_fo_grunt_b": [
+      {"speaker": "crowd_grunt", "text": "I'm only here till my shift ends. ...Which is never. Is it never? Nobody tells me."}
+    ],
+    "works_fo_mox": [
+      {"speaker": "mox", "text": "In a crate. Again. Very cozy."}
+    ],
+    "works_fo_gate": [
+      {"speaker": "sign", "text": "SIGNALS ACCESS ONLY.\nAnd the Signals don't like you."}
+    ],
+    "works_ts_enter": [
+      {"speaker": "otis", "text": "Hush a moment. Old stone. ...It feels like a church that got taken over by an office."},
+      {"speaker": "mox", "text": "An office with a conveyor belt. I can hear it through the ceiling. It sounds like a very long meeting."}
+    ],
+    "works_ts_plaque": [
+      {"speaker": "sign", "text": "RAISED SO WE CAN HEAR THEM."}
+    ],
+    "works_ts_mural": [
+      {"speaker": "narrator", "text": "A faded mural: a crew of five waving from a ship, heading down the last lane. Every window behind them is lit."}
+    ],
+    "works_tc_chart": [
+      {"speaker": "sign", "text": "QUOTA: 400. ACHIEVED: 1,203.\n- Sgt. Kasp: NOT ENOUGH."}
+    ],
+    "works_tc_spool": [
+      {"speaker": "sign", "text": "PROPERTY OF SGT. KASP. DO NOT TOUCH. THIS MEANS YOU."}
+    ],
+    "works_tc_conveyor": [
+      {"speaker": "narrator", "text": "The conveyor never stops. Not for lunch. Especially not for lunch."}
+    ],
+    "works_tb_window": [
+      {"speaker": "narrator", "text": "Through the slit: the slums' neon, and past it, Harrow's windows. Fewer lit than there used to be."}
+    ],
+    "works_tg_rubble": [
+      {"speaker": "narrator", "text": "The stairs are gone. Cable everywhere. Very Kasp."}
+    ],
+    "works_tg_plate": [
+      {"speaker": "sign", "text": "MAKER'S PLATE.\nThe date's been worn off by hands, not years."}
+    ],
+    "works_tg_board": [
+      {"speaker": "sign", "text": "INSPECTED. The sticker is dated last week. Initials: S.K."}
+    ],
+    "works_td_console": [
+      {"speaker": "sign", "text": "SPEC SHEET: THE HUSHMASTER.\nWritten, drawn and underlined by Sgt. Kasp. Margin note: 'MORE CUPHOLDERS.'"}
+    ],
+    "works_td_line": [
+      {"speaker": "narrator", "text": "Every drone's serial plate reads: BUILT FOR A QUIETER HARROW."}
+    ],
+    "works_td_coffee": [
+      {"speaker": "sign", "text": "COFFEE STATION. DECAF ONLY, BY ORDER."}
+    ],
+    "works_td_pen": [
+      {"speaker": "sign", "text": "QUOTA ENFORCEMENT.\nDO NOT DISTURB."}
+    ],
+    "works_tl_rack": [
+      {"speaker": "narrator", "text": "Kasp's coat rack, with a lanyard of about forty laminated cards. Every one is his photo."}
+    ],
+    "works_tl_zero_pour": [
+      {"speaker": "zero_old", "text": "Somebody had to come up the back way."},
+      {"speaker": "narrator", "text": "(She pours from the thermos Red delivered. It's hot. It's the best thing anyone has tasted in years.)"},
+      {"speaker": "zero_old", "text": "Drink. All of you. Then go be loud."}
+    ],
+    "works_tl_zero_luck": [
+      {"speaker": "zero_old", "text": "Go loud, kid. I'll keep the lamp warm."}
+    ]
+  }
+}

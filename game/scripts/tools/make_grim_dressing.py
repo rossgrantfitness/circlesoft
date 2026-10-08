@@ -16,7 +16,9 @@ import json
 import os
 
 DATA = os.path.join(os.path.dirname(__file__), "..", "..", "data", "world", "look_dressing.json")
-KEEP = ("harrow_square", "harrow_checkpoint", "battle")
+WORKS = ("road_mast_road", "road_mast_foot", "tower_sump", "tower_cable_hall", "tower_bell_gallery", "tower_generator",
+         "tower_jammer_deck", "tower_landing", "tower_roof")  # written by make_works_dressing.py
+KEEP = ("harrow_square", "harrow_checkpoint", "battle") + WORKS
 
 TEAL, SODIUM, PINK = "#5fe0c8", "#ff9a3c", "#ff3e9a"
 
@@ -125,7 +127,6 @@ def build():
     rooms["harrow_dock_office"] = interior(0, 7, 0, 5, "CLAIMS", TEAL, "ALL CLEAR", variant=0)
     rooms["harrow_bar"] = interior(0, 9, 0, 6, "BAR", PINK, "CURFEW 22", variant=1)
     rooms["harrow_docks"] = docks()
-    rooms["road_mast_road"] = outdoor(0, 10, 0, 6, "ROAD", SODIUM, variant=2)
     rooms["test_room"] = outdoor(-5, 13, -4, 4, "TEST", TEAL, variant=0)
     rooms["test_a"] = outdoor(-6, 10, -4, 4, "YARD A", SODIUM, variant=1)
     rooms["test_b"] = outdoor(-5, 9, -4, 4, "YARD B", TEAL, variant=2)
