@@ -57,7 +57,7 @@ def interior(x0, x1, z0, z1, neon, color, screen_text="ALL CLEAR", wall_h=3.0, v
         P("steam", [x0 + w * 0.82, 0, z0 + d * 0.28], rise=0.9),
         P("puddle", [x0 + w * 0.58, 0, z0 + d * 0.7], size=[1.2, 0.8]),
         P("stripes", [x0 + w * 0.5, 0.03, z0 + 0.3], size=[w * 0.55, 0.03, 0.18]),
-        P("smear", [x0 + w * 0.55, 0, z0 + 1.0], size=[0.6, 1.1], color=color),
+        P("smear", [x0 + w * 0.55, 0, z0 + 0.8], size=[0.6, 0.9], color=color, energy=0.35),
     ]
     return {"key_light": {"color": "#d4e4e0", "energy": 0.8, "dir_deg": [-48.0, 36.0]}, "items": items}
 

@@ -328,7 +328,7 @@ static func _smear(item: Dictionary) -> Node3D:
 			if across * fade > GrimePaint._bayer(x, y) * 0.9:
 				img.set_pixel(x, y, Color(1, 1, 1, 1))
 	var texture: ImageTexture = ImageTexture.create_from_image(img)
-	root.add_child(_quad("Smear", size, unlit(texture, Color(tint.r, tint.g, tint.b, 1.0), 0.8), Vector3(0.0, 0.025, 0.0), Vector3(-90.0, 0.0, 0.0)))
+	root.add_child(_quad("Smear", size, unlit(texture, Color(tint.r, tint.g, tint.b, 1.0), float(item.get("energy", 0.35))), Vector3(0.0, 0.025, 0.0), Vector3(-90.0, 0.0, 0.0)))
 	return root
 
 

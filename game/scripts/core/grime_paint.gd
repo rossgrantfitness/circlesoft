@@ -448,7 +448,7 @@ static func dull_character_image(src: Image, cfg: Dictionary, salt: int = 0) -> 
 				c = c.lightened(0.07)
 			# grimy lower half: dirt creeps up from the bottom of each 16 px cell
 			var blotch: float = _value_noise(x, y, 8, maxi(w, 8), 210 + salt)
-			if blotch > 0.62 and ((x + y) & 1) == 0:
+			if scuff >= 0.2 and blotch > 0.62 and ((x + y) & 1) == 0:
 				c = c.lerp(dirt, 0.4)
 			img.set_pixel(x, y, c)
 	return img

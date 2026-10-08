@@ -310,6 +310,34 @@ static func dress_model(model: Node, source_path: String = "", role: String = ""
 			mesh_instance.set_surface_override_material(surface, copy)
 
 
+## The soft dark contact ring under a character standing in a room (the grim look; none in classic, and none
+## for battle views, which have their own blob shadow). `holder` is the character's root, standing at its feet.
+static func sync_contact_shadow(holder: Node3D, radius: float) -> void:
+	var existing: Node = holder.get_node_or_null("ContactShadow")
+	var scale: float = float(_dict(active().get("characters", {})).get("contact_shadow", 0.0))
+	if scale <= 0.0:
+		if existing != null:
+			holder.remove_child(existing)
+			existing.queue_free()
+		return
+	if existing != null:
+		return
+	var ring: MeshInstance3D = MeshInstance3D.new()
+	ring.name = "ContactShadow"
+	var quad: QuadMesh = QuadMesh.new()
+	quad.size = Vector2(radius * 2.0, radius * 2.0) * scale
+	quad.orientation = PlaneMesh.FACE_Y
+	ring.mesh = quad
+	var material: ShaderMaterial = ShaderMaterial.new()
+	material.shader = load("res://shaders/psx_unlit.gdshader") as Shader
+	material.set_shader_parameter("albedo_texture", BattleTextures.shadow_texture(16, Color("#0b0a14")))
+	material.set_shader_parameter("affine_amount", 0.0)
+	ring.set_surface_override_material(0, material)
+	ring.position = Vector3(0.0, 0.03, 0.0)
+	ring.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	holder.add_child(ring)
+
+
 ## Writes the edge-light settings of a character config into a psx_lit material.
 static func apply_rim(material: ShaderMaterial, cfg: Dictionary) -> void:
 	material.set_shader_parameter("rim_strength", float(cfg.get("rim_strength", 0.0)))

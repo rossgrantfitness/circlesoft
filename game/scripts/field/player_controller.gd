@@ -82,6 +82,7 @@ func _ready() -> void:
 	add_to_group(LookProfiles.GROUP_AWARE)
 	_load_look_model()
 	_sync_lamp(LookProfiles.active())
+	LookProfiles.sync_contact_shadow(self, 0.4)
 	_play_animation(PlayerMotion.ANIM_IDLE)
 
 
@@ -89,6 +90,7 @@ func _ready() -> void:
 ## (the grim shiba) if the one on screen is not the right one.
 func apply_look(_id: String, profile: Dictionary) -> void:
 	_sync_lamp(profile)
+	LookProfiles.sync_contact_shadow(self, 0.4)
 	if _visual == null or _loaded_look_key == "":
 		return
 	if _loaded_look_key == LookProfiles.model_look_key(_loaded_model_path):
@@ -375,7 +377,7 @@ func attach_model(model_scene: PackedScene, source_path: String = "") -> Node3D:
 		return null
 	model.name = "Model"
 	_visual.add_child(model)
-	LookProfiles.dress_model(model, source_path, "party")
+	LookProfiles.dress_model(model, source_path, "player")
 	_animation_player = _find_animation_player(model)
 	_current_animation = &""
 	_play_animation(PlayerMotion.ANIM_IDLE)

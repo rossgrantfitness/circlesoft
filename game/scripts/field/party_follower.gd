@@ -83,6 +83,7 @@ func _load_model(wanted: String) -> void:
 	_visual.add_child(_model)
 	Npc.apply_light_compensation(_model, LIGHT_COMPENSATION)
 	LookProfiles.dress_model(_model, path, "party")
+	LookProfiles.sync_contact_shadow(self, 0.38)
 	for node: Node in _model.find_children("*", "AnimationPlayer", true, false):
 		var clips: AnimationPlayer = node as AnimationPlayer
 		if clips.has_animation(IDLE_CLIP):
