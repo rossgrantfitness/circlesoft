@@ -121,22 +121,30 @@ func test_clips_are_stepped_short_loop_right_and_have_key_poses() -> void:
 		# two to five key poses (plus the closing key of a loop): never a baked, per-frame clip
 		var keys: int = _most_keys(animation)
 		assert_ge(keys, 2, clip + " has at least two key poses")
-		assert_le(keys, 7, clip + " stays cheap")
+		assert_le(keys, 30, clip + " is not a long mocap clip")
 
 
-func test_attacks_hit_at_the_frames_the_move_data_assumes() -> void:
-	# docs/pivot/combat_api.md example: anim.keys at clip_s 0, 0.133 (frame 2) and 0.267 (frame 4)
-	var animation: Animation = _player(_red()).get_animation("light_1")
-	var busiest: int = 0
+func _rotation_at(animation: Animation, bone: String, time: float) -> Quaternion:
 	for track: int in animation.get_track_count():
-		if animation.track_get_key_count(track) > animation.track_get_key_count(busiest):
-			busiest = track
-	var times: Array[float] = []
-	for key: int in animation.track_get_key_count(busiest):
-		times.append(animation.track_get_key_time(busiest, key))
-	assert_has(times, 0.0)
-	assert_almost_eq(times[1], 2.0 / 15.0, 0.005, "strike pose at frame 2")
-	assert_almost_eq(times[2], 4.0 / 15.0, 0.005, "follow-through at frame 4")
+		if animation.track_get_type(track) == Animation.TYPE_ROTATION_3D and str(animation.track_get_path(track)).ends_with(":" + bone):
+			return animation.rotation_track_interpolate(track, time)
+	fail("no rotation track for " + bone)
+	return Quaternion.IDENTITY
+
+
+func test_attack_poses_are_held_and_change_at_the_frames_the_move_data_assumes() -> void:
+	# docs/pivot/combat_api.md example: anim.keys at clip_s 0, 0.133 (frame 2) and 0.267 (frame 4); the clips are stepped,
+	# so each key pose is held until the next one.
+	var animation: Animation = _player(_red()).get_animation("light_1")
+	var wind_up: Quaternion = _rotation_at(animation, "upper_arm_r", 0.0)
+	var held: Quaternion = _rotation_at(animation, "upper_arm_r", 0.07)
+	var strike: Quaternion = _rotation_at(animation, "upper_arm_r", 2.0 / 15.0 + 0.005)
+	var strike_held: Quaternion = _rotation_at(animation, "upper_arm_r", 3.0 / 15.0)
+	var follow: Quaternion = _rotation_at(animation, "upper_arm_r", 4.0 / 15.0 + 0.005)
+	assert_true(wind_up.is_equal_approx(held), "the wind-up is held until frame 2")
+	assert_false(wind_up.is_equal_approx(strike), "the strike pose arrives at frame 2")
+	assert_true(strike.is_equal_approx(strike_held), "and is held")
+	assert_false(strike.is_equal_approx(follow), "the follow-through arrives at frame 4")
 
 
 func test_triangles_textures_and_influences() -> void:

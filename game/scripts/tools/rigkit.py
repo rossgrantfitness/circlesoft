@@ -286,6 +286,22 @@ def _align_socket(rig, hand, sock, target_dir, roll_deg):
     _update()
 
 
+def set_constant(action):
+    """Every key held until the next one (stepped), whatever Blender's preference did. Works on layered actions (5.x)."""
+    curves = []
+    if hasattr(action, "fcurves"):
+        curves = list(action.fcurves)
+    else:
+        for layer in action.layers:
+            for strip in layer.strips:
+                for bag in strip.channelbags:
+                    curves.extend(bag.fcurves)
+    for fc in curves:
+        for kp in fc.keyframe_points:
+            kp.interpolation = "CONSTANT"
+    return len(curves)
+
+
 def build_clips(arm_obj, clips, scale_bones=("root",)):
     """clips: name -> dict(fps frames=[(frame, pose dict), ...], length=N, loop=bool). Keys are held (stepped).
     A loop's closing key (frame == length) repeats the first pose. Returns a printable table."""
@@ -313,9 +329,7 @@ def build_clips(arm_obj, clips, scale_bones=("root",)):
         elif spec["length"] > last:                  # one-shots: pad the end so the clip length is what was asked
             apply_pose(rig, frames[-1][1])
             rig.key(spec["length"], scale_bones)
-        for fc in action.fcurves if hasattr(action, "fcurves") else []:
-            for kp in fc.keyframe_points:
-                kp.interpolation = "CONSTANT"
+        set_constant(action)
         made.append((name, action))
         table.append((name, spec["length"], len(frames), bool(spec.get("loop"))))
     anim.action = None
