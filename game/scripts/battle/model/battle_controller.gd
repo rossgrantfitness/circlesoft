@@ -25,6 +25,11 @@ signal message(text: String)
 signal battle_ended(result: String, report: Dictionary)
 ## Added after the contract (see "Changes" in battle_api.md): a gadget wheel landed on something.
 signal skill_result(info: Dictionary)
+## Multi-part bosses (M5-1, see BattleBoss): a part (a pair of legs) broke, the boss changed phase
+## (the rig toppled), and the Quiet Hours jam pulse switched on or off (info: rounds, offset_ms, dropout_chance).
+signal part_broken(enemy_id: String, part_id: String, pairs_broken: int, pairs_total: int)
+signal phase_changed(enemy_id: String, from_phase: String, to_phase: String)
+signal jam_changed(active: bool, info: Dictionary)
 signal _command_submitted
 
 const KIND_ATTACK: String = "attack"
@@ -42,6 +47,7 @@ const MAX_INVALID_COMMANDS: int = 20
 const MAX_ROUNDS: int = 300
 const MIN_STEP_USEC: int = 1000
 const PRESS_SEED_OFFSET: int = 7919
+const BOSS_SEED_OFFSET: int = 104729
 const MSG_CANT_RUN: String = "Can't run from this one!"
 const MSG_NOISE_TICKET: String = "Noise Ticket! No skills."
 const MSG_NO_JUICE: String = "Not enough Juice!"
@@ -58,6 +64,9 @@ var state: BattleState = BattleState.new()
 var clock: BattleClock = null
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var press_rng: RandomNumberGenerator = RandomNumberGenerator.new()
+## Boss randomness (jam offsets, which memo line): its own stream so a boss never shifts the
+## damage rolls of the fights that do not have one.
+var boss_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var press_source: PressSource = null
 var progression: Progression = null
 
@@ -71,6 +80,12 @@ var start_usec: int = 0
 var end_usec: int = 0
 
 var _encounter: Dictionary = {}
+## The jam pulse in force: {through_round, offset_ms: [min, max], dropout_chance} or {} when off.
+var _jam: Dictionary = {}
+## The leg pair the current party command aims at ("" = the first one standing).
+var _action_part: String = ""
+## A pause (ms) the next end-of-action gap adds: a leg break or the topple needs a beat.
+var _beat_ms: int = 0
 var _can_run: bool = true
 var _bag: Dictionary = {}
 var _items_used: Dictionary = {}
@@ -98,6 +113,7 @@ static func create(p_setup: BattleSetup) -> BattleController:
 func start() -> void:
 	start_usec = clock.now_usec()
 	battle_started.emit(snapshot())
+	_say_for_all("start")
 	while not is_over:
 		var already: String = _outcome()
 		if not already.is_empty():
@@ -112,6 +128,9 @@ func start() -> void:
 		var order_ids: Array[String] = []
 		for c: BattleCombatant in order:
 			order_ids.append(c.id)
+		if not _jam.is_empty() and round_number > int(_jam["through_round"]):
+			_jam = {}
+			jam_changed.emit(false, {})
 		round_started.emit(round_number, order_ids, BattleTurnOrder.ids(state.all_active()))
 		for c: BattleCombatant in order:
 			if is_over:
@@ -200,9 +219,11 @@ func _build(p_setup: BattleSetup) -> void:
 	if setup.rng_seed == BattleSetup.RANDOM_SEED:
 		rng.randomize()
 		press_rng.randomize()
+		boss_rng.randomize()
 	else:
 		rng.seed = setup.rng_seed
 		press_rng.seed = setup.rng_seed + PRESS_SEED_OFFSET
+		boss_rng.seed = setup.rng_seed + BOSS_SEED_OFFSET
 	_encounter = data.encounter(setup.encounter_id)
 	if _encounter.is_empty():
 		push_error("BattleController: unknown encounter '%s'" % setup.encounter_id)
@@ -274,6 +295,7 @@ func _make_enemy(enemy_id: String, index: int) -> BattleCombatant:
 	c.status_resist = def.get("status_resist", {})
 	c.flee_at_hp_pct = float(def.get("flee_at_hp_pct", 0.0))
 	c.enemy_data = def
+	BattleBoss.setup(c, def)
 	return c
 
 
@@ -296,6 +318,9 @@ func _take_turn(c: BattleCombatant) -> void:
 		await _wait_ms(int(data.f("pacing", "skip_turn_ms", 0.0)))
 		_end_turn(c)
 		return
+	if not c.is_party():
+		_tick_cooldowns(c)
+		_say_turn_line(c)
 	if c.is_party():
 		var cmd: Dictionary = await _get_party_command(c)
 		if is_over:
@@ -312,6 +337,11 @@ func _take_turn(c: BattleCombatant) -> void:
 
 ## Win/lose check, then the short gap between actions.
 func _after_action() -> void:
+	if _beat_ms > 0 and _outcome().is_empty():
+		var beat: int = _beat_ms
+		_beat_ms = 0
+		await _wait_ms(beat)
+	_beat_ms = 0
 	var outcome: String = _outcome()
 	if not outcome.is_empty():
 		await _finish(outcome)
@@ -444,6 +474,7 @@ func _check_command(c: BattleCombatant, cmd: Dictionary) -> Dictionary:
 				return {"error": MSG_NO_TARGET}
 			fixed["skill_id"] = c.attack_skill
 			fixed["targets"] = attack_targets
+			fixed["part"] = str(cmd.get("part", ""))
 			return {"command": fixed}
 		KIND_SKILL:
 			var skill_id: String = str(cmd.get("skill_id", ""))
@@ -459,6 +490,7 @@ func _check_command(c: BattleCombatant, cmd: Dictionary) -> Dictionary:
 				return {"error": MSG_NO_TARGET}
 			fixed["skill_id"] = skill_id
 			fixed["targets"] = skill_targets
+			fixed["part"] = str(cmd.get("part", ""))
 			return {"command": fixed}
 		KIND_ITEM:
 			var item_id: String = str(cmd.get("item_id", ""))
@@ -514,7 +546,9 @@ func _execute_party(c: BattleCombatant, cmd: Dictionary) -> void:
 	match str(cmd["kind"]):
 		KIND_ATTACK, KIND_SKILL:
 			var skill: Dictionary = data.skill(str(cmd["skill_id"]))
+			_action_part = str(cmd.get("part", ""))
 			await _run_skill_action(c, skill, cmd["targets"], str(cmd["kind"]))
+			_action_part = ""
 		KIND_ITEM:
 			await _run_item_action(c, str(cmd["item_id"]), cmd["targets"])
 		KIND_DEFEND:
@@ -529,7 +563,10 @@ func _execute_enemy(c: BattleCombatant) -> void:
 		await _wait_ms(int(data.f("pacing", "skip_turn_ms", 0.0)))
 		return
 	var targets: Array[String] = choice["targets"]
-	await _run_skill_action(c, data.skill(str(choice["skill_id"])), targets, KIND_SKILL)
+	var chosen: Dictionary = data.skill(str(choice["skill_id"]))
+	if int(chosen.get("cooldown_turns", 0)) > 0:
+		c.cooldowns[str(chosen["id"])] = int(chosen["cooldown_turns"])
+	await _run_skill_action(c, chosen, targets, KIND_SKILL)
 
 
 # ---- Defend and Run ----
@@ -667,7 +704,8 @@ func _skill_action_dict(actor: BattleCombatant, kind: String, skill: Dictionary,
 	return {"actor": actor.id, "kind": kind, "skill_id": str(skill["id"]), "name": str(skill.get("name", "")),
 		"targets": targets, "t0_usec": t0, "timeline_ms": timeline, "presses": presses,
 		"anim": str(skill.get("anim", "")), "show_name": bool(skill.get("show_name", false)),
-		"tell": str(skill.get("tell", "")), "contact": str(skill.get("contact", "melee"))}
+		"tell": str(skill.get("tell", "")), "contact": str(skill.get("contact", "melee")),
+		"telegraph": (skill.get("telegraph", {}) as Dictionary).duplicate()}
 
 
 func _press_info(slot: Dictionary) -> Dictionary:
@@ -676,6 +714,11 @@ func _press_info(slot: Dictionary) -> Dictionary:
 		"scrambled": slot["scrambled"], "window_ms": slot["window_ms"]}
 	if bool(slot["scrambled"]):
 		info["shown_cue_ms"] = slot["shown_cue_ms"]
+		info["cue_hidden"] = slot["cue_hidden"]
+		if slot.has("shown_hold_by_ms"):
+			info["shown_hold_by_ms"] = slot["shown_hold_by_ms"]
+	if int(slot["bangs"]) > 0:
+		info["bangs"] = slot["bangs"]
 	return info
 
 
@@ -721,6 +764,11 @@ func _build_slots(actor: BattleCombatant, skill: Dictionary, targets: Array[Stri
 		slot["hold_by_ms"] = hold_by_ms if press_type == ClutchJudge.TYPE_HOLD else 0
 		slot["scrambled"] = press.has("shown_cue_ms")
 		slot["shown_cue_ms"] = int(press.get("shown_cue_ms", cue_ms))
+		slot["cue_hidden"] = false
+		slot["shown_offset_usec"] = 0
+		slot["bangs"] = int((skill.get("telegraph", {}) as Dictionary).get("bangs", 0)) if side == SIDE_BLOCK else 0
+		if owner != null and owner.is_party() and not _jam.is_empty() and not bool(skill.get("scramble_immune", false)):
+			_scramble_slot(slot, press_type, cue_ms, hold_by_ms)
 		slot["window_ms"] = {"nice": float(window.get("nice_ms", 0.0)) * mult,
 			"rad": float(window.get("rad_ms", 0.0)) * mult,
 			"totally_rad": float(window.get("totally_rad_ms", 0.0)) * mult}
@@ -817,6 +865,8 @@ func _apply_one(actor: BattleCombatant, skill: Dictionary, fx: Dictionary, prima
 				_apply_status_list(actor, t, fx.get("statuses", []), ClutchJudge.BLOCK_NONE)
 		"wheel":
 			_fx_wheel(actor, skill, fx, primary, rating)
+		"jam":
+			_fx_jam(actor, skill)
 
 
 func _fx_damage(actor: BattleCombatant, skill: Dictionary, fx: Dictionary, primary: Array[String],
@@ -838,9 +888,13 @@ func _fx_damage(actor: BattleCombatant, skill: Dictionary, fx: Dictionary, prima
 		var amount: int = BattleDamage.hit_damage(data, actor.stat(str(fx.get("stat", "attack"))),
 			float(fx.get("power", 1.0)), target.stat("defense"), rating_mult,
 			defend_mult if target.defending else 1.0, reduction, rng)
-		target.hp = maxi(target.hp - amount, 0)
-		hit.emit({"source": actor.id, "target": target.id, "amount": amount, "kind": "damage",
-			"blocked": blocked, "payback": false})
+		_last_hit_part = ""
+		var dealt: int = _inflict(target, amount, skill)
+		var info: Dictionary = {"source": actor.id, "target": target.id, "amount": dealt, "kind": "damage",
+			"blocked": blocked, "payback": false}
+		if not _last_hit_part.is_empty():
+			info["part"] = _last_hit_part
+		hit.emit(info)
 		_emit_stats(target)
 		if target.hp <= 0:
 			_down(target)
@@ -861,8 +915,8 @@ func _payback(defender: BattleCombatant, attacker: BattleCombatant) -> void:
 	var amount: int = BattleDamage.hit_damage(data, defender.stat("attack"),
 		float(data.windows_doc.get("payback_power", 0.0)) * float(defender.perks.get("payback_mult", 1.0)),
 		attacker.stat("defense"), 1.0, 1.0, 0.0, rng)
-	attacker.hp = maxi(attacker.hp - amount, 0)
-	hit.emit({"source": defender.id, "target": attacker.id, "amount": amount, "kind": "damage",
+	var dealt: int = _inflict(attacker, amount, {})
+	hit.emit({"source": defender.id, "target": attacker.id, "amount": dealt, "kind": "damage",
 		"blocked": ClutchJudge.BLOCK_NONE, "payback": true})
 	_emit_stats(attacker)
 	if attacker.hp <= 0:
@@ -992,8 +1046,7 @@ func _apply_item_effect(actor: BattleCombatant, target: BattleCombatant, effect:
 		if target.statuses.erase(str(status_id)):
 			status_changed.emit(target.id, str(status_id), false)
 	if effect.has("damage"):
-		var amount: int = int(effect["damage"])
-		target.hp = maxi(target.hp - amount, 0)
+		var amount: int = _inflict(target, int(effect["damage"]), {})
 		hit.emit({"source": actor.id, "target": target.id, "amount": amount, "kind": "damage",
 			"blocked": ClutchJudge.BLOCK_NONE, "payback": false})
 		_emit_stats(target)
@@ -1033,6 +1086,8 @@ func _add_juice(target: BattleCombatant, amount: int) -> void:
 
 
 func _down(c: BattleCombatant) -> void:
+	if not c.is_party():
+		_say(c, "defeat")
 	c.hp = 0
 	c.down = true
 	c.defending = false
@@ -1045,6 +1100,131 @@ func _down(c: BattleCombatant) -> void:
 
 func _emit_stats(c: BattleCombatant) -> void:
 	stats_changed.emit(c.id, c.hp, c.hp_max, c.juice, c.juice_max)
+
+
+# ---- bosses: parts, phases, the jam pulse, memo lines (see BattleBoss) ----
+
+var _last_hit_part: String = ""
+
+
+## Puts damage on a fighter. A multi-part boss still on its rig takes it on a leg pair instead
+## (x skill.part_mult, so Heave-Ho flips legs); everyone else just loses HP. Returns the number to show.
+func _inflict(target: BattleCombatant, amount: int, skill: Dictionary) -> int:
+	if target.is_party() or not BattleBoss.is_multi_part(target.enemy_data) or not BattleBoss.on_rig(target):
+		target.hp = maxi(target.hp - amount, 0)
+		return amount
+	var dealt: int = maxi(int(round(float(amount) * float(skill.get("part_mult", 1.0)))), 1)
+	var outcome: Dictionary = BattleBoss.damage_parts(target, dealt, _action_part)
+	_last_hit_part = str(outcome["part"])
+	if bool(outcome["broken"]):
+		_on_part_broken(target, str(outcome["part"]), float(skill.get("part_mult", 1.0)) > 1.0)
+	if bool(outcome["all_broken"]):
+		_topple(target)
+	return dealt
+
+
+func _on_part_broken(boss: BattleCombatant, part_id: String, flipped: bool) -> void:
+	var broken: int = BattleBoss.broken_count(boss)
+	_beat_ms += int(data.f("pacing", "part_break_ms", 0.0))
+	part_broken.emit(boss.id, part_id, broken, boss.parts.size())
+	_say(boss, "leg_flip" if flipped and _has_lines(boss, "leg_flip") else "leg_break", broken)
+
+
+## The rig is out of legs: Kasp climbs out and fights on foot with the last phase's numbers.
+func _topple(boss: BattleCombatant) -> void:
+	var phases: Array = boss.enemy_data["phases"]
+	var next: Dictionary = phases[phases.size() - 1]
+	var from_phase: String = boss.phase
+	boss.phase = str(next["id"])
+	boss.display_name = str(next.get("name", boss.display_name))
+	for key: String in (next.get("stats", {}) as Dictionary):
+		boss.stats[key] = maxi(int(round(float(next["stats"][key]))), 1)
+	boss.hp_max = maxi(int(boss.stats.get("hp", 1)), 1)
+	boss.hp = boss.hp_max
+	boss.cooldowns = (next.get("start_cooldowns", {}) as Dictionary).duplicate()
+	if not _jam.is_empty():
+		_jam = {}
+		jam_changed.emit(false, {})
+	var enter: Dictionary = next.get("on_enter", {})
+	var stun_id: String = str(enter.get("status", ""))
+	if not stun_id.is_empty() and data.statuses.has(stun_id):
+		boss.statuses[stun_id] = int(data.status(stun_id).get("duration_turns", 1))
+		status_changed.emit(boss.id, stun_id, true)
+	_beat_ms += int(data.f("pacing", "topple_ms", 0.0))
+	phase_changed.emit(boss.id, from_phase, boss.phase)
+	_say(boss, "topple")
+	_say(boss, "foot_start")
+
+
+## The Quiet Hours pulse: from now until `rounds` more rounds have started, the party's cues are
+## scrambled (the real window never moves). Fewer legs left means a weaker pulse.
+func _fx_jam(actor: BattleCombatant, skill: Dictionary) -> void:
+	var row: Dictionary = BattleBoss.pulse_row(actor.enemy_data, BattleBoss.broken_count(actor))
+	if row.is_empty():
+		return
+	_jam = {"through_round": round_number + int(row.get("rounds", 1)), "offset_ms": row.get("offset_ms", [100, 200]),
+		"dropout_chance": float(row.get("dropout_chance", 0.0))}
+	var cooldown: int = int(row.get("cooldown_turns", 0))
+	if cooldown > 0:
+		actor.cooldowns[str(skill["id"])] = cooldown
+	jam_changed.emit(true, _jam.duplicate(true))
+	_say(actor, "pulse")
+
+
+## Fake cues for one party press while the pulse is on: the flash comes off the beat (or does not
+## come at all). The judge keeps using the real cue.
+func _scramble_slot(slot: Dictionary, press_type: String, cue_ms: int, hold_by_ms: int) -> void:
+	var offsets: Array = _jam["offset_ms"]
+	var magnitude: float = boss_rng.randf_range(float(offsets[0]), float(offsets[1]))
+	var sign_value: float = 1.0 if boss_rng.randf() < 0.5 else -1.0
+	if cue_ms + int(sign_value * magnitude) < 0:
+		sign_value = 1.0
+	var shift_ms: int = int(sign_value * magnitude)
+	slot["scrambled"] = true
+	slot["shown_cue_ms"] = cue_ms + shift_ms
+	slot["shown_offset_usec"] = shift_ms * 1000
+	slot["cue_hidden"] = boss_rng.randf() < float(_jam["dropout_chance"])
+	if press_type == ClutchJudge.TYPE_HOLD:
+		slot["shown_hold_by_ms"] = hold_by_ms + shift_ms
+
+
+func _tick_cooldowns(c: BattleCombatant) -> void:
+	for skill_id: String in c.cooldowns.keys():
+		var left: int = int(c.cooldowns[skill_id]) - 1
+		if left <= 0:
+			c.cooldowns.erase(skill_id)
+		else:
+			c.cooldowns[skill_id] = left
+
+
+func _has_lines(c: BattleCombatant, key: String) -> bool:
+	return not (data.boss_lines.get(c.kind, {}) as Dictionary).get(key, []).is_empty()
+
+
+## A memo line in the battle messages (placeholder text from text/boss_lines.json).
+func _say(c: BattleCombatant, key: String, count: int = 0) -> void:
+	if c.is_party() or data.boss_lines.is_empty():
+		return
+	var text: String = BattleBoss.line(data, c.kind, key, boss_rng, count)
+	if not text.is_empty():
+		message.emit(text)
+
+
+func _say_for_all(key: String) -> void:
+	for c: BattleCombatant in state.side_members(BattleCombatant.SIDE_ENEMY):
+		_say(c, key)
+
+
+## One line on a boss's turn, by phase ("rig_turn", "foot_turn"), most of the time.
+func _say_turn_line(c: BattleCombatant) -> void:
+	if c.phase.is_empty() or not BattleBoss.is_multi_part(c.enemy_data):
+		return
+	if boss_rng.randf() >= float(c.enemy_data.get("line_chance", 0.0)):
+		return
+	var key: String = "rig_turn" if BattleBoss.on_rig(c) else "foot_turn"
+	if key == "foot_turn" and c.hp_pct() < float(c.enemy_data.get("low_hp_pct", 0.0)) and _has_lines(c, "low_hp"):
+		key = "low_hp"
+	_say(c, key)
 
 
 # ---- ending ----

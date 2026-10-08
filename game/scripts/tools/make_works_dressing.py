@@ -23,6 +23,13 @@ ROOMS = ["road_mast_road", "road_mast_foot", "tower_sump", "tower_cable_hall", "
          "tower_jammer_deck", "tower_landing", "tower_roof"]
 
 
+def retext(kit, old, new):
+    for item in kit["items"]:
+        if item.get("text") == old:
+            item["text"] = new
+    return kit
+
+
 def strip(kit, drop):
     kit["items"] = [i for i in kit["items"] if i["type"] not in drop]
     return kit
@@ -59,7 +66,7 @@ def works_gate():
         P("barrier", [3.0, 0, 9.6]),
         P("puddle", [6.0, 0, 8.0], size=[2.0, 1.2]),
     ]
-    return kit
+    return retext(kit, "ALL CLEAR", "QUIET IS A DUTY")
 
 
 def sump():
@@ -119,7 +126,7 @@ def roof():
     kit["items"] += [P("skyline", [10.0, 0, 16.5], length=40.0, count=12, seed=23, base_y=-4.0, max_height=6.0),
                      P("steam", [1.5, 8.0, 1.5], rise=1.4), P("steam", [18.5, 8.0, 1.5], rise=1.4),
                      P("floodlight", [4.0, 0, 11.0], aim_deg=-30.0, height=3.0), P("floodlight", [17.0, 0, 11.0], aim_deg=30.0, height=3.0)]
-    return kit
+    return retext(kit, "ALL CLEAR", "NO ONE IS LISTENING")
 
 
 KITS = {"road_mast_road": spillway, "road_mast_foot": works_gate, "tower_sump": sump, "tower_cable_hall": cable_hall,
@@ -133,6 +140,8 @@ def build():
     for room_id in ROOMS:
         kit = KITS[room_id]()
         g.keep_written_text(kit, data["rooms"].get(room_id))
+        retext(kit, "ALL CLEAR", "QUIET IS A DUTY")  # the placeholder words the Technical Artist retired
+        retext(kit, "CURFEW 22", "QUIET 22:00")
         data["rooms"][room_id] = kit
     with open(DATA, "w") as f:
         json.dump(data, f, indent=1)

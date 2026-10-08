@@ -168,9 +168,7 @@ def hopper():
     # the brake hut at the east end, and the crew locker on the catwalk
     r.body("BrakeHut", 20.5, 1.0, 2.0, 2.4, 2.0, WALL, cover=True)
     r.box("HutWindow", 20.5, 1.7, 2.03, 0.9, 0.5, 0.04, r.glow((1.0, 0.82, 0.45), 1.2))
-    r.box("Locker", 11.0, 0.8, 0.3, 0.8, 1.6, 0.5, r.lit((0.38, 0.45, 0.4)), solid=True)
-    lantern(r, 11.0, 1.0, 0.57)
-    r.pickup("LockerPickup", "tr_locker", 11.0, 0.95)
+    r.crate("Locker", "tr_locker", 11.0, 0.5)
     r.door("DoorEast", "tr_hp_east", w, 3.5, yaw=-90)
     r.door("DoorRear", "tr_hp_west", 0, 3.5, yaw=90)
     r.npc("HutInspector", "tr_hut_inspector", 20.5, 2.4, face=(-1, 0))

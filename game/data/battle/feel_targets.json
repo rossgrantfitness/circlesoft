@@ -10,7 +10,8 @@
   "win_rate": {
     "tutorial": {"perfect": [0.99, 1.0], "good": [0.97, 1.0], "auto": [0.9, 1.0], "miss": [0.8, 1.0]},
     "regular":  {"perfect": [0.97, 1.0], "good": [0.85, 1.0], "auto": [0.7, 1.0], "miss": [0.3, 1.0]},
-    "tough":    {"perfect": [0.9, 1.0],  "good": [0.8, 1.0], "auto": [0.5, 1.0], "miss": [0.0, 0.6]}
+    "tough":    {"perfect": [0.9, 1.0],  "good": [0.8, 1.0], "auto": [0.5, 1.0], "miss": [0.0, 0.6]},
+    "boss":     {"perfect": [0.9, 1.0],  "good": [0.7, 1.0], "auto": [0.4, 1.0], "miss": [0.0, 0.5]}
   },
   "perfect_beats_miss_by": 0.1,
   "level_at_kasp": 6,
@@ -26,7 +27,8 @@
       {"encounter": "drone_flock", "party": ["red", "otis", "mox"], "optional": true},
       {"encounter": "card_pair", "party": ["red", "otis", "mox"]},
       {"encounter": "card_squad", "party": ["red", "otis", "mox"]},
-      {"encounter": "ambush_no_exit", "party": ["red", "otis", "mox"], "optional": true}
+      {"encounter": "ambush_no_exit", "party": ["red", "otis", "mox"], "optional": true},
+      {"encounter": "kasp_hushmaster", "party": ["red", "otis", "mox"], "bag": "boss_bag", "boss": true}
     ],
     "final_level": [6, 6],
     "must_win_final_level": [5, 6],
@@ -39,6 +41,8 @@
     "hold_lead_ms": 450,
     "start_bag": {"ration_bar": 4, "can_of_chili": 1, "canned_coffee": 2, "smelling_salts": 1, "burn_gel": 1},
     "heal_below_pct": 40,
+    "boss_bag": {"ration_bar": 6, "can_of_chili": 3, "canned_coffee": 3, "juice_box": 2, "smelling_salts": 2, "burn_gel": 1},
+    "scramble_follow": {"good": 0.45},
     "gear": {
       "_about": "What the simulated party wears, by party level (the highest by_level row at or below the level wins): the starting gear; then the three shop weapons bought in town (about 1,100 credits); then Mox in the Padded Work Vest too. Loadouts are item ids from items/equipment.json. Remove this block to simulate a party in no gear at all.",
       "loadouts": {

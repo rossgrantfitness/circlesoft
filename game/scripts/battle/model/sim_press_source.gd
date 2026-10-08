@@ -16,6 +16,9 @@ var sigma_ms: float = 40.0
 var hold_lead_ms: float = 450.0
 ## Chance a press is skipped entirely (a lapse of attention); only the good player has any.
 var lapse_chance: float = 0.0
+## Chance the player trusts a scrambled (fake) flash instead of the rhythm they learned: they press
+## on the shown cue, or lose the press altogether when the flash never came. Boss jam pulses only.
+var scramble_follow: float = 0.0
 
 
 static func make(p_mode: String, p_sigma_ms: float = 40.0, p_hold_lead_ms: float = 450.0, p_lapse_chance: float = 0.0) -> SimPressSource:
@@ -35,6 +38,10 @@ func plan(slot: Dictionary, rng: RandomNumberGenerator) -> Dictionary:
 	if lapse_chance > 0.0 and rng.randf() < lapse_chance:
 		return {"downs": downs, "ups": ups}
 	var cue: int = slot["cue"]
+	if bool(slot.get("scrambled", false)) and scramble_follow > 0.0 and rng.randf() < scramble_follow:
+		if bool(slot.get("cue_hidden", false)):
+			return {"downs": downs, "ups": ups}
+		cue += int(slot.get("shown_offset_usec", 0))
 	var error_usec: int = 0
 	if mode == MODE_GOOD:
 		error_usec = int(rng.randfn(0.0, sigma_ms) * ClutchJudge.USEC_PER_MS)

@@ -4517,7 +4517,7 @@
      ],
      "yaw": 90,
      "width": 0.95,
-     "text": "ALL CLEAR",
+     "text": "QUIET IS A DUTY",
      "kind": "alert",
      "light_energy": 0.7
     },
@@ -6301,7 +6301,7 @@
      ],
      "yaw": 90,
      "width": 0.95,
-     "text": "ALL CLEAR",
+     "text": "QUIET IS A DUTY",
      "kind": "slogan",
      "light_energy": 0.7
     },

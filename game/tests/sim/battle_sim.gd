@@ -80,7 +80,9 @@ func make_setup(encounter_id: String, player: String, seed: int, level: int, mem
 	if player == PLAYER_AUTO:
 		setup.auto_timing = true
 	else:
-		setup.press_source = SimPressSource.make(player, float(sim.get("good_sigma_ms", 40.0)), float(sim.get("hold_lead_ms", 450.0)), float(sim.get("good_lapse_chance", 0.0)))
+		var source: SimPressSource = SimPressSource.make(player, float(sim.get("good_sigma_ms", 40.0)), float(sim.get("hold_lead_ms", 450.0)), float(sim.get("good_lapse_chance", 0.0)))
+		source.scramble_follow = float((sim.get("scramble_follow", {}) as Dictionary).get(player, 0.0))
+		setup.press_source = source
 	setup.command_source = BattleSimPolicy.new(sim)
 	if members.is_empty():
 		var loadouts: Dictionary = gear_for_level(level)
@@ -261,7 +263,10 @@ func walkthrough(player: String, seed: int, rest_between: bool = true, restock_b
 		var fighting: Array[Dictionary] = []
 		for id: String in ids:
 			fighting.append(_member_of(members, id))
-		var fight: Dictionary = await run_fight(str(step["encounter"]), player, seed + i, 1, fighting, bag)
+		var fight_bag: Dictionary = bag
+		if step.has("bag"):
+			fight_bag = ((data.feel.get("sim", {}) as Dictionary).get(str(step["bag"]), bag) as Dictionary).duplicate()
+		var fight: Dictionary = await run_fight(str(step["encounter"]), player, seed + i, 1, fighting, fight_bag)
 		fights += 1
 		if fight["result"] != BattleController.RESULT_WIN:
 			lost_at = str(step["encounter"])

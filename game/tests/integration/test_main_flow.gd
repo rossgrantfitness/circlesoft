@@ -1,12 +1,12 @@
 extends TestCase
 ## Milestone 1 integration: main.tscn shows the title first, loads the test room when the title
-## emits start_demo_requested (New Game: Red's home in Harrow), and goes back to the title on Esc / Start.
+## emits start_demo_requested (New Game: the ore train's flatcar), and goes back to the title on Esc / Start.
 
 const MAIN_SCENE: String = "res://scenes/core/main.tscn"
 const TITLE_STUB: String = "res://tests/fixtures/ui/title_stub.tscn"
 const MISSING_TITLE: String = "res://scenes/ui/no_such_title.tscn"
-## New Game from the title now starts in Red's home in Harrow Landing (rooms.json "start_room").
-const ROOM_NAME: String = "HarrowHome"
+## New Game from the title starts on the ore train's flatcar (rooms.json "start_room").
+const ROOM_NAME: String = "TrainFlatcar"
 ## start_demo() (no title, or the title turned off) still loads the scene Main was given: the test room.
 const DEMO_ROOM_NAME: String = "PsxTestRoom"
 
@@ -71,8 +71,8 @@ func test_goes_straight_to_the_room_when_title_is_off() -> void:
 func test_start_button_in_the_room_returns_to_the_title() -> void:
 	var main: Main = _make_main(TITLE_STUB)
 	main.get_title().emit_signal("start_demo_requested")
-	# The opening scene of Harrow holds Esc / Start while it talks: mark it seen.
-	tree.root.get_node("GameState").call("set_flag", "intro_seen", true)
+	# The train's opening scene holds Esc / Start while it talks: mark it seen.
+	tree.root.get_node("GameState").call("set_flag", "train_open_seen", true)
 	await tree.process_frame
 	await tree.process_frame
 	assert_eq(main.get_state(), Main.State.ROOM, "stays in the room with no input")

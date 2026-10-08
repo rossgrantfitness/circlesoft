@@ -77,6 +77,7 @@
       "id": "heave_ho", "name": "Heave-Ho", "user": "otis", "kind": "skill", "learn_level": 1, "juice_cost": 8,
       "target": "one_enemy", "contact": "melee", "anim": "heave_ho", "show_name": true,
       "desc": "Hold while he lifts, let go at the top to slam it onto a second enemy. A perfect release stuns them.",
+      "part_mult": 2.0,
       "timeline_ms": {"windup": 400, "impact": 1250, "end": 1700},
       "presses": [{"type": "hold_release", "hold_by_ms": 700, "cue_ms": 1200, "window": "standard"}],
       "effects": [
@@ -244,6 +245,76 @@
         {"at_ms": 700, "kind": "damage", "stat": "attack", "power": 0.5, "press": 0, "target": "primary"},
         {"at_ms": 950, "kind": "damage", "stat": "attack", "power": 0.5, "press": 1, "target": "primary"},
         {"at_ms": 1200, "kind": "damage", "stat": "attack", "power": 0.5, "press": 2, "target": "primary"}
+      ]
+    },
+
+    {
+      "id": "kasp_leg_stomp", "name": "Hydraulic Knee", "user": "kasp_hushmaster", "kind": "enemy", "juice_cost": 0,
+      "target": "one_enemy", "contact": "melee", "anim": "kasp_leg_stomp", "show_name": true,
+      "tell": "A leg folds up with a hiss, then slams down.",
+      "timeline_ms": {"windup": 650, "impact": 1000, "end": 1500},
+      "presses": [{"type": "tap", "cue_ms": 1000, "window": "block"}],
+      "effects": [{"at_ms": 1000, "kind": "damage", "stat": "attack", "power": 1.0, "press": 0, "target": "primary"}]
+    },
+    {
+      "id": "kasp_leg_sweep", "name": "Leg Sweep", "user": "kasp_hushmaster", "kind": "enemy", "juice_cost": 0,
+      "target": "one_enemy", "contact": "melee", "anim": "kasp_leg_sweep", "show_name": true,
+      "tell": "Two legs swing out low, one after the other.",
+      "timeline_ms": {"windup": 600, "impact": 900, "end": 1700},
+      "presses": [{"type": "string", "cue_ms": 900, "window": "block"}, {"type": "string", "cue_ms": 1250, "window": "block"}],
+      "effects": [
+        {"at_ms": 900, "kind": "damage", "stat": "attack", "power": 0.65, "press": 0, "target": "primary"},
+        {"at_ms": 1250, "kind": "damage", "stat": "attack", "power": 0.65, "press": 1, "target": "primary"}
+      ]
+    },
+    {
+      "id": "kasp_quiet_hours", "name": "Quiet Hours", "user": "kasp_hushmaster", "kind": "enemy", "juice_cost": 0,
+      "target": "all_enemies", "contact": "ranged", "anim": "kasp_quiet_hours", "show_name": true, "cooldown_turns": 3,
+      "tell": "The dish whines up. Every flash in the room goes out of rhythm.",
+      "timeline_ms": {"windup": 1200, "impact": 1700, "end": 2400},
+      "presses": [],
+      "effects": [{"at_ms": 1700, "kind": "jam", "target": "all_allies"}]
+    },
+    {
+      "id": "kasp_dish_blast", "name": "Noise Violation", "user": "kasp_hushmaster", "kind": "enemy", "juice_cost": 0,
+      "target": "one_enemy", "contact": "ranged", "anim": "kasp_dish_blast", "show_name": true, "cooldown_turns": 4,
+      "scramble_immune": true, "telegraph": {"bangs": 2, "warning_sfx": "battle_hit_big", "push_in": true},
+      "tell": "The dish swings round and locks on. Everything goes quiet. This one is big.",
+      "timeline_ms": {"windup": 1700, "impact": 2300, "end": 2900},
+      "presses": [{"type": "tap", "cue_ms": 2300, "window": "block"}],
+      "effects": [{"at_ms": 2300, "kind": "damage", "stat": "attack", "power": 2.2, "press": 0, "target": "primary"}]
+    },
+    {
+      "id": "kasp_clipboard_smack", "name": "Clipboard Smack", "user": "kasp_hushmaster", "kind": "enemy", "juice_cost": 0,
+      "target": "one_enemy", "contact": "melee", "anim": "kasp_clipboard_smack", "show_name": true,
+      "tell": "Raises the clipboard like a gavel, then brings it down.",
+      "timeline_ms": {"windup": 600, "impact": 950, "end": 1400},
+      "presses": [{"type": "tap", "cue_ms": 950, "window": "block"}],
+      "effects": [{"at_ms": 950, "kind": "damage", "stat": "attack", "power": 1.15, "press": 0, "target": "primary"}]
+    },
+    {
+      "id": "kasp_whistle", "name": "Noise Violation (Whistle)", "user": "kasp_hushmaster", "kind": "enemy", "juice_cost": 0,
+      "target": "one_enemy", "contact": "ranged", "anim": "kasp_whistle", "show_name": true, "cooldown_turns": 2,
+      "tell": "Fills his chest and blows the whistle. Someone, somewhere, is in violation.",
+      "timeline_ms": {"windup": 800, "impact": 1100, "end": 1600},
+      "presses": [{"type": "tap", "cue_ms": 1100, "window": "block"}],
+      "effects": [{"at_ms": 1100, "kind": "damage", "stat": "attack", "power": 0.5, "press": 0, "target": "primary", "statuses": [{"id": "noise_ticket", "chance": 0.7}]}]
+    },
+    {
+      "id": "kasp_final_notice", "name": "Final Notice", "user": "kasp_hushmaster", "kind": "enemy", "juice_cost": 0,
+      "target": "one_enemy", "contact": "melee", "anim": "kasp_final_notice", "show_name": true, "cooldown_turns": 4,
+      "scramble_immune": true, "telegraph": {"bangs": 2, "warning_sfx": "battle_hit_big", "push_in": true},
+      "tell": "Tears three pink slips off the pad. Stamps each one. Slowly.",
+      "timeline_ms": {"windup": 1500, "impact": 2000, "end": 3000},
+      "presses": [
+        {"type": "string", "cue_ms": 2000, "window": "block"},
+        {"type": "string", "cue_ms": 2300, "window": "block"},
+        {"type": "string", "cue_ms": 2600, "window": "block"}
+      ],
+      "effects": [
+        {"at_ms": 2000, "kind": "damage", "stat": "attack", "power": 0.95, "press": 0, "target": "primary"},
+        {"at_ms": 2300, "kind": "damage", "stat": "attack", "power": 0.95, "press": 1, "target": "primary"},
+        {"at_ms": 2600, "kind": "damage", "stat": "attack", "power": 0.95, "press": 2, "target": "primary"}
       ]
     }
   ]

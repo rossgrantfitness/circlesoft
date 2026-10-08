@@ -100,7 +100,7 @@ static func line(data: BattleData, boss_id: String, key: String, rng: RandomNumb
 		var by_count: Array = (entry as Dictionary).get("by_count", [])
 		if by_count.is_empty():
 			return ""
-		entry = by_count[clampi(count - 1, 0, by_count.size() - 1)]
+		return str(by_count[clampi(count - 1, 0, by_count.size() - 1)])
 	var list: Array = entry as Array
 	if list.is_empty():
 		return ""

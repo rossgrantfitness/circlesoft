@@ -30,14 +30,14 @@ func _scene_root(room_id: String) -> Node:
 	return own((load(path) as PackedScene).instantiate())
 
 
-func test_the_nine_rooms_are_in_rooms_json_and_new_game_starts_at_home() -> void:
+func test_the_nine_rooms_are_in_rooms_json_and_new_game_starts_on_the_train() -> void:
 	var rooms: Dictionary = DataDB.get_dict("world/rooms")["rooms"]
 	for room_id: String in ROOMS:
 		assert_has(rooms, room_id)
 		assert_true(ResourceLoader.exists(str(rooms[room_id]["scene"])), room_id)
-	assert_eq(DataDB.get_value("world/rooms", "start_room"), "harrow_home")
-	assert_eq(DataDB.get_value("world/rooms", "rooms.harrow_home.default_spawn"), "start")
-	assert_eq(DataDB.get_value("world/save", "new_game.story_beat"), "b1_night")
+	assert_eq(DataDB.get_value("world/rooms", "start_room"), "train_flatcar")
+	assert_eq(DataDB.get_value("world/rooms", "rooms.train_flatcar.default_spawn"), "start")
+	assert_eq(DataDB.get_value("world/save", "new_game.story_beat"), "b0_train")
 
 
 func test_the_doors_go_where_the_map_says() -> void:
@@ -66,7 +66,8 @@ func test_every_npc_and_spot_has_a_node_in_its_room_and_the_other_way_round() ->
 	var kinds: Dictionary = {Placements.SECTION_NPCS: "PlacedNpc", Placements.SECTION_SPOTS: "SceneSpot"}
 	for section: String in kinds:
 		var seen: Array[String] = []
-		for room_id: String in ROOMS:
+		# Every room in rooms.json, not just Harrow's nine: the Spillway and the works have people and signs too.
+		for room_id: String in DataDB.get_dict("world/rooms")["rooms"]:
 			var root: Node = _scene_root(room_id)
 			for node: Node in root.find_children("*", "Node3D", true, false):
 				var script: Script = node.get_script() as Script
@@ -127,7 +128,7 @@ func test_story_scenes_only_use_real_lines_actors_encounters_and_flags() -> void
 			if what == "give_item" or what == "take_item":
 				assert_has(item_ids, str(step["item"]), scene_id)
 			if what == "beat":
-				assert_has(["b1_night", "b2_otis_joined", "b3_home_again"], str(step["beat"]))
+				assert_has(["b1_night", "b2_otis_joined", "b3_home_again", "b2_road", "b3_tower"], str(step["beat"]))
 
 
 func test_jobs_use_real_items_and_the_flags_the_story_uses() -> void:

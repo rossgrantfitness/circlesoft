@@ -9,6 +9,8 @@
   "run": {"base_chance": 0.55, "per_speed_point": 0.04, "min_chance": 0.25, "max_chance": 0.95},
   "pacing": {
     "between_actions_ms": 250,
+    "part_break_ms": 600,
+    "topple_ms": 1500,
     "ko_beat_ms": 700,
     "flee_ms": 800,
     "skip_turn_ms": 500,
@@ -20,5 +22,6 @@
     "flee": {"xp": 1.0, "credits": 1.0, "drops": 0.0},
     "after_win_revive_pct": 10
   },
+  "boss": {"min_telegraph_windup_ms": 1200},
   "first_turn_values": ["normal", "party", "enemies"]
 }

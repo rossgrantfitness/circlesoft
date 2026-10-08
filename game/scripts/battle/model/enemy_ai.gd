@@ -6,6 +6,8 @@ extends RefCounted
 ##   self_hp_below_pct: n       self_hp_above_pct: n
 ##   round_at_least: n          round_at_most: n
 ##   allies_alive_at_least: n   allies_alive_at_most: n   (counts the enemy itself)
+##   phase_is: id   pairs_broken_at_least: n   pairs_broken_at_most: n   (multi-part bosses)
+## A skill with cooldown_turns > 0 is skipped while the enemy's cooldown for it is running.
 ## An entry can also say "pick": "lowest_hp" to aim at the weakest target (default: random).
 
 
@@ -21,6 +23,8 @@ static func choose(data: BattleData, enemy: BattleCombatant, state: BattleState,
 		var entry: Dictionary = entry_variant
 		var cond: Dictionary = entry.get("if", {})
 		if not self_conditions_met(cond, enemy, state, round_number):
+			continue
+		if int(enemy.cooldowns.get(str(entry.get("skill", "")), 0)) > 0:
 			continue
 		var targets: Array[BattleCombatant] = valid_targets(cond, pool)
 		if targets.is_empty():
@@ -57,6 +61,12 @@ static func self_conditions_met(cond: Dictionary, enemy: BattleCombatant, state:
 	if cond.has("round_at_least") and round_number < int(cond["round_at_least"]):
 		return false
 	if cond.has("round_at_most") and round_number > int(cond["round_at_most"]):
+		return false
+	if cond.has("phase_is") and enemy.phase != str(cond["phase_is"]):
+		return false
+	if cond.has("pairs_broken_at_least") and BattleBoss.broken_count(enemy) < int(cond["pairs_broken_at_least"]):
+		return false
+	if cond.has("pairs_broken_at_most") and BattleBoss.broken_count(enemy) > int(cond["pairs_broken_at_most"]):
 		return false
 	var allies: int = state.allies_of(enemy).size()
 	if cond.has("allies_alive_at_least") and allies < int(cond["allies_alive_at_least"]):

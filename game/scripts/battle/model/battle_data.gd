@@ -306,7 +306,7 @@ func _validate_skills(errs: Array[String]) -> void:
 			var telegraph: Dictionary = skill["telegraph"]
 			if int(telegraph.get("bangs", 0)) < 1 or int(telegraph.get("bangs", 0)) > 3:
 				errs.append("%s: telegraph bangs must be 1 to 3" % tag)
-			if int(timeline["impact"]) - int(timeline["windup"]) < 0 or int(timeline["windup"]) < int(data_min_telegraph_windup()):
+			if float(timeline["windup"]) < data_min_telegraph_windup():
 				errs.append("%s: a telegraphed attack needs a longer wind-up (formulas.json boss.min_telegraph_windup_ms)" % tag)
 
 

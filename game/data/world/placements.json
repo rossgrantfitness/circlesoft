@@ -570,7 +570,7 @@
     "test_b_guard": {
       "room": "test_b",
       "enemy": "whistle_blower",
-      "encounter": "train_inspector",
+      "encounter": "grunt_solo",
       "kind": "story",
       "defeat_flag": "defeated_test_b_guard",
       "patrol": []
@@ -578,7 +578,7 @@
     "tr_insp_fc": {
       "room": "train_flatcar",
       "enemy": "signals_grunt",
-      "encounter": "grunt_solo",
+      "encounter": "train_inspector",
       "kind": "regular",
       "scanner": true,
       "patrol": [

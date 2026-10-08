@@ -1,7 +1,9 @@
 extends TestCase
 ## Harrow Landing's story layer (M3-4): townsfolk whose lines change with the story beat, the job
 ## board and the two side deliveries end to end, the dock fight scene, the checkpoint, the shops, the
-## hidden items, and New Game starting in Red's home. Rooms are the graybox scenes in scenes/rooms/harrow.
+## hidden items, and New Game starting on the ore train. Rooms are the graybox scenes in scenes/rooms/harrow.
+## The town tests start from "the train is done": GameState.reset() plus the b1_night beat (New Game itself
+## begins on the train, beat b0_train).
 
 const B1: String = "b1_night"
 const B2: String = "b2_otis_joined"
@@ -14,6 +16,10 @@ var _room: FieldRoom = null
 func before_each() -> void:
 	_state = tree.root.get_node("GameState")
 	_state.call("reset")
+	_state.call("set_story_beat", B1)
+	# Off the train: Red is alone; Otis joins at the dock fight, Mox later.
+	_state.call("leave_party", "otis")
+	_state.call("leave_party", "mox")
 	ExplorationKit.drop_stale_modals(self)
 
 
@@ -39,7 +45,7 @@ func _says(room: FieldRoom, node_name: String) -> String:
 
 # ---- New Game ----
 
-func test_new_game_starts_in_red_s_home_at_night() -> void:
+func test_new_game_starts_on_the_ore_train_with_red_alone() -> void:
 	var main: Main = (load(BattleFlowKit.MAIN_SCENE) as PackedScene).instantiate() as Main
 	main.show_title = false
 	main.debug_overlay_enabled = false
@@ -51,19 +57,22 @@ func test_new_game_starts_in_red_s_home_at_night() -> void:
 	while router.call("is_busy"):
 		await tree.process_frame
 	var room: FieldRoom = main.get_room() as FieldRoom
-	assert_eq(room.room_id, "harrow_home", "New Game starts in Red's home")
-	assert_eq(_state.call("get_story_beat"), B1)
-	assert_eq(_state.call("get_location"), {"room": "harrow_home", "spawn": "start"})
+	assert_eq(room.room_id, "train_flatcar", "New Game starts on the ore train's flatcar")
+	assert_eq(_state.call("get_story_beat"), "b0_train")
+	assert_eq(_state.call("get_location"), {"room": "train_flatcar", "spawn": "start"})
 	var marker: Marker3D = room.get_node("Spawns/start") as Marker3D
 	assert_lt(room.player.global_position.distance_to(marker.global_position), 0.3)
-	assert_eq(DataDB.get_value("world/rooms", "start_room"), "harrow_home")
-	# The opening plays by itself: a few plain lines about the night and the lamp.
+	assert_eq(DataDB.get_value("world/rooms", "start_room"), "train_flatcar")
+	assert_eq(_state.call("get_active_party"), ["red"] as Array[String], "Red is alone")
+	assert_eq(int(_state.call("get_member", "red")["level"]), 1, "level 1")
+	assert_true(bool(_state.call("has_item", "delivery_crate")), "she carries Watch Zero's crate")
+	# The opening plays by itself.
 	for i: int in 120:
 		if room.runner.is_running():
 			break
 		await tree.physics_frame
-	assert_eq(room.runner.get_current_conversation(), "harrow_intro", "the opening scene starts")
-	assert_true(bool(_state.call("get_flag", "intro_seen")))
+	assert_eq(room.runner.get_current_conversation(), "train_open_1", "the opening scene starts")
+	assert_true(bool(_state.call("get_flag", "train_open_seen")))
 	ExplorationKit.finish_conversation(room)
 
 
@@ -273,6 +282,7 @@ func test_the_balcony_can_be_reached_by_hopping_two_crates() -> void:
 func test_the_appeal_side_job_end_to_end() -> void:
 	_beat(B2)
 	_state.call("set_flag", "otis_joined", true)
+	_state.call("join_party", "otis")
 	var courier: FieldRoom = _load("harrow_courier")
 	_use_board(courier, 2)
 	assert_true(bool(_state.call("get_flag", "job_appeal_taken")))
@@ -388,12 +398,13 @@ func test_the_checkpoint_in_b1_shows_the_ticket_scene_and_a_closed_barrier() -> 
 	assert_true(bool(_state.call("get_flag", "checkpoint_b1_seen")))
 	var road: Door = checkpoint.get_node("DoorRoad") as Door
 	assert_false(road.is_unlocked())
-	assert_eq(road.locked_message(), "Road's closed. Signals business.")
+	assert_eq(road.locked_message(), "Stair's closed. Signals business.")
 
 
 func test_in_b2_otis_lifts_the_barrier_and_it_stays_open() -> void:
 	_beat(B2)
 	_state.call("set_flag", "otis_joined", true)
+	_state.call("join_party", "otis")
 	var checkpoint: FieldRoom = _load("harrow_checkpoint", "from_square", true)
 	assert_not_null(checkpoint.party.follower_for("otis"))
 	var road: Door = checkpoint.get_node("DoorRoad") as Door
@@ -416,12 +427,13 @@ func test_the_road_door_goes_to_the_road_stub_and_back() -> void:
 	assert_eq(door.get_target_room(), "road_mast_road")
 	assert_eq(door.get_target_spawn(), "from_harrow")
 	var road: FieldRoom = ExplorationKit.load_room_at(self, "res://scenes/rooms/road/road_mast_road.tscn", "from_harrow")
-	assert_eq((road.get_node("DoorBack") as Door).get_target_room(), "harrow_checkpoint")
+	assert_eq((road.get_node("DoorHarrow") as Door).get_target_room(), "harrow_checkpoint")
 
 
 func test_the_office_has_otis_say_the_crate_is_by_the_door_once_in_b2() -> void:
 	_beat(B2)
 	_state.call("set_flag", "otis_joined", true)
+	_state.call("join_party", "otis")
 	var office: FieldRoom = _load("harrow_dock_office", "from_docks", true)
 	var result: Dictionary = await ExplorationKit.drive_scene(self, office)
 	assert_true(result["ok"])

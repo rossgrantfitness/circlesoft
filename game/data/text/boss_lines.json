@@ -1,0 +1,51 @@
+{
+  "_about": "PLACEHOLDER memo lines for the boss fights, shown as battle messages. The Writer replaces them in M6-2; the tone (docs/tone_guide.md) is chilling-funny: Kasp sounds like an office manager and means every word. Keys per boss id: start (when the fight begins), rig_turn / foot_turn (on his turn, with the chance set by the enemy's line_chance), low_hp (foot phase, under low_hp_pct), pulse (the Quiet Hours jam pulse goes off), leg_break (by_count: one line each time another pair breaks, 1 to 4), leg_flip (a pair broken by Heave-Ho; optional), topple (the rig goes over), foot_start (he climbs out), defeat (he is beaten). Not here on purpose: his spec-sheet lines about the dish, which belong to the Writer.",
+  "kasp_hushmaster": {
+    "start": [
+      "Eight legs. Hydraulic knees. Heated seat. Cupholder. You are about to be defeated by a cupholder, courier.",
+      "MEMO. Effective immediately, you are pending."
+    ],
+    "rig_turn": [
+      "Let's circle back to your surrender. I've pencilled it in.",
+      "Nobody's in trouble, friends. Trouble requires paperwork. You're just... pending.",
+      "Heated seat: on. Cupholder: occupied. Mercy: out of stock.",
+      "Every one of those cues is a noise violation. I'm writing them all up.",
+      "I'd hate to have to ink it."
+    ],
+    "pulse": [
+      "MEMO. Quiet Hours are now in effect. Please stop hearing things.",
+      "Quiet Hours. Rhythm is a noise. Noise is a violation.",
+      "Effective now, the beat is cancelled."
+    ],
+    "leg_break": {
+      "by_count": [
+        "That leg was under warranty. The warranty was a noise violation.",
+        "Four legs. The spec sheet still says eight. I'm not amending the spec sheet.",
+        "Six legs, down. This is a stagger, not a fall. I will be filing it as a stagger.",
+        "Seven. Eight. I'd like it noted that I did not scream."
+      ]
+    },
+    "leg_flip": [
+      "Did he just FLIP my leg? That is a hydraulic knee. It does not do that."
+    ],
+    "topple": [
+      "Rig status: horizontal. Filing a form for it.",
+      "This is not a fall. This is an unscheduled descent."
+    ],
+    "foot_start": [
+      "I still have the clipboard. The clipboard was always the point."
+    ],
+    "foot_turn": [
+      "Let's circle back to your surrender. On foot. In person.",
+      "Trouble requires paperwork. I have the paperwork. It is on me.",
+      "You will not be taking my stripe. It is stitched on. I checked."
+    ],
+    "low_hp": [
+      "This is not a retreat. It is a strategic withdrawal from a position I am still standing in.",
+      "Eleven years. Eleven years, and it ends on a roof, by a courier."
+    ],
+    "defeat": [
+      "I would like to dispute this outcome. In writing. In triplicate. Please hold."
+    ]
+  }
+}
