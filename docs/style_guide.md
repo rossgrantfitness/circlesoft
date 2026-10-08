@@ -166,6 +166,17 @@ Each party member owns one accent hue (Red red, Otis orange, Mox teal and mustar
 
 That is about 17 clips for Otis and Mox and 22 for Red. Wave 1 first; later waves can arrive while systems get built.
 
+**Model contract for the action game (DRAFT until the sandbox confirms it; Technical Director, 2026-10-08)**
+> Follows Ross's approved action RPG plan (docs/decisions.md, 2026-10-08: early PS2, D4). Binding for the combat sandbox only; the full text, with the clip fallbacks, is section 5 of docs/pivot/combat_api.md. Once Ross has played the sandbox, this replaces the PSX contract below; until then the PSX contract still describes the shelved build and every placeholder.
+- **Reference model:** Ross's Red, `game/art/final/characters/red/red_ross_v1.glb` (never edited). The rigged copy sits beside it as `red_ross_v1_rigged.glb`; the game finds it through `data/combat/player_action.json`, not code.
+- **Orientation and scale:** faces +Z in Godot (-Y in Blender), +Y up, 1 unit = 1 m, origin at the feet, scale and rotation applied. Red keeps her delivered height (about 0.95 m) and is still the unit other characters are scaled against.
+- **Budgets (early PS2):** hero about 3,000 tris (cap 5,000); fodder enemies 1,000 to 1,500; elites 2,000 to 2,500; swords 300 to 600; bolt-on gear 200 to 500 each. Textures: hero body up to 512×512 (+ 256×256 face); enemies 256; smooth filtering with mipmaps.
+- **Skeleton:** smooth skinning, at most 4 bone influences per vertex. Required bones: `root`, `hips`, `spine`, `chest`, `neck`, `head`, `upper_arm_l/r`, `forearm_l/r`, `hand_l/r`, `thigh_l/r`, `shin_l/r`, `foot_l/r`, `weapon_socket` (child of `hand_r`, +Y along the blade). Optional: `ear_l`, `ear_l_2`, `ear_r`, `ear_r_2`, `tail`, `prop_socket`, `head_gear`, `back`, `lamp_socket`. The old 17 names are a subset.
+- **Swords:** one file per sword, origin at the middle of the grip, blade along +Y, so it drops onto `weapon_socket` with no offset (Ross's six already follow this).
+- **Clips (exact names):** `idle`, `run`, `jump_up`, `fall`, `land`, `dash`, `light_1`, `light_2`, `light_3`, `heavy`, `launcher`, `air_1`, `air_2`, `air_3`, `parry`, `hurt`, `knockdown` (optional: `walk`, `air_dash`, `parry_success`, `getup`). Attacks can be 2 to 3 key poses. Move timing lives in data, so a missing or rough clip never breaks the game: missing clips fall back to procedural tweens. Smooth or stepped in-betweens is a look call for Ross once he sees it.
+- **Enemies:** same facing, scale, origin and bone names (a subset is fine). They need `idle` and a movement clip, plus wind-up and strike poses; hit, launch, down, get-up and death are done in code.
+- **Not changed by this draft:** "Armor never changes the model" and the PSX rendering rules stay as written until Ross approves their replacements. The visible sword swap is part of the approved sandbox.
+
 **Model contract (what a character .glb must be so it drops into the game)**
 This is the seam for outside artists. The game finds a model's clips **by name** and never asks for a specific bone, so any model that follows this list can replace the placeholder with no code changes. The placeholder shiba Red, `game/art/placeholder/characters/red/red_shiba.glb`, is the working example (built by `game/scripts/tools/red_shiba.py`).
 - **Clips (exact names, lowercase):** `idle`, `walk`, `run`, `jump`, `fall`, `land`. The game picks them from what the character is doing: standing, walking, running (run button held), rising, falling, and touching down while standing still.

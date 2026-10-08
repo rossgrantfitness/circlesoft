@@ -254,7 +254,7 @@ from rigkit import _emission_material  # noqa: E402
 
 TEST_POSES = [
     ("rest", {}),
-    ("arms_up", {"upper_arm_l": (0, 0, 70), "upper_arm_r": (0, 0, -70), "forearm_l": (-40, 0, 0), "forearm_r": (-40, 0, 0)}),
+    ("arms_up", {"upper_arm_l": (0, -75, 0), "upper_arm_r": (0, 75, 0), "forearm_l": (-40, 0, 0), "forearm_r": (-40, 0, 0)}),
     ("arms_fwd_bend", {"upper_arm_l": (-90, 0, 0), "upper_arm_r": (-90, 0, 0), "spine": (25, 0, 0), "head": (-10, 0, 0),
                        "ear_l": (0, 0, -35), "ear_r": (0, 0, 35), "thigh_l": (-45, 0, 0), "shin_l": (60, 0, 0)}),
     ("twist", {"spine": (0, 0, 35), "chest": (0, 0, 20), "head": (0, 0, -30), "upper_arm_r": (-120, 0, 0), "forearm_r": (-60, 0, 0),

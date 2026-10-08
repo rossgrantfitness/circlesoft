@@ -18,6 +18,35 @@
 
 > Milestones 0 and 1 are Done (see Done).
 
+### Combat sandbox (approved 2026-10-08; current milestone)
+> Ross approved the action RPG plan (docs/decisions.md, 2026-10-08). Contract: **docs/pivot/combat_api.md** (owners, buttons, move data, interfaces, tests). Plan: docs/pivot/buildability.md section 6. Scope is exactly D2; anything else goes to Later below. Combat mechanics are Ross's (Level 1 covers numbers and names only), so contested calls are feel-panel toggles he picks by playing. The turn-based milestones further down are shelved, not active.
+
+| ID | Task | Assigned to | Depends on | Ross sign-off | Notes |
+|---|---|---|---|---|---|
+| CS-0 | Combat API contract (docs/pivot/combat_api.md) and code review of every CS task | Technical Director | | No | Written 2026-10-08. Changes go in its "Changes" section. |
+| CS-1 | Input actions (light, heavy, dash, parry, lock_on, camera_toggle, feel_panel, camera_*), physics layer names 10 to 16, `sandbox` feature-tag overrides (user dir, name), main.gd sandbox boot (`sandbox` feature or `-- --sandbox`) | Integrator | CS-0 | No | Contract sections 1 and 2. Old game's boot unchanged. |
+| CS-2 | ActionPlayer: run, jump (PlayerMotion kept), dash and air-dash with i-frames, attack / parry / hurt / knockdown states, bot inputs; `player_action.json`, movement knobs | Gameplay Programmer | CS-1, CS-5 | No | Contract 4.2. Test: test_action_player. |
+| CS-3 | OrbitCamera + LockOn + LockOnMath, action-diorama toggle, attack magnetism, `camera.json`, camera knobs | Gameplay Programmer | CS-1 | No | Contract 4.8. Shake comes from CS-14. |
+| CS-4 | Sandbox arena scene (pillars, a ledge, spawns, enemy respawn, reset), sword rack stands, `sandbox.json`, `screen_pos_of`; the two sandbox export presets (Windows, Mac) | Gameplay Programmer | CS-2, CS-3 | No | Ross is in the arena in under 10 seconds. |
+| CS-5 | Combat model core: CombatClock, CombatTime (hit-stop, flare scaling), MoveSet, MoveRunner, InputBuffer, FeelKnobs; `moves.json` (Red's set), `feel.json` | Battle Programmer | CS-0 | No | Contract 3, 4.1, 4.9. Pure classes with unit tests first, so CS-2 can start. |
+| CS-6 | Hit chain: CombatActor, CombatDirector, Hitbox, Hurtbox, HitResolver, JuggleRules, CombatLayers; `hit_feel.json`; all director signals | Battle Programmer | CS-5 | No | Contract 4.2 and 4.6. Ship a signal stub early for UI and FX. |
+| CS-7 | ParryJudge (on ClutchJudge), perfect dodge, Lamp Flare; `parry` entry in timing_windows.json; flare knobs | Battle Programmer | CS-6 | No | Contract 4.3, 4.4. |
+| CS-8 | ActionEnemy, EnemyBrain, AttackTokens; Grunt and Brute move sets and `enemies.json`; `enemies_attack` knob | Battle Programmer | CS-6, CS-12 (models can be blockouts at first) | No | Grunt = Ross's Cyberwolf Sentinel once rigged. |
+| CS-9 | Noise (StyleMeter) and the Lights On stub (fills, shows, simple buffs); `style.json` | Battle Programmer | CS-6 | No | Contract 4.5. Rank names are Level 1. |
+| CS-10 | Rig Ross's Red (`red_ross_v1_rigged.glb`, `weapon_socket` on `hand_r`) and her clips or key poses; `anim.keys` in moves.json; procedural fallbacks for missing clips | Technical Artist | | No (his model, rigged; Ross sees it in the build) | **In progress.** Contract section 5. Test: test_red_ross_rig. |
+| CS-11 | Swords: split (done), `swords.json` for all six, GearVisuals swap on `weapon_socket` | Technical Artist | CS-10 | No | Contract 4.7. Test: test_gear_visuals. |
+| CS-12 | Enemy models: rig the Cyberwolf Sentinel (the Grunt), Brute blockout in art/placeholder/, idle / move / wind-up and strike poses | Technical Artist | | No | Readable wind-ups for parrying. |
+| CS-13 | PS2 rendering for the sandbox: `grim_ps2` profile, 640×360, per-pixel lit shader with the edge light, one shadow light, glow, jitter / affine / dither off, `art/final/` textures smooth with mipmaps | Technical Artist | | No (D4 approved; show Ross screenshots) | Contract section 6. Old game's look unchanged. |
+| CS-14 | Combat FX: sword trails, hit sparks, wind-up flash, Lamp Flare and Lights On looks, dash streak, CameraShake (smooth), CombatFx sound hookup; `fx.json` | Technical Artist | CS-6, CS-11 | No | Contract 4.6 (who plays which sound). |
+| CS-15 | Sandbox HUD (HP, Noise meter and rank pop-ups, Lights On, lock-on reticle, parry and Lamp Flare pop-ups, damage numbers), controls card, pause menu (Resume, Reset, Controls, Quit), Config rows for the new buttons | UI Programmer | CS-6 stub | No | Re-use battle_popup and the stencil lettering. |
+| CS-16 | Feel-knobs panel built from `feel.json`: pause, Save to `user://feel/`, Reset, Revert, Open folder | UI Programmer | CS-5 | No | Contract 4.9. Ross sends the saved file back. |
+| CS-17 | Placeholder combat sounds (19 `combat_*` ids) | Audio Designer | | No (placeholders) | **In progress** (files and ids exist). |
+| CS-18 | Data validation, hit-flow and smoke tests, bot runs, real-renderer pass, bug log | QA Tester | CS-2 to CS-16 | No | Contract section 7. |
+| CS-19 | Feel pass before Ross plays (does every move read, is anything mushy) | Playtester | CS-18 | No | Report, not fixes. |
+| CS-20 | Sandbox builds for Windows and Mac, download link, short how-to-play, studio log with screenshots or a clip; **Ross plays it** and sends feel notes and his saved feel file | Producer + Gameplay Programmer | CS-18, CS-19 | **Yes** (feel and the "Ross picks by playing" toggles) | Taste Keeper records predictions first. |
+
+**Later (not in the sandbox):** Rip on big bosses; double jump; gadget arm; goggles on/off; Signals grunts fleeing from Lights On; materials, crafting and the workshop; gear beyond swords; saving; towns under the hybrid camera; sorting field buttons against combat buttons.
+
 ### Milestone 2: Battle system and battle simulator
 | ID | Task | Assigned to | Depends on | Ross sign-off | Notes |
 |---|---|---|---|---|---|
