@@ -105,3 +105,62 @@ func test_tiles_are_lossless_crops_of_the_sheets() -> void:
 			piece.convert(Image.FORMAT_RGBA8)
 			var expected: Image = sheet.get_region(_rect_of(tile, variant))
 			assert_true(piece.get_data() == expected.get_data(), "%s/%s differs from the sheet" % [variant, tile["id"]])
+
+
+# ---- seam-fixed copies (scripts/tools/make_seamless_city_tiles.gd) ----
+
+const COPY_DIRS: Dictionary = {"clean": "res://art/final/textures/city/tiles_seamless/",
+	"busted": "res://art/final/textures/city/tiles_busted_seamless/"}
+const MAX_CROP_PX: int = 3
+
+
+func _copy_suffix(variant: String) -> String:
+	return "" if variant == "clean" else "_" + variant
+
+
+func test_seamless_copies_exist_with_the_recorded_size() -> void:
+	var fixed: int = 0
+	for variant: String in COPY_DIRS:
+		var suffix: String = _copy_suffix(variant)
+		for tile_value: Variant in _atlas["tiles"]:
+			var tile: Dictionary = tile_value
+			if not (String(tile["kind"]) == "floor" or String(tile["kind"]) == "wall"):
+				assert_false(tile.has("seamless_copy" + suffix), "%s is not a floor or wall" % tile["id"])
+				continue
+			assert_true(tile.has("seamless_copy" + suffix), "%s/%s needs seamless_copy" % [variant, tile["id"]])
+			assert_true(tile.has("seam_method" + suffix), "%s/%s needs seam_method" % [variant, tile["id"]])
+			var path: String = String(COPY_DIRS[variant]) + String(tile["id"]) + ".png"
+			if bool(tile.get("seamless_copy" + suffix, false)):
+				fixed += 1
+				assert_true(FileAccess.file_exists(path), "missing " + path)
+				var image: Image = Image.load_from_file(ProjectSettings.globalize_path(path))
+				assert_not_null(image, "cannot read " + path)
+				if image != null:
+					var size: Array = tile["seamless_copy_size" + suffix]
+					assert_eq(image.get_size(), Vector2i(int(size[0]), int(size[1])), path + " size")
+					var original: Vector2i = _rect_of(tile, variant).size
+					assert_le(original.x - image.get_width(), MAX_CROP_PX, path + " lost too many columns")
+					assert_le(original.y - image.get_height(), MAX_CROP_PX, path + " lost too many rows")
+					assert_ge(image.get_width(), original.x - MAX_CROP_PX)
+			else:
+				assert_false(FileAccess.file_exists(path), path + " exists but the atlas says no copy")
+				var method: String = String(tile["seam_method" + suffix])
+				assert_has(["already_seamless", "rejected", "failed_measure"], method)
+				if method == "rejected":
+					var rejected: Dictionary = tile.get("seam_fix_rejected", {})
+					assert_true(rejected.has(variant) and String(rejected[variant]).length() > 5,
+						"%s/%s needs a rejection reason" % [variant, tile["id"]])
+	assert_gt(fixed, 20.0, "expected the seam-fixed copies")
+
+
+func test_no_stray_files_in_the_seamless_folders() -> void:
+	for variant: String in COPY_DIRS:
+		var suffix: String = _copy_suffix(variant)
+		var expected: Dictionary = {}
+		for tile_value: Variant in _atlas["tiles"]:
+			var tile: Dictionary = tile_value
+			if bool(tile.get("seamless_copy" + suffix, false)):
+				expected[String(tile["id"]) + ".png"] = true
+		for file_name: String in DirAccess.get_files_at(String(COPY_DIRS[variant])):
+			if file_name.get_extension() == "png":
+				assert_true(expected.has(file_name), "stray file " + file_name)

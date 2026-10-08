@@ -260,3 +260,29 @@ func test_rehit_ms_allows_a_multi_hit_move_to_repeat() -> void:
 	assert_false(HitResolver.may_hit(ledger, 1, &"a", 99.0, 100.0))
 	assert_true(HitResolver.may_hit(ledger, 1, &"a", 100.0, 100.0))
 	assert_false(HitResolver.may_hit(ledger, 1, &"a", 150.0, 100.0))
+
+
+func test_the_real_numbers_kill_a_grunt_in_about_five_hits() -> void:
+	var moves: MoveSet = MoveSet.load_default()
+	var grunt_hp: int = int(((CombatData.enemies()["enemies"] as Dictionary)["grunt"] as Dictionary)["hp"])
+	var light_only: int = 0
+	var hp: int = grunt_hp
+	for move_id: StringName in [&"light_1", &"light_2", &"light_3", &"light_1", &"light_2", &"light_3"]:
+		hp -= int((moves.get_move(&"red", move_id)["hit"] as Dictionary)["damage"])
+		light_only += 1
+		if hp <= 0:
+			break
+	assert_between_hits(light_only)
+	hp = grunt_hp
+	var combo: int = 0
+	for move_id: StringName in [&"light_1", &"light_2", &"light_3", &"heavy", &"launcher"]:
+		hp -= int((moves.get_move(&"red", move_id)["hit"] as Dictionary)["damage"])
+		combo += 1
+		if hp <= 0:
+			break
+	assert_between_hits(combo)
+
+
+func assert_between_hits(count: int) -> void:
+	assert_ge(float(count), 4.0, "not dead too fast")
+	assert_le(float(count), 6.0, "not too slow")

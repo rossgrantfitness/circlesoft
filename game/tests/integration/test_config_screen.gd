@@ -341,7 +341,7 @@ func test_the_controls_page_lists_every_remappable_button_and_a_reset_row() -> v
 	var ids: Array[String] = []
 	for item: Dictionary in screen.get_controls_list().get_items():
 		ids.append(str(item["id"]))
-	assert_eq(ids, ["confirm", "cancel", "interact", "jump", "run", "menu", "clutch", "reset"] as Array[String])
+	assert_eq(ids, ["confirm", "cancel", "interact", "jump", "run", "menu", "clutch", "light", "heavy", "dash", "parry", "lock_on", "camera_toggle", "feel_panel", "reset"] as Array[String])
 
 
 func test_remapping_a_key_with_a_real_key_event_saves_and_reloads() -> void:

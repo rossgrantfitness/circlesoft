@@ -22,6 +22,8 @@ const ST_DOWN: StringName = &"down"
 const ST_GETUP: StringName = &"getup"
 const ST_DEAD: StringName = &"dead"
 
+static var _spawn_counts: Dictionary = {}
+
 @export var enemy_id: StringName = &"grunt"
 @export var rng_seed: int = 0
 
@@ -424,7 +426,8 @@ func _load_data() -> void:
 		push_error("ActionEnemy: no enemy '%s' in enemies.json" % enemy_id)
 		return
 	if actor_id == &"":
-		actor_id = StringName("%s_%d" % [enemy_id, get_instance_id() % 10000])
+		_spawn_counts[enemy_id] = int(_spawn_counts.get(enemy_id, 0)) + 1
+		actor_id = StringName("%s_%d" % [enemy_id, int(_spawn_counts[enemy_id])])
 	team = &"enemy"
 	move_set_id = StringName(str(data.get("move_set", enemy_id)))
 	hp_max = int(data.get("hp", 40))

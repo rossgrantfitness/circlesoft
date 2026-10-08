@@ -32,7 +32,7 @@ func _keys(action: String) -> Array[int]:
 
 func test_the_groups_come_from_data_and_are_real_actions() -> void:
 	var groups: Array[String] = InputRemap.group_ids()
-	assert_eq(groups, ["confirm", "cancel", "interact", "jump", "run", "menu", "clutch"] as Array[String])
+	assert_eq(groups, ["confirm", "cancel", "interact", "jump", "run", "menu", "clutch", "light", "heavy", "dash", "parry", "lock_on", "camera_toggle", "feel_panel"] as Array[String])
 	for group: String in groups:
 		for action: String in InputRemap.group_actions(group):
 			assert_true(InputMap.has_action(action), "%s drives '%s'" % [group, action])

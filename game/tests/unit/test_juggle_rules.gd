@@ -54,3 +54,42 @@ func test_the_real_numbers_let_a_launcher_plus_four_air_hits_stay_up() -> void:
 	assert_true(JuggleRules.can_juggle(5))
 	assert_gt(JuggleRules.air_lift_for(4), 0.0)
 	assert_gt(JuggleRules.lift_for(11.0, 0), JuggleRules.air_lift_for(0))
+
+
+## Pure maths of the sandbox juggle with the REAL numbers: a launcher, then an air hit every 330 ms.
+func _simulate_juggle(air_hits: int, first_air_hit_s: float, spacing_s: float, juggle_float: float) -> Dictionary:
+	var hit_feel: Dictionary = CombatData.hit_feel()
+	var gravity: float = float(hit_feel["gravity_mps2"])
+	var y: float = 0.0
+	var vy: float = JuggleRules.lift_for(11.0, 0)
+	var count: int = 1
+	var last_air_hit_s: float = -1.0e9
+	var t: float = 0.0
+	var dt: float = 0.002
+	var given: int = 0
+	while t < 10.0:
+		var next_hit_s: float = first_air_hit_s + spacing_s * float(given)
+		if given < air_hits and t >= next_hit_s and y > 0.0:
+			vy = JuggleRules.air_lift_for(count)
+			count += 1
+			given += 1
+			last_air_hit_s = t
+		var scale: float = JuggleRules.gravity_scale_after_hit((t - last_air_hit_s) * 1000.0, juggle_float)
+		vy -= gravity * scale * dt
+		y += vy * dt
+		t += dt
+		if y <= 0.0 and t > 0.1:
+			break
+	return {"landed_at": t, "hits": given}
+
+
+func test_a_launcher_plus_four_air_hits_keeps_the_target_airborne() -> void:
+	var result: Dictionary = _simulate_juggle(4, 0.55, 0.33, 1.0)
+	assert_eq(result["hits"], 4, "all four air hits found the target still up")
+	assert_gt(float(result["landed_at"]), 0.55 + 0.33 * 3.0, "it was still up after the last hit")
+
+
+func test_the_juggle_float_knob_is_what_keeps_it_up() -> void:
+	var with_float: Dictionary = _simulate_juggle(4, 0.55, 0.33, 1.0)
+	var without: Dictionary = _simulate_juggle(4, 0.55, 0.33, 0.0)
+	assert_gt(float(with_float["landed_at"]), float(without["landed_at"]) + 0.3)

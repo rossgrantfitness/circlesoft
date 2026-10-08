@@ -4,12 +4,15 @@ extends Node3D
 ## Set the three options BEFORE adding the scene to the tree (or call build() again after changing them):
 ##   variant_mode  "clean", "busted" or "mixed" (a fixed set of pieces is busted, see MIXED_BUSTED)
 ##   filter_mode   "nearest" (crisp pixel art) or "smooth" (linear filtering + mipmaps)
+##   seamless_copies  true = use the seam-fixed copies (tiles_seamless/, tiles_busted_seamless/) where the atlas has one
 ##   camera_preset "alley" (down the alley), "right_wall" or "left_wall" (face-on detail views)
 ##   texels_per_m  128.0 = one 128 px tile covers 1 m (the starting density); 64.0 = chunkier, 2 m per tile
 ## Scale: the capsule is 1.0 m tall (a placeholder for Red). Walls are 3 m high, the alley 5 m wide.
 ## It uses engine nodes only; every texture comes from Ross's tiles, nothing is painted here.
 
 const ATLAS_PATH: String = "res://data/world/city_texture_atlas.json"
+const SEAMLESS_DIRS: Dictionary = {"clean": "res://art/final/textures/city/tiles_seamless/",
+	"busted": "res://art/final/textures/city/tiles_busted_seamless/"}
 const ALLEY_HALF_WIDTH: float = 2.5
 const ALLEY_FRONT_Z: float = 1.0
 const ALLEY_BACK_Z: float = -9.0
@@ -23,10 +26,12 @@ var variant_mode: String = "clean"
 var filter_mode: String = "nearest"
 var texels_per_m: float = 128.0
 var camera_preset: String = "alley"
+var seamless_copies: bool = false
 
 var _variants: Dictionary = {}
 var _textures: Dictionary = {}
 var _built: bool = false
+var _seamless_ids: Dictionary = {}
 
 
 func _ready() -> void:
@@ -39,7 +44,12 @@ func build() -> void:
 		child.queue_free()
 		remove_child(child)
 	_textures.clear()
-	_variants = (JSON.parse_string(FileAccess.get_file_as_string(ATLAS_PATH)) as Dictionary)["variants"]
+	var atlas: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(ATLAS_PATH)) as Dictionary
+	_variants = atlas["variants"]
+	_seamless_ids.clear()
+	for tile: Dictionary in atlas["tiles"]:
+		_seamless_ids["clean/" + String(tile["id"])] = bool(tile.get("seamless_copy", false))
+		_seamless_ids["busted/" + String(tile["id"])] = bool(tile.get("seamless_copy_busted", false))
 	_built = true
 	_build_environment()
 	_build_lights()
@@ -66,6 +76,8 @@ func _texture(tile_id: String, variant: String) -> ImageTexture:
 	if _textures.has(key):
 		return _textures[key]
 	var dir: String = String((_variants[variant] as Dictionary)["tile_dir"])
+	if seamless_copies and _seamless_ids.get(key, false):
+		dir = String(SEAMLESS_DIRS[variant])
 	var image: Image = Image.load_from_file(ProjectSettings.globalize_path(dir.path_join(tile_id + ".png")))
 	if filter_mode == "smooth":
 		image.generate_mipmaps()
