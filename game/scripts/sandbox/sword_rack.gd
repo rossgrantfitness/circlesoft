@@ -147,6 +147,7 @@ func _make_sword_model() -> Node3D:
 		if scene != null:
 			var model: Node3D = scene.instantiate() as Node3D
 			if model != null:
+				Ps2Look.upgrade_model(model, path, LookProfiles.active())
 				return model
 	var bar: MeshInstance3D = MeshInstance3D.new()
 	var mesh: BoxMesh = BoxMesh.new()

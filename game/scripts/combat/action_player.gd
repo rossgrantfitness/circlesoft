@@ -974,6 +974,10 @@ func _load_model() -> void:
 		if str(entry.get("origin", "feet")) == "middle":
 			model.position.y = float(entry.get("height_m", 0.95)) * 0.5 * model_scale
 		_visual.add_child(model)
+		# The PS2 look: models on the old PSX shader get the PS2 one (a no-op in the old game's profiles),
+		# then the edge light from the profile's character block.
+		Ps2Look.upgrade_model(model, path, LookProfiles.active())
+		LookProfiles.dress_model(model, path, "player")
 		_model = model
 		_model_path = path
 		_animation_player = _find_animation_player(model)
