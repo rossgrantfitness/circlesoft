@@ -36,11 +36,30 @@ static func set_theme(value: Theme) -> void:
 # ---- theme reads ----
 
 static func font(role: String) -> Font:
-	return theme().get_font(StringName(role), TYPE)
+	return theme().get_font(StringName(_role(role)), TYPE)
 
 
 static func font_size(role: String) -> int:
-	return theme().get_font_size(StringName(role), TYPE)
+	return theme().get_font_size(StringName(_role(role)), TYPE)
+
+
+## True when the theme's whole-font fallback (Jersey 15, upright) is switched on.
+static func uses_fallback_font() -> bool:
+	return theme().get_constant(&"use_fallback_font", TYPE) != 0
+
+
+## The role as asked, or its "_fallback" twin when the fallback switch is on (the label font never changes).
+static func _role(role: String) -> String:
+	if role != "label" and uses_fallback_font():
+		return role + "_fallback"
+	return role
+
+
+## How far letters lean (0 = upright). The label font and the fallback font stay upright.
+static func slant(role: String) -> float:
+	if role == "label" or uses_fallback_font():
+		return 0.0
+	return float(theme().get_constant(&"slant_pct", TYPE)) / 100.0
 
 
 static func color(name: String) -> Color:
@@ -71,6 +90,14 @@ static func text(canvas: CanvasItem, role: String, at: Vector2, text_value: Stri
 	var f: Font = font(role)
 	var px: int = font_size(role)
 	var shadow: Vector2 = Vector2(float(const_int("shadow_x")), float(const_int("shadow_y")))
+	var lean: float = slant(role)
+	if lean != 0.0:
+		# Leaning letters: shear the canvas around the baseline's left end, then draw upright.
+		canvas.draw_set_transform_matrix(Transform2D(Vector2(1, 0), Vector2(-lean, 1), at))
+		canvas.draw_string(f, shadow, text_value, align, width, px, color("shadow"))
+		canvas.draw_string(f, Vector2.ZERO, text_value, align, width, px, tint)
+		canvas.draw_set_transform_matrix(Transform2D.IDENTITY)
+		return
 	canvas.draw_string(f, at + shadow, text_value, align, width, px, color("shadow"))
 	if const_int("top_light") > 0:
 		canvas.draw_string(f, at, text_value, align, width, px, color("text_light"))

@@ -19,6 +19,8 @@ const FONT_DIR: String = "res://art/final/ui/fonts/"
 ## docs/screenshots/ui_font_options_ffta.png (all SIL OFL 1.1): PixelifySans-VariableFont_wght.ttf (default:
 ## the most character), Handjet-Variable.ttf (loses its i-dots at menu sizes), Jersey15-Regular.ttf (clean;
 ## used here for numerals because Pixelify's 5, 2 and 8 read alike), Micro5-Regular.ttf, JacquardaBastarda9-Regular.ttf.
+## Ross picked (2026-10-08) "Pixelify + slant": body in Pixelify Sans leaning by slant_pct, numerals in Jersey 15
+## with the same lean; second place Jersey 15 alone (use_fallback_font = 1, no slant). slant_pct = 0 turns the lean off.
 ## Round one (Vagrant Story reference): docs/screenshots/ui_font_options.png.
 const BODY_FONT: String = "PixelifySans-VariableFont_wght.ttf"
 const BODY_WEIGHT: int = 500
@@ -85,6 +87,8 @@ const CONSTANTS: Dictionary = {
 	"shadow_x": 1,
 	"shadow_y": 1,
 	"top_light": 0,
+	"slant_pct": 22,
+	"use_fallback_font": 0,
 	"stack_offset": 3,
 	"edge_light_pct": 30,
 	"edge_dark_pct": 50,
@@ -106,6 +110,10 @@ func _initialize() -> void:
 	theme.set_font_size("title", TYPE, TITLE_SIZE)
 	theme.set_font("digits", TYPE, _font(DIGITS_FONT, DIGITS_SPACING, 0))
 	theme.set_font_size("digits", TYPE, DIGITS_SIZE)
+	# Ross's second choice (Jersey 15 for everything, upright): set the constant use_fallback_font to 1.
+	for role: String in ["body", "title", "digits"]:
+		theme.set_font("%s_fallback" % role, TYPE, _font(DIGITS_FONT, DIGITS_SPACING, 0))
+		theme.set_font_size("%s_fallback" % role, TYPE, DIGITS_SIZE + (4 if role == "title" else 0))
 	theme.set_font("label", TYPE, _font(LABEL_FONT, LABEL_SPACING, 0))
 	theme.set_font_size("label", TYPE, LABEL_SIZE)
 	for name: String in COLORS:
