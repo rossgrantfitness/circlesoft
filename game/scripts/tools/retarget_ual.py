@@ -299,6 +299,32 @@ class Retargeter:
         return q
 
 
+    def natural_speed(self, res):
+        """Forward ground speed (m/s) at which a looping locomotion clip plays without foot sliding: the speed of the lowest
+        sole point while it is on the floor (target skeleton, root fixed)."""
+        t = self.t
+        n = len(t.nodes)
+        track = []
+        for k in range(len(res["times"])):
+            lr = np.array([quat_to_mat(res["rot"][i][k]) if i in res["rot"] else t.rest_r[i] for i in range(n)])
+            lt = t.rest_t.copy()
+            lt[self.t_hips] = res["hips"][k]
+            wr, wp = t.fk(lr, lt)
+            low = None
+            for idx, (f, off, lift) in enumerate(self.t_soles):
+                if lift:
+                    continue
+                pos = wp[f] + (wr[f] @ t.rest_world_r[f].T) @ off
+                if low is None or pos[1] < low[1][1]:
+                    low = (idx, pos)
+            track.append(low)
+        speeds = []
+        for a, b in zip(track[:-1], track[1:]):
+            if a[0] == b[0] and a[1][1] < 0.02 and b[1][1] < 0.02:
+                speeds.append(abs(b[1][2] - a[1][2]) * self.fps)
+        return float(np.mean(speeds)) if speeds else 0.0
+
+
 # ---------------------------------------------------------------------- driver
 def load_cfg(name):
     with open(os.path.join(CFG_DIR, "retarget_%s.json" % name)) as f:
@@ -364,6 +390,8 @@ def main():
         if "loop_error_deg" in res:
             line += "  loop err %.1f deg" % res["loop_error_deg"]
         if args.report:
+            if spec.get("loop") and spec["name"] in ("walk", "run", "strafe_l", "strafe_r", "retreat"):
+                line += "  natural speed %.2f m/s" % rt.natural_speed(res)
             q = rt.quality(res, spec)
             line += "  head-clip %2d/%d (%.0f mm)  torso-clip %2d (%.0f mm)" % (q["head"], q["frames"], q["head_pen_max"] * 1000, q["torso"], q["torso_pen_max"] * 1000)
         print(line)

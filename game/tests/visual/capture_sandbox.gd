@@ -320,12 +320,15 @@ func _real_sandbox_shot(shot: String) -> void:
 		await _stage_fx(sandbox, director, player)
 	else:
 		# a camera that shows the far walls: pulled back and level, looking down the long way
+		for enemy: Variant in sandbox.call("get_enemies") as Array:
+			(enemy as Node3D).set_physics_process(false)
+			(enemy as Node3D).set_process(false)
 		var feel: Object = sandbox.call("get_feel") as Object
 		if feel != null:
-			feel.call("set_value", "cam_distance_m", 9.0)
+			feel.call("set_value", "cam_distance_m", 7.0)
 		var camera: Node = sandbox.call("get_camera") as Node
 		if camera != null:
-			camera.call("set_orbit_angles", float(camera.call("get_yaw")), -0.05)
+			camera.call("set_orbit_angles", float(camera.call("get_yaw")), -0.14)
 		await _settle(40)
 	_stats(shot)
 	var image: Image = root.get_viewport().get_texture().get_image()
