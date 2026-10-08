@@ -30,8 +30,8 @@ var key_light: DirectionalLight3D = null
 var prop_count: int = 0
 var is_on: bool = false
 
-## material -> {"texture": Texture2D, "tint": Color}: how it was before the grime, for putting it back.
-var _originals: Dictionary[ShaderMaterial, Dictionary] = {}
+## What was on each restyled surface before the grime ({"mesh", "surface", "override"}), for putting it back.
+var _records: Array[Dictionary] = []
 
 
 func _ready() -> void:
@@ -110,37 +110,43 @@ func _apply_key_light(profile: Dictionary) -> void:
 
 
 # ---- the room's own materials ----
+# The room's materials are shared resources (a scene file's sub-resources), so they are never edited:
+# each mesh surface gets its own grimed COPY as a surface override, and the old override (usually none)
+# is remembered and put back for classic.
 
 func _restyle(profile: Dictionary) -> void:
+	_restore()
 	var grime: Dictionary = _dict(profile.get("grime", {}))
 	var id: String = LookProfiles.active_id()
-	for material: ShaderMaterial in _room_materials():
-		if not _originals.has(material):
-			_originals[material] = {"texture": material.get_shader_parameter(PARAM_TEXTURE), "tint": material.get_shader_parameter(PARAM_TINT)}
-		var original: Dictionary = _originals[material]
-		var texture: Texture2D = original["texture"] as Texture2D
-		var kind: String = GrimePaint.kind_for_path(texture.resource_path) if texture != null else ""
-		if kind != "":
-			material.set_shader_parameter(PARAM_TEXTURE, GrimePaint.surface_texture(kind, grime))
-		var tint: Variant = original["tint"]
-		var base: Color = tint if tint is Color else Color.WHITE
-		material.set_shader_parameter(PARAM_TINT, LookProfiles.grade_color(base, id))
+	var copies: Dictionary[ShaderMaterial, ShaderMaterial] = {}
+	for entry: Dictionary in _room_surfaces():
+		var source: ShaderMaterial = entry["source"]
+		if not copies.has(source):
+			var copy: ShaderMaterial = source.duplicate() as ShaderMaterial
+			var texture: Texture2D = source.get_shader_parameter(PARAM_TEXTURE) as Texture2D
+			var kind: String = GrimePaint.kind_for_path(texture.resource_path) if texture != null else ""
+			if kind != "":
+				copy.set_shader_parameter(PARAM_TEXTURE, GrimePaint.surface_texture(kind, grime))
+			var tint: Variant = source.get_shader_parameter(PARAM_TINT)
+			copy.set_shader_parameter(PARAM_TINT, LookProfiles.grade_color(tint if tint is Color else Color.WHITE, id))
+			copies[source] = copy
+		var mesh_instance: MeshInstance3D = entry["mesh"]
+		_records.append({"mesh": mesh_instance, "surface": entry["surface"], "override": entry["override"]})
+		mesh_instance.set_surface_override_material(entry["surface"], copies[source])
 
 
 func _restore() -> void:
-	for material: ShaderMaterial in _originals:
-		if not is_instance_valid(material):
-			continue
-		var original: Dictionary = _originals[material]
-		material.set_shader_parameter(PARAM_TEXTURE, original["texture"])
-		var tint: Variant = original["tint"]
-		material.set_shader_parameter(PARAM_TINT, tint if tint is Color else Color.WHITE)
-	_originals.clear()
+	for record: Dictionary in _records:
+		var mesh_instance: MeshInstance3D = record["mesh"]
+		if is_instance_valid(mesh_instance):
+			mesh_instance.set_surface_override_material(record["surface"], record["override"])
+	_records.clear()
 
 
-## The lit materials of the room's own geometry (not characters, not this node's props).
-func _room_materials() -> Array[ShaderMaterial]:
-	var found: Array[ShaderMaterial] = []
+## Every lit surface of the room's own geometry (not characters, not this node's props), as
+## {"mesh", "surface", "override" (what was set before), "source" (the ShaderMaterial in use)}.
+func _room_surfaces() -> Array[Dictionary]:
+	var found: Array[Dictionary] = []
 	var host: Node = get_parent()
 	if host == null:
 		return found
@@ -149,11 +155,12 @@ func _room_materials() -> Array[ShaderMaterial]:
 		if mesh_instance.mesh == null or _is_character_branch(mesh_instance) or (props_root != null and props_root.is_ancestor_of(mesh_instance)):
 			continue
 		for surface: int in mesh_instance.mesh.get_surface_count():
-			var material: ShaderMaterial = mesh_instance.get_surface_override_material(surface) as ShaderMaterial
-			if material == null:
+			var override: Material = mesh_instance.get_surface_override_material(surface)
+			var material: ShaderMaterial = override as ShaderMaterial
+			if material == null and override == null:
 				material = mesh_instance.mesh.surface_get_material(surface) as ShaderMaterial
-			if material != null and material.shader != null and material.shader.resource_path == LIT_SHADER_PATH and not found.has(material):
-				found.append(material)
+			if material != null and material.shader != null and material.shader.resource_path == LIT_SHADER_PATH:
+				found.append({"mesh": mesh_instance, "surface": surface, "override": override, "source": material})
 	return found
 
 
