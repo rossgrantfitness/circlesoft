@@ -155,8 +155,8 @@ func apply_hit(result: Dictionary) -> void:
 	poise = float(result.get("poise_after", poise))
 	juggle_count = int(result.get("juggle_count", juggle_count))
 	_last_hit_ms = clock.now_ms()
-	if bool(result.get("air_hit", false)) or float(result.get("launch_mps", 0.0)) > 0.0:
-		_air_hit_ms = clock.now_ms()
+	if bool(result.get("air_hit", false)):
+		_air_hit_ms = clock.now_ms()     # low gravity starts with an AIR hit, not with the launch itself
 	_on_hit_reaction(result)
 	if hp <= 0 and not dead:
 		dead = true

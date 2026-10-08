@@ -122,6 +122,8 @@ static func resolve(attack: Dictionary, attacker: Dictionary, target: Dictionary
 		elif airborne:
 			knockdown = true       # juggle cap reached: the next hit drops them
 		launch *= launch_scale
+		if knockdown and airborne:
+			launch = 0.0        # a slam drops them instead of lifting them
 	result["launch_mps"] = launch
 	result["launched"] = launch > 0.0
 	result["knockdown"] = knockdown
