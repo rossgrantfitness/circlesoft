@@ -456,3 +456,134 @@ static func dull_character_texture(src: Texture2D, cfg: Dictionary) -> Texture2D
 	var salt: int = int(src.get_width()) + int(src.get_height())
 	_char_cache[key] = _texture(dull_character_image(image, cfg, salt))
 	return _char_cache[key]
+
+
+# ---- pixel text, neon and propaganda screens ----
+
+## A 3x5 pixel font (rows top to bottom, 3 bits each, left bit first). Just enough for signs and slogans.
+const FONT: Dictionary[String, PackedInt32Array] = {
+	"A": [2, 5, 7, 5, 5], "B": [6, 5, 6, 5, 6], "C": [3, 4, 4, 4, 3], "D": [6, 5, 5, 5, 6],
+	"E": [7, 4, 6, 4, 7], "F": [7, 4, 6, 4, 4], "G": [3, 4, 5, 5, 3], "H": [5, 5, 7, 5, 5],
+	"I": [7, 2, 2, 2, 7], "J": [1, 1, 1, 5, 2], "K": [5, 5, 6, 5, 5], "L": [4, 4, 4, 4, 7],
+	"M": [5, 7, 7, 5, 5], "N": [6, 5, 5, 5, 5], "O": [2, 5, 5, 5, 2], "P": [6, 5, 6, 4, 4],
+	"Q": [2, 5, 5, 6, 3], "R": [6, 5, 6, 5, 5], "S": [3, 4, 2, 1, 6], "T": [7, 2, 2, 2, 2],
+	"U": [5, 5, 5, 5, 7], "V": [5, 5, 5, 5, 2], "W": [5, 5, 7, 7, 5], "X": [5, 5, 2, 5, 5],
+	"Y": [5, 5, 2, 2, 2], "Z": [7, 1, 2, 4, 7],
+	"0": [7, 5, 5, 5, 7], "1": [2, 6, 2, 2, 7], "2": [6, 1, 2, 4, 7], "3": [6, 1, 2, 1, 6],
+	"4": [5, 5, 7, 1, 1], "5": [7, 4, 6, 1, 6], "6": [3, 4, 7, 5, 7], "7": [7, 1, 2, 2, 2],
+	"8": [7, 5, 7, 5, 7], "9": [7, 5, 7, 1, 6], ":": [0, 2, 0, 2, 0], "-": [0, 0, 7, 0, 0],
+	"!": [2, 2, 2, 0, 2], " ": [0, 0, 0, 0, 0],
+}
+const FONT_ADVANCE: int = 4
+
+
+static func text_width(text: String, scale: int = 1) -> int:
+	return maxi(text.length() * FONT_ADVANCE - 1, 0) * scale
+
+
+## Draws `text` with its top-left corner at (x, y). Unknown characters are blank.
+static func draw_text(img: Image, text: String, x: int, y: int, color: Color, scale: int = 1) -> void:
+	var cursor: int = x
+	for i: int in text.length():
+		var rows: PackedInt32Array = FONT.get(text.substr(i, 1).to_upper(), FONT[" "])
+		for row: int in 5:
+			for col: int in 3:
+				if (rows[row] >> (2 - col)) & 1 == 1:
+					_rect(img, cursor + col * scale, y + row * scale, scale, scale, color)
+		cursor += FONT_ADVANCE * scale
+
+
+## A neon sign: glowing tube letters on a dark backing with a tube frame. The backing is part of the
+## picture (the unlit sign material just brightens it), so the sign reads as lit letters on a dark plate.
+static func neon_image(text: String, color: Color, frame: bool = true) -> Image:
+	var scale: int = 2
+	var w: int = text_width(text, scale) + 10
+	var h: int = 5 * scale + 8
+	var back: Color = Color(color.r * 0.07, color.g * 0.07, color.b * 0.07, 1.0)
+	var img: Image = _image(w, h, back)
+	for y: int in h:
+		for x: int in w:
+			if _hash(x, y, 120) > 0.9:
+				img.set_pixel(x, y, back.lightened(0.25))
+	var dim: Color = Color(color.r * 0.45, color.g * 0.45, color.b * 0.45, 1.0)
+	draw_text(img, text, 6, 5, dim, scale)
+	draw_text(img, text, 5, 4, color, scale)
+	if frame:
+		_rect(img, 0, 0, w, 1, color)
+		_rect(img, 0, h - 1, w, 1, dim)
+		_rect(img, 0, 0, 1, h, color)
+		_rect(img, w - 1, 0, 1, h, dim)
+	return img
+
+
+## One frame of a grimy propaganda screen (64x40). Kinds: "slogan" (a slogan over the Signals mark),
+## "alert" (a flashing bar and a curfew line), "static" (noise). Scanlines and smudges on every frame.
+static func screen_image(kind: String, frame: int, text: String) -> Image:
+	var w: int = 64
+	var h: int = 40
+	var back: Color = Color("#10171a")
+	var ink: Color = Color("#cfd8c4")
+	var teal: Color = Color("#5fe0c8")
+	var alarm: Color = Color("#e8456a")
+	var img: Image = _image(w, h, back)
+	match kind:
+		"static":
+			for y: int in h:
+				for x: int in w:
+					var n: float = _hash(x, y, 300 + frame)
+					var v: float = 0.12 + n * 0.5
+					img.set_pixel(x, y, Color(v * 0.8, v, v * 0.9, 1.0))
+		"alert":
+			var on: bool = frame % 2 == 0
+			_rect(img, 0, 0, w, 8, alarm if on else alarm.darkened(0.6))
+			draw_text(img, "ALERT", 20, 2, back, 1)
+			draw_text(img, text, 4, 16, ink, 1)
+			draw_text(img, "STAY IN", 4, 26, ink, 1)
+		_:
+			_paint_signals_mark(img, 12 + (frame % 2), 20, 1, teal)
+			draw_text(img, text, 26, 12, ink, 1)
+			_rect(img, 26, 21, 30, 1, teal)
+			_rect(img, 26, 25, 20 + (frame % 3) * 5, 1, ink.darkened(0.3))
+			_rect(img, 26, 29, 24, 1, ink.darkened(0.5))
+	for y: int in range(0, h, 2):
+		for x: int in w:
+			img.set_pixel(x, y, img.get_pixel(x, y).darkened(0.25))
+	for y: int in h:
+		for x: int in w:
+			if _value_noise(x, y, 8, 64, 310) > 0.78 and (x + y) % 2 == 0:
+				img.set_pixel(x, y, img.get_pixel(x, y).darkened(0.5))
+	return img
+
+
+static func neon_texture(text: String, color: Color) -> ImageTexture:
+	var key: String = "neon:%s:%s" % [text, color.to_html()]
+	if not _cache.has(key):
+		_cache[key] = _texture(neon_image(text, color))
+	return _cache[key]
+
+
+static func screen_texture(kind: String, frame: int, text: String) -> ImageTexture:
+	var key: String = "screen:%s:%d:%s" % [kind, frame, text]
+	if not _cache.has(key):
+		_cache[key] = _texture(screen_image(kind, frame, text))
+	return _cache[key]
+
+
+## A puff of steam (32x32, 1-bit alpha): a dithered cloud. `phase` 0..2 grows it.
+static func steam_texture(phase: int) -> ImageTexture:
+	var key: String = "steam:%d" % phase
+	if not _cache.has(key):
+		var img: Image = _image(32, 32, Color(0, 0, 0, 0))
+		var radius: float = 8.0 + float(phase) * 3.5
+		for y: int in 32:
+			for x: int in 32:
+				var d: float = Vector2(float(x) - 15.5, float(y) - 15.5).length()
+				var edge: float = (_value_noise(x, y, 8, 32, 400 + phase) - 0.5) * 7.0
+				if d + edge < radius:
+					var shade: float = 0.62 - d / 60.0
+					var c: Color = Color(shade, shade * 1.02, shade * 0.98, 1.0)
+					if d + edge > radius - 3.0 and (x + y) % 2 == 0:
+						continue
+					img.set_pixel(x, y, c)
+		_cache[key] = _texture(img)
+	return _cache[key]
