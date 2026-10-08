@@ -71,7 +71,7 @@ func test_two_hits_never_land_less_than_450_ms_apart() -> void:
 	tokens.step(0.2)
 	assert_false(tokens.begin_attack(&"b", 560.0, false), "200 ms later its hit would land 200 ms after a's")
 	tokens.step(0.3)
-	assert_true(tokens.begin_attack(&"b", 560.0, false), "450 ms later is fine")
+	assert_true(tokens.begin_attack(&"b", 560.0, false), "470 ms later is fine")
 
 
 func test_the_gap_works_in_both_directions() -> void:
@@ -80,8 +80,8 @@ func test_the_gap_works_in_both_directions() -> void:
 	assert_false(tokens.begin_attack(&"quick", 560.0, false), "560 ms is 340 ms before the slam lands")
 	tokens.step(0.5)
 	assert_false(tokens.begin_attack(&"quick", 560.0, false), "it would land at 1060, 160 ms after the slam")
-	tokens.step(0.3)
-	assert_true(tokens.begin_attack(&"quick", 560.0, false), "it would land at 1360, 460 ms after the slam")
+	tokens.step(0.35)
+	assert_true(tokens.begin_attack(&"quick", 560.0, false), "it would land at 1410, 510 ms after the slam")
 
 
 func test_a_landed_hit_still_counts_for_the_gap() -> void:
@@ -89,7 +89,9 @@ func test_a_landed_hit_still_counts_for_the_gap() -> void:
 	tokens.begin_attack(&"a", 100.0, false)
 	tokens.step(0.3)     # a's hit landed 200 ms ago
 	assert_false(tokens.attack_allowed(&"b", 100.0, false), "b would land 200 ms after a")
-	assert_true(tokens.attack_allowed(&"b", 400.0, false), "b would land 500 ms after")
+	assert_true(tokens.attack_allowed(&"b", 400.0, false), "b would land 600 ms after")
+	assert_false(tokens.attack_allowed(&"b", 260.0, false), "460 ms is not enough: a frame of margin keeps it above 450 in play")
+	assert_true(tokens.attack_allowed(&"b", 270.0, false), "470 ms is")
 	tokens.step(1.0)
 	assert_true(tokens.attack_allowed(&"b", 0.0, false), "a's hit is long gone")
 

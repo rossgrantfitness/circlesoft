@@ -108,6 +108,7 @@ var _flees_used: int = 0
 var _cornered_since_ms: float = -1.0
 var _flank_since_ms: float = 0.0
 var _flank_hold_since_ms: float = -1.0
+var _flank_ready: bool = false
 var _flank_side: float = 1.0
 var _ally_deaths: Array[float] = []
 
@@ -769,6 +770,7 @@ func _track_of(move: String, fallback: float) -> float:
 func _begin_flank(now_ms: float, view: Dictionary) -> Dictionary:
 	_flank_since_ms = now_ms
 	_flank_hold_since_ms = -1.0
+	_flank_ready = false
 	var mine: float = float(view.get("my_angle_deg", 0.0))
 	_flank_side = signf(mine) if absf(mine) > 1.0 else _circle_sign
 	_enter(FLANK)
@@ -777,7 +779,8 @@ func _begin_flank(now_ms: float, view: Dictionary) -> Dictionary:
 
 func _step_flank(now_ms: float, view: Dictionary, dist: float, has_token: bool, attacks_enabled: bool) -> Dictionary:
 	var cfg: Dictionary = _low_cfg().get("flank", {})
-	if not attacks_enabled or now_ms - _flank_since_ms >= float(cfg.get("max_ms", 3500.0)):
+	var committed: bool = _flank_ready and has_token
+	if not attacks_enabled or (not committed and now_ms - _flank_since_ms >= float(cfg.get("max_ms", 3500.0))):
 		_enter_circle()
 		return _intent(Vector3.ZERO, true, false, &"")
 	var arc: Array = cfg.get("arc_deg", [135.0, 225.0])
@@ -786,18 +789,24 @@ func _step_flank(now_ms: float, view: Dictionary, dist: float, has_token: bool, 
 	var target_abs: float = (arc_min + arc_max) * 0.5
 	var radius: float = float(cfg.get("radius_m", 3.6))
 	var angle: float = float(view.get("my_angle_deg", 0.0))
+	var speed_mult: float = float(cfg.get("speed_mult", 1.3))
+	# With the token in hand it closes in from behind to striking range, then swings (the wind-up is 710 ms).
+	if committed:
+		if dist > _shortest_reach() and now_ms - _flank_hold_since_ms < 8000.0:
+			return _intent(Vector3(0.0, 0.0, 1.0), true, true, &"", {"gait": &"stalk", "speed_mult": speed_mult, "flank": true})
+		if now_ms >= _attack_retry_ms:
+			return _begin_attack({"move": str(cfg.get("move", "swipe_flank")), "track_ms": float(cfg.get("track_ms", 480.0)), "flank": true}, FLANK)
+		return _intent(Vector3.ZERO, true, true, &"", {"gait": &"stalk", "flank": true})
 	var error: float = wrapf(_flank_side * target_abs - angle, -180.0, 180.0)
 	var in_position: bool = absf(angle) >= arc_min and absf(dist - radius) < 0.9
-	var speed_mult: float = float(cfg.get("speed_mult", 1.3))
 	if in_position:
 		if _flank_hold_since_ms < 0.0:
 			_flank_hold_since_ms = now_ms
-		var held: bool = now_ms - _flank_hold_since_ms >= float(cfg.get("hold_ms", 600.0))
-		if held and has_token and now_ms >= _attack_retry_ms:
-			return _begin_attack({"move": str(cfg.get("move", "swipe_flank")), "track_ms": float(cfg.get("track_ms", 480.0)), "flank": true}, FLANK)
-		return _intent(Vector3(0.0, 0.0, clampf(dist - radius, -0.5, 0.5)), true, held, &"",
+		_flank_ready = now_ms - _flank_hold_since_ms >= float(cfg.get("hold_ms", 600.0))
+		return _intent(Vector3(0.0, 0.0, clampf(dist - radius, -0.5, 0.5)), true, _flank_ready, &"",
 				{"gait": &"stalk", "speed_mult": speed_mult, "flank": true})
 	_flank_hold_since_ms = -1.0
+	_flank_ready = false
 	var side: float = clampf(error / 40.0, -1.0, 1.0)
 	var radial: float = clampf((dist - radius) * 1.2, -1.0, 1.0)
 	return _intent(Vector3(side, 0.0, radial), true, false, &"", {"gait": &"stalk", "speed_mult": speed_mult, "flank": true})

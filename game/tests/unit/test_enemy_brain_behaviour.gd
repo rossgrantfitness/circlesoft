@@ -649,6 +649,11 @@ func test_a_flanker_holds_600_ms_then_asks_for_a_token_with_the_flank_bonus() ->
 	assert_gt(asked_at, 590.0, "the 600 ms pause is the warning")
 	assert_lt(asked_at, 680.0)
 	driver.view["has_token"] = true
+	var closing: Dictionary = driver.step()
+	assert_eq(closing["start_move"], &"", "3.6 m is too far to swing from")
+	assert_gt((closing["move_dir"] as Vector3).z, 0.5, "with the token in hand it closes in from behind")
+	assert_true(closing["want_token"], "and keeps the token")
+	driver.view["dist_to_player"] = 1.7
 	var attack: Dictionary = driver.step()
 	assert_eq(attack["start_move"], &"swipe_flank")
 	assert_eq(driver.brain.state(), EnemyBrain.ATTACK)

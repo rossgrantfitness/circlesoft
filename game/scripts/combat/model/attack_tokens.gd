@@ -12,6 +12,10 @@ extends RefCounted
 ## Defending and fleeing enemies simply do not ask (they hold no token); `release()` also takes them out of the queue.
 ## `step()` moves the tokens' own clock (real seconds) so these rules can compare times.
 
+## Impacts are found at the first physics frame of the hit, up to one frame after the planned moment; this margin
+## is added to the gap so the hits really land at least `min_impact_gap_ms` apart.
+const FRAME_MARGIN_MS: float = 17.0
+
 var max_attackers: int = 2
 var min_impact_gap_ms: float = 0.0
 var max_rear_attackers: int = 99
@@ -50,7 +54,7 @@ func step(delta_s: float) -> void:
 	_clock_ms += maxf(delta_s, 0.0) * 1000.0
 	var keep: Array[Dictionary] = []
 	for impact: Dictionary in _impacts:
-		if float(impact["at_ms"]) >= _clock_ms - min_impact_gap_ms:
+		if float(impact["at_ms"]) >= _clock_ms - min_impact_gap_ms - FRAME_MARGIN_MS:
 			keep.append(impact)
 	_impacts = keep
 
@@ -123,7 +127,7 @@ func attack_allowed(enemy_id: StringName, impact_in_ms: float, rear: bool) -> bo
 	if min_impact_gap_ms > 0.0:
 		var at_ms: float = _clock_ms + impact_in_ms
 		for impact: Dictionary in _impacts:
-			if impact["id"] != enemy_id and absf(float(impact["at_ms"]) - at_ms) < min_impact_gap_ms:
+			if impact["id"] != enemy_id and absf(float(impact["at_ms"]) - at_ms) < min_impact_gap_ms + FRAME_MARGIN_MS:
 				return false
 	if rear and _rear_attackers(enemy_id) >= max_rear_attackers:
 		return false

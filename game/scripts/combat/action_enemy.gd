@@ -715,6 +715,7 @@ func _on_death(_result: Dictionary) -> void:
 	_cut_attack()
 	_set_state(ST_DEAD)
 	_dead_real_s = 0.0
+	_play_once(_clip_for(&"death"))
 	get_hurtbox().collision_layer = 0
 	collision_layer = 0
 	var director: CombatDirector = find_director()
