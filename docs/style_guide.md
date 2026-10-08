@@ -196,7 +196,7 @@ This is the seam for outside artists. The game finds a model's clips **by name**
 - **Texel density:** about **32 texels per unit** for environments (so a 64×64 tile covers 2×2 units, and one texel is roughly one screen pixel). Characters are denser on purpose, for cutscene close-ups.
 - **Budgets per room** *(starting)*:
   - Interior (visible triangles only): **2000 target, 3500 cap**.
-  - Outdoor area (the Landing streets, the road): **4000 target, 6000 cap**.
+  - Outdoor or large area (the Landing streets, the Spillway, a train car): **4000 target, 6000 cap**.
   - Single prop: 30 to 150 triangles (large furniture up to 300).
   - Textures: up to 6 environment textures (64×64 to 256×128) plus the shared prop atlas.
   - Kit piece: 20 to 400 triangles.
@@ -305,7 +305,7 @@ This is the seam for outside artists. The game finds a model's clips **by name**
   - `game/art/final/npcs/`
   - `game/art/final/enemies/` and `game/art/final/bosses/`
   - `game/art/final/weapons/` and `game/art/final/props/`
-  - `game/art/final/environments/harrow_landing/`, `.../road/`, `.../old_relay_tower/` (one folder per place, kit pieces inside)
+  - `game/art/final/environments/harrow_landing/`, `.../road/` (the Spillway and the Works gate; folder name kept), `.../old_relay_tower/` (the jammer-works kit; folder name kept), `.../train/` (the train-car kit) (one folder per place, kit pieces inside)
   - `game/art/final/portraits/<character>/`
   - `game/art/final/ui/` (`windows/`, `cursor/`, `ratings/`, `gestures/`, `icons/`, `digits/`)
   - `game/art/final/ui/fonts/`
@@ -315,9 +315,9 @@ This is the seam for outside artists. The game finds a model's clips **by name**
 
 ## Reference notes
 *Describe references in words only. Never paste or copy images from existing games.*
-- **Mega Man Legends:** chunky, toy-like low-poly characters and towns, bright readable colors, big friendly shapes. **We take:** big heads, simple faces drawn with a few shapes, flat bold colors with one shade step, towns that feel like play sets, and robots made of round, bolted-on parts. **We leave:** any specific character, building or robot design.
-- **Tail Concerto:** a PSX world of anthropomorphic animal characters with cute proportions, mechs and airships: the closest match to our cast and our robots. **We take:** animal heads that stay simple (round ears, small snouts, mitten hands), storybook-bright towns, and small characters piloting big machines. When a look question is unclear, start here. **We leave:** its species, outfits, machines and layouts.
-- **Metal Gear Solid (1):** moody, grounded military-industrial spaces, strong silhouettes, dramatic in-engine cutscene staging. **We take:** the Hegemony and tower spaces (narrow range of grays, one accent color, hard-edged blocky shapes), strong light-versus-dark contrast, and the camera language of cutscenes (close-ups on eyes, low angles on villains, slow push-ins at big moments). **We leave:** its realism and its serious mood; our version stays loud and goofy.
-- **Final Fantasy VII:** chibi field models next to big moments, heavy industrial sci-fi mixed with fantasy, iconic menus and windows. **We take:** the idea of cute little models that still carry huge story moments (here by camera, lighting and title cards, since we use one model everywhere), and industrial machinery living alongside folk culture. **We leave:** its blue gradient window, its character and monster designs, and its logos.
+- **Mega Man Legends:** chunky low-poly characters and towns, big readable shapes. **We take:** simple faces drawn with a few shapes, flat colors with one shade step, readable silhouettes at a distance, and robots made of round, bolted-on parts. **We leave:** its bright toy palette (ours is grim since 2026-10-08) and any specific character, building or robot design.
+- **Tail Concerto:** a PSX world of anthropomorphic animal characters, mechs and airships: the closest match to our cast and our robots. **We take:** animal heads that stay simple (small snouts, mitten hands), clear species reads, and small characters piloting big machines. When a question about how an animal reads in low poly is unclear, start here. **We leave:** its storybook-bright towns and cute proportions (ours are leaner and dirtier now), and its species, outfits, machines and layouts.
+- **Metal Gear Solid (1):** moody, grounded military-industrial spaces, strong silhouettes, dramatic in-engine cutscene staging. **We take (more since the grim look, 2026-10-08):** its mood for the Hegemony's spaces and the jammer works (narrow range of grays, one accent color, hard-edged blocky shapes, cold floodlights, oppressive and watched), strong light-versus-dark contrast, guards you can see and sneak past (the train's scanner cones), and the camera language of cutscenes (close-ups on eyes, low angles on villains, slow push-ins at big moments). **We leave:** its realism (our cast stays stylized animals) and its military-thriller plot. The world can be as grim as MGS1's; the heroes stay loud.
+- **Final Fantasy VII:** small field models next to big moments, heavy industrial sci-fi mixed with fantasy, Midgar's slums in the shadow of the plant, iconic menus and windows. **We take:** small models that still carry huge story moments (here by camera, lighting and title cards, since we use one model everywhere); industrial machinery living alongside folk culture; a rusted, poor town under an industrial power with one warm bar where people still talk (Harrow Landing and The Long Wait). **We leave:** its blue gradient window, its character and monster designs, its specific places and its logos.
 - **How we use them:** the touchstones give us the *feel*; every design (characters, windows, machines, towns) is drawn fresh. If something looks too close to a touchstone, change it.
 - When anything visual is unclear, ask Ross which game he means before guessing.
