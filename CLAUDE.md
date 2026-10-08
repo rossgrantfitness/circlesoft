@@ -34,7 +34,7 @@ Then wait. After Ross approves, the Producer logs it in docs/decisions.md with t
 - Music and SFX needs go in docs/audio_requests.md with mood, length, and whether it loops.
 
 ## The look
-- PSX-era style: low-poly 3D, low-resolution textures (64–256px), nearest-neighbor filtering, vertex jitter/snapping, affine texture warping, dithering, and a low internal render resolution scaled up. 2D anime character portraits for dialogue and menus.
+- PS2-era style (Ross, 2026-10-08: "the psx look needs a upgrade to ps2"): the grim, greasy sci-fi look with edge-lit characters, at PS2-era fidelity. Exact targets (resolution, poly and texture budgets, lighting and effects) come from the Technical Director's proposal once Ross approves it. The earlier PSX rules (vertex jitter, affine warp, 64–256 px textures, low internal resolution) are retired unless that proposal keeps them as options. 2D anime character portraits for dialogue and menus until Ross says otherwise.
 - docs/style_guide.md is the authority on the look. Read it before any visual work.
 
 ## Story secrecy
