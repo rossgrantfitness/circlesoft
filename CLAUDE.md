@@ -44,6 +44,7 @@ Then wait. After Ross approves, the Producer logs it in docs/decisions.md with t
 - Godot 4, GDScript, statically typed where possible.
 - Game data (stats, items, enemies, dialogue, shops) lives in game/data/ as JSON or CSV, never hard-coded, so balance and writing can change without touching code.
 - Small commits with clear messages. Never commit broken builds to main.
+- Don't delete files (Ross's standing rule): superseded files, screenshots and old versions stay; stop referencing them instead.
 - Every gameplay system gets automated tests in game/tests/ that can run headless.
 
 ## Scope discipline
