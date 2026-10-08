@@ -159,8 +159,7 @@ func reset_arena() -> void:
 			enemy.queue_free()
 	_enemies.clear()
 	_enemy_serial = 0
-	if _director != null and _director.has_method("reset"):
-		_director.call("reset")
+	_reset_director()
 	if _player != null and _player.has_method("reset_to"):
 		_player.call("reset_to", get_player_spawn())
 	elif _player != null:
@@ -170,6 +169,21 @@ func reset_arena() -> void:
 		_camera.recenter()
 		_camera.snap()
 	arena_reset.emit()
+
+
+## Noise back to empty, any Lamp Flare over, so a reset really is a fresh start.
+func _reset_director() -> void:
+	if _director == null:
+		return
+	if _director.has_method("reset"):
+		_director.call("reset")
+		return
+	if _director is CombatDirector:
+		var director: CombatDirector = _director as CombatDirector
+		if director.style != null:
+			director.style.reset()
+		if director.time != null:
+			director.time.end_flare()
 
 
 func get_player_spawn() -> Transform3D:
@@ -464,6 +478,8 @@ func _spawn_player() -> void:
 	if _player == null:
 		push_error("CombatSandbox: the player scene's root is not a Node3D")
 		return
+	if "knobs" in _player:
+		_player.set("knobs", _feel)
 	add_child(_player)
 	_place_player()
 	_lock = LockOn.new()
@@ -476,8 +492,6 @@ func _spawn_player() -> void:
 	_camera.follow(_player)
 	_camera.set_lock_on(_lock)
 	_camera.snap()
-	if "knobs" in _player:
-		_player.set("knobs", _feel)
 	_camera.knobs = _feel
 	if "camera" in _player:
 		_player.set("camera", _camera.get_camera())
@@ -545,6 +559,10 @@ func _build_racks() -> void:
 
 
 func _find_actor(actor_id: StringName) -> Node3D:
+	if _director is CombatDirector:
+		var found: CombatActor = (_director as CombatDirector).get_actor(actor_id)
+		if found != null:
+			return found
 	if _player != null and "actor_id" in _player and StringName(_player.get("actor_id")) == actor_id:
 		return _player
 	if actor_id == &"red" and _player != null:

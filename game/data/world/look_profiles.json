@@ -366,10 +366,10 @@
    },
    "glow": {
     "enabled": true,
-    "intensity": 0.9,
+    "intensity": 0.8,
     "strength": 1.0,
     "bloom": 0.05,
-    "hdr_threshold": 0.8,
+    "hdr_threshold": 1.05,
     "hdr_scale": 2.0,
     "blend": "screen",
     "levels": [

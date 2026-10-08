@@ -48,23 +48,99 @@
     "view_hint": "Cancel: back",
     "lock_note": "Lock on: press to lock, press again to let go. Flick the camera to switch targets.",
     "rows": [
-      {"action": "move", "label": "Move", "key": "W A S D / Arrows", "pad": "Left stick / D-pad", "fixed": true},
-      {"action": "camera", "label": "Camera", "key": "Mouse", "pad": "Right stick", "fixed": true},
-      {"action": "jump", "label": "Jump", "key": "Space", "pad": "A / Cross"},
-      {"action": "light", "label": "Light attack", "key": "J / Left mouse", "pad": "X / Square"},
-      {"action": "heavy", "label": "Heavy attack", "key": "K / Right mouse", "pad": "Y / Triangle"},
-      {"action": "dash", "label": "Dash", "key": "Left Shift", "pad": "B / Circle"},
-      {"action": "parry", "label": "Parry", "key": "L", "pad": "LB / L1"},
-      {"action": "lock_on", "label": "Lock on", "key": "Tab / Middle mouse", "pad": "RB / R1"},
-      {"action": "camera_toggle", "label": "Camera style", "key": "V", "pad": "R3"},
-      {"action": "feel_panel", "label": "Feel knobs", "key": "F12", "pad": "Back / Share"},
-      {"action": "start", "label": "Pause", "key": "Esc", "pad": "Start", "fixed": true}
+      {
+        "action": "move",
+        "label": "Move",
+        "key": "W A S D / Arrows",
+        "pad": "Left stick / D-pad",
+        "fixed": true
+      },
+      {
+        "action": "camera",
+        "label": "Camera",
+        "key": "Mouse",
+        "pad": "Right stick",
+        "fixed": true
+      },
+      {
+        "action": "jump",
+        "label": "Jump",
+        "key": "Space",
+        "pad": "A / Cross"
+      },
+      {
+        "action": "light",
+        "label": "Light attack",
+        "key": "J / Left mouse",
+        "pad": "X / Square"
+      },
+      {
+        "action": "heavy",
+        "label": "Heavy attack",
+        "key": "K / Right mouse",
+        "pad": "Y / Triangle"
+      },
+      {
+        "action": "dash",
+        "label": "Dash",
+        "key": "Left Shift",
+        "pad": "B / Circle"
+      },
+      {
+        "action": "parry",
+        "label": "Parry",
+        "key": "L",
+        "pad": "LB / L1"
+      },
+      {
+        "action": "lock_on",
+        "label": "Lock on",
+        "key": "Tab / Middle mouse",
+        "pad": "RB / R1"
+      },
+      {
+        "action": "camera_toggle",
+        "label": "Camera style",
+        "key": "V",
+        "pad": "R3"
+      },
+      {
+        "action": "feel_panel",
+        "label": "Feel knobs",
+        "key": "F12",
+        "pad": "Back / Share"
+      },
+      {
+        "action": "start",
+        "label": "Pause",
+        "key": "Esc",
+        "pad": "Start",
+        "fixed": true
+      }
     ],
     "pad_names": [
-      "A / Cross", "B / Circle", "X / Square", "Y / Triangle", "Back / Share", "Guide", "Start",
-      "L3", "R3", "LB / L1", "RB / R1", "D-Up", "D-Down", "D-Left", "D-Right", "Share"
+      "A / Cross",
+      "B / Circle",
+      "X / Square",
+      "Y / Triangle",
+      "Back / Share",
+      "Guide",
+      "Start",
+      "L3",
+      "R3",
+      "LB / L1",
+      "RB / R1",
+      "D-Up",
+      "D-Down",
+      "D-Left",
+      "D-Right",
+      "Share"
     ],
-    "mouse_names": {"1": "Left mouse", "2": "Right mouse", "3": "Middle mouse"}
+    "mouse_names": {
+      "1": "Left mouse",
+      "2": "Right mouse",
+      "3": "Middle mouse"
+    }
   },
   "feel": {
     "title": "Feel Knobs",
@@ -177,6 +253,7 @@
         "perfect_only": "Only a Totally Rad parry starts a flare.",
         "off": "Parries never start a flare. Only dodges do."
       }
-    }
+    },
+    "info_label": "Information"
   }
 }

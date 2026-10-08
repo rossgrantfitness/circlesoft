@@ -1001,8 +1001,7 @@
      "telegraph_ms": 0,
      "impact_ms": 560,
      "parryable": true,
-     "dodge_flare": true,
-     "track_ms": 380
+     "dodge_flare": true
     }
    }
   },
@@ -1090,8 +1089,7 @@
      "armor": {
       "from_ms": 0,
       "to_ms": 1050
-     },
-     "track_ms": 600
+     }
     }
    }
   }

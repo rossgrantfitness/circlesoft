@@ -60,12 +60,12 @@ func _knob(id: String) -> Dictionary:
 
 
 func _stage_point(local: Vector2) -> Vector2:
-	return local + SandboxUiData.rect("feel_panel.window").position
+	return local
 
 
 func _row_point(visible_index: int, x: float) -> Vector2:
 	var layout: Dictionary = SandboxUiData.ui("feel_panel", {})
-	return _stage_point(Vector2(x, float(layout["row_y"]) + float(visible_index) * float(layout["row_h"]) + 7.0))
+	return _stage_point(Vector2(x, float(layout["row_y"]) + float(visible_index) * float(layout["row_step"]) + 7.0))
 
 
 func _click(point: Vector2) -> void:

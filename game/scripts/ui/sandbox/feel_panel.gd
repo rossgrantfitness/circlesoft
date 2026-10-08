@@ -70,10 +70,9 @@ var _message: String = ""
 var _message_good: bool = true
 var _message_left: float = 0.0
 var _last_path: String = ""
-var _palette: Dictionary[String, Color] = {}
+var _reveal: float = 1.0
 
 var _dim: ColorRect = null
-var _window: UiWindow = null
 var _overlay: Control = null
 
 
@@ -83,26 +82,16 @@ func _ready() -> void:
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	size = Vector2(UiStage.STAGE_SIZE)
 	_layout = SandboxUiData.ui("feel_panel", {})
-	for key: String in DataDB.get_value(SandboxUiData.THEME_ID, "palette", {}):
-		_palette[key] = SandboxUiData.palette(key)
-	var window_rect: Rect2 = SandboxUiData.rect("feel_panel.window")
 	_dim = ColorRect.new()
 	_dim.name = "Dim"
 	_dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_dim.color = Color(_palette["ink"], float(_layout.get("dim_alpha", 0.5)))
+	_dim.color = Color(SandboxStyle.color("dim"), float(_layout.get("dim_alpha", 0.5)))
 	_dim.size = size
 	add_child(_dim)
-	_window = UiWindow.new()
-	_window.name = "Window"
-	_window.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_window.position = window_rect.position
-	_window.size = window_rect.size
-	add_child(_window)
 	_overlay = Control.new()
 	_overlay.name = "Overlay"
 	_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_overlay.position = window_rect.position
-	_overlay.size = window_rect.size
+	_overlay.size = size
 	_overlay.draw.connect(_draw_overlay)
 	add_child(_overlay)
 	visible = false
@@ -238,7 +227,7 @@ func open_panel() -> void:
 	_message_left = 0.0
 	_dragging = false
 	_open_clock = 0.0
-	_window.open_amount = 0.25 if animations_enabled else 1.0
+	_reveal = 0.25 if animations_enabled else 1.0
 	if pause_game:
 		SandboxPauseGate.hold(get_tree(), self)
 	audio.sfx("confirm")
@@ -334,10 +323,11 @@ func tick(delta: float) -> void:
 	if not _open:
 		return
 	_open_clock += delta
-	if animations_enabled and _window.open_amount < 1.0:
+	if animations_enabled and _reveal < 1.0:
 		var steps: int = int(_layout.get("open_steps", 4))
 		var step_s: float = SandboxUiData.ui_float("step_s", 0.0833)
-		_window.open_amount = minf(1.0, 0.25 + 0.75 * float(int(_open_clock / step_s) + 1) / float(steps))
+		_reveal = minf(1.0, 0.25 + 0.75 * float(int(_open_clock / step_s) + 1) / float(steps))
+		_overlay.queue_redraw()
 	if _message_left > 0.0:
 		_message_left -= delta
 		if _message_left <= 0.0:
@@ -664,7 +654,7 @@ func handle_mouse(event: InputEvent) -> bool:
 			_zone = Zone.BUTTONS
 			_refresh()
 			return true
-		return _window.get_rect().has_point(motion.position)
+		return _panel_rect().has_point(at)
 	if event is InputEventMouseButton:
 		var click: InputEventMouseButton = event as InputEventMouseButton
 		var at: Vector2 = _local(click.position)
@@ -722,7 +712,7 @@ func _click(at: Vector2) -> bool:
 					_drag_to(at.x)
 		_refresh()
 		return true
-	return _window.get_rect().has_point(at + _overlay.position)
+	return _panel_rect().has_point(at)
 
 
 func _drag_to(local_x: float) -> void:
@@ -739,7 +729,20 @@ func _wheel(direction: int) -> void:
 		_step_value(direction, 1)
 
 
-# ---- layout helpers (local to the window) ----
+# ---- layout helpers (stage pixels) ----
+
+func _left() -> float:
+	return float(_layout["x"])
+
+
+func _width() -> float:
+	return float(_layout["w"])
+
+
+func _panel_rect() -> Rect2:
+	var top: float = float(_layout["header_y"])
+	return Rect2(_left(), top, _width(), float(_layout["button_y"]) + float(_layout["button_h"]) - top)
+
 
 func _rows_visible() -> int:
 	return int(_layout.get("rows_visible", 7))
@@ -754,14 +757,14 @@ func _scroll_to_row() -> void:
 
 
 func _row_rect(visible_index: int) -> Rect2:
-	var y: float = float(_layout["row_y"]) + float(visible_index) * float(_layout["row_h"])
-	return Rect2(6.0, y, _overlay.size.x - 12.0, float(_layout["row_h"]))
+	var y: float = float(_layout["row_y"]) + float(visible_index) * float(_layout["row_step"])
+	return Rect2(_left(), y, _width(), float(_layout["row_h"]))
 
 
 func _slider_rect(visible_index: int) -> Rect2:
 	var row: Rect2 = _row_rect(visible_index)
 	var h: float = float(_layout["slider_h"])
-	return Rect2(float(_layout["slider_x"]), row.position.y + (row.size.y - h) / 2.0, float(_layout["slider_w"]), h)
+	return Rect2(float(_layout["slider_x"]), row.position.y + roundf((row.size.y - h) / 2.0), float(_layout["slider_w"]), h)
 
 
 func _row_at(at: Vector2) -> int:
@@ -776,12 +779,12 @@ func _row_at(at: Vector2) -> int:
 
 func _tab_rects() -> Array[Rect2]:
 	var out: Array[Rect2] = []
-	var x: float = 10.0
-	var pad: float = float(_layout.get("tab_pad_x", 5))
+	var x: float = _left()
+	var pad: float = float(_layout.get("tab_pad_x", 6))
 	for group: String in _groups:
-		var w: float = float(UiFonts.text_width("tag", FeelFormat.group_title(group))) + pad * 2.0
+		var w: float = SandboxStyle.text_width("body", FeelFormat.group_title(group)) + pad * 2.0
 		out.append(Rect2(x, float(_layout["tab_y"]), w, float(_layout["tab_h"])))
-		x += w + 2.0
+		x += w + float(_layout.get("tab_gap", 2))
 	return out
 
 
@@ -795,12 +798,12 @@ func _tab_at(at: Vector2) -> int:
 
 func _button_rects() -> Array[Rect2]:
 	var out: Array[Rect2] = []
-	var x: float = float(_layout["label_x"])
-	var pad: float = float(_layout.get("button_pad_x", 7))
+	var x: float = _left()
+	var pad: float = float(_layout.get("button_pad_x", 8))
 	for id: String in BUTTON_IDS:
-		var w: float = float(UiFonts.text_width("menu", SandboxUiData.text("feel.buttons.%s" % id))) + pad * 2.0
+		var w: float = SandboxStyle.text_width("body", SandboxUiData.text("feel.buttons.%s" % id)) + pad * 2.0
 		out.append(Rect2(x, float(_layout["button_y"]), w, float(_layout["button_h"])))
-		x += w + float(_layout.get("button_gap", 6))
+		x += w + float(_layout.get("button_gap", 4))
 	return out
 
 
@@ -817,17 +820,18 @@ func _refresh() -> void:
 		_overlay.queue_redraw()
 
 
-# ---- drawing ----
+# ---- drawing (the look is SandboxStyle's) ----
 
 func _draw_overlay() -> void:
 	if not _open or _layout.is_empty():
 		return
-	var width: float = _overlay.size.x
-	UiText.draw(_overlay, "menu", Vector2(16, float(_layout["title_y"])), SandboxUiData.text("feel.title"), _palette["lamp_amber"])
-	var status: String = SandboxUiData.text("feel.unsaved") if is_dirty() else SandboxUiData.text("feel.saved")
-	var status_color: Color = _palette["lamp_glow"] if is_dirty() else _palette["text_dim"]
-	UiText.draw(_overlay, "tag", Vector2(width - 14, float(_layout["title_y"])), status, status_color, HORIZONTAL_ALIGNMENT_RIGHT, 150.0)
-	UiText.draw(_overlay, "tag", Vector2(width - 14 - 150, float(_layout["title_y"])), SandboxUiData.text("feel.paused"), _palette["slate_light"], HORIZONTAL_ALIGNMENT_RIGHT, 140.0)
+	var header: Rect2 = Rect2(_left(), float(_layout["header_y"]), _width() * _reveal, float(_layout["header_h"]))
+	SandboxStyle.header_bar(_overlay, header)
+	if _reveal < 1.0:
+		return
+	var head_base: float = header.position.y + 12.0
+	SandboxStyle.text(_overlay, "body", Vector2(_left() + 8.0, head_base), SandboxUiData.text("feel.title"), SandboxStyle.color("text_on_header"))
+	SandboxStyle.text_right(_overlay, "body", _left() + _width() - 8.0, head_base, SandboxUiData.text("feel.paused"), SandboxStyle.color("text_on_header"), 120.0)
 	_draw_tabs()
 	_draw_rows()
 	_draw_info()
@@ -839,14 +843,16 @@ func _draw_tabs() -> void:
 	for i: int in rects.size():
 		var rect: Rect2 = rects[i]
 		var active: bool = i == _tab
-		var focused: bool = active and _zone == Zone.TABS
-		if active:
-			_overlay.draw_rect(rect, Color(_palette["dusk"], 0.9))
-			_overlay.draw_rect(Rect2(rect.position.x, rect.end.y - 2.0, rect.size.x, 2.0), _palette["lamp_amber"] if focused else _palette["brass"])
-		var color: Color = _palette["lamp_amber"] if focused else (_palette["text"] if active else _palette["slate_light"])
-		UiText.draw(_overlay, "tag", Vector2(rect.position.x + float(_layout.get("tab_pad_x", 5)), rect.position.y + 10.0), FeelFormat.group_title(_groups[i]), color)
+		SandboxStyle.list_bar(_overlay, rect, active, not active)
+		var pad: float = float(_layout.get("tab_pad_x", 6))
+		SandboxStyle.text(_overlay, "body", Vector2(rect.position.x + pad, rect.position.y + 11.0), FeelFormat.group_title(_groups[i]), SandboxStyle.row_color(active))
+		if active and _zone == Zone.TABS:
+			SandboxStyle.cursor(_overlay, Vector2(rect.position.x + 1.0, rect.position.y + rect.size.y / 2.0))
 		if _group_changed(_groups[i]):
-			_overlay.draw_rect(Rect2(rect.end.x - 4.0, rect.position.y + 1.0, 2.0, 2.0), _palette["lamp_glow"])
+			_overlay.draw_rect(Rect2(rect.end.x - 4.0, rect.position.y + 2.0, 2.0, 2.0), SandboxStyle.color("pip"))
+	var mid: float = float(_layout["tab_y"]) + float(_layout["tab_h"]) / 2.0
+	SandboxStyle.arrow(_overlay, Vector2(_left() - 7.0, mid), Vector2i.LEFT)
+	SandboxStyle.arrow(_overlay, Vector2(_left() + _width() + 7.0, mid), Vector2i.RIGHT)
 
 
 func _draw_rows() -> void:
@@ -858,73 +864,51 @@ func _draw_rows() -> void:
 		var knob: Dictionary = rows[index]
 		var rect: Rect2 = _row_rect(i)
 		var focused: bool = index == _row and _zone == Zone.ROWS
-		var baseline: float = rect.position.y + 11.0
+		SandboxStyle.list_bar(_overlay, rect, focused)
+		var mid: float = rect.position.y + rect.size.y / 2.0
 		if focused:
-			_overlay.draw_rect(rect, Color(_palette["dusk"], 0.8))
-			_draw_cursor_arrow(Vector2(float(_layout.get("cursor_x", 3)), rect.position.y + rect.size.y / 2.0))
+			SandboxStyle.cursor(_overlay, Vector2(float(_layout.get("cursor_x", 5)), mid))
 		var changed: bool = _is_changed(knob)
 		if changed:
-			_overlay.draw_rect(Rect2(float(_layout.get("pip_x", 14)), rect.position.y + rect.size.y / 2.0 - 1.0, 3.0, 3.0), _palette["lamp_glow"])
-		var color: Color = _palette["lamp_amber"] if focused else _palette["text"]
-		UiText.draw(_overlay, "menu", Vector2(float(_layout["label_x"]), baseline), FeelFormat.label_of(knob), color)
+			_overlay.draw_rect(Rect2(float(_layout.get("pip_x", 14)), mid - 1.0, 3.0, 3.0), SandboxStyle.color("pip"))
+		var baseline: float = rect.position.y + 11.0
+		SandboxStyle.text(_overlay, "body", Vector2(float(_layout["label_x"]), baseline), FeelFormat.label_of(knob), SandboxStyle.row_color(focused))
 		var value: Variant = _read(knob)
-		var value_color: Color = _palette["lamp_glow"] if changed else _palette["text"]
+		var value_color: Color = SandboxStyle.color("pip") if changed else SandboxStyle.color("text")
 		var value_right: float = float(_layout["value_right"])
 		if FeelFormat.is_slider(knob):
 			_draw_slider(knob, i, float(value), focused)
-			UiText.draw(_overlay, "menu", Vector2(value_right - 80.0, baseline), FeelFormat.value_text(knob, value), value_color, HORIZONTAL_ALIGNMENT_RIGHT, 80.0)
+			SandboxStyle.text_right(_overlay, "body", value_right, baseline, FeelFormat.value_text(knob, value), value_color, 66.0)
 		else:
 			var text: String = FeelFormat.value_text(knob, value)
 			if FeelFormat.kind_of(knob) == FeelFormat.KIND_BOOL:
-				value_color = SandboxUiData.color("good") if bool(value) else _palette["text_dim"]
-			UiText.draw(_overlay, "menu", Vector2(value_right - 150.0, baseline), text, value_color, HORIZONTAL_ALIGNMENT_RIGHT, 150.0)
+				value_color = SandboxStyle.color("good") if bool(value) else SandboxStyle.color("text_dim")
+			SandboxStyle.text_right(_overlay, "body", value_right, baseline, text, value_color, 150.0)
 			if focused:
-				var text_w: float = float(UiFonts.text_width("menu", text))
-				var mid: float = rect.position.y + rect.size.y / 2.0
-				_draw_arrow(Vector2(value_right - text_w - 8.0, mid), -1, _palette["lamp_amber"])
-				_draw_arrow(Vector2(value_right + 3.0, mid), 1, _palette["lamp_amber"])
-	_draw_scroll_arrows(rows.size())
-
-
-func _draw_cursor_arrow(center: Vector2) -> void:
-	for i: int in 4:
-		_overlay.draw_rect(Rect2(center.x + float(i), center.y - float(3 - i), 1.0, float((3 - i) * 2 + 1)), _palette["lamp_amber"])
-
-
-func _draw_arrow(center: Vector2, direction: int, color: Color) -> void:
-	for i: int in 3:
-		var x: float = center.x + float(i * direction)
-		_overlay.draw_rect(Rect2(x, center.y - float(2 - i), 1.0, float((2 - i) * 2 + 1)), color)
+				var text_w: float = SandboxStyle.text_width("body", text)
+				SandboxStyle.arrow(_overlay, Vector2(value_right - text_w - 7.0, mid), Vector2i.LEFT)
+				SandboxStyle.arrow(_overlay, Vector2(value_right + 7.0, mid), Vector2i.RIGHT)
+	var arrow_x: float = _left() + _width() + 7.0
+	var first_y: float = float(_layout["row_y"])
+	if _top > 0:
+		SandboxStyle.arrow(_overlay, Vector2(arrow_x, first_y + 5.0), Vector2i.UP)
+	if _top + _rows_visible() < rows.size():
+		SandboxStyle.arrow(_overlay, Vector2(arrow_x, first_y + float(_rows_visible()) * float(_layout["row_step"]) - 6.0), Vector2i.DOWN)
 
 
 func _draw_slider(knob: Dictionary, visible_index: int, value: float, focused: bool) -> void:
 	var track: Rect2 = _slider_rect(visible_index)
-	_overlay.draw_rect(track.grow(1.0), _palette["ink"])
-	_overlay.draw_rect(track, _palette["night"])
+	var top: Color = SandboxStyle.color("slider_focus_top" if focused else "slider_top")
+	var bottom: Color = SandboxStyle.color("slider_focus_bottom" if focused else "slider_bottom")
 	var along: float = FeelFormat.fraction(knob, value)
-	var fill_w: float = roundf(track.size.x * along)
-	if fill_w > 0.0:
-		_overlay.draw_rect(Rect2(track.position, Vector2(fill_w, track.size.y)), _palette["lamp_amber"] if focused else _palette["brass"])
-		_overlay.draw_rect(Rect2(track.position, Vector2(fill_w, 1.0)), Color(_palette["lamp_glow"], 0.8))
+	SandboxStyle.thin_bar(_overlay, track, along, top, bottom)
 	var default_value: Variant = _defaults.get(str(knob["id"]))
 	if default_value != null:
 		var notch_x: float = track.position.x + roundf(track.size.x * FeelFormat.fraction(knob, float(default_value)))
-		_overlay.draw_rect(Rect2(notch_x - 1.0, track.position.y - 3.0, 2.0, track.size.y + 6.0), _palette["chalk"])
-		_overlay.draw_rect(Rect2(notch_x - 1.0, track.position.y - 3.0, 2.0, 1.0), _palette["ink"])
-	var handle_x: float = track.position.x + fill_w
-	_overlay.draw_rect(Rect2(handle_x - 1.0, track.position.y - 2.0, 3.0, track.size.y + 4.0), _palette["ink"])
-	_overlay.draw_rect(Rect2(handle_x, track.position.y - 1.0, 1.0, track.size.y + 2.0), _palette["lamp_glow"] if focused else _palette["chalk"])
-
-
-func _draw_scroll_arrows(count: int) -> void:
-	var x: float = _overlay.size.x - 14.0
-	if _top > 0:
-		_overlay.draw_rect(Rect2(x + 2.0, float(_layout["row_y"]) - 3.0, 1.0, 1.0), _palette["lamp_amber"])
-		_overlay.draw_rect(Rect2(x + 1.0, float(_layout["row_y"]) - 2.0, 3.0, 1.0), _palette["lamp_amber"])
-	if _top + _rows_visible() < count:
-		var y: float = float(_layout["row_y"]) + float(_rows_visible()) * float(_layout["row_h"]) + 1.0
-		_overlay.draw_rect(Rect2(x + 1.0, y, 3.0, 1.0), _palette["lamp_amber"])
-		_overlay.draw_rect(Rect2(x + 2.0, y + 1.0, 1.0, 1.0), _palette["lamp_amber"])
+		_overlay.draw_rect(Rect2(notch_x, track.position.y - 3.0, 1.0, track.size.y + 6.0), SandboxStyle.color("notch"))
+	var handle_x: float = track.position.x + floorf(track.size.x * along)
+	_overlay.draw_rect(Rect2(handle_x - 1.0, track.position.y - 2.0, 3.0, track.size.y + 4.0), SandboxStyle.color("track_edge"))
+	_overlay.draw_rect(Rect2(handle_x, track.position.y - 1.0, 1.0, track.size.y + 2.0), SandboxStyle.color("text_light") if focused else SandboxStyle.color("text"))
 
 
 ## The three lines of the info area (hint, default and range, message).
@@ -956,16 +940,16 @@ func get_info_lines() -> Array[String]:
 
 
 func _draw_info() -> void:
-	var top: float = float(_layout["info_y"])
 	var lines: Array[String] = get_info_lines()
-	_overlay.draw_rect(Rect2(8.0, top - 2.0, _overlay.size.x - 16.0, 1.0), Color(_palette["slate"], 0.6))
-	UiText.draw(_overlay, "tag", Vector2(14, top + 9.0), lines[0], _palette["text"])
-	UiText.draw(_overlay, "tag", Vector2(14, top + 20.0), lines[1], _palette["slate_light"])
-	var message_color: Color = SandboxUiData.color("good") if _message_good else SandboxUiData.color("warn")
+	var top: float = float(_layout["info_y"])
+	SandboxStyle.label(_overlay, Vector2(_left() + 2.0, float(_layout["info_label_y"])), SandboxUiData.text("feel.info_label"))
+	SandboxStyle.list_bar(_overlay, Rect2(_left(), top, _width(), float(_layout["info_h"])))
+	SandboxStyle.text(_overlay, "body", Vector2(_left() + 8.0, top + 12.0), lines[0], SandboxStyle.color("text"))
 	if not _message.is_empty():
-		UiText.draw(_overlay, "tag", Vector2(14, top + 31.0), lines[2], message_color)
+		var tint: Color = SandboxStyle.color("good") if _message_good else SandboxStyle.color("warn")
+		SandboxStyle.text(_overlay, "label", Vector2(_left() + 8.0, top + 24.0), lines[2], tint)
 	else:
-		UiText.draw(_overlay, "tag", Vector2(14, top + 31.0), SandboxUiData.text("feel.move_hint"), _palette["text_dim"])
+		SandboxStyle.text(_overlay, "label", Vector2(_left() + 8.0, top + 24.0), lines[1].to_upper(), SandboxStyle.color("label_dim"))
 
 
 func _draw_buttons() -> void:
@@ -973,10 +957,11 @@ func _draw_buttons() -> void:
 	for i: int in rects.size():
 		var rect: Rect2 = rects[i]
 		var focused: bool = i == _button and _zone == Zone.BUTTONS
-		_overlay.draw_rect(rect.grow(1.0), _palette["ink"])
-		_overlay.draw_rect(rect, _palette["dusk"] if focused else _palette["night"])
+		SandboxStyle.list_bar(_overlay, rect, focused)
+		var pad: float = float(_layout.get("button_pad_x", 8))
+		SandboxStyle.text(_overlay, "body", Vector2(rect.position.x + pad, rect.position.y + 11.0), SandboxUiData.text("feel.buttons.%s" % BUTTON_IDS[i]), SandboxStyle.row_color(focused))
 		if focused:
-			_overlay.draw_rect(Rect2(rect.position.x, rect.end.y - 2.0, rect.size.x, 2.0), _palette["lamp_amber"])
-		var label: String = SandboxUiData.text("feel.buttons.%s" % BUTTON_IDS[i])
-		var color: Color = _palette["lamp_amber"] if focused else _palette["text"]
-		UiText.draw(_overlay, "menu", Vector2(rect.position.x + float(_layout.get("button_pad_x", 7)), rect.position.y + 11.0), label, color)
+			SandboxStyle.cursor(_overlay, Vector2(rect.position.x + 1.0, rect.position.y + rect.size.y / 2.0))
+	var dirty: bool = is_dirty()
+	var status: String = SandboxUiData.text("feel.unsaved" if dirty else "feel.saved")
+	SandboxStyle.label(_overlay, Vector2(_left() + _width() - SandboxStyle.text_width("label", status.to_upper()) - 2.0, float(_layout["button_y"]) + 10.0), status, SandboxStyle.color("pip") if dirty else SandboxStyle.color("label_dim"))

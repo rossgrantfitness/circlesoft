@@ -1,5 +1,5 @@
 class_name ActionPlayer
-extends CharacterBody3D
+extends CombatActor
 ## Red in the combat sandbox (docs/pivot/combat_api.md 4.2): the state machine over PlayerMotion.
 ##
 ## States: LOCOMOTION, AIR, DASH, AIR_DASH, ATTACK, PARRY, HURT, KNOCKDOWN, GETUP.
@@ -29,7 +29,6 @@ signal dashed(air: bool)
 signal move_started(move_id: StringName)
 signal swing_started(move_id: StringName, swing: Dictionary)
 signal state_changed(state: State)
-signal died(actor_id: StringName)
 
 const DATA_ID: String = "combat/player_action"
 const SET_ID: StringName = &"red"
@@ -47,27 +46,20 @@ const TOKEN_LAUNCH: StringName = &"launch"
 const ATTACK_TOKENS: Array[StringName] = [&"light", &"heavy", &"launch"]
 const MOVE_PARRY: StringName = &"parry"
 const MOVE_HEAVY: StringName = &"heavy"
-const LAYER_PLAYER_BODY: int = 10
-const LAYER_ENEMY_BODY: int = 11
-const LAYER_WORLD: int = 1
 const NODE_VISUAL: NodePath = ^"Visual"
 const NODE_PLACEHOLDER: NodePath = ^"Visual/PlaceholderCapsule"
-const GROUP_DIRECTOR: StringName = &"combat_director"
 const USEC: float = 1000000.0
 const STICK_TO_FLOOR: float = -0.5
-const RESYNC_USEC: int = 60000
 
-@export var actor_id: StringName = &"red"
-@export var team: StringName = &"player"
 ## Poll Input in tick() (the game). Bots and tests turn it off and use press() / release() / set_move_input().
 @export var read_engine_input: bool = true
 
-var hp: int = 120
-var hp_max: int = 120
-## FeelKnobs (or null: the defaults in player_action.json). Read every frame, never cached.
-var knobs: FeelKnobs = null
-## Red's own clock. Hit-stop and flares scale it; everything she does reads it.
-var clock: CombatClock = CombatClock.new()
+## FeelKnobs (the director's when there is one, else the defaults). Read every frame, never cached.
+var knobs: FeelKnobs = null:
+	set(value):
+		knobs = value
+		if _buffer != null:
+			_buffer = InputBuffer.create(knobs)
 ## What movement is relative to: the OrbitCamera's Camera3D. Null = the viewport's current camera.
 var camera: Camera3D = null
 var lock_on: LockOn = null
@@ -115,9 +107,12 @@ var _warned_clips: Dictionary[StringName, bool] = {}
 var _missing_clips: Array[StringName] = []
 var _bob_time: float = 0.0
 var _gear: Node = null
-var _hitbox: Node = null
-var _hurtbox: Node = null
-var _registered_with: Node = null
+
+
+func _init() -> void:
+	actor_id = &"red"
+	team = &"player"
+	move_set_id = SET_ID
 
 
 func _ready() -> void:
@@ -126,29 +121,26 @@ func _ready() -> void:
 	_hit_feel = CombatData.hit_feel()
 	hp_max = int(_data.get("hp_max", hp_max))
 	hp = hp_max
-	collision_layer = 1 << (LAYER_PLAYER_BODY - 1)
+	var body: Dictionary = _data.get("body", {}) as Dictionary
+	radius_m = float(body.get("radius_m", 0.3))
+	height_m = float(body.get("height_m", 0.9))
+	super._ready()          # groups, collision layers, Hurtbox and Hitbox, registration with the director
 	_restore_enemy_collision()
 	floor_snap_length = 0.3
 	floor_max_angle = deg_to_rad(50.0)
 	if knobs == null:
-		knobs = FeelKnobs.load_defaults()
+		var found: CombatDirector = find_director()
+		knobs = found.feel if found != null and found.feel != null else FeelKnobs.load_defaults()
 	_moves = MoveSet.load_default()
 	_runner = MoveRunner.create(_moves, SET_ID)
 	_buffer = InputBuffer.create(knobs)
-	clock.anchor_real(Time.get_ticks_usec())
+	if find_director() == null:
+		clock.anchor_real(Time.get_ticks_usec())
 	_air_dashes_left = int(_knob("air_dash_count"))
 	_visual = get_node_or_null(NODE_VISUAL) as Node3D
 	_size_body()
 	_load_model()
-	_wire_combat_nodes()
-	_register()
 	_play_clip(&"idle")
-
-
-func _exit_tree() -> void:
-	if _registered_with != null and is_instance_valid(_registered_with) and _registered_with.has_method("unregister"):
-		_registered_with.call("unregister", self)
-	_registered_with = null
 
 
 func _physics_process(delta: float) -> void:
@@ -205,12 +197,16 @@ func is_invulnerable() -> bool:
 	return (_dash != null and _dash.invulnerable()) or _invuln_left_s > 0.0
 
 
-func get_hurtbox() -> Node:
-	return _hurtbox
+## Lights On gives super armor.
+func is_armored() -> bool:
+	var director: CombatDirector = find_director()
+	if director == null or director.lights_on == null or not director.lights_on.is_active():
+		return false
+	return bool(director.lights_on.buffs().get("super_armor", false))
 
 
-func get_hitbox() -> Node:
-	return _hitbox
+func current_swing_id() -> int:
+	return _runner.swing_id() if _runner != null and _runner.is_busy() else 0
 
 
 ## The unit direction her model faces (flat).
@@ -267,20 +263,7 @@ func anchor(point: StringName) -> Vector3:
 			return global_position + Vector3.UP * _body_height() * 0.6 \
 					+ global_basis * Vector3(float(offset[0]), float(offset[1]), float(offset[2]))
 		_:
-			return global_position + Vector3.UP * _body_height() * 0.5
-
-
-func snapshot() -> Dictionary:
-	var armored: bool = false
-	var director: Node = _director()
-	if director != null and "lights_on" in director:
-		var lights: Variant = director.get("lights_on")
-		if lights != null and (lights as Object).has_method("is_active") and bool((lights as Object).call("is_active")):
-			armored = bool(((lights as Object).call("buffs") as Dictionary).get("super_armor", false))
-	return {
-		"id": actor_id, "team": team, "airborne": is_airborne(), "invulnerable": is_invulnerable(),
-		"poise": 0.0, "poise_max": 0.0, "armored": armored, "juggle_count": 0, "launchable": true, "hp": hp,
-	}
+			return super.anchor(point)
 
 
 ## Swap the sword in her hand (GearVisuals, when the Technical Artist's file is there).
@@ -294,21 +277,16 @@ func current_sword() -> StringName:
 	return StringName(gear.call("current_sword")) if gear != null else &""
 
 
-## The victim side of a hit (the director calls it with HitResolver's result). Guards and armor take
-## damage but don't stagger her; a hit or stagger interrupts whatever she is doing.
-func apply_hit(result: Dictionary) -> void:
+## The victim side: the base class has taken the damage; this is how she reacts. Guards and armor
+## take damage but don't stagger her; a hit or stagger interrupts whatever she is doing.
+func _on_hit_reaction(result: Dictionary) -> void:
 	var outcome: String = str(result.get("outcome", "hit"))
-	if outcome in ["ignored", "evaded", "perfect_parry", "parried"]:
-		if outcome == "perfect_parry" or outcome == "parried":
-			_invuln_left_s = maxf(_invuln_left_s, 0.25)
-			_play_clip(&"parry_success" if _has_clip(&"parry_success") else _current_clip)
+	if outcome == "perfect_parry" or outcome == "parried":
+		_invuln_left_s = maxf(_invuln_left_s, 0.25)
+		if _has_clip(&"parry_success"):
+			_play_clip(&"parry_success")
 		return
-	var damage: int = int(result.get("damage", 0))
-	hp = maxi(hp - damage, 0)
-	if hp <= 0:
-		_go_down(true)
-		return
-	if outcome == "guarded" or outcome == "armored":
+	if outcome == "ignored" or outcome == "evaded" or outcome == "guarded" or outcome == "armored" or hp <= 0:
 		return
 	_interrupt_move()
 	_end_dash_state()
@@ -328,14 +306,17 @@ func apply_hit(result: Dictionary) -> void:
 		_play_clip(&"hurt")
 
 
+## She can't lose: at 0 HP she drops, Noise resets, and after a couple of seconds she gets up at full health.
+func _on_death(_result: Dictionary) -> void:
+	_go_down(true)
+	var director: CombatDirector = find_director()
+	if director != null and director.style != null:
+		director.style.reset()
+
+
 ## The attacker side: one of her swings connected.
-func on_hit_landed(_result: Dictionary) -> void:
+func _on_hit_landed(_result: Dictionary) -> void:
 	_hit_landed_in_move = true
-
-
-## The attacker side: one of her swings was parried (Red's moves are not parryable in the sandbox).
-func on_parried(_result: Dictionary) -> void:
-	pass
 
 
 ## Back to full health, standing at `where`, nothing queued (a reset, a respawn).
@@ -357,7 +338,7 @@ func reset_to(where: Transform3D) -> void:
 	_launched = false
 	_knock_velocity = Vector3.ZERO
 	_air_dashes_left = int(_knob("air_dash_count"))
-	hp = hp_max
+	revive(true)
 	_restore_enemy_collision()
 	_set_state(State.LOCOMOTION)
 	_current_clip = &""
@@ -369,14 +350,13 @@ func reset_to(where: Transform3D) -> void:
 func tick(delta: float) -> void:
 	if delta <= 0.0:
 		return
-	var scale: float = _combat_scale(delta)
+	var director: CombatDirector = find_director()
+	var scale: float = director.time.step_scale_for(actor_id, delta) if director != null else 1.0
 	_last_scale = scale
 	if read_engine_input:
 		_read_engine_input()
-	if _registered_with == null:
-		# No director: she steps her own clock. With one, the director steps it (before us, priority -100).
-		if read_engine_input:
-			_resync_clock()
+	if director == null:
+		# A bare run (no director): she steps her own clock. With one, it steps it before us (priority -100).
 		clock.step(int(delta * USEC), scale)
 	_combat_delta = delta * scale
 	# Presses always reach the buffer, even in hit-stop (the buffer runs on Red's clock).
@@ -403,6 +383,7 @@ func tick(delta: float) -> void:
 			_tick_getup(dt, scale, now)
 		_:
 			_tick_free(dt, scale, now)
+	_hitbox.tick(dt)
 	_update_animation(dt)
 
 
@@ -412,13 +393,6 @@ func _read_engine_input() -> void:
 		_held[action] = Input.is_action_pressed(action)
 		if not _event_fed and Input.is_action_just_pressed(action):
 			press(action, Time.get_ticks_usec())
-
-
-## Keeps her clock's real-time axis near the engine's, so press timestamps from `_input` line up.
-func _resync_clock() -> void:
-	var wall: int = Time.get_ticks_usec()
-	if absi(wall - clock.real_now_usec()) > RESYNC_USEC:
-		clock.anchor_real(wall)
 
 
 ## Turns queued presses into buffered tokens on her own clock.
@@ -570,12 +544,12 @@ func _start_dash(stick_direction: Vector3, in_air: bool, _now: int) -> void:
 		_air_dashes_left -= 1
 		_vy = 0.0
 	rotation.y = PlayerMotion.yaw_for_direction(direction)
-	collision_mask &= ~(1 << (LAYER_ENEMY_BODY - 1))
+	collision_mask = CombatLayers.body_mask(team, true)
 	_set_state(State.AIR_DASH if in_air else State.DASH)
 	_play_clip(&"air_dash" if in_air and _has_clip(&"air_dash") else &"dash")
-	var director: Node = _director()
-	if director != null and director.has_method("report_dash"):
-		director.call("report_dash", clock.real_now_usec())
+	var director: CombatDirector = find_director()
+	if director != null:
+		director.report_dash(clock.real_now_usec())
 	dashed.emit(in_air)
 
 
@@ -644,7 +618,7 @@ func _end_dash_state(start_cooldown: bool = false) -> void:
 
 
 func _restore_enemy_collision() -> void:
-	collision_mask = (1 << (LAYER_WORLD - 1)) | (1 << (LAYER_ENEMY_BODY - 1))
+	collision_mask = CombatLayers.body_mask(team, false)
 
 
 # ---- attacks and the parry ----
@@ -688,9 +662,9 @@ func _on_move_began(move_id: StringName, stick_direction: Vector3, now: int) -> 
 			_vy = maxf(_vy, up)
 	_set_state(State.PARRY if move_id == MOVE_PARRY else State.ATTACK)
 	if move_id == MOVE_PARRY:
-		var director: Node = _director()
-		if director != null and director.has_method("report_parry_press"):
-			director.call("report_parry_press", clock.real_now_usec())
+		var director: CombatDirector = find_director()
+		if director != null:
+			director.report_parry_press(clock.real_now_usec())
 	var anim: Dictionary = move.get("anim", {}) as Dictionary
 	_start_move_clip(anim, float(move.get("total_ms", 500.0)))
 	move_started.emit(move_id)
@@ -817,21 +791,21 @@ func _start_jump_from_move(follow: bool) -> void:
 func _handle_runner_event(event: Dictionary) -> void:
 	match str(event["type"]):
 		"hitbox_on":
-			if _hitbox != null and _hitbox.has_method("activate"):
-				_hitbox.call("activate", event["box"], _runner.attack_data(), _runner.swing_id())
+			var box: Dictionary = (event["box"] as Dictionary).duplicate()
+			box["index"] = int(event["index"])
+			_hitbox.activate(box, _runner.attack_data(), _runner.swing_id())
 		"hitbox_off":
-			if _hitbox != null and _hitbox.has_method("deactivate"):
-				_hitbox.call("deactivate", int(event["index"]))
+			_hitbox.deactivate(int(event["index"]))
 		"swing":
-			swing_started.emit(_runner.current_move(), event.get("swing", {}) as Dictionary)
+			var swing: Dictionary = event.get("swing", {}) as Dictionary
+			swing_started.emit(_runner.current_move(), swing)
+			var director: CombatDirector = find_director()
+			if director != null:
+				director.notify_move_started(self, _runner.current_move(), swing)
 		"pose":
 			_seek_pose(StringName(event["clip"]), float(event["clip_s"]))
-		"interrupted":
-			if _hitbox != null and _hitbox.has_method("clear"):
-				_hitbox.call("clear")
-		"done":
-			if _hitbox != null and _hitbox.has_method("clear"):
-				_hitbox.call("clear")
+		"interrupted", "done":
+			_hitbox.clear()
 
 
 func _finish_move() -> void:
@@ -845,8 +819,7 @@ func _interrupt_move() -> void:
 		return
 	for event: Dictionary in _runner.interrupt():
 		_handle_runner_event(event)
-	if _hitbox != null and _hitbox.has_method("clear"):
-		_hitbox.call("clear")
+	_hitbox.clear()
 
 
 # ---- being hit ----
@@ -879,10 +852,7 @@ func _tick_knockdown(dt: float, scale: float, _now: int) -> void:
 	if _down_left_s <= 0.0:
 		if _downed_for_good:
 			_downed_for_good = false
-			hp = hp_max
-			var director: Node = _director()
-			if director != null and director.has_signal("hp_changed"):
-				director.emit_signal("hp_changed", actor_id, hp, hp_max)
+			revive(true)
 		_getup_left_s = _hurt_cfg("getup_ms", 450.0) / 1000.0
 		_invuln_left_s = (_hurt_cfg("getup_ms", 450.0) + _hurt_cfg("invuln_after_getup_ms", 500.0)) / 1000.0
 		_set_state(State.GETUP)
@@ -916,7 +886,6 @@ func _go_down(for_good: bool) -> void:
 	_down_left_s = _hurt_cfg("downed_respawn_s", 2.0) if for_good else _hurt_cfg("knockdown_ms", 700.0) / 1000.0
 	_set_state(State.KNOCKDOWN)
 	_play_clip(&"knockdown")
-	died.emit(actor_id)
 
 
 # ---- shared helpers ----
@@ -935,27 +904,6 @@ func _set_state(new_state: State) -> void:
 		return
 	_state = new_state
 	state_changed.emit(new_state)
-
-
-func _director() -> Node:
-	if not is_inside_tree():
-		return null
-	return get_tree().get_first_node_in_group(GROUP_DIRECTOR)
-
-
-## Red's clock scale for this step: 0 in hit-stop, else 1 (a flare slows the enemies, not her).
-func _combat_scale(delta: float) -> float:
-	var director: Node = _director()
-	if director != null and director.has_method("delta_for"):
-		return clampf(float(director.call("delta_for", self, delta)) / delta, 0.0, 4.0)
-	return 1.0
-
-
-func _register() -> void:
-	var director: Node = _director()
-	if director != null and director.has_method("register"):
-		director.call("register", self)
-		_registered_with = director
 
 
 func _camera_basis() -> Basis:
@@ -998,13 +946,6 @@ func _size_body() -> void:
 		capsule.radius = float(body.get("radius_m", 0.3))
 		capsule.height = float(body.get("height_m", 0.9))
 		shape_node.position.y = capsule.height * 0.5
-
-
-## The Hitbox and Hurtbox come from the Battle Programmer's hit chain; they are added when those
-## scripts exist, so the player works (and is tested) before and after they land.
-func _wire_combat_nodes() -> void:
-	_hitbox = get_node_or_null("Hitbox")
-	_hurtbox = get_node_or_null("Hurtbox")
 
 
 # ---- model and animation ----

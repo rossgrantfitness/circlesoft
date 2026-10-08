@@ -1,0 +1,83 @@
+{
+ "_about": "Enemies for the combat sandbox (docs/pivot/combat_api.md 4.2). Numbers are starting guesses for Ross to tune. 'model' is tried first, then 'fallback_model', then a coloured blockout (capsule or box) so nothing is ever missing.",
+ "version": 1,
+ "max_attackers": 2,
+ "enemies": {
+  "grunt": {
+   "name": "Cyberwolf Sentinel",
+   "model": "res://art/final/enemies/cyberwolf_sentinel_rigged.glb",
+   "fallback_model": "res://art/final/enemies/cyberwolf_sentinel_ross_v1.glb",
+   "blockout": {"shape": "capsule", "color": "#5d6f8c", "face_color": "#e8d36a"},
+   "height_m": 1.19,
+   "radius_m": 0.36,
+   "hp": 48,
+   "poise": 30,
+   "poise_regen_per_s": 15,
+   "poise_regen_delay_ms": 1500,
+   "weight": 1.0,
+   "launchable": true,
+   "base_armor": false,
+   "move_set": "grunt",
+   "move_speed_mps": 2.8,
+   "turn_rate_deg_per_s": 420,
+   "brain": {
+    "notice_range_m": 14.0,
+    "notice_ms": 450,
+    "circle_range_m": 4.5,
+    "min_range_m": 2.2,
+    "circle_speed_mult": 0.55,
+    "circle_flip_ms": [1500, 3200],
+    "attack_interval_ms": [1400, 3000],
+    "recover_ms": 450,
+    "react_ms": 250,
+    "land_react_ms": 300,
+    "dead_ms": 100000
+   },
+   "attacks": [
+    {"move": "swipe", "weight": 1.0, "track_ms": 380, "when": {"max_dist_m": 2.1, "player_airborne": false}},
+    {"move": "swipe", "weight": 0.5, "track_ms": 380, "when": {"max_dist_m": 2.1, "player_airborne": true}}
+   ],
+   "look": "grunt",
+   "telegraph_color": "#ff4a3a",
+   "death_color": "#222222"
+  },
+  "brute": {
+   "name": "Brute",
+   "model": "res://art/placeholder/enemies/sandbox_brute/enm_sandbox_brute.glb",
+   "fallback_model": "",
+   "blockout": {"shape": "box", "color": "#7a4f3a", "face_color": "#e8a23a"},
+   "height_m": 1.7,
+   "radius_m": 0.6,
+   "hp": 220,
+   "poise": 90,
+   "poise_regen_per_s": 10,
+   "poise_regen_delay_ms": 2500,
+   "weight": 3.0,
+   "launchable": false,
+   "base_armor": true,
+   "move_set": "brute",
+   "move_speed_mps": 2.0,
+   "turn_rate_deg_per_s": 240,
+   "brain": {
+    "notice_range_m": 16.0,
+    "notice_ms": 600,
+    "circle_range_m": 5.5,
+    "min_range_m": 3.0,
+    "circle_speed_mult": 0.4,
+    "circle_flip_ms": [2000, 4000],
+    "attack_interval_ms": [2200, 4200],
+    "recover_ms": 700,
+    "react_ms": 200,
+    "land_react_ms": 300,
+    "dead_ms": 100000
+   },
+   "attacks": [
+    {"move": "slam", "weight": 1.0, "track_ms": 600, "when": {"max_dist_m": 3.2, "player_airborne": false}},
+    {"move": "slam", "weight": 0.6, "track_ms": 600, "when": {"max_dist_m": 3.2, "player_airborne": true}}
+   ],
+   "look": "brute",
+   "telegraph_color": "#ffb02e",
+   "death_color": "#222222"
+  }
+ }
+}

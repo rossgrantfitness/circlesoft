@@ -97,9 +97,9 @@ clip("run", 8, [(0, run_key(1, False)), (2, run_key(1, True)), (4, run_key(-1, F
 # ---- the attack: wind-up (the telegraph) then the swing
 WIND_0 = merge(body(lean=-4, head_x=-2, twist=-6), leg("l", -14, 30), leg("r", 14, 30), tail(0, 4), ear(8),
                {"squash": -0.08, "plant": True}, arms(r=(-0.34, 0.02, 0.60), l=(0.26, -0.10, 0.44)))
-WIND_1 = merge(body(lean=-22, head_x=10, twist=-24, chest_z=-10), leg("l", -6, 22), leg("r", 24, 36), tail(-20, 18), ear(18),
+WIND_1 = merge(body(lean=-14, head_x=-4, twist=-24, chest_z=-10), leg("l", -6, 22), leg("r", 24, 36), tail(-20, 18), ear(18),
                {"squash": 0.10, "plant": True}, arms(r=(-0.26, 0.12, 0.98), l=(0.30, -0.06, 0.42)))
-WIND_2 = merge(body(lean=-28, head_x=14, twist=-30, chest_z=-12), leg("l", -4, 20), leg("r", 28, 40), tail(-26, 24), ear(24),
+WIND_2 = merge(body(lean=-18, head_x=-2, twist=-30, chest_z=-12), leg("l", -4, 20), leg("r", 28, 40), tail(-26, 24), ear(24),
                {"squash": 0.14, "plant": True}, arms(r=(-0.24, 0.16, 1.04), l=(0.32, -0.04, 0.40)))
 clip("attack_windup", 8, [(0, WIND_0), (2, WIND_1), (4, WIND_2), (6, pose(WIND_2, squash=0.12, **tail(-30, 26)))])
 

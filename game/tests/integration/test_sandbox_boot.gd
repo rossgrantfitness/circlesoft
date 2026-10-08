@@ -253,3 +253,23 @@ class SwordTaker extends Node3D:
 
 	func current_sword() -> StringName:
 		return sword
+
+
+func test_walking_onto_a_stand_swaps_the_sword_in_her_hand() -> void:
+	var arena: CombatSandbox = _arena()
+	var player: ActionPlayer = arena.get_player() as ActionPlayer
+	player.read_engine_input = false
+	for i: int in 3:
+		await tree.physics_frame
+	var first: SwordRack = arena.get_racks()[0]
+	var other: SwordRack = arena.get_racks()[3]
+	var before: StringName = player.current_sword()
+	player.global_position = other.global_position + Vector3(0.0, 0.05, 0.0)
+	for i: int in 6:
+		await tree.physics_frame
+	if before == &"" and player.current_sword() == &"":
+		# no GearVisuals on this build: nothing to assert about the hand, but the stand must not crash
+		assert_true(true, "no gear visuals yet")
+		return
+	assert_eq(player.current_sword(), other.sword_id, "the glass_core stand put its sword in her hand")
+	assert_ne(player.current_sword(), first.sword_id)

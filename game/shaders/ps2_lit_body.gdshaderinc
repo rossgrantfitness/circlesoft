@@ -46,15 +46,15 @@ void vertex() {
 	float span = max(psx_fog_far - psx_fog_near, 0.0001);
 	v_fog = clamp((-view.z - psx_fog_near) / span, 0.0, 1.0) * psx_fog_enabled;
 	v_fog = v_fog * v_fog * (3.0 - 2.0 * v_fog);
-	if (psx_jitter_strength > 0.0) {
-		vec4 clip = PROJECTION_MATRIX * view;
-		if (clip.w > 0.0) {
-			vec2 cells = psx_snap_res * 0.5 / psx_jitter_strength;
-			vec2 ndc = clip.xy / clip.w;
-			ndc = floor(ndc * cells + 0.5) / cells;
-			POSITION = vec4(ndc * clip.w, clip.z, clip.w);
-		}
+	// POSITION must always be written (a shader that writes it only sometimes leaves it empty the rest of the time).
+	vec4 clip = PROJECTION_MATRIX * view;
+	if (psx_jitter_strength > 0.0 && clip.w > 0.0) {
+		vec2 cells = psx_snap_res * 0.5 / psx_jitter_strength;
+		vec2 ndc = clip.xy / clip.w;
+		ndc = floor(ndc * cells + 0.5) / cells;
+		clip = vec4(ndc * clip.w, clip.z, clip.w);
 	}
+	POSITION = clip;
 }
 
 void fragment() {
