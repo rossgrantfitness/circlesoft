@@ -40,6 +40,26 @@ func test_switches_between_every_resolution_at_runtime() -> void:
 				float(size.x) / float(size.y), 0.001, "picture keeps its shape at %s" % size)
 
 
+func test_native_mode_draws_at_the_window_size_and_leaves_cleanly() -> void:
+	var screen: PsxScreen = _make_screen()
+	assert_false(screen.is_native(), "the old picture is not native")
+	screen.set_native(true)
+	assert_true(screen.is_native())
+	var wanted: Vector2i = screen.native_size()
+	assert_eq(screen.get_resolution(), wanted)
+	assert_eq(screen.get_world_viewport().size, wanted, "the viewport is the window size in screen pixels")
+	assert_eq(screen.get_display().position, Vector2.ZERO, "fills the window, no bars")
+	assert_almost_eq(screen.get_display_scale(), 1.0, 0.01, "one picture pixel per screen pixel")
+	screen.size = Vector2(800, 450)
+	assert_eq(screen.get_world_viewport().size, screen.native_size(), "follows the window")
+	assert_true(screen.set_resolution(DEFAULT_RESOLUTION), "choosing a listed size leaves native")
+	assert_false(screen.is_native())
+	assert_eq(screen.get_world_viewport().size, DEFAULT_RESOLUTION)
+	screen.set_native(true)
+	screen.set_native(false)
+	assert_eq(screen.get_resolution(), DEFAULT_RESOLUTION, "back to the default size")
+
+
 func test_resolution_change_signal_and_cycle() -> void:
 	var screen: PsxScreen = _make_screen()
 	var heard: Array[Vector2i] = []

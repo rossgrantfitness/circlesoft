@@ -348,6 +348,7 @@ func test_a_long_tab_scrolls_to_keep_the_cursor_visible() -> void:
 func test_save_writes_a_readable_file_and_shows_where() -> void:
 	_setup()
 	_panel.focus_knob("dash_distance_m")
+	var expected_dash: float = _knobs.get_f("dash_distance_m") + 2.0 * float(_knob("dash_distance_m")["step"])    # two steps up from the shipped value
 	_press([MenuInput.Cmd.RIGHT, MenuInput.Cmd.RIGHT])
 	assert_true(_panel.is_dirty(), "unsaved changes are flagged")
 	var saved_paths: Array[String] = []
@@ -357,7 +358,7 @@ func test_save_writes_a_readable_file_and_shows_where() -> void:
 	assert_true(FileAccess.file_exists(saved_paths[0]), "the file is there")
 	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(saved_paths[0]))
 	assert_true(parsed is Dictionary, "the file is readable JSON")
-	assert_almost_eq(float((parsed as Dictionary)["values"]["dash_distance_m"]), 4.5, 0.0001)
+	assert_almost_eq(float((parsed as Dictionary)["values"]["dash_distance_m"]), expected_dash, 0.0001)
 	assert_true(_panel.get_message().contains("feel_current.json"), "the message shows the file")
 	assert_eq(_panel.get_saved_path(), saved_paths[0])
 	assert_false(_panel.is_dirty(), "after a save nothing is unsaved")

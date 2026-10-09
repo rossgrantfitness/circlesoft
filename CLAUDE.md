@@ -49,7 +49,7 @@ Then wait. After Ross approves, the Producer logs it in docs/decisions.md with t
 
 ## Scope discipline
 - Game direction (Ross, 2026-10-08): a third-person action RPG about **a cyberpunk hacker bunny girl with a sword**, with cute towns and people. Untitled for now: the working title "LIGHTS ON" and the whole "Lights On" mechanic/theme are cut (Ross, 2026-10-08), though the sandbox keeps the old code until Ross says to remove it. The gameplay loop is still being worked out (Mega Man Legends-style town/dungeon loop was the plan; roguelike ideas are under discussion); a solid action game comes first. Fast character-action combat and visible customizable gear stay. The turn-based version is shelved, not deleted.
-- Current milestone: **COMBAT SANDBOX** (a playable feel prototype Ross downloads and judges by hand). Next: the action VERTICAL SLICE (one town, one dungeon, one boss, Red as the single playable hero, full combat system), scoped after Ross plays the sandbox.
+- Current milestone: **VERTICAL SLICE** (Ross approved 2026-10-09; docs/slice/slice_pitch.md and docs/decisions.md): Mega Man Legends loop; Harrow night market town; a robot junkyard dungeon (loader robot midway, docking into the colossus); boss Sergeant Kasp in the Hushmaster; Red's four starter hacks; untitled. The combat sandbox milestone is done (Ross: "totally bad ass").
 - Anything beyond the current milestone goes in a "Later" list on the task board, not into the build.
 
 ## Borrow what works, transform it

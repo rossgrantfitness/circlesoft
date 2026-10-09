@@ -36,14 +36,46 @@ func test_the_grade_is_ross_s_lighter_b_filter() -> void:
 	assert_almost_eq(LookProfiles.number(PS2, "grade.desat", 0.0), 0.35, 0.0001)
 	assert_almost_eq(LookProfiles.number(PS2, "grade.tint_amount", 0.0), 0.3, 0.0001)
 	assert_almost_eq(LookProfiles.number(PS2, "grade.gamma", 0.0), 1.0, 0.0001)
-	for key: String in ["accent_keep", "crush", "grain", "vignette", "gain"]:
+	for key: String in ["accent_keep", "crush", "vignette", "gain"]:
 		assert_almost_eq(LookProfiles.number(PS2, "grade." + key, -1.0), LookProfiles.number("grim", "grade." + key, -2.0), 0.0001, key + " as in grim")
+
+
+func test_the_picture_is_clean_no_grain_no_dither_no_blur() -> void:
+	# Ross, 2026-10-09: "no need to make them so grainy blurry". Native resolution, no grain, no dither, no smearing filter.
+	var profile: Dictionary = _profile()
+	assert_eq(str(profile["screen"]["resolution"]), "native", "the full window resolution is the default")
+	assert_false(bool(profile["screen"]["smooth_scale"]), "no smooth scale-up filter")
+	assert_eq(float(profile["grade"]["grain"]), 0.0, "no film grain")
+	assert_eq(float(profile["post"]["dither_amount"]), 0.0, "no dither")
+	assert_false(bool(profile["dither"]["enabled"]))
+	assert_false(bool(profile["color_depth"]["enabled"]))
+	assert_ge(int(profile["post"]["color_levels"]), 256, "full colour, no banding")
+	assert_eq(float(LookProfiles.grade_parameters(PS2)["grade_grain"]), 0.0, "what the post shader gets")
+	assert_eq(float(LookProfiles.grade_parameters(PS2)["dither_amount"]), 0.0)
+	var glow: Dictionary = profile["glow"]
+	assert_le(float(glow["intensity"]), 0.7, "a light glow, nothing hazy")
+	assert_eq(float(glow["bloom"]), 0.0)
+	var levels: Array = glow["levels"]
+	for index: int in range(2, levels.size()):
+		assert_eq(float(levels[index]), 0.0, "glow level %d is a wide haze: off" % (index + 1))
+	assert_gt(float(levels[0]) + float(levels[1]), 0.0, "but the tight levels keep the neon halo")
+	assert_ne(str(profile["antialiasing"]["msaa_3d"]), "off", "MSAA smooths edges without blur")
+	assert_false(profile.has("dof") or profile.has("motion_blur"))
+	var viewport: SubViewport = SubViewport.new()
+	own(viewport)
+	Ps2Look.apply_antialiasing(viewport, profile)
+	assert_eq(viewport.msaa_3d, Viewport.MSAA_4X)
+	assert_eq(viewport.screen_space_aa, Viewport.SCREEN_SPACE_AA_DISABLED, "FXAA smears")
+	assert_false(viewport.use_taa, "TAA smears")
+	Ps2Look.apply_antialiasing(viewport, {})
+	assert_eq(viewport.msaa_3d, Viewport.MSAA_DISABLED, "an old profile has no AA")
 
 
 func test_the_ps2_blocks() -> void:
 	var profile: Dictionary = _profile()
 	assert_true(Ps2Look.is_ps2_profile(profile))
-	assert_eq(Ps2Look.resolution_of(str(profile["screen"]["resolution"])), Vector2i(640, 360))
+	var wanted: String = str(profile["screen"]["resolution"])
+	assert_true(wanted == Ps2Look.NATIVE or Ps2Look.resolution_of(wanted) != Vector2i.ZERO, "native or a listed size")
 	assert_eq(float(profile["retro_wobble"]["jitter"]), 0.0)
 	assert_eq(float(profile["retro_wobble"]["affine"]), 0.0)
 	assert_false(bool(profile["dither"]["enabled"]))
@@ -73,7 +105,7 @@ func test_texture_filtering_is_data_per_group() -> void:
 	assert_eq(Ps2Look.group_for_path("res://art/placeholder/enemies/x.glb"), "placeholders")
 
 
-func test_the_640x360_resolution_is_listed_and_the_default_stays_384x216() -> void:
+func test_a_listed_size_stays_a_data_option_and_the_old_default_stays_384x216() -> void:
 	assert_eq(Ps2Look.resolution_of("640x360"), Vector2i(640, 360))
 	assert_eq(Ps2Look.resolution_of("nonsense"), Vector2i.ZERO)
 	assert_eq(str(DataDB.get_value("world/psx_look", "default_resolution", "")), "384x216")
@@ -134,8 +166,16 @@ func test_the_node_switches_the_screen_and_the_effects_and_puts_them_back() -> v
 	assert_false(look.is_applied())
 	LookProfiles.set_forced(PS2)
 	assert_true(look.is_applied())
-	assert_eq(screen.get_resolution(), Vector2i(640, 360))
-	assert_eq(screen.get_display().texture_filter, CanvasItem.TEXTURE_FILTER_LINEAR, "smooth scale-up")
+	var screen_block: Dictionary = _profile()["screen"]
+	if str(screen_block["resolution"]) == Ps2Look.NATIVE:
+		assert_true(screen.is_native(), "the full window resolution")
+		assert_eq(screen.get_resolution(), screen.native_size())
+		assert_eq(screen.get_world_viewport().size, screen.native_size())
+	else:
+		assert_eq(screen.get_resolution(), Ps2Look.resolution_of(str(screen_block["resolution"])))
+	var wanted_filter: int = CanvasItem.TEXTURE_FILTER_LINEAR if bool(screen_block["smooth_scale"]) else CanvasItem.TEXTURE_FILTER_NEAREST
+	assert_eq(screen.get_display().texture_filter, wanted_filter, "the scale-up filter from data")
+	assert_eq(screen.get_world_viewport().msaa_3d, Viewport.MSAA_4X, "MSAA on the world picture")
 	assert_false(PsxLook.is_effect_on(PsxLook.Effect.JITTER), "vertex jitter off")
 	assert_false(PsxLook.is_effect_on(PsxLook.Effect.WARP), "affine warp off")
 	assert_false(PsxLook.is_effect_on(PsxLook.Effect.DITHER))
@@ -145,6 +185,8 @@ func test_the_node_switches_the_screen_and_the_effects_and_puts_them_back() -> v
 	LookProfiles.set_forced("grim")
 	assert_false(look.is_applied())
 	assert_eq(screen.get_resolution(), Vector2i(384, 216), "back to the old game's picture")
+	assert_false(screen.is_native())
+	assert_eq(screen.get_world_viewport().msaa_3d, Viewport.MSAA_DISABLED, "no AA on the old picture")
 	assert_eq(screen.get_display().texture_filter, CanvasItem.TEXTURE_FILTER_NEAREST)
 	assert_true(PsxLook.is_effect_on(PsxLook.Effect.JITTER))
 	assert_true(PsxLook.is_effect_on(PsxLook.Effect.WARP))

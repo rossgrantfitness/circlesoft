@@ -100,3 +100,21 @@ Data only; no mechanic changed.
 | `near_radius_m` | 3.0 m | **5.0 m** | A Grunt circles at 2.2 to 4.5 m, so three wolves nearby now count as a crowd and the sweep can trigger. |
 
 Tests that pinned the old distances: `unit/test_combo_selector.gd` (default target 1.5 m, and the lunge band is now read from `combo.json`), `sim/test_combo_bots.gd` (grunt staged at 1.6 m, Brute at 1.8 m, so Light 1 is the opener) and `integration/test_action_player.gd` (close target at 1.6 m). From 2 m and out a press now lunges by design.
+
+## Tuning v1.2: faster, farther dash (Ross, build 2: "wish the dash was a little faster / farther")
+
+Data only. Ross likes the build; this is the one thing he asked to be bigger.
+
+| Setting | Was | Now | Why |
+|---|---|---|---|
+| `dash_distance_m` | 4.0 m | **5.25 m** (+31%) | Farther, as asked. |
+| `dash_time_ms` | 180 ms | **150 ms** | Snappier. Average speed goes from 22 to 35 m/s, and the burst at the start (the curve is front-loaded) from about 29 to 45 m/s. |
+| `dash_iframes_ms` | 180 | **150** | Still the whole dash: invulnerable from the first instant to the last. |
+| Air dash (`air_distance_mult` 0.85, unchanged) | 3.4 m | **4.5 m** | The same 0.85 share of the new distance, in the same 150 ms, so air and ground feel alike. |
+| `dash.cooldown_ms` | 220 | **180** | Recovery stays short; you can dash again as soon as the last one lands. |
+| `attack_cancel_ms` / `jump_cancel_ms` / `dash_cancel_ms` | 110 / 70 / 220 | **90 / 60 / 180** | Scaled with the shorter dash, so the same share of it is committed before you can cut into an attack, jump or another dash. |
+| `dash.end_speed_mult` (new key, in the dash block) | 0.6 (code default) | **1.0** | At 45 m/s the old drop to 3.6 m/s at the end would be a hard snap; now Red leaves the dash at run speed. Playtester suggested the same. |
+
+Feel knobs and the `knob_defaults` fallback in `player_action.json` both carry the new numbers; the robot forms keep their own dash numbers (`scale_profiles.json` untouched).
+
+Test that pinned the old value: `integration/test_feel_panel.gd::test_save_writes_a_readable_file_and_shows_where` expected the saved dash distance to be 4.5 (the old 4.0 plus two steps). It now computes two steps up from the shipped value.
