@@ -1,0 +1,7 @@
+{
+ "_about": "THROWAWAY (VS-21 tests, not used by the game): a room that starts with Red already inside the loader (rooms.json form small), to prove place_in, the carried form and the knock-out restart inside a real ActionRoom.",
+ "version": 1,
+ "ground": false,
+ "small_robot": {"pos": [0.0, 0.0, 11.5], "yaw_deg": 0.0},
+ "props": [{"kind": "crate_small", "pos": [4.0, 0.0, 6.0], "yaw_deg": 0.0}]
+}

@@ -1,0 +1,14 @@
+kasp_ual.glb and junk_mech_ual.glb : animation credits and license
+
+Animations in these files come from the Universal Animation Library 1 and 2 (Standard) by Quaternius, CC0 1.0 (public domain),
+https://quaternius.itch.io/universal-animation-library and https://quaternius.itch.io/universal-animation-library-2
+No credit is required; it is given anyway. License texts: art/placeholder/animations/quaternius_ual/LICENSE_UAL1.txt and LICENSE_UAL2.txt.
+
+They were retargeted offline (Red's bone names kept) by scripts/tools/retarget_ual.py from data/animation/retarget_kasp.json and
+retarget_junk_mech.json (task VS-25). No clip was authored by hand or by code: every clip is an existing Quaternius clip, sliced,
+sped up or slowed (the junk mech's), joined, held at its last pose, or played mirrored (Scrap Swing, left arm = Sword_Regular_A
+reflected). The source of each clip is in data/animation/kasp_clip_keys.json and junk_mech_clip_keys.json ("source").
+Source clips used: Kasp: Idle_Loop, Jog_Fwd_Loop, Idle_Talking_Loop, Yes, Hit_Chest, Hit_Knockback, LayToIdle, Death01.
+Junk mech: Idle_Loop, Walk_Loop, Sword_Regular_A, Sword_Regular_A_Rec, Sword_Heavy_Combo, OverhandThrow, Hit_Chest, Zombie_Scratch, Death01.
+The meshes are the Technical Artist's placeholder blockouts (scripts/tools/make_bosses.py, task VS-24); the original kasp.glb and
+junk_mech.glb beside them are untouched.

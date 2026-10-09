@@ -157,17 +157,15 @@ func test_zap_drone_hits_a_grunt_across_the_arena() -> void:
 	assert_eq(grunt.hp, grunt.hp_max - 12)
 
 
-func test_emp_pushes_a_pack_off_her_through_the_number_keys() -> void:
+func test_emp_pushes_a_pack_off_her_from_the_number_key() -> void:
 	await _boot(["grunt_1", "grunt_2", "grunt_3"])
 	var pack: Array[ActionEnemy] = [_enemy("grunt_1"), _enemy("grunt_2"), _enemy("grunt_3")]
 	await _stage([[pack[0], 1.8, 0.0], [pack[1], 1.5, 1.6], [pack[2], 1.5, -1.6]])
 	_director.battery.set_charge(100.0)
-	_key(KEY_2)
-	assert_eq(_red.hack_caster().selected(), &"emp", "key 2 chose EMP through the relay")
 	var before: Array[float] = []
 	for grunt: ActionEnemy in pack:
 		before.append(_red.global_position.distance_to(grunt.global_position))
-	await _tap_hack()
+	_key(KEY_2)                           # fires EMP straight away, through the sandbox's own input relay
 	await _run(1.2)
 	print("      [bot] emp: moves %s, hits %d" % [_moves, _hits_by(&"hack_emp").size()])
 	assert_true(_moves.has(&"hack_emp"))
@@ -184,8 +182,7 @@ func test_overclock_turns_a_grunt_on_the_others() -> void:
 	await _stage([[mine, 4.0, 0.0], [theirs, 6.5, 3.0]])
 	theirs.set_physics_process(false)          # a punching bag: this run is about the hijacked Grunt, not about chasing a circling one
 	_director.battery.set_charge(100.0)
-	_key(KEY_3)
-	await _tap_hack()
+	_key(KEY_3)                           # Overclock
 	await _run(1.5, func() -> bool: return mine.hijacked_by != null)
 	assert_eq(mine.hijacked_by, _red, "Overclock took the Grunt she was facing")
 	assert_eq(mine.team, &"player")
@@ -205,8 +202,7 @@ func test_reboot_heals_her_and_empties_the_battery() -> void:
 	await _stage([])
 	_director.battery.reset_full()
 	_red.hp = 30
-	_key(KEY_4)
-	await _tap_hack()
+	_key(KEY_4)                           # Reboot
 	await _run(1.5, func() -> bool: return _red.hp > 30)
 	print("      [bot] reboot: hp 30 -> %d, battery %.0f" % [_red.hp, _director.battery.charge()])
 	assert_eq(_red.hp, 90)

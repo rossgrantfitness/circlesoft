@@ -4,7 +4,7 @@ extends SceneTree
 ##   xvfb-run -a -s "-screen 0 1280x720x24" godot --path game --rendering-driver opengl3 \
 ##       -s res://tests/visual/capture_boss_clips.gd -- --shot=kasp|mech|townsfolk --out=/some/dir
 ## Optional: --poses=clip:seconds,clip:contact,...  (debug: replaces the default list)  --yaw=55  --name=file_stem
-##   --model=res://....glb --keys=res://....json --height=1.05 (debug: another rig)  --columns=5
+##   --light=2.0 (brighter stage for the dark mech)  --model=res://....glb --keys=res://....json --height=1.05 (debug: another rig)  --columns=5
 ## Writes <out>/<shot>_clip_poses.png: one tile per pose (a front-ish three-quarter view), clip name under each.
 ## A pose given as "contact" is the clip's contact_s from the key data.
 ## No game classes are named here (this file compiles before the autoloads exist); everything goes through load().
@@ -50,6 +50,7 @@ var _model_arg: String = ""
 var _keys_arg: String = ""
 var _height_arg: float = 0.0
 var _height: float = 1.0
+var _light: float = 1.0
 var _screen: Node = null
 var _world: Node3D = null
 var _camera: Camera3D = null
@@ -76,6 +77,8 @@ func _initialize() -> void:
 			_keys_arg = arg.trim_prefix("--keys=")
 		elif arg.begins_with("--height="):
 			_height_arg = float(arg.trim_prefix("--height="))
+		elif arg.begins_with("--light="):
+			_light = float(arg.trim_prefix("--light="))
 		elif arg.begins_with("--columns="):
 			COLUMNS = int(arg.trim_prefix("--columns="))
 	await process_frame
@@ -158,13 +161,13 @@ func _build_stage() -> void:
 	environment.background_color = Color("#14172a")
 	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	environment.ambient_light_color = Color("#59607a")
-	environment.ambient_light_energy = 0.9
+	environment.ambient_light_energy = 0.9 * _light
 	var holder: WorldEnvironment = WorldEnvironment.new()
 	holder.environment = environment
 	_world.add_child(holder)
 	var key: DirectionalLight3D = DirectionalLight3D.new()
 	key.light_color = Color("#ffd9b0")
-	key.light_energy = 1.35
+	key.light_energy = 1.35 * _light
 	key.rotation_degrees = Vector3(-40.0, 20.0, 0.0)
 	_world.add_child(key)
 	for lamp: Array in [[Vector3(-2.5, 2.0, -1.5) * _height, Color("#ffb347"), 2.0], [Vector3(2.5, 2.0, 1.5) * _height, Color("#4fd8ff"), 1.6]]:

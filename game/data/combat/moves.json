@@ -2717,8 +2717,34 @@
       "trail": false
      },
      "anim": {
-      "clip": "slam",
-      "keys": [],
+      "clip": "swing_l_windup",
+      "keys": [
+       {
+        "at_ms": 0,
+        "clip": "swing_l_windup",
+        "clip_s": 0.0
+       },
+       {
+        "at_ms": 1900,
+        "clip": "swing_l_strike",
+        "clip_s": 0.0
+       },
+       {
+        "at_ms": 2000,
+        "clip": "swing_l_strike",
+        "clip_s": 0.1
+       },
+       {
+        "at_ms": 2900,
+        "clip": "swing_l_strike",
+        "clip_s": 1.0
+       },
+       {
+        "at_ms": 5100,
+        "clip": "swing_l_strike",
+        "clip_s": 3.2
+       }
+      ],
       "fallback": "swing_l"
      },
      "telegraph_ms": 0,
@@ -2827,8 +2853,34 @@
       "trail": false
      },
      "anim": {
-      "clip": "slam",
-      "keys": [],
+      "clip": "swing_r_windup",
+      "keys": [
+       {
+        "at_ms": 0,
+        "clip": "swing_r_windup",
+        "clip_s": 0.0
+       },
+       {
+        "at_ms": 1900,
+        "clip": "swing_r_strike",
+        "clip_s": 0.0
+       },
+       {
+        "at_ms": 2000,
+        "clip": "swing_r_strike",
+        "clip_s": 0.1
+       },
+       {
+        "at_ms": 2900,
+        "clip": "swing_r_strike",
+        "clip_s": 1.0
+       },
+       {
+        "at_ms": 5100,
+        "clip": "swing_r_strike",
+        "clip_s": 3.2
+       }
+      ],
       "fallback": "swing_r"
      },
      "telegraph_ms": 0,
@@ -2920,8 +2972,34 @@
       "trail": false
      },
      "anim": {
-      "clip": "slam",
-      "keys": [],
+      "clip": "drop_windup",
+      "keys": [
+       {
+        "at_ms": 0,
+        "clip": "drop_windup",
+        "clip_s": 0.0
+       },
+       {
+        "at_ms": 2300,
+        "clip": "drop_strike",
+        "clip_s": 0.0
+       },
+       {
+        "at_ms": 2400,
+        "clip": "drop_strike",
+        "clip_s": 0.1
+       },
+       {
+        "at_ms": 3400,
+        "clip": "drop_strike",
+        "clip_s": 1.1
+       },
+       {
+        "at_ms": 6200,
+        "clip": "drop_strike",
+        "clip_s": 3.9
+       }
+      ],
       "fallback": "overhead"
      },
      "telegraph_ms": 0,
@@ -3062,8 +3140,34 @@
       "trail": false
      },
      "anim": {
-      "clip": "slam",
-      "keys": [],
+      "clip": "stomp_windup",
+      "keys": [
+       {
+        "at_ms": 0,
+        "clip": "stomp_windup",
+        "clip_s": 0.0
+       },
+       {
+        "at_ms": 1600,
+        "clip": "stomp_strike",
+        "clip_s": 0.0
+       },
+       {
+        "at_ms": 1700,
+        "clip": "stomp_strike",
+        "clip_s": 0.1
+       },
+       {
+        "at_ms": 3600,
+        "clip": "stomp_strike",
+        "clip_s": 2.0
+       },
+       {
+        "at_ms": 5600,
+        "clip": "stomp_strike",
+        "clip_s": 4.0
+       }
+      ],
       "fallback": "overhead"
      },
      "telegraph_ms": 0,
@@ -3162,8 +3266,34 @@
       "trail": false
      },
      "anim": {
-      "clip": "slam",
-      "keys": [],
+      "clip": "barrage_windup",
+      "keys": [
+       {
+        "at_ms": 0,
+        "clip": "barrage_windup",
+        "clip_s": 0.0
+       },
+       {
+        "at_ms": 1700,
+        "clip": "barrage_strike",
+        "clip_s": 0.0
+       },
+       {
+        "at_ms": 1800,
+        "clip": "barrage_strike",
+        "clip_s": 0.1
+       },
+       {
+        "at_ms": 3400,
+        "clip": "barrage_strike",
+        "clip_s": 1.7
+       },
+       {
+        "at_ms": 5200,
+        "clip": "barrage_strike",
+        "clip_s": 3.5
+       }
+      ],
       "fallback": "overhead"
      },
      "telegraph_ms": 0,
@@ -3272,7 +3402,7 @@
      "hit": {},
      "hitboxes": [],
      "anim": {
-      "clip": "stagger",
+      "clip": "roar",
       "keys": [],
       "fallback": "stretch_up"
      },

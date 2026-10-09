@@ -140,6 +140,8 @@ var _last_hack_usec: int = -1000000000
 ## Red's hack button, from press to effect (HackCaster). Made the first time a CombatDirector is found; null in a bare test
 ## or when `hacks_enabled` is false, and then the hack button only shows the old call-out.
 var hacks_enabled: bool = true
+## True = the pad's d-pad also walks her (the old behaviour). Off by default: in the slice the d-pad is the deck and the hack picker.
+var dpad_walks: bool = false
 var _hacks: HackCaster = null
 var _hack_request: Dictionary = {}
 ## CS-21, the giant-robot scale test: the body size she has now. Null = Red as always. All the numbers are in
@@ -494,13 +496,32 @@ func tick(delta: float) -> void:
 
 
 func _read_engine_input() -> void:
-	_stick = Input.get_vector(ACTION_LEFT, ACTION_RIGHT, ACTION_UP, ACTION_DOWN)
+	_stick = _walk_input()
 	for action: StringName in BUTTONS:
 		_held[action] = Input.is_action_pressed(action)
 		if not _event_fed and Input.is_action_just_pressed(action):
 			press(action, Time.get_ticks_usec())
 	if not _event_fed and _hacks != null:
 		_hacks.poll_input()
+
+
+## The stick, without the pad's d-pad when `dpad_walks` is off: the d-pad is the command deck and the hack picker's
+## (up opens the deck, down scrolls it, left and right change the hack), so it must not also walk her.
+func _walk_input() -> Vector2:
+	if dpad_walks or not hacks_enabled:
+		return Input.get_vector(ACTION_LEFT, ACTION_RIGHT, ACTION_UP, ACTION_DOWN)
+	var left: float = Input.get_action_strength(ACTION_LEFT) - _dpad(JOY_BUTTON_DPAD_LEFT)
+	var right: float = Input.get_action_strength(ACTION_RIGHT) - _dpad(JOY_BUTTON_DPAD_RIGHT)
+	var up: float = Input.get_action_strength(ACTION_UP) - _dpad(JOY_BUTTON_DPAD_UP)
+	var down: float = Input.get_action_strength(ACTION_DOWN) - _dpad(JOY_BUTTON_DPAD_DOWN)
+	return Vector2(maxf(right, 0.0) - maxf(left, 0.0), maxf(down, 0.0) - maxf(up, 0.0)).limit_length(1.0)
+
+
+static func _dpad(button: JoyButton) -> float:
+	for device: int in Input.get_connected_joypads():
+		if Input.is_joy_button_pressed(device, button):
+			return 1.0
+	return 0.0
 
 
 ## Turns queued presses into buffered tokens on her own clock.
@@ -513,6 +534,10 @@ func _ingest_presses() -> void:
 			continue
 		if action == TOKEN_JUMP and _jump_blocked_frames > 0:
 			continue            # the press that closed a menu must not also jump
+		if action != TOKEN_PARRY and _form_id == &"red" and not dead:
+			var caster: HackCaster = hack_caster()
+			if caster != null and caster.consume_shortcut(action):
+				continue        # guard (or lock-on) held + a face button: a hack shortcut, not the button's own job
 		if action == TOKEN_HEAVY:
 			_press_hack(int(entry["usec"]))        # the second button is the hack button: no attack
 			continue
@@ -993,7 +1018,12 @@ func _handle_move_inputs(now: int, direction: Vector3, on_floor: bool) -> void:
 				_begin_move(MOVE_PARRY, now, direction)
 				return
 			TOKEN_HACK:
-				if _begin_hack(now, direction, true):
+				if _state == State.PARRY:
+					for brace_event: Dictionary in _runner.interrupt():
+						_handle_runner_event(brace_event)
+					if _begin_hack(now, direction, false):
+						return
+				elif _begin_hack(now, direction, true):
 					return          # the cast move took over from the one that was playing
 			TOKEN_LIGHT:
 				if _apply_combo_pick(_combo_pick_cache, now, direction, true):
@@ -1023,7 +1053,11 @@ func _move_accepts(token: StringName, now: int, on_floor: bool) -> bool:
 		TOKEN_PARRY:
 			return _runner.can_cancel(&"parry", now) and on_floor
 		TOKEN_HACK:
-			return _hacks != null and _state == State.ATTACK and _runner.chain_window_open(now)      # a hack follows a swing in its chain window
+			if _hacks == null:
+				return false
+			if _state == State.PARRY:
+				return bool(_hack_request.get("shortcut", false))       # guard held + a face button: out of the brace into the hack
+			return _state == State.ATTACK and _runner.chain_window_open(now)      # a hack follows a swing in its chain window
 		TOKEN_JUMP:
 			return _runner.can_cancel(&"jump", now) and (on_floor or _follow_jump_ready())
 		TOKEN_LIGHT:

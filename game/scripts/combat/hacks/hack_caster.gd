@@ -22,6 +22,7 @@ const ACTION_NEXT: StringName = &"hack_next"
 const ACTION_SLOTS: Array[StringName] = [&"hack_1", &"hack_2", &"hack_3", &"hack_4"]
 const BUTTON: StringName = &"heavy"
 const TEXT_FILE: String = "hack_text.json"
+const SHORTCUTS_FILE: String = "hack_shortcuts.json"
 const REFUSAL_GAP_USEC: int = 500000
 
 var player: ActionPlayer = null
@@ -30,6 +31,7 @@ var rules: HackRules = null
 var selector: HackSelector = null
 
 var _text: Dictionary = {}
+var _shortcuts: Dictionary = {}
 var _cast: Dictionary = {}                 # the cast in flight (see begin_cast)
 var _down_usec: int = -1
 var _hold_fired: bool = false
@@ -47,6 +49,7 @@ func attach(who: ActionPlayer) -> void:
 	rules = HackRules.load_default()
 	selector = HackSelector.load_default()
 	_text = CombatData.read_json(CombatData.DIR + TEXT_FILE)
+	_shortcuts = CombatData.read_json(CombatData.DIR + SHORTCUTS_FILE)
 	ensure_actions()
 	_sync_mode()
 	if not who.swing_started.is_connected(_on_swing_started):
@@ -152,6 +155,11 @@ func set_current(id: StringName) -> bool:
 	return true
 
 
+## The same as set_current (the deck's mouse picks call this name).
+func select_id(id: StringName) -> bool:
+	return set_current(id)
+
+
 func current() -> StringName:
 	return selector.current() if selector != null else &""
 
@@ -163,11 +171,48 @@ func cast_current() -> bool:
 
 ## Fires `id` now without changing the current one (a shortcut, or a menu entry picked and confirmed). The cost, cooldown,
 ## jam, target and air rules still apply; a refusal comes back through `hack_refused`. True if the request was made.
-func cast_direct(id: StringName) -> bool:
+func cast_direct(id: StringName, shortcut: bool = false) -> bool:
 	if player == null or rules == null or not rules.has_hack(id) or player.town_mode or player.get_form_id() != &"red" or player.dead:
 		return false
-	player.queue_hack({"held_ms": 0.0, "hack": id}, player.clock.real_now_usec())
+	player.queue_hack({"held_ms": 0.0, "hack": id, "shortcut": shortcut}, player.clock.real_now_usec())
 	return true
+
+
+## Keys 1 to 4 and a modifier plus a face button: fire hack `slot` (0 to 3, in the order of hacks.json) straight away.
+## It does not change the current hack. False if there is no such slot or the cast cannot be asked for.
+func fire_slot(slot: int, shortcut: bool = false) -> bool:
+	if rules == null or slot < 0 or slot >= rules.order().size():
+		return false
+	return cast_direct(rules.order()[slot], shortcut)
+
+
+## Which slot a pressed button means while a modifier is held (-1 if no modifier is held or the button is not a shortcut).
+func shortcut_slot(action: StringName) -> int:
+	var buttons: Dictionary = _shortcuts.get("buttons", {}) as Dictionary
+	if not buttons.has(String(action)) or not _modifier_held():
+		return -1
+	return int(buttons[String(action)])
+
+
+## A button press that is really a shortcut: fires the hack and tells the caller to drop the press. Only in play, never in town.
+func consume_shortcut(action: StringName) -> bool:
+	if player == null or player.town_mode:
+		return false
+	var slot: int = shortcut_slot(action)
+	if slot < 0:
+		return false
+	fire_slot(slot, true)
+	return true
+
+
+func _modifier_held() -> bool:
+	for modifier: Variant in _shortcuts.get("modifiers", []) as Array:
+		var action: StringName = StringName(str(modifier))
+		if player != null and player.is_held(action):
+			return true
+		if InputMap.has_action(action) and action != &"parry" and Input.is_action_pressed(action):
+			return true
+	return false
 
 
 ## Everything a menu row needs about one hack: {id, name, icon, role, cost (number, the whole battery for Reboot), cost_all,
@@ -234,7 +279,7 @@ func _announce_selection() -> void:
 	_callout("selected", {"name": rules.display_name(id), "cost": _cost_words(id)})
 
 
-## One input event from the relay (with its action names): the selection keys, wheel and d-pad.
+## One input event from the relay (with its action names): wheel and d-pad change the hack, keys 1 to 4 fire hack 1 to 4.
 func handle_input_event(event: InputEvent) -> void:
 	if event.is_echo() or (player != null and player.town_mode):
 		return
@@ -245,7 +290,7 @@ func handle_input_event(event: InputEvent) -> void:
 	else:
 		for i: int in range(ACTION_SLOTS.size()):
 			if InputMap.has_action(ACTION_SLOTS[i]) and event.is_action_pressed(ACTION_SLOTS[i]):
-				select_slot(i)
+				fire_slot(i)
 
 
 ## The same keys, polled (the game when no relay forwards events).
@@ -258,7 +303,7 @@ func poll_input() -> void:
 		select_step(1)
 	for i: int in range(ACTION_SLOTS.size()):
 		if InputMap.has_action(ACTION_SLOTS[i]) and Input.is_action_just_pressed(ACTION_SLOTS[i]):
-			select_slot(i)
+			fire_slot(i)
 
 
 # ---- the button ----
@@ -357,7 +402,7 @@ func begin_cast(request: Dictionary) -> Dictionary:
 	if selector.mode == HackSelector.MODE_AUTO:
 		director.hack_selected.emit(hack)
 	director.hack_cast.emit({"hack": hack, "name": rules.display_name(hack), "cost": price, "target": _id_of(target),
-			"position": player.global_position})
+			"position": player.global_position, "cooldown_ms": rules.cooldown_ms(hack, knobs)})
 	_callout("cast", {"name": rules.display_name(hack), "left": str(int(roundf(battery_now.charge())))})
 	return {"started": true, "move": _cast["move"], "aim": heading}
 

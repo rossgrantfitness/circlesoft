@@ -1,0 +1,7 @@
+{
+  "_about": "The quick way to fire a hack without the command deck (Ross, Decision 1: a Kingdom Hearts style menu plus shortcuts). Keys 1 to 4 fire hack 1 to 4 straight away (hacks.json selection.order: Zap Drone, EMP, Overclock, Reboot). Holding a modifier button and pressing a face button fires the same four: the face button does not do its usual job while a modifier is held. Slots are 0-based positions in the order. Owner: Combat Designer (the mapping), Combat Programmer (the code). Remap by editing this file.",
+  "modifiers": ["parry", "lock_on"],
+  "_modifiers_note": "parry = the guard button (L on the keyboard, left shoulder on a pad). lock_on = Tab / middle mouse / right shoulder. Holding the lock-on button still toggles the lock when pressed, so the guard button is the cleaner one.",
+  "buttons": {"jump": 0, "dash": 1, "light": 2, "heavy": 3},
+  "_buttons_note": "Pad A (jump) = 1, B (dash) = 2, X (light) = 3, Y (heavy) = 4; on the keyboard Space, Shift, J, K."
+}

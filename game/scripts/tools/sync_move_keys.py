@@ -10,7 +10,11 @@ each key snaps the clip to the data-timed pose (docs/pivot/combat_api.md section
     player move:  at 0 -> contact - startup (the wind-up as it would be at that moment), at startup -> contact,
                   at startup+active -> contact + active, at the end -> contact + (active + recovery).
     enemy attack: the wind-up clip plays from 0; LEAD_IN_S before the impact the swing clip takes over, so the strike
-                  lands at impact_ms.
+                  lands at impact_ms. The swing clip is `attack_swing` for the sandbox enemies; for a wind-up clip whose key
+                  entry has `"strike": "<clip>"` (the junk mech's swing_r_windup -> swing_r_strike ...) it is that clip.
+For the junk mech the second and third strikes of a multi-hit clip are `extra_contacts_s` in the key data (stomp: the second stomp,
+barrage: the second and third lob); they are not keyed (the clip plays at its own speed between keys), the tests check that they
+sit where the move's hitboxes are.
 Clips whose contact does not exist (hand-posed stand-ins) keep the keys they have.
 The file is read and written in its own format (indent 1, no trailing newline); the script refuses to run if a plain
 round trip would change it.
@@ -22,12 +26,14 @@ import os
 HERE = os.path.dirname(os.path.abspath(__file__))
 GAME = os.path.abspath(os.path.join(HERE, "..", ".."))
 MOVES = os.path.join(GAME, "data", "combat", "moves.json")
-CLIP_KEYS = {"red": "red_clip_keys.json", "grunt": "wolf_clip_keys.json", "brute": "brute_clip_keys.json"}
+# move set -> clip-key file, relative to game/data/
+CLIP_KEYS = {"red": "combat/red_clip_keys.json", "grunt": "combat/wolf_clip_keys.json", "brute": "combat/brute_clip_keys.json",
+             "junk_mech": "animation/junk_mech_clip_keys.json"}
 LEAD_IN_S = 0.1
 
 
 def load_clips(set_id):
-    path = os.path.join(GAME, "data", "combat", CLIP_KEYS[set_id])
+    path = os.path.join(GAME, "data", CLIP_KEYS[set_id])
     if not os.path.exists(path):
         return {}
     with open(path) as f:
@@ -51,19 +57,21 @@ def player_keys(clips, move):
 
 def enemy_keys(clips, move):
     anim = move["anim"]
-    wind, swing = clips.get(anim["clip"]), clips.get("attack_swing")
-    if anim["clip"] != "attack_windup" or not is_real(wind) or not is_real(swing) or "contact_s" not in swing:
+    wind = clips.get(anim["clip"])
+    strike = (wind or {}).get("strike", "attack_swing" if anim["clip"] == "attack_windup" else None)
+    swing = clips.get(strike) if strike else None
+    if strike is None or not is_real(wind) or not is_real(swing) or "contact_s" not in swing:
         return None
     impact = int(move.get("impact_ms", move["startup_ms"]))
     a, total = move["active_ms"], move["startup_ms"] + move["active_ms"] + move["recovery_ms"]
     c, length = swing["contact_s"], swing["length_s"]
     lead = min(LEAD_IN_S, c)
     return [
-        {"at_ms": 0, "clip": "attack_windup", "clip_s": 0.0},
-        {"at_ms": int(impact - lead * 1000), "clip": "attack_swing", "clip_s": round(c - lead, 4)},
-        {"at_ms": impact, "clip": "attack_swing", "clip_s": round(c, 4)},
-        {"at_ms": impact + a, "clip": "attack_swing", "clip_s": round(min(c + a / 1000.0, length), 4)},
-        {"at_ms": total, "clip": "attack_swing", "clip_s": round(min(c + (total - impact) / 1000.0, length), 4)},
+        {"at_ms": 0, "clip": anim["clip"], "clip_s": 0.0},
+        {"at_ms": int(impact - lead * 1000), "clip": strike, "clip_s": round(c - lead, 4)},
+        {"at_ms": impact, "clip": strike, "clip_s": round(c, 4)},
+        {"at_ms": impact + a, "clip": strike, "clip_s": round(min(c + a / 1000.0, length), 4)},
+        {"at_ms": total, "clip": strike, "clip_s": round(min(c + (total - impact) / 1000.0, length), 4)},
     ]
 
 

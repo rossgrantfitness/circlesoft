@@ -108,7 +108,9 @@ static func _is_allowed(allowed: Array, a: String, b: String) -> bool:
 static func apply(interact_mode: StringName) -> void:
 	_mode = interact_mode
 	InputRemap.snapshot()            # remember the project's own bindings before touching any, so a remap starts from them
-	var changes: Array = DataDB.get_value(DATA_ID, "interact_changes.%s" % String(interact_mode), []) as Array
+	ensure_slice_actions()
+	var changes: Array = (DataDB.get_value(DATA_ID, "always_changes", []) as Array).duplicate()
+	changes.append_array(DataDB.get_value(DATA_ID, "interact_changes.%s" % String(interact_mode), []) as Array)
 	for entry: Variant in changes:
 		var change: Dictionary = entry as Dictionary
 		var action: String = str(change.get("action", ""))
@@ -121,6 +123,13 @@ static func apply(interact_mode: StringName) -> void:
 		for axis_entry: Variant in (change.get("add_pad_axes", []) as Array):
 			var info: Dictionary = axis_entry as Dictionary
 			_add_pad_axis(action, int(info.get("axis", 0)), float(info.get("value", 1.0)))
+
+
+## The slice's own buttons that the project file does not have: the hack picker's wheel, d-pad left / right and keys 1 to 4
+## (HackCaster), and the command deck's open and scroll (ActionHud). Both add them only when missing, so this is safe to repeat.
+static func ensure_slice_actions() -> void:
+	HackCaster.ensure_actions()
+	ActionHud.ensure_deck_actions()
 
 
 ## Puts every action apply() touched back as it was (the old game's buttons).

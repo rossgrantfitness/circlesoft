@@ -375,17 +375,72 @@ func test_reboot_in_the_air_is_refused() -> void:
 
 # ---- picking ----
 
-func test_keys_one_to_four_choose_the_hack() -> void:
+func test_keys_one_to_four_fire_that_hack_straight_away() -> void:
+	await _setup()
+	_kit.battery().set_charge(100.0)
+	var event: InputEventKey = InputEventKey.new()
+	event.physical_keycode = KEY_2
+	event.pressed = true
+	_kit.red.handle_input_event(event)
+	await _kit.frames(30)
+	assert_eq(_kit.moves, [&"hack_emp"] as Array[StringName], "key 2 is EMP")
+	assert_eq(_kit.caster().current(), &"zap_drone", "and the menu's current hack did not change")
+	assert_eq(_kit.battery().charge(), 60.0)
+	assert_eq(float(_kit.casts[0]["cooldown_ms"]), 1200.0, "hack_cast tells the HUD the cooldown")
+
+
+func test_select_id_is_the_decks_mouse_pick() -> void:
 	await _setup()
 	var chosen: Array[StringName] = []
 	_kit.director.hack_selected.connect(func(id: StringName) -> void: chosen.append(id))
-	var event: InputEventKey = InputEventKey.new()
-	event.physical_keycode = KEY_3
-	event.pressed = true
-	_kit.red.handle_input_event(event)
-	assert_eq(_kit.caster().selected(), &"overclock")
+	assert_true(_kit.caster().select_id(&"overclock"))
+	assert_eq(_kit.caster().current(), &"overclock")
 	assert_eq(chosen, [&"overclock"] as Array[StringName])
-	assert_has(_kit.texts, "Hack: Overclock  (costs 50)")
+	assert_false(_kit.caster().select_id(&"nope"))
+
+
+func test_holding_guard_and_pressing_a_face_button_fires_a_hack_and_not_the_buttons_own_job() -> void:
+	await _setup()
+	_kit.battery().set_charge(100.0)
+	_kit.red.press(&"parry")
+	await _kit.frames(1)
+	_kit.red.press(&"dash")                 # B = hack 2 = EMP
+	await _kit.frames(1)
+	_kit.red.release(&"dash")
+	await _kit.frames(30)
+	_kit.red.release(&"parry")
+	assert_true(_kit.moves.has(&"hack_emp"), "the shortcut cast EMP: %s" % [_kit.moves])
+	assert_null(_kit.red.get_dash(), "and she did not dash")
+	assert_eq(_kit.battery().charge(), 60.0)
+
+
+func test_the_four_face_buttons_with_guard_are_the_four_hacks() -> void:
+	await _setup()
+	var expected: Dictionary = {&"jump": 0, &"dash": 1, &"light": 2, &"heavy": 3}
+	for button: StringName in expected.keys():
+		assert_eq(_kit.caster().shortcut_slot(button), -1, "no modifier held: not a shortcut")
+	_kit.red.press(&"parry")
+	await _kit.frames(1)
+	for button: StringName in expected.keys():
+		assert_eq(_kit.caster().shortcut_slot(button), int(expected[button]), String(button))
+	assert_eq(_kit.caster().shortcut_slot(&"parry"), -1)
+	_kit.red.release(&"parry")
+
+
+func test_a_face_button_without_a_modifier_does_its_own_job() -> void:
+	await _setup()
+	_kit.battery().set_charge(100.0)
+	_kit.red.press(&"light")
+	await _kit.frames(5)
+	_kit.red.release(&"light")
+	await _kit.frames(20)
+	assert_eq(_kit.moves[0], &"light_1")
+	assert_eq(_kit.casts.size(), 0)
+
+
+func test_the_pad_dpad_no_longer_walks_her() -> void:
+	await _setup()
+	assert_false(_kit.red.dpad_walks)
 
 
 func test_the_mouse_wheel_and_dpad_step_the_selection() -> void:

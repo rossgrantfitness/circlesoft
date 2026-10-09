@@ -2,11 +2,15 @@
  "_about": "Input sorting for the slice (docs/slice/slice_tech_plan.md 3, Decision 3). The old game and the sandbox share one InputMap (project.godot), so the slice does not rewrite it: at slice boot InputSorting applies the small changes below, and a test proves that no two actions that are live in the same kind of room share a button by accident. contexts: which actions the player can use at once in a town room, a dungeon or arena room, and a menu. room_kinds: rooms.json kind -> context. allowed_overlaps: pairs that share a button on purpose (never live at the same moment). interact_changes: what Decision 3 does to the interact button, per slice.json interact.mode. Pad button numbers are Godot's (0 A, 1 B, 2 X, 3 Y, 6 Start, 9 left shoulder, 10 right shoulder); axis 5 is the right trigger.",
  "contexts": {
   "town": ["move_up", "move_down", "move_left", "move_right", "jump", "light", "dash", "interact", "start"],
-  "dungeon": ["move_up", "move_down", "move_left", "move_right", "jump", "light", "heavy", "dash", "parry", "lock_on", "interact", "camera_left", "camera_right", "camera_up", "camera_down", "camera_toggle", "disembark", "feel_panel", "start"],
+  "dungeon": ["move_up", "move_down", "move_left", "move_right", "jump", "light", "heavy", "dash", "parry", "lock_on", "interact", "camera_left", "camera_right", "camera_up", "camera_down", "camera_toggle", "disembark", "feel_panel", "start", "hack_prev", "hack_next", "hack_1", "hack_2", "hack_3", "hack_4", "deck_open", "deck_scroll"],
   "menu": ["move_up", "move_down", "move_left", "move_right", "confirm", "cancel", "start"]
  },
  "room_kinds": {"town": "town", "dungeon": "dungeon", "arena": "dungeon"},
  "allowed_overlaps": [
+  {"actions": ["move_up", "deck_open"], "why": "Pad d-pad up opens the command deck. The d-pad also moves menus (move_* is the menu cursor), but ActionPlayer ignores d-pad for walking (the left stick moves Red), so in a room the press only means the deck."},
+  {"actions": ["move_down", "deck_scroll"], "why": "Pad d-pad down scrolls the deck. Same reason."},
+  {"actions": ["move_left", "hack_prev"], "why": "Pad d-pad left picks the previous hack. Same reason."},
+  {"actions": ["move_right", "hack_next"], "why": "Pad d-pad right picks the next hack. Same reason."},
   {"actions": ["confirm", "start"], "why": "Enter confirms inside a menu and Start closes the pause menu; the same press never means both because the pause menu eats it (old game's setup)."}
  ],
  "interact_changes": {

@@ -511,6 +511,10 @@ func _apply_session() -> void:
 		if not robot_stage.form_changed.is_connected(_on_stage_form):
 			robot_stage.form_changed.connect(_on_stage_form)
 	hero.hp = _entry_session.health_for(hero.hp_max)
+	if _entry_session.hp > 0 and _entry_session.hp_max > 0 and _entry_session.hp_max != hero.hp_max:
+		# she walked in from a body of another size (Red to the loader and back): keep the fraction, not the number
+		var fraction: float = clampf(float(_entry_session.hp) / float(_entry_session.hp_max), 0.0, 1.0)
+		hero.hp = clampi(int(roundf(fraction * float(hero.hp_max))), 1, hero.hp_max)
 	hero.dead = false
 	if director != null:
 		director.hp_changed.emit(hero.actor_id, hero.hp, hero.hp_max)

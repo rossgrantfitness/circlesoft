@@ -1,0 +1,10 @@
+townsfolk_blockout_ual.glb : animation credits and license
+
+Animations in this file come from the Universal Animation Library 1 (Standard) by Quaternius, CC0 1.0 (public domain),
+https://quaternius.itch.io/universal-animation-library
+No credit is required; it is given anyway. License text: art/placeholder/animations/quaternius_ual/LICENSE_UAL1.txt.
+
+Retargeted offline (Red's bone names kept) by scripts/tools/retarget_ual.py from data/animation/retarget_townsfolk.json (task VS-25):
+idle = Idle_Loop, talk = Idle_Talking_Loop, walk = Walk_Loop. Nothing was authored. The mesh is a plain placeholder mannequin made by
+scripts/tools/make_townsfolk.py (body node townsfolk_body, separable face plate townsfolk_face); townsfolk_blockout.glb beside it
+has no animation.
