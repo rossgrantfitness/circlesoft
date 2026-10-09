@@ -422,7 +422,7 @@ func test_the_card_lists_every_row_from_the_contract_table() -> void:
 		labels.append(str(row["label"]))
 		assert_ne(str(row["key"]), "", "%s has a keyboard button" % row["label"])
 		assert_ne(str(row["pad"]), "", "%s has a controller button" % row["label"])
-	for need: String in ["Move", "Camera", "Jump", "Attack", "Hack (coming later)", "Dash", "Parry", "Lock on", "Camera style", "Feel knobs", "Pause"]:
+	for need: String in ["Move", "Camera", "Jump", "Attack", "Hack", "Dash", "Parry", "Lock on", "Camera style", "Feel knobs", "Pause"]:
 		assert_has(labels, need)
 
 

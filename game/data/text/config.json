@@ -128,8 +128,8 @@
     "hint": "Sword attack. Keep pressing it: Red picks the right move for the moment."
    },
    "heavy": {
-    "label": "Hack (coming later)",
-    "hint": "Reserved for Red's hacker powers. For now it only shows a note."
+    "label": "Hack",
+    "hint": "Fires Red's selected hack. Sword hits charge the battery, hacks spend it. Numbers 1 to 4, the mouse wheel or the d-pad change the hack."
    },
    "dash": {
     "label": "Dash",

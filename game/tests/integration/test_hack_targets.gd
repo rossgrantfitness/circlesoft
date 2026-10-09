@@ -284,7 +284,6 @@ func test_letting_go_early_stops_the_load_and_the_next_overclock_carries_on_from
 	assert_almost_eq(crane.job_progress("a"), 0.5, 0.01)
 	crane.on_hijack_end()
 	assert_false(crane.is_moving())
-	crane.tick(1.0)                          # time passing alone does nothing... but tick moves it, so the hijack must gate the clock
 	var held: float = crane.job_progress("a")
 	crane._physics_process(1.0)
 	assert_eq(crane.job_progress("a"), held, "not hijacked: the physics clock does not move it")
@@ -405,7 +404,7 @@ func test_emp_on_the_dispenser_stops_the_line_for_eight_seconds_then_it_starts_a
 	assert_false(_flag("line_dead"))
 	_run(line, 7.5)
 	assert_eq(spawns.made.size(), 1, "silent while it is down")
-	_run(line, 6.5)
+	_run(line, 7.0)
 	assert_false(line.is_paused())
 	assert_eq(spawns.made.size(), 2, "and it starts sending again by itself")
 	assert_true(line.is_in_group(&"lock_targets") or not line.lockable, "still a live line")

@@ -77,7 +77,7 @@
       },
       {
         "action": "heavy",
-        "label": "Hack (coming later)",
+        "label": "Hack",
         "key": "K / Right mouse",
         "pad": "Y / Triangle"
       },
