@@ -44,6 +44,7 @@ const AMBIENCE_IDS: Array[String] = [
 ]
 const MUSIC_IDS: Array[String] = [
 	"music_market", "music_battle_regular", "music_battle_tough", "music_battle_boss", "music_hushmaster", "music_junk_mech",
+	"music_junkyard", "music_loader",
 ]
 ## Loops (sfx.json "loop": true). The market's one-shots (drones, patrol) are not loops.
 const LOOP_IDS: Array[String] = [
@@ -52,6 +53,7 @@ const LOOP_IDS: Array[String] = [
 	"amb_market_night", "amb_market_music", "amb_market_radio", "amb_market_arcade", "amb_market_noodles",
 	"amb_market_charger", "amb_market_chimes", "amb_junkyard",
 	"music_market", "music_battle_regular", "music_battle_tough", "music_battle_boss", "music_hushmaster", "music_junk_mech",
+	"music_junkyard", "music_loader",
 ]
 ## Anything that answers a press or lands a hit: loud inside its first 10 ms.
 const TRANSIENT_IDS: Array[String] = [
@@ -237,6 +239,29 @@ func test_every_room_music_key_has_a_stand_in() -> void:
 		checked += 1
 	assert_true(text.contains("\"music\":\"market\"") or text.contains("\"music\": \"market\""), "the slice rooms still ask for 'market'")
 	assert_eq(checked, 4)
+
+
+## Every `music` a slice room asks for (after data/slice/audio.json's aliases) has a track behind it, and the
+## junkyard rooms and the loader run have their own.
+func test_every_slice_room_music_resolves_to_a_track() -> void:
+	var audio: Node = tree.root.get_node_or_null("AudioManager")
+	assert_not_null(audio, "AudioManager autoload")
+	if audio == null:
+		return
+	var rooms: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/slice/rooms.json")) as Dictionary
+	var aliases: Dictionary = (JSON.parse_string(FileAccess.get_file_as_string("res://data/slice/audio.json")) as Dictionary).get("music_aliases", {}) as Dictionary
+	var seen: Dictionary = {}
+	for id: Variant in (rooms.get("rooms", {}) as Dictionary):
+		var entry: Dictionary = (rooms["rooms"] as Dictionary)[id] as Dictionary
+		var key: String = str(entry.get("music", ""))
+		if key.is_empty():
+			continue
+		seen[key] = true
+		assert_ne(audio.resolve_music_id(StringName(str(aliases.get(key, key)))), "", "room %s: music '%s' has a track" % [id, key])
+	assert_has(seen, "junkyard", "the junkyard rooms ask for 'junkyard'")
+	assert_has(seen, "loader", "the loader run asks for 'loader'")
+	assert_eq(audio.resolve_music_id(&"junkyard"), "music_junkyard")
+	assert_eq(audio.resolve_music_id(&"loader"), "music_loader")
 
 
 # ---- the files ----

@@ -1054,6 +1054,24 @@
       "loop": true,
       "placeholder": true,
       "note": "Music stand-in, the junk mech (phase 2): heavy lurching C minor chug at 132 BPM, ~14.5 s loop. NEW id."
+    },
+    "music_junkyard": {
+      "file": "res://audio/sfx/placeholder/music_junkyard.wav",
+      "bus": "Music",
+      "volume_db": -14.0,
+      "pitch_scale": 1.0,
+      "loop": true,
+      "placeholder": true,
+      "note": "Music stand-in, the junkyard (rooms.json 'junkyard'): grimy, industrial, mid-tempo A minor at 96 BPM, 80 s loop; bass, pad, pipe clanks, then a half-time beat and a lonely lead. Original tune."
+    },
+    "music_loader": {
+      "file": "res://audio/sfx/placeholder/music_loader.wav",
+      "bus": "Music",
+      "volume_db": -13.0,
+      "pitch_scale": 1.0,
+      "loop": true,
+      "placeholder": true,
+      "note": "Music stand-in, Smash Run J5 in the loader (rooms.json 'loader'): the junkyard mood, more driving; four on the floor at 112 BPM, ~34 s loop. NEW id."
     }
   }
 }

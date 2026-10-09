@@ -1,9 +1,10 @@
 {
- "_about": "Sound wiring for the slice's rooms (VS-32 sounds, wired by the Gameplay Programmer). A room's rooms.json `music` is a track name for AudioManager.play_music; `music_aliases` renames a rooms.json name to the track that exists (a name with no track is silence, one warning). `ambience_by_music` lists the ambience loops (sfx.json ids with loop true) that run under a room, picked by its `music` name; a room may carry its own `ambience` list in rooms.json, which wins. The loops start when the room is entered and stop when it is left. `hack_sounds` maps the director's hack signals to sfx ids. Boss sounds are wired by the Combat Programmer. TODO for the Audio Designer: a `music_junkyard` track (the junkyard rooms are silent apart from the ambience until it exists).",
+ "_about": "Sound wiring for the slice's rooms (VS-32 sounds, wired by the Gameplay Programmer). A room's rooms.json `music` is a track name for AudioManager.play_music; `music_aliases` renames a rooms.json name to the track that exists (a name with no track is silence, one warning). `ambience_by_music` lists the ambience loops (sfx.json ids with loop true) that run under a room, picked by its `music` name; a room may carry its own `ambience` list in rooms.json, which wins. The loops start when the room is entered and stop when it is left. `hack_sounds` maps the director's hack signals to sfx ids. Boss sounds are wired by the Combat Programmer. Tracks (placeholder loops made by scripts/tools/make_slice_sfx.py): `junkyard` (J1 to J4), `loader` (J5, Red in the loader), `hushmaster` and `junk_mech` through the aliases for Kasp's arena.",
  "music_aliases": {"kasp_phase1": "hushmaster", "kasp_phase2": "junk_mech"},
  "ambience_by_music": {
   "market": ["amb_market_night"],
   "junkyard": ["amb_junkyard"],
+  "loader": ["amb_junkyard"],
   "kasp_phase1": ["amb_junkyard"],
   "kasp_phase2": ["amb_junkyard"]
  },

@@ -274,7 +274,7 @@
    "robots": "junk_j5",
    "checkpoint": true,
    "autosave": false,
-   "music": "junkyard",
+   "music": "loader",
    "spawns": [
     "from_j4"
    ],

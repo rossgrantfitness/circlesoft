@@ -1377,6 +1377,11 @@ def drum_hat(rng, open_=False):
     return burst(rng, n, 6000, 16000, 0.07 if open_ else 0.012, 0.0003)
 
 
+def drum_clank(rng, base, tau):
+    """Industrial percussion: a struck pipe or plate (inharmonic metal partials), used by the junkyard tracks."""
+    return 0.55 * clank(rng, n_of(0.35), base, tau)
+
+
 def render_track(spec, rng):
     """Mix a TRACKS spec into a circular buffer (tails wrap, so the loop is seamless)."""
     bpm = spec["bpm"]
@@ -1389,12 +1394,16 @@ def render_track(spec, rng):
     for layer in spec["layers"]:
         kind = layer["kind"]
         gain = layer.get("gain", 1.0)
-        if kind in ("kick", "snare", "hat", "ohat"):
+        if kind in ("kick", "snare", "hat", "ohat", "clank", "clank_low"):
             for st in layer["steps"]:
                 if kind == "kick":
                     snd = drum_kick()
                 elif kind == "snare":
                     snd = drum_snare(rng)
+                elif kind == "clank":
+                    snd = drum_clank(rng, 760.0, 0.09)       # a pipe struck with a wrench
+                elif kind == "clank_low":
+                    snd = drum_clank(rng, 330.0, 0.16)       # a heavy plate
                 else:
                     snd = drum_hat(rng, kind == "ohat")
                 mix = place_wrap(mix, st * step_s, snd, gain)
@@ -1593,6 +1602,98 @@ TRACKS = {
 }
 
 
+# ---- junkyard tracks (VS-32 follow-up): longer loops built from sections, so they are not 12 s of the same bar.
+
+def steps_in(bars, pattern):
+    """Step numbers (16 per bar) for `pattern` repeated in each bar of `bars`."""
+    return [b * 16 + st for b in bars for st in pattern]
+
+
+def sectioned(*sections):
+    """Join 8-bar sections into one bar list. A section is a list of bars, or None for 8 silent bars."""
+    out = []
+    for sec in sections:
+        out += fix_bars(sec) if sec is not None else [[(None, 16)] for _ in range(8)]
+    return out
+
+
+# 8-bar chord roots in A minor (degrees): Am Am F Em Am Am F G
+YARD_ROOTS = [0, 0, 5, 4, 0, 0, 5, 6]
+YARD_BASS_RHYTHM = [(0, 3), (None, 1), (0, 2), (None, 2), (0, 2), (None, 1), (0, 1), (0, 2), (None, 2)]
+YARD_CHUG_RHYTHM = [(0, 1), (0, 1), (None, 2)] * 2 + [(0, 1), (0, 1), (None, 1), (0, 1), (None, 2), (0, 1), (None, 1)]
+# A lonely, slow line over the yard (answers itself in the last section). Original.
+YARD_LEAD_A = [
+    [(4, 4), (None, 2), (2, 2), (0, 4), (None, 4)],
+    [(1, 4), (None, 2), (0, 2), (-1, 6), (None, 2)],
+    [(0, 6), (2, 2), (3, 4), (None, 4)],
+    [(2, 4), (None, 4), (1, 4), (None, 4)],
+    [(4, 4), (None, 2), (5, 2), (4, 4), (None, 4)],
+    [(2, 4), (None, 2), (1, 2), (0, 8)],
+    [(3, 6), (2, 2), (0, 4), (-1, 2), (0, 2)],
+    [(1, 8), (None, 8)],
+]
+YARD_LEAD_B = [
+    [(7, 4), (None, 2), (5, 2), (4, 4), (None, 4)],
+    [(5, 4), (None, 2), (4, 2), (2, 6), (None, 2)],
+    [(4, 6), (5, 2), (7, 4), (None, 4)],
+    [(6, 4), (None, 4), (4, 4), (None, 4)],
+    [(7, 4), (None, 2), (8, 2), (7, 4), (None, 4)],
+    [(5, 4), (None, 2), (4, 2), (2, 8)],
+    [(3, 6), (4, 2), (3, 4), (1, 2), (0, 2)],
+    [(0, 12), (None, 4)],
+]
+
+
+def _yard_pad(roots, third):
+    return [[(r + third, 16)] for r in roots]
+
+
+LOADER_ROOTS = [0, 0, 5, 5, 4, 4, 6, 6]
+LOADER_LEAD = [
+    [(4, 2), (None, 2), (4, 1), (None, 1), (2, 2), (0, 2), (None, 2), (2, 2), (4, 2)],
+    [(5, 2), (None, 2), (5, 1), (None, 1), (4, 2), (2, 2), (None, 2), (1, 2), (0, 2)],
+    [(4, 2), (None, 2), (4, 1), (None, 1), (7, 2), (5, 2), (None, 2), (4, 2), (2, 2)],
+    [(3, 4), (2, 4), (1, 4), (0, 2), (1, 2)],
+]
+
+TRACKS["music_junkyard"] = {
+    # Junkyard rooms J1 to J4 and Kasp's arena stand-in: grimy, industrial, mid-tempo. 32 bars at 96 BPM = 80 s.
+    # A (bars 0-7) bass, pad and a few clanks; B (8-15) the half-time beat and chug come in; C (16-23) the lonely lead
+    # over the full groove; D (24-31) the lead answers an octave up, the beat thins to clanks at the very end so the
+    # loop re-enters on the quiet intro.
+    "bpm": 96, "steps": 512, "root": 57, "scale": MINOR,
+    "layers": [
+        {"kind": "bass", "bars": sectioned(*[bass_bars([-7 + r for r in YARD_ROOTS], YARD_BASS_RHYTHM)] * 4), "gain": 0.75},
+        {"kind": "pad", "bars": sectioned(_yard_pad(YARD_ROOTS, -7), _yard_pad(YARD_ROOTS, 0), _yard_pad(YARD_ROOTS, 0), _yard_pad(YARD_ROOTS, 0)), "gain": 0.2},
+        {"kind": "pad", "bars": sectioned(None, _yard_pad(YARD_ROOTS, 2), _yard_pad(YARD_ROOTS, 2), _yard_pad(YARD_ROOTS, 2)), "gain": 0.14},
+        {"kind": "growl", "bars": sectioned(None, bass_bars([-14 + r for r in YARD_ROOTS], YARD_CHUG_RHYTHM), bass_bars([-14 + r for r in YARD_ROOTS], YARD_CHUG_RHYTHM), bass_bars([-14 + r for r in YARD_ROOTS], YARD_CHUG_RHYTHM)), "gain": 0.3},
+        {"kind": "pluck", "bars": sectioned(None, None, YARD_LEAD_A, YARD_LEAD_B), "gain": 0.4, "octave": 0, "gate": 1.0},
+        {"kind": "kick", "steps": steps_in(range(8, 31), [0, 6, 10]), "gain": 0.9},
+        {"kind": "snare", "steps": steps_in(range(8, 31), [8]), "gain": 0.5},
+        {"kind": "hat", "steps": steps_in(range(16, 31), [2, 6, 10, 14]), "gain": 0.16},
+        {"kind": "clank", "steps": steps_in(range(0, 8, 2), [10]) + steps_in(range(8, 32), [14]) + steps_in(range(16, 31), [3]), "gain": 0.5},
+        {"kind": "clank_low", "steps": steps_in([3, 7, 11, 15, 19, 23, 27, 31], [12]), "gain": 0.55},
+    ],
+}
+
+TRACKS["music_loader"] = {
+    # Smash Run J5, Red in the loader: the junkyard's mood a bit more driving. 16 bars at 112 BPM = 34 s.
+    # Four on the floor with a pipe on every off-beat, a chugging bass and a short stomping lead.
+    "bpm": 112, "steps": 256, "root": 57, "scale": MINOR,
+    "layers": [
+        {"kind": "bass", "bars": bass_bars([-7 + r for r in LOADER_ROOTS] * 2, [(0, 2), (0, 1), (None, 1)] * 3 + [(0, 1), (0, 1), (None, 1), (4, 1)]), "gain": 0.75},
+        {"kind": "growl", "bars": bass_bars([-14 + r for r in LOADER_ROOTS] * 2, [(0, 1), (0, 1), (None, 2)] * 4), "gain": 0.33},
+        {"kind": "pad", "bars": _yard_pad(LOADER_ROOTS * 2, 0), "gain": 0.17},
+        {"kind": "pluck", "bars": sectioned(LOADER_LEAD * 2, LOADER_LEAD * 2), "gain": 0.4, "octave": 0, "gate": 0.8},
+        {"kind": "kick", "steps": steps_in(range(16), [0, 4, 8, 12]), "gain": 0.9},
+        {"kind": "snare", "steps": steps_in(range(16), [4, 12]), "gain": 0.5},
+        {"kind": "hat", "steps": steps_in(range(16), [2, 6, 10, 14]), "gain": 0.2},
+        {"kind": "clank", "steps": steps_in(range(16), [2, 10]) + steps_in(range(1, 16, 2), [15]), "gain": 0.5},
+        {"kind": "clank_low", "steps": steps_in([3, 7, 11, 15], [12]), "gain": 0.5},
+    ],
+}
+
+
 def _music_builder(track_id):
     def build(rng):
         x = render_track(TRACKS[track_id], rng)
@@ -1690,6 +1791,8 @@ SOUNDS = {
     "music_battle_boss": S(_music_builder("music_battle_boss"), -13.0, "Music stand-in, boss fight ('battle_boss'): pompous brass march at 148 BPM, ~13 s loop.", loop=True, bus="Music", rate=LOW_RATE),
     "music_hushmaster": S(_music_builder("music_hushmaster"), -13.0, "Music stand-in, Kasp and the Hushmaster (phase 1): bureaucratic staccato march at 140 BPM, ~13.7 s loop. NEW id.", loop=True, bus="Music", rate=LOW_RATE),
     "music_junk_mech": S(_music_builder("music_junk_mech"), -13.0, "Music stand-in, the junk mech (phase 2): heavy lurching C minor chug at 132 BPM, ~14.5 s loop. NEW id.", loop=True, bus="Music", rate=LOW_RATE),
+    "music_junkyard": S(_music_builder("music_junkyard"), -14.0, "Music stand-in, the junkyard (rooms.json 'junkyard'): grimy, industrial, mid-tempo A minor at 96 BPM, 80 s loop; bass, pad, pipe clanks, then a half-time beat and a lonely lead. Original tune.", loop=True, bus="Music", rate=LOW_RATE),
+    "music_loader": S(_music_builder("music_loader"), -13.0, "Music stand-in, Smash Run J5 in the loader (rooms.json 'loader'): the junkyard mood, more driving; four on the floor at 112 BPM, ~34 s loop. NEW id.", loop=True, bus="Music", rate=LOW_RATE),
 }
 
 # Anything that answers a press or lands a hit must start loud in its first 10 ms (the test checks it).
