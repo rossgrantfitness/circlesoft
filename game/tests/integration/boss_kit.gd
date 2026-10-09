@@ -50,6 +50,7 @@ func arena(start_fight: bool = true, rng_seed: int = 3) -> void:
 	room.add_child(floor_body)
 	floor_body.position = Vector3(0, -0.5, 0)
 	_marker(&"hushmaster_start", Vector3(0, 0, 0))
+	_marker(&"mech_start", Vector3(0, 0, -60))
 	_marker(&"drone_hatch_a", Vector3(-10, 0, -6))
 	_marker(&"drone_hatch_b", Vector3(10, 0, -6))
 	_marker(&"drone_hatch_c", Vector3(0, 0, 11))

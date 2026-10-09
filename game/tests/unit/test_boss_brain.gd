@@ -229,3 +229,104 @@ func test_the_same_seed_gives_the_same_fight() -> void:
 		a.finish(now + 500.0, 0)
 		b.finish(now + 500.0, 0)
 		now += 6000.0
+
+
+# ---- the Heap's brain (junk_mech.json) ----
+
+func _heap_doc() -> Dictionary:
+	return CombatData.read_json(CombatData.DIR + "bosses/junk_mech.json")
+
+
+func _heap(rng_seed: int = 1) -> BossBrain:
+	return BossBrain.from_heap(_heap_doc(), rng_seed)
+
+
+func _heap_view(overrides: Dictionary = {}) -> Dictionary:
+	var base: Dictionary = {"dist_m": 30.0, "stage": "armored", "allowed": ["scrap_swing", "wrecking_drop", "stomp_march", "scrap_barrage"], "bias": {}}
+	base.merge(overrides, true)
+	return base
+
+
+func test_the_heap_opens_with_the_swing_then_the_drop() -> void:
+	var brain: BossBrain = _heap()
+	var first: Dictionary = brain.step(0.0, _heap_view())
+	assert_eq(first["pattern"], &"scrap_swing")
+	assert_eq(first["moves"], ["scrap_swing_l", "scrap_swing_r"])
+	brain.begin(first["pattern"], 0.0)
+	brain.finish(5000.0, 0, brain.stage_gap_ms("armored"))
+	assert_eq(brain.step(8000.0, _heap_view())["pattern"], &"wrecking_drop")
+
+
+func test_the_heap_waits_until_red_is_in_swing_range() -> void:
+	var brain: BossBrain = _heap()
+	assert_true(brain.step(0.0, _heap_view({"dist_m": 45.0})).is_empty(), "the swing needs her within 38 m: it keeps walking")
+
+
+func test_the_gap_depends_on_the_stage() -> void:
+	var brain: BossBrain = _heap()
+	assert_eq(brain.stage_gap_ms("armored"), 2600.0)
+	assert_eq(brain.stage_gap_ms("core"), 2200.0)
+	assert_eq(brain.stage_gap_ms("last_stand"), 1800.0)
+
+
+func test_the_chains_only_come_in_the_last_stand() -> void:
+	var brain: BossBrain = _heap(4)
+	var now: float = 0.0
+	for stage: String in ["armored", "core"]:
+		for i: int in range(40):
+			var pick: Dictionary = brain.step(now, _heap_view({"stage": stage, "allowed": ["scrap_swing", "wrecking_drop", "stomp_march", "scrap_barrage", "chain_a", "chain_b"], "dist_m": 32.0}))
+			if not pick.is_empty():
+				assert_does_not_have(["chain_a", "chain_b"], String(pick["pattern"]), "stage %s" % stage)
+				brain.begin(pick["pattern"], now)
+				brain.finish(now + 100.0, 0, 0.0)
+			now += 3000.0
+
+
+func test_a_stage_only_uses_its_own_patterns() -> void:
+	var brain: BossBrain = _heap(2)
+	var now: float = 0.0
+	var seen: Dictionary = {}
+	for i: int in range(60):
+		var pick: Dictionary = brain.step(now, _heap_view({"stage": "last_stand", "allowed": ["chain_a", "chain_b", "scrap_barrage"], "dist_m": 35.0}))
+		if not pick.is_empty():
+			seen[String(pick["pattern"])] = true
+			brain.begin(pick["pattern"], now)
+			brain.finish(now + 100.0, 0, 0.0)
+		now += 4000.0
+	for id: Variant in seen.keys():
+		assert_has(["chain_a", "chain_b", "scrap_barrage", "scrap_swing", "wrecking_drop"], str(id))
+	assert_does_not_have(seen, "stomp_march", "not in the last stand's list")
+
+
+func test_the_attack_that_opens_a_standing_plate_is_favoured() -> void:
+	var counts: Dictionary = {"scrap_swing": 0, "wrecking_drop": 0, "stomp_march": 0, "scrap_barrage": 0}
+	for rng_seed: int in range(1, 200):
+		var brain: BossBrain = _heap(rng_seed)
+		brain.begin(&"scrap_swing", 0.0)
+		brain.finish(0.0, 0, 0.0)
+		brain.begin(&"wrecking_drop", 0.0)
+		brain.finish(0.0, 0, 0.0)
+		var pick: Dictionary = brain.step(10.0, _heap_view({"dist_m": 32.0, "bias": {"stomp_march": 1.6}}))
+		if not pick.is_empty():
+			counts[String(pick["pattern"])] += 1
+	assert_gt(float(counts["stomp_march"]), float(counts["scrap_barrage"]), "weight 2 x 1.6 against weight 2")
+
+
+func test_every_heap_attack_obeys_the_fair_play_rules_in_the_data() -> void:
+	var doc: Dictionary = _heap_doc()
+	var floor_ms: float = float((doc["rules"] as Dictionary)["boss_windup_floor_ms"])
+	var min_width: float = float((doc["readability"] as Dictionary)["decal_min_width_m"])
+	var moves: Dictionary = CombatData.moves()["sets"]["junk_mech"]["moves"]
+	for name_raw: Variant in ["scrap_swing_l", "scrap_swing_r", "wrecking_drop", "stomp_march", "scrap_barrage"]:
+		var move: Dictionary = moves[str(name_raw)]
+		assert_ge(float(move["impact_ms"]), floor_ms, "%s: a wind-up of at least %d ms" % [name_raw, int(floor_ms)])
+		var decal: Dictionary = move["floor_decal"]
+		assert_ge(float(decal.get("radius_m", 0.0)) * 2.0, min_width, "%s: a decal at least 12 m wide" % name_raw)
+		assert_true(float(decal.get("min_width_m", 0.0)) >= min_width, "%s: the decal says so" % name_raw)
+
+
+func test_every_pattern_move_in_the_heap_data_exists() -> void:
+	var moves: MoveSet = MoveSet.load_default()
+	for spec: Variant in _heap_doc()["patterns"] as Array:
+		for move: Variant in (spec as Dictionary)["moves"] as Array:
+			assert_true(moves.has_move(&"junk_mech", StringName(str(move))), str(move))
