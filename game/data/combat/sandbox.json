@@ -72,7 +72,9 @@
   ],
   "enemy_scenes": {
     "grunt": "res://scenes/actors/enemies/grunt.tscn",
-    "brute": "res://scenes/actors/enemies/brute.tscn"
+    "brute": "res://scenes/actors/enemies/brute.tscn",
+    "signals_drone": "res://scenes/actors/enemies/signals_drone.tscn",
+    "wall_turret": "res://scenes/actors/enemies/wall_turret.tscn"
   },
   "racks": {
     "interact_radius_m": 0.9,

@@ -140,8 +140,19 @@ class Retargeter:
         self.t_floor_err = max(abs(self.t.rest_world_p[f][1] + o[1]) for f, o, lift in self.t_soles if lift == 0.0)
 
     # ------------------------------------------------------------ one frame
-    def frame(self, src_sk, src_clip, t, ground="lock", yaw=None):
-        """The target's mapped bones at source time t: ({bone idx: local rotation matrix}, hips local translation, source info)."""
+    def _mirror_of(self, src_sk, s):
+        """The source bone on the other side of the body (clavicle_l <-> clavicle_r); centre bones are their own mirror."""
+        name = src_sk.name[s]
+        if name.endswith("_l") or name.endswith("_r"):
+            other = name[:-1] + ("r" if name.endswith("_l") else "l")
+            if other in src_sk.index:
+                return src_sk.index[other]
+        return s
+
+    def frame(self, src_sk, src_clip, t, ground="lock", yaw=None, mirror=False):
+        """The target's mapped bones at source time t: ({bone idx: local rotation matrix}, hips local translation, source info).
+        mirror=True plays the source left-for-right: every bone follows the mirror image (across the YZ plane) of its opposite
+        bone, so a right-handed swing becomes a left-handed one. No motion is invented, the existing clip is reflected."""
         lr, lp = src_clip.pose(src_sk, t)
         wr, wp = src_sk.fk(lr, lp)
         # source lowest sole point
@@ -150,6 +161,9 @@ class Retargeter:
             d = wr[f] @ src_sk.rest_world_r[f].T
             s_low = min(s_low, wp[f][1] + (d @ off)[1] - lift)
         pelvis_delta = wp[self.s_pelvis] - src_sk.rest_world_p[self.s_pelvis]
+        flip = np.diag([-1.0, 1.0, 1.0])
+        if mirror:
+            pelvis_delta = flip @ pelvis_delta
         if yaw:
             pelvis_delta = axis_angle((0, 1, 0), yaw["deg"]) @ pelvis_delta
 
@@ -161,7 +175,11 @@ class Retargeter:
             p = self.t.parent[i]
             if i in self.mapped:
                 _, s, c = self.pairs[self.mapped[i]]
-                w = (wr[s] @ src_sk.rest_world_r[s].T) @ c
+                if mirror:
+                    s = self._mirror_of(src_sk, s)
+                    w = flip @ (wr[s] @ src_sk.rest_world_r[s].T) @ flip @ c
+                else:
+                    w = (wr[s] @ src_sk.rest_world_r[s].T) @ c
                 if yaw and self.t.name[i] in yaw["weights"]:
                     w = axis_angle((0, 1, 0), yaw["deg"] * yaw["weights"][self.t.name[i]]) @ w
                 wr_t[i] = w
@@ -202,7 +220,7 @@ class Retargeter:
             b = float(p["to_s"]) if p.get("to_s") is not None else clip.length
             if p.get("reverse"):
                 a, b = b, a
-            out.append((sk, clip, a, b, float(p.get("speed", 1.0))))
+            out.append((sk, clip, a, b, float(p.get("speed", spec.get("speed", 1.0)))))
         return out
 
     def _yaw(self, spec):
@@ -229,7 +247,7 @@ class Retargeter:
                 if times and k == 0:
                     continue                                   # the joint between two parts is one frame
                 ts = a + (b - a) * (k / max(count, 1))
-                local, ht, inf = self.frame(sk, clip, ts, spec.get("ground", "lock"), self._yaw(spec))
+                local, ht, inf = self.frame(sk, clip, ts, spec.get("ground", "lock"), self._yaw(spec), bool(spec.get("mirror")))
                 times.append(t_out + (k / self.fps))
                 for bone in self.mapped:
                     rots[bone].append(mat_to_quat(local[bone]))

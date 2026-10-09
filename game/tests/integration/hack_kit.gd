@@ -7,6 +7,8 @@ extends RefCounted
 const RED_SCENE: String = "res://scenes/actors/action_player.tscn"
 const GRUNT_SCENE: String = "res://scenes/actors/enemies/grunt.tscn"
 const BRUTE_SCENE: String = "res://scenes/actors/enemies/brute.tscn"
+const DRONE_SCENE: String = "res://scenes/actors/enemies/signals_drone.tscn"
+const TURRET_SCENE: String = "res://scenes/actors/enemies/wall_turret.tscn"
 const DT: float = 1.0 / 60.0
 
 var test: TestCase = null
@@ -65,6 +67,17 @@ func grunt(at: Vector3, tags: Array[String] = []) -> ActionEnemy:
 	enemy.set_physics_process(false)
 	for tag: String in tags:
 		enemy.tags.append(tag)
+	enemies.append(enemy)
+	return enemy
+
+
+## Any enemy scene at `at`, facing `yaw` radians, ticked by `frames()`.
+func spawn(scene_path: String, at: Vector3, yaw: float = 0.0) -> ActionEnemy:
+	var enemy: ActionEnemy = (load(scene_path) as PackedScene).instantiate() as ActionEnemy
+	enemy.position = at
+	enemy.rotation.y = yaw
+	test.add_to_root(enemy)
+	enemy.set_physics_process(false)
 	enemies.append(enemy)
 	return enemy
 

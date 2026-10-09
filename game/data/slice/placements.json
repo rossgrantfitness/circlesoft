@@ -175,7 +175,7 @@
  "npcs": {
   "mk_sq_pop": {
    "room": "market_square",
-   "speaker": "mk_sq_pop",
+   "speaker": "crowd_pop",
    "look": {
     "body": "#c9763a",
     "head": "#d6b48a",
@@ -202,7 +202,7 @@
   },
   "mk_sq_dumpling": {
    "room": "market_square",
-   "speaker": "mk_sq_dumpling",
+   "speaker": "crowd_dumpling_cook",
    "look": {
     "body": "#6aa89a",
     "head": "#c9a67e",
@@ -227,7 +227,7 @@
   },
   "mk_sq_tape": {
    "room": "market_square",
-   "speaker": "mk_sq_tape",
+   "speaker": "crowd_tape_keeper",
    "look": {
     "body": "#8a6fa0",
     "head": "#d6b48a",
@@ -254,7 +254,7 @@
   },
   "mk_sq_odds": {
    "room": "market_square",
-   "speaker": "mk_sq_odds",
+   "speaker": "crowd_odds_man",
    "look": {
     "body": "#8a6f4a",
     "head": "#d6b48a",
@@ -281,7 +281,7 @@
   },
   "mk_sq_neighbor": {
    "room": "market_square",
-   "speaker": "mk_sq_neighbor",
+   "speaker": "crowd_neighbor",
    "look": {
     "body": "#9a8a9e",
     "head": "#e0c2a4",
@@ -306,7 +306,7 @@
   },
   "mk_sq_ume": {
    "room": "market_square",
-   "speaker": "mk_sq_ume",
+   "speaker": "crowd_grandma_ume",
    "look": {
     "body": "#d68a9a",
     "head": "#e0c2a4",
@@ -334,7 +334,7 @@
   },
   "mk_sq_shopper_a": {
    "room": "market_square",
-   "speaker": "mk_sq_shopper_a",
+   "speaker": "crowd_shopper_a",
    "look": {
     "body": "#5a7a9a",
     "head": "#d6b48a",
@@ -359,7 +359,7 @@
   },
   "mk_sq_shopper_b": {
    "room": "market_square",
-   "speaker": "mk_sq_shopper_b",
+   "speaker": "crowd_shopper_b",
    "look": {
     "body": "#9a5a6a",
     "head": "#c9a67e",
@@ -386,7 +386,7 @@
   },
   "mk_sq_shopper_c": {
    "room": "market_square",
-   "speaker": "mk_sq_shopper_c",
+   "speaker": "crowd_shopper_c",
    "look": {
     "body": "#4a8a6a",
     "head": "#e0c2a4",
@@ -411,7 +411,7 @@
   },
   "mk_sq_shopper_d": {
    "room": "market_square",
-   "speaker": "mk_sq_shopper_d",
+   "speaker": "crowd_shopper_d",
    "look": {
     "body": "#a08a4a",
     "head": "#d6b48a",
@@ -438,7 +438,7 @@
   },
   "mk_sq_wolf_a": {
    "room": "market_square",
-   "speaker": "mk_sq_wolf_a",
+   "speaker": "crowd_patrol_wolf_a",
    "look": {
     "body": "#3a4a6a",
     "head": "#8a8a9a",
@@ -455,7 +455,7 @@
   },
   "mk_sq_wolf_b": {
    "room": "market_square",
-   "speaker": "mk_sq_wolf_b",
+   "speaker": "crowd_patrol_wolf_b",
    "look": {
     "body": "#3a4a6a",
     "head": "#8a8a9a",
@@ -472,7 +472,7 @@
   },
   "mk_wf_juno": {
    "room": "market_wharf",
-   "speaker": "mk_wf_juno",
+   "speaker": "crowd_juno",
    "look": {
     "body": "#e0782b",
     "head": "#d6b48a",
@@ -497,7 +497,7 @@
   },
   "mk_wf_kid_a": {
    "room": "market_wharf",
-   "speaker": "mk_wf_kid_a",
+   "speaker": "crowd_drone_kid_a",
    "look": {
     "body": "#5a7aaa",
     "head": "#c9a67e",
@@ -524,7 +524,7 @@
   },
   "mk_wf_kid_b": {
    "room": "market_wharf",
-   "speaker": "mk_wf_kid_b",
+   "speaker": "crowd_drone_kid_b",
    "look": {
     "body": "#aa5a7a",
     "head": "#e0c2a4",
@@ -549,7 +549,7 @@
   },
   "mk_wf_judge": {
    "room": "market_wharf",
-   "speaker": "mk_wf_judge",
+   "speaker": "crowd_race_judge",
    "look": {
     "body": "#6a8a5a",
     "head": "#d6b48a",
@@ -576,7 +576,7 @@
   },
   "mk_wf_pell": {
    "room": "market_wharf",
-   "speaker": "mk_wf_pell",
+   "speaker": "crowd_pell",
    "look": {
     "body": "#8a7a5a",
     "head": "#d6b48a",
@@ -622,7 +622,7 @@
   },
   "mk_wf_late_cook": {
    "room": "market_wharf",
-   "speaker": "mk_wf_late_cook",
+   "speaker": "crowd_late_cook",
    "look": {
     "body": "#c9763a",
     "head": "#d6b48a",
@@ -649,7 +649,7 @@
   },
   "mk_wf_fisher": {
    "room": "market_wharf",
-   "speaker": "mk_wf_fisher",
+   "speaker": "crowd_fisher",
    "look": {
     "body": "#4a6a8a",
     "head": "#c9a67e",
@@ -676,7 +676,7 @@
   },
   "mk_gt_grunt_a": {
    "room": "market_gate",
-   "speaker": "mk_gt_grunt_a",
+   "speaker": "crowd_gate_grunt_a",
    "look": {
     "body": "#4a5a7a",
     "head": "#c9a67e",
@@ -698,7 +698,7 @@
   },
   "mk_gt_grunt_b": {
    "room": "market_gate",
-   "speaker": "mk_gt_grunt_b",
+   "speaker": "crowd_gate_grunt_b",
    "look": {
     "body": "#4a5a7a",
     "head": "#c9a67e",
@@ -714,7 +714,7 @@
   },
   "mk_gt_line_a": {
    "room": "market_gate",
-   "speaker": "mk_gt_line_a",
+   "speaker": "crowd_line_a",
    "look": {
     "body": "#9a7a5a",
     "head": "#d6b48a",
@@ -739,7 +739,7 @@
   },
   "mk_gt_line_b": {
    "room": "market_gate",
-   "speaker": "mk_gt_line_b",
+   "speaker": "crowd_line_b",
    "look": {
     "body": "#5a8a7a",
     "head": "#e0c2a4",
@@ -764,7 +764,7 @@
   },
   "mk_gt_line_c": {
    "room": "market_gate",
-   "speaker": "mk_gt_line_c",
+   "speaker": "crowd_line_c",
    "look": {
     "body": "#8a5a7a",
     "head": "#c9a67e",
@@ -789,7 +789,7 @@
   },
   "mk_dp_dispatcher": {
    "room": "market_dispatch",
-   "speaker": "mk_dp_dispatcher",
+   "speaker": "crowd_dispatcher",
    "look": {
     "body": "#3d5f8a",
     "head": "#e0c2a4",
@@ -828,7 +828,7 @@
   },
   "mk_dp_sleeper": {
    "room": "market_dispatch",
-   "speaker": "mk_dp_sleeper",
+   "speaker": "crowd_sleeping_courier",
    "look": {
     "body": "#7a7f5a",
     "head": "#d6b48a",
@@ -842,7 +842,7 @@
   },
   "mk_cs_keeper": {
    "room": "market_corner",
-   "speaker": "mk_cs_keeper",
+   "speaker": "crowd_shopkeeper",
    "look": {
     "body": "#5a8a6a",
     "head": "#d6b48a",
@@ -869,7 +869,7 @@
   },
   "mk_cs_clerk": {
    "room": "market_corner",
-   "speaker": "mk_cs_clerk",
+   "speaker": "crowd_clerk",
    "look": {
     "body": "#3a4a6a",
     "head": "#c9a67e",
@@ -885,7 +885,7 @@
   },
   "mk_fg_otis": {
    "room": "market_forge",
-   "speaker": "mk_fg_otis",
+   "speaker": "otis",
    "look": {
     "body": "#6a5a4a",
     "head": "#d6b48a",
@@ -901,7 +901,7 @@
   },
   "mk_rp_mox": {
    "room": "market_repair",
-   "speaker": "mk_rp_mox",
+   "speaker": "mox",
    "look": {
     "body": "#2a6a6a",
     "head": "#d6b48a",
@@ -917,7 +917,7 @@
   },
   "mk_ar_owner": {
    "room": "market_arcade",
-   "speaker": "mk_ar_owner",
+   "speaker": "crowd_arcade_owner",
    "look": {
     "body": "#aa5a8a",
     "head": "#d6b48a",
@@ -944,7 +944,7 @@
   },
   "mk_ar_kid_a": {
    "room": "market_arcade",
-   "speaker": "mk_ar_kid_a",
+   "speaker": "crowd_arcade_kid_a",
    "look": {
     "body": "#5a7aaa",
     "head": "#c9a67e",
@@ -971,7 +971,7 @@
   },
   "mk_ar_kid_b": {
    "room": "market_arcade",
-   "speaker": "mk_ar_kid_b",
+   "speaker": "crowd_arcade_kid_b",
    "look": {
     "body": "#aa5a7a",
     "head": "#e0c2a4",
@@ -996,7 +996,7 @@
   },
   "mk_ar_kid_c": {
    "room": "market_arcade",
-   "speaker": "mk_ar_kid_c",
+   "speaker": "crowd_arcade_kid_c",
    "look": {
     "body": "#6a8a5a",
     "head": "#d6b48a",
@@ -1023,7 +1023,7 @@
   },
   "mk_ar_zed": {
    "room": "market_arcade",
-   "speaker": "mk_ar_zed",
+   "speaker": "crowd_zed",
    "look": {
     "body": "#2a2a35",
     "head": "#c9a67e",

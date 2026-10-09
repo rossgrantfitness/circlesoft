@@ -8,7 +8,7 @@ const CHARMS: Array[String] = ["lucky_bolt", "earplugs", "oven_mitts", "sore_los
 const ITEMS: Array[String] = ["ration_bar", "can_of_chili", "canned_coffee", "juice_box", "smelling_salts", "burn_gel",
 		"appeal_form", "ginger_chews", "camp_stove", "firecracker_string", "hot_sauce_bomb", "smoke_bomb", "protein_shake"]
 const KEY_ITEMS: Array[String] = ["courier_job_slip", "delivery_crate", "side_job_parcel", "kasp_access_card",
-		"bell_tune_napkin", "beacon_part"]
+		"bell_tune_napkin", "beacon_part", "courier_pass"]
 
 
 func _data() -> ItemData:
@@ -25,7 +25,7 @@ func test_the_slice_list_is_all_there() -> void:
 		if not data.is_key_item(id):
 			consumables.append(id)
 	assert_eq(consumables, ITEMS, "13 items")
-	assert_eq(data.key_item_ids(), KEY_ITEMS, "6 key items")
+	assert_eq(data.key_item_ids(), KEY_ITEMS, "7 key items (the Courier Pass joined at VS-14)")
 
 
 func test_data_validates_with_no_problems() -> void:

@@ -244,12 +244,15 @@ func _target() -> CombatActor:
 	return director.player() if director != null else null
 
 
-## The living enemy nearest to this one (what a hijacked unit goes for), or null.
+## The living enemy nearest to this one (what a hijacked unit goes for), or null. If the director lists
+## `hijack_priority_tags` (the boss arena: the Hushmaster's relays) and any living enemy has one, the nearest of those wins.
 func _nearest_enemy(director: CombatDirector) -> CombatActor:
 	if director == null:
 		return null
 	var best: CombatActor = null
 	var best_dist: float = INF
+	var best_priority: CombatActor = null
+	var best_priority_dist: float = INF
 	for other: CombatActor in director.living_enemies():
 		if other == self:
 			continue
@@ -257,7 +260,17 @@ func _nearest_enemy(director: CombatDirector) -> CombatActor:
 		if gap < best_dist:
 			best_dist = gap
 			best = other
-	return best
+		if gap < best_priority_dist and not director.hijack_priority_tags.is_empty() and _has_any_tag(other, director.hijack_priority_tags):
+			best_priority_dist = gap
+			best_priority = other
+	return best_priority if best_priority != null else best
+
+
+static func _has_any_tag(other: CombatActor, wanted: Array) -> bool:
+	for tag: Variant in HackCaster.tags_of(other):
+		if wanted.has(str(tag)):
+			return true
+	return false
 
 
 ## The geometry of the moment: the unit vector toward Red on the floor, and how far she is.
@@ -821,6 +834,9 @@ func on_hijack_begin(by: CombatActor, duration_s: float) -> bool:
 	if director != null and director.tokens != null:
 		director.tokens.release(actor_id)
 	brain.notify(&"move_finished")
+	var spec: Dictionary = data.get("hijack", {}) as Dictionary
+	if spec.has("interval_ms"):
+		brain = _make_brain({"attack_interval_ms": spec["interval_ms"], "recover_ms": 100})     # a hijacked turret fires about every 1.4 s
 	_hijack_end_stun_ms = float(CombatData.hacks().get("hacks", {}).get("overclock", {}).get("effect", {}).get("end_stun_ms", 800.0))
 	_hijack_damage_scale = 1.0
 	if director != null and director.feel != null and director.feel.has("hack_damage_scale"):
@@ -838,6 +854,8 @@ func on_hijack_end() -> void:
 	hijacked_by = null
 	team = &"enemy"
 	_hijack_damage_scale = 1.0
+	if (data.get("hijack", {}) as Dictionary).has("interval_ms"):
+		brain = _make_brain()
 	var director: CombatDirector = find_director()
 	if dead or body_state == ST_DEAD:
 		return
@@ -1044,8 +1062,12 @@ func _load_data() -> void:
 	_respawn_s = float(sandbox.get("respawn_s", DEFAULT_RESPAWN_S))
 
 
-func _make_brain() -> EnemyBrain:
+func _make_brain(brain_override: Dictionary = {}) -> EnemyBrain:
 	var brain_data: Dictionary = data.duplicate(true)
+	if not brain_override.is_empty():
+		var numbers: Dictionary = (brain_data.get("brain", {}) as Dictionary)
+		numbers.merge(brain_override, true)
+		brain_data["brain"] = numbers
 	var gaits: Dictionary = {}
 	for gait: String in ["strafe", "retreat", "flee"]:
 		var move: Dictionary = _moves.get_move(move_set_id, StringName(gait))

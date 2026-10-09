@@ -47,6 +47,9 @@ var tokens: AttackTokens = null
 var feel: FeelKnobs = null
 ## The hack battery (HackBattery): sword hits fill it, hacks spend it. Owned here so it survives anything Red does.
 var battery: HackBattery = null
+## Tags a hijacked unit goes for before the nearest enemy (the boss arena sets ["relay"] so a hijacked turret shoots the
+## Hushmaster's leg relays). Empty = just the nearest.
+var hijack_priority_tags: Array[String] = []
 var hit_feel: Dictionary = {}
 ## True in the game: the fighters' real-time axis follows the engine clock, so a press stamped by `_input`
 ## lines up. Headless tests that step by hand set it false and use stamp_usec().

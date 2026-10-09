@@ -3,253 +3,253 @@
  "conversations": {
   "mk_sq_pop": [
    {
-    "speaker": "mk_sq_pop",
+    "speaker": "crowd_pop",
     "text": "NOODLES! Hot noodles! Sit, sit, the broth is loud tonight!"
    },
    {
-    "speaker": "mk_sq_pop",
+    "speaker": "crowd_pop",
     "text": "Everyone eats here. Even the patrol. ...Especially the patrol."
    }
   ],
   "mk_sq_dumpling": [
    {
-    "speaker": "mk_sq_dumpling",
+    "speaker": "crowd_dumpling_cook",
     "text": "Sample? It is a little cold. ...Mm. Asleep. Sorry. Sample?"
    }
   ],
   "mk_sq_tape": [
    {
-    "speaker": "mk_sq_tape",
+    "speaker": "crowd_tape_keeper",
     "text": "Scrap wire by the foot! Tape by the mood! Name your length!"
    }
   ],
   "mk_sq_odds": [
    {
-    "speaker": "mk_sq_odds",
+    "speaker": "crowd_odds_man",
     "text": "Will the screen glitch before ten? Two rations says yes."
    },
    {
-    "speaker": "mk_sq_odds",
+    "speaker": "crowd_odds_man",
     "text": "I am right most days. That is the problem."
    }
   ],
   "mk_sq_neighbor": [
    {
-    "speaker": "mk_sq_neighbor",
+    "speaker": "crowd_neighbor",
     "text": "You were out at all hours again! I bake at three. We are not so different."
    },
    {
-    "speaker": "mk_sq_neighbor",
+    "speaker": "crowd_neighbor",
     "text": "Bring me a speaker and I will bake to it. ...Not THAT loud."
    }
   ],
   "mk_sq_ume": [
    {
-    "speaker": "mk_sq_ume",
+    "speaker": "crowd_grandma_ume",
     "text": "Phones, five minutes a bar. Do not touch the cords."
    },
    {
-    "speaker": "mk_sq_ume",
+    "speaker": "crowd_grandma_ume",
     "text": "I said do not touch the cords!"
    }
   ],
   "mk_sq_shopper_a": [
    {
-    "speaker": "mk_sq_shopper_a",
+    "speaker": "crowd_shopper_a",
     "text": "Four for the price of three! Get in, get in!"
    }
   ],
   "mk_sq_shopper_b": [
    {
-    "speaker": "mk_sq_shopper_b",
+    "speaker": "crowd_shopper_b",
     "text": "The screen is looking at us again. Pretend to browse."
    }
   ],
   "mk_sq_shopper_c": [
    {
-    "speaker": "mk_sq_shopper_c",
+    "speaker": "crowd_shopper_c",
     "text": "New headphones! Turned all the way up. Do not tell Mom."
    }
   ],
   "mk_sq_shopper_d": [
    {
-    "speaker": "mk_sq_shopper_d",
+    "speaker": "crowd_shopper_d",
     "text": "Wind chimes are back on the poles this week. Hear that? That is the good stuff."
    }
   ],
   "mk_sq_wolf_a": [
    {
-    "speaker": "mk_sq_wolf_a",
+    "speaker": "crowd_patrol_wolf_a",
     "text": "..."
    },
    {
-    "speaker": "mk_sq_wolf_a",
+    "speaker": "crowd_patrol_wolf_a",
     "text": "Move along."
    }
   ],
   "mk_sq_wolf_b": [
    {
-    "speaker": "mk_sq_wolf_b",
+    "speaker": "crowd_patrol_wolf_b",
     "text": "...Move it along, courier. Everybody out of the lane."
    }
   ],
   "mk_wf_juno": [
    {
-    "speaker": "mk_wf_juno",
+    "speaker": "crowd_juno",
     "text": "Watch the track! Tuesday-class drones only. ...Mine crashes. Always the green one."
    }
   ],
   "mk_wf_kid_a": [
    {
-    "speaker": "mk_wf_kid_a",
+    "speaker": "crowd_drone_kid_a",
     "text": "Don't tell the patrol it is a race. It is a... delivery rehearsal."
    }
   ],
   "mk_wf_kid_b": [
    {
-    "speaker": "mk_wf_kid_b",
+    "speaker": "crowd_drone_kid_b",
     "text": "Go go go! It is turning!"
    }
   ],
   "mk_wf_judge": [
    {
-    "speaker": "mk_wf_judge",
+    "speaker": "crowd_race_judge",
     "text": "(through the megaphone) FIRST. PLACE. The green one crashed. AGAIN."
    }
   ],
   "mk_wf_pell": [
    {
-    "speaker": "mk_wf_pell",
+    "speaker": "crowd_pell",
     "text": "Hello, courier! Papers are my hobby. Ask me about papers, I dare you."
    }
   ],
   "mk_wf_late_cook": [
    {
-    "speaker": "mk_wf_late_cook",
+    "speaker": "crowd_late_cook",
     "text": "Pop's cousin. Same menu. Better view."
    }
   ],
   "mk_wf_fisher": [
    {
-    "speaker": "mk_wf_fisher",
+    "speaker": "crowd_fisher",
     "text": "Something bit. ...Once. Last Tuesday."
    }
   ],
   "mk_gt_grunt_a": [
    {
-    "speaker": "mk_gt_grunt_a",
+    "speaker": "crowd_gate_grunt_a",
     "text": "Road's closed. Papers?"
    }
   ],
   "mk_gt_grunt_b": [
    {
-    "speaker": "mk_gt_grunt_b",
+    "speaker": "crowd_gate_grunt_b",
     "text": "Noise ticket. One wind chime. Form 12. ...I did not write the rules. I write the tickets."
    }
   ],
   "mk_gt_line_a": [
    {
-    "speaker": "mk_gt_line_a",
+    "speaker": "crowd_line_a",
     "text": "It's only a wind chime. One little wind chime."
    }
   ],
   "mk_gt_line_b": [
    {
-    "speaker": "mk_gt_line_b",
+    "speaker": "crowd_line_b",
     "text": "Third week in this line."
    }
   ],
   "mk_gt_line_c": [
    {
-    "speaker": "mk_gt_line_c",
+    "speaker": "crowd_line_c",
     "text": "Do not make eye contact with the searchlight."
    }
   ],
   "mk_dp_sleeper": [
    {
-    "speaker": "mk_dp_sleeper",
+    "speaker": "crowd_sleeping_courier",
     "text": "...zzz..."
    }
   ],
   "mk_cs_keeper": [
    {
-    "speaker": "mk_cs_keeper",
+    "speaker": "crowd_shopkeeper",
     "text": "Everything you need, nothing you want. The usual?"
    }
   ],
   "mk_cs_clerk": [
    {
-    "speaker": "mk_cs_clerk",
+    "speaker": "crowd_clerk",
     "text": "Antacids. Do not look at the badge. I am just a guy."
    }
   ],
   "mk_fg_otis": [
    {
-    "speaker": "mk_fg_otis",
+    "speaker": "otis",
     "text": "Friend! Welcome. Mind the anvil. ...Sorry, anvil."
    },
    {
-    "speaker": "mk_fg_otis",
+    "speaker": "otis",
     "text": "Swords are on the wall. Ask, and I will tinker."
    }
   ],
   "mk_rp_mox": [
    {
-    "speaker": "mk_rp_mox",
+    "speaker": "mox",
     "text": "Red! The deck is a hundred percent... forty percent finished. Tuesday, say hi. ...Tuesday?"
    }
   ],
   "mk_ar_owner": [
    {
-    "speaker": "mk_ar_owner",
+    "speaker": "crowd_arcade_owner",
     "text": "Turn it up! Every machine has a different beep. Do not touch the claw. The claw knows."
    }
   ],
   "mk_ar_kid_a": [
    {
-    "speaker": "mk_ar_kid_a",
+    "speaker": "crowd_arcade_kid_a",
     "text": "Beep. Beep beep. Beeeep. (That was a win.)"
    }
   ],
   "mk_ar_kid_b": [
    {
-    "speaker": "mk_ar_kid_b",
+    "speaker": "crowd_arcade_kid_b",
     "text": "Zed is one point ahead. I will fix that."
    }
   ],
   "mk_ar_kid_c": [
    {
-    "speaker": "mk_ar_kid_c",
+    "speaker": "crowd_arcade_kid_c",
     "text": "Beep beep BEEP! I am on the last level!"
    }
   ],
   "mk_ar_zed": [
    {
-    "speaker": "mk_ar_zed",
+    "speaker": "crowd_zed",
     "text": "Nine thousand nine hundred ninety. ...You are at nine nine eight nine? One point. Always one point."
    }
   ],
   "mk_gt_grunt_a_open": [
    {
-    "speaker": "mk_gt_grunt_a",
+    "speaker": "crowd_gate_grunt_a",
     "text": "...Pass is in order. Stamp, stamp. Boom's up. Do not make a noise on the road."
    }
   ],
   "mk_dp_dispatcher_taken": [
    {
-    "speaker": "mk_dp_dispatcher",
+    "speaker": "crowd_dispatcher",
     "text": "Yard 9. Gate 4, show the pass, and keep it down on the road. Why are you still here?"
    }
   ],
   "mk_dp_dispatcher_done": [
    {
-    "speaker": "mk_dp_dispatcher",
+    "speaker": "crowd_dispatcher",
     "text": "Stamped DONE. ...Everyone is talking about it. Loudly."
    }
   ],
   "mk_dp_dispatcher": [
    {
-    "speaker": "mk_dp_dispatcher",
+    "speaker": "crowd_dispatcher",
     "text": "Job board is on the wall. Main job is the Yard 9 pickup. Do not dawdle, the deadline is already angry."
    }
   ],
@@ -375,17 +375,17 @@
   ],
   "mk_wf_pell_done": [
    {
-    "speaker": "mk_wf_pell",
+    "speaker": "crowd_pell",
     "text": "Filed. They said my appeal is important to them. ...Nobody has said that to me in years."
    }
   ],
   "mk_wf_pell_form": [
    {
-    "speaker": "mk_wf_pell",
+    "speaker": "crowd_pell",
     "text": "An Appeal Form! Signals hands out the tickets and never mentions the forms. You have to know somebody."
    },
    {
-    "speaker": "mk_wf_pell",
+    "speaker": "crowd_pell",
     "text": "Drop it in the APPEALS slot at Gate 4. In triplicate. Well, once. It is a start.",
     "give_item": "side_job_parcel",
     "set_flag": "job_appeal_form_got"
@@ -393,7 +393,7 @@
   ],
   "mk_wf_pell_go": [
    {
-    "speaker": "mk_wf_pell",
+    "speaker": "crowd_pell",
     "text": "Booth slot, Gate 4. Do not fold it. They hate it when you fold it."
    }
   ],
@@ -417,7 +417,7 @@
   ],
   "mk_charge_reward": [
    {
-    "speaker": "mk_sq_ume",
+    "speaker": "crowd_grandma_ume",
     "text": "Do not touch the cords! ...Thank you. The sill has something for you."
    }
   ],
@@ -429,7 +429,7 @@
   ],
   "mk_appeal_paid": [
    {
-    "speaker": "mk_wf_pell",
+    "speaker": "crowd_pell",
     "text": "(a note slides out of the slot) 'Filed. Payment attached.' ...Two rations and some credits."
    }
   ]
