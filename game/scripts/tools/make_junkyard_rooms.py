@@ -39,7 +39,11 @@ def prop(r, name, kind, x, z, yaw=0.0, y=0.0, solid=True):
     r.glb(name, PROPS + PROP_GLB[kind], x, y, z, yaw=yaw)
     if solid:
         s = PROP_SIZE[kind]
-        r.box(name + "Hull", x, y + s[1] / 2.0, z, s[0], s[1], s[2], r.lit((0.4, 0.3, 0.25)), solid=True, yaw=yaw) if False else r.collide(name + "Shape", x, y + s[1] / 2.0, z, s[0], s[1], s[2], yaw)
+        r.collide(name + "Shape", x, y + s[1] / 2.0, z, s[0], s[1], s[2], yaw)
+
+
+def crate_at(r, name, pid, x, y, z):
+    r.node(name, "", ".", (x, y, z), instance=r.inst("res://scenes/props/crate.tscn"), extra='placement_id = "%s"' % pid)
 
 
 def hack_node(r, name, script, tid, x, y, z, yaw=0.0, extra=""):
@@ -120,12 +124,11 @@ def j1():
     r.spot("ScreenSpot", "jk_j1_screen", 16.5, 19.5)
     r.spot("MemoSpot", "jk_j1_memo", 12.5, 27.8)
     prop(r, "StackCarA", "car", 6.0, 18.0, yaw=90)
-    prop(r, "StackCarB", "car", 6.0, 18.0, yaw=90, y=1.4)
     r.box("StackTop", 6.0, 1.8, 18.0, 4.5, 0.4, 2.0, r.lit((0.35, 0.3, 0.3)))
     r.collide("StackShape", 6.0, 0.9, 18.0, 4.5, 1.8, 2.0)
     r.box("ChalkLantern", 3.4, 1.0, 16.2, 0.4, 0.5, 0.04, r.glow((0.95, 0.95, 0.85), 0.7))
     r.box("HopCrate", 8.5, 0.45, 20.0, 0.9, 0.9, 0.9, r.lit((0.8, 0.5, 0.35)), solid=True)
-    r.crate("Stash", "jk_j1_stash", 6.0, 18.0)
+    crate_at(r, "Stash", "jk_j1_stash", 6.0, 1.8, 18.0)
     r.pickup("GlintA", "jk_j1_glint_a", 11.0, 20.0)
     r.pickup("GlintB", "jk_j1_glint_b", 14.0, 25.0)
     # the Pound (x 32 to 64): burn barrel clearing, a few cars as cover edges, the fuse box on its pylon
@@ -137,8 +140,6 @@ def j1():
     hack_node(r, "hack_j1_door", "hack_door", "hack_j1_door", 54.0, 5.0, 12.0,
               extra="")
     # the east gate: a slab that slides up when the fuse box is zapped (built by HackDoor from placements "slab"), and the Door beyond
-    r.box("GateFrameN", 62.4, 3.0, 18.2, 1.0, 6.0, 1.0, r.lit((0.45, 0.4, 0.3)), solid=True)
-    r.box("GateFrameS", 62.4, 3.0, 25.8, 1.0, 6.0, 1.0, r.lit((0.45, 0.4, 0.3)), solid=True)
     door(r, "DoorWest", "jk_j1_to_market", 0.0, 22.0, 90)
     door(r, "DoorEast", "jk_j1_to_j2", 63.0, 22.0, -90)
     # the dormant colossus's head on the eastern skyline: a faint huge dark shape over the heaps
@@ -170,32 +171,30 @@ def j2():
     r.holder("Cliffs")
     r.cliffs(walk, (-30, -22, 190, 62), seed="j2", hmin=13, hmax=19)
     # bay 3's ramp up 4 m (x 98 to 120), then the high ground to the gate
-    r.tilted_box("Bay3Ramp", 109.0, 1.9, 14.0, 22.4, 0.5, 12.0, r.tile("floor_diamond_plate_rust", (11, 6), (0.8, 0.7, 0.65)), rz_deg=10.3)
-    r.box("Bay3High", 135.0, 1.8, 14.0, 30.0, 4.0, 12.0, r.tile("floor_diamond_plate_rust", (15, 6), (0.8, 0.7, 0.65)), solid=True)
+    r.tilted_box("Bay3Ramp", 109.04, 1.75, 14.0, 22.4, 0.5, 12.0, r.tile("floor_diamond_plate_rust", (11, 6), (0.8, 0.7, 0.65)), rz_deg=10.3)
+    r.box("Bay3High", 135.0, 1.9, 14.0, 30.0, 4.2, 12.0, r.tile("floor_diamond_plate_rust", (15, 6), (0.8, 0.7, 0.65)), solid=True)
     # bay 1, the Chute: T1 on its ledge in the alcove (30, 3), a container for cover, a crate hop
     r.box("T1Ledge", 30.0, 2.0, 4.5, 6.0, 4.0, 9.0, r.lit((0.35, 0.36, 0.4)), solid=True)
     prop(r, "ChuteContainer", "container", 22.0, 20.0, yaw=0)
     r.box("HopCrateA", 36.5, 0.45, 12.0, 0.9, 0.9, 0.9, r.lit((0.8, 0.5, 0.35)), solid=True)
     r.box("HopCrateB", 37.6, 0.9, 12.0, 0.9, 1.8, 0.9, r.lit((0.7, 0.45, 0.32)), solid=True)
     # bay 2, the Pit Stop: a scrap ramp up to the north ledge (T2 at (62, 2), 4 m up), the ledge stash S2
-    r.tilted_box("LedgeRamp", 54.0, 1.9, 5.0, 16.4, 0.5, 6.0, r.lit((0.42, 0.34, 0.28)), rz_deg=14.2)
-    r.box("NorthLedge", 71.0, 1.9, 5.0, 18.0, 3.8, 6.0, r.lit((0.38, 0.32, 0.28)), solid=True)
-    r.box("T2Pedestal", 62.0, 4.4, 2.6, 1.6, 1.0, 1.6, r.lit((0.3, 0.33, 0.38)), solid=True)
-    prop(r, "RoofCar", "car", 78.0, 7.0, yaw=0, y=4.0)
-    r.crate("S2Stash", "jk_j2_stash", 72.0, 3.0)
-    r.box("S2Chalk", 72.0, 4.8, 0.2, 0.4, 0.5, 0.04, r.glow((0.95, 0.95, 0.85), 0.7))
+    r.tilted_box("LedgeRamp", 54.06, 1.76, 5.0, 16.5, 0.5, 6.0, r.lit((0.42, 0.34, 0.28)), rz_deg=14.04)
+    r.box("NorthLedge", 71.0, 2.0, 5.0, 18.0, 4.0, 6.0, r.lit((0.38, 0.32, 0.28)), solid=True)
+    prop(r, "RoofCar", "car", 78.0, 6.6, yaw=90, y=4.0)
+    crate_at(r, "S2Stash", "jk_j2_stash", 78.0, 5.4, 6.6)
+    r.box("S2Chalk", 76.0, 4.9, 5.55, 0.4, 0.5, 0.04, r.glow((0.95, 0.95, 0.85), 0.7))
     prop(r, "PitCarA", "car", 54.0, 30.0, yaw=30)
     prop(r, "PitContainer", "container", 86.0, 12.0, yaw=90)
     prop(r, "PitCrate", "crate_large", 48.0, 20.0, yaw=10)
     burn_barrel(r, "PitBarrel", 66.0, 34.0)
     r.pickup("GlintA", "jk_j2_glint_a", 20.0, 14.0)
     r.pickup("GlintB", "jk_j2_glint_b", 60.0, 14.0)
-    r.pickup("CellPickup", "jk_j2_cell", 142.0, 12.0, y=4.0)
+    r.pickup("CellPickup", "jk_j2_cell", 142.0, 12.0, y=4.2)
     # bay 3, the Gate: a terminal on the high ground and the gate it opens
     hack_node(r, "term_j2_gate", "hack_terminal", "term_j2_gate", 144.0, 4.0, 14.0)
     r.box("GateFrameN", 150.4, 5.0, 10.2, 1.0, 10.0, 1.0, r.lit((0.45, 0.4, 0.3)), solid=True)
     r.box("GateFrameS", 150.4, 5.0, 17.8, 1.0, 10.0, 1.0, r.lit((0.45, 0.4, 0.3)), solid=True)
-    r.box("GateSlab", 150.4, 7.0, 14.0, 0.6, 1.0, 5.2, r.lit((0.45, 0.4, 0.3)))
     door(r, "DoorWest", "jk_j2_to_j1", 0.0, 17.0, 90)
     door(r, "DoorEast", "jk_j2_to_j3", 150.0, 14.0, -90)
     # the gantry crane's jib fills the sky over bay 3 (the next job)
@@ -208,7 +207,7 @@ def j2():
     encounters(r, "junk_j2")
     barks(r, [("bark_j2_turret", 18.0, 17.0, 10.0), ("bark_j2_overclock", 60.0, 22.0, 12.0), ("bark_j2_crane", 128.0, 14.0, 10.0)])
     r.spawn("from_j1", 2.0, 17.0, face=(1, 0))
-    r.spawn("from_j3", 148.0, 14.0, face=(-1, 0), y=4.0)
+    r.spawn("from_j3", 148.0, 14.0, face=(-1, 0), y=4.3)
     r.write("junk_j2.tscn")
 
 
@@ -224,6 +223,8 @@ def j3():
     r.plane("PitWater", 50.5, -8.5, 40.0, 9.0, 64.0, r.glow((0.03, 0.08, 0.1), 0.4))
     r.box("PitRimA", 45.7, -4.0, 40.0, 0.6, 8.0, 64.0, r.lit((0.3, 0.26, 0.24)), solid=False)
     r.box("PitRimB", 55.3, -4.0, 40.0, 0.6, 8.0, 64.0, r.lit((0.3, 0.26, 0.24)), solid=False)
+    r.box("PitEndN", 50.5, -4.0, 7.7, 9.0, 8.0, 0.6, r.lit((0.3, 0.26, 0.24)), solid=False)
+    r.box("PitEndS", 50.5, -4.0, 72.3, 9.0, 8.0, 0.6, r.lit((0.3, 0.26, 0.24)), solid=False)
     # the gantry crane straddling the pit: legs, rail x 44 to 66, a trolley and hook; controls at (44, 44)
     metal = r.lit((0.65, 0.55, 0.2))
     r.box("CraneLegW", 44.0, 9.0, 30.0, 1.4, 18.0, 1.4, metal, solid=True)
@@ -254,29 +255,29 @@ def j3():
     for i, (x, z) in enumerate(((38.0, 12.0), (40.0, 14.5), (6.0, 40.0))):
         r.cyl("Spool%d" % i, x, 0.7, z, 0.7, 1.4, r.lit((0.5, 0.35, 0.25)), solid=True)
     prop(r, "RoofChalkCar", "car", 20.0, 70.0, yaw=0)
-    r.crate("RoofStash", "jk_j3_roof_stash", 20.0, 70.0)
+    crate_at(r, "RoofStash", "jk_j3_roof_stash", 20.0, 1.4, 70.0)
     # east half: the Foreman's shed with the last on-foot save terminal, a bench, a heal pickup, the vault
     r.box("ShedFloor", 90.0, 0.08, 48.0, 8.0, 0.16, 6.0, r.lit((0.4, 0.38, 0.34)))
     for sx in (86.2, 93.8):
         r.box("ShedPost%d" % int(sx), sx, 1.6, 45.2, 0.3, 3.2, 0.3, r.lit((0.4, 0.38, 0.34)))
     r.box("ShedRoof", 90.0, 3.3, 48.0, 9.0, 0.2, 7.0, r.lit((0.45, 0.35, 0.3)), fade=True)
-    save_terminal(r, "term_save_j3", "junk_j3", "from_j2", 90.0, 49.0, yaw=0)
+    save_terminal(r, "term_save_j3", "junk_j3", "from_j4", 90.0, 49.0, yaw=0)
     r.box("Bench", 84.0, 0.25, 52.0, 2.0, 0.5, 0.6, r.lit((0.45, 0.35, 0.28)), solid=True)
     r.pickup("HealPickup", "jk_j3_heal", 87.0, 52.0)
     # the vault: a breakable wall at (72, 20) in front of a small chamber; a second way in by a fuse door (hack_j3_vault)
-    r.box("VaultChamberN", 77.0, 1.75, 14.6, 8.0, 3.5, 0.4, r.lit((0.32, 0.3, 0.3)), solid=True)
-    r.box("VaultChamberS", 77.0, 1.75, 25.4, 8.0, 3.5, 0.4, r.lit((0.32, 0.3, 0.3)), solid=True)
-    r.box("VaultChamberE", 81.2, 1.75, 20.0, 0.4, 3.5, 11.2, r.lit((0.32, 0.3, 0.3)), solid=True)
-    r.box("VaultRoof", 77.0, 3.6, 20.0, 8.4, 0.2, 11.2, r.lit((0.32, 0.3, 0.3)), fade=True)
-    r.node("VaultWall", "StaticBody3D", "Breakables", (72.0, 0, 20.0)) if False else None
+    r.box("VaultChamberNW", 73.5, 1.75, 17.0, 1.8, 3.5, 0.4, r.lit((0.32, 0.3, 0.3)), solid=True)
+    r.box("VaultChamberNE", 79.0, 1.75, 17.0, 2.8, 3.5, 0.4, r.lit((0.32, 0.3, 0.3)), solid=True)
+    r.box("VaultChamberS", 76.5, 1.75, 23.0, 8.0, 3.5, 0.4, r.lit((0.32, 0.3, 0.3)), solid=True)
+    r.box("VaultChamberE", 80.2, 1.75, 20.0, 0.4, 3.5, 6.4, r.lit((0.32, 0.3, 0.3)), solid=True)
+    r.box("VaultRoof", 76.5, 3.6, 20.0, 8.0, 0.2, 6.4, r.lit((0.32, 0.3, 0.3)), fade=True)
     r.holder("Breakables")
-    r.node("VaultWall", "StaticBody3D", "Breakables", (72.4, 0, 20.0), extra="")
+    r.node("VaultWall", "StaticBody3D", "Breakables", (72.4, 0, 20.0))
     r.nodes[-1] = r.nodes[-1].replace('type="StaticBody3D" parent="Breakables"]', 'type="StaticBody3D" parent="Breakables" groups=["crane_breakable"]]')
-    r.box("VaultWallMesh", 72.4, 1.75, 20.0, 0.8, 3.5, 5.6, r.lit((0.5, 0.4, 0.35)), parent="Breakables")
+    r.box("VaultWallMesh", 0.0, 1.75, 0.0, 0.8, 3.5, 5.6, r.lit((0.5, 0.4, 0.35)), parent="Breakables/VaultWall")
     r.node("VaultWallShape", "CollisionShape3D", "Breakables/VaultWall", (0, 1.75, 0), extra="shape = %s" % r.box_shape((0.8, 3.5, 5.6)))
-    hack_node(r, "hack_j3_vault", "hack_door", "hack_j3_vault", 78.0, 1.0, 26.2)
-    r.crate("VaultCache", "jk_j3_vault_cache", 78.0, 20.0)
-    r.box("VaultGlow", 78.0, 2.4, 14.9, 1.0, 0.5, 0.05, r.glow((1.0, 0.8, 0.3), 1.0))
+    hack_node(r, "hack_j3_vault", "hack_door", "hack_j3_vault", 76.0, 1.0, 15.0)
+    r.crate("VaultCache", "jk_j3_vault_cache", 77.5, 20.0)
+    r.box("VaultGlow", 76.0, 2.6, 16.7, 1.0, 0.5, 0.05, r.glow((1.0, 0.8, 0.3), 1.0))
     # doors, the hangar door east
     door(r, "DoorWest", "jk_j3_to_j2", 0.0, 60.0, 90)
     door(r, "DoorHangar", "jk_j3_to_j4", 100.0, 40.0, -90)
@@ -323,8 +324,9 @@ def j4():
         r.box("%sPedestal" % tid, x, 1.5, z, 2.4, 3.0, 2.4, r.lit((0.32, 0.34, 0.38)), solid=True)
     r.holder("Shutters")
     for nm, x in (("shutter_w", 13.0), ("shutter_e", 65.0)):
-        r.node(nm, "StaticBody3D", "Shutters", (x, 5.5, 30.0))      # raised 5.5 m: open; the Stand drops it to y 0 (collision on)
-        r.box(nm + "Mesh", x, 5.5 + 2.0, 30.0, 0.6, 4.0, 9.0, r.lit((0.45, 0.4, 0.3)), parent="Shutters")
+        r.node(nm, "StaticBody3D", "Shutters", (x, 5.5, 30.0))      # raised 5.5 m: open; the Stand drops it to y 0 (its collision then blocks)
+        r.box(nm + "Mesh", 0.0, 2.0, 0.0, 0.6, 4.0, 9.0, r.lit((0.45, 0.4, 0.3)), parent="Shutters/" + nm)
+        r.node(nm + "Shape", "CollisionShape3D", "Shutters/" + nm, (0, 2.0, 0), extra="shape = %s" % r.box_shape((0.6, 4.0, 9.0)))
     # the Stand: cars as bleacher cover at the edges, a burn barrel or two
     prop(r, "StandCarA", "car", 20.0, 14.0, yaw=0)
     prop(r, "StandCarB", "car", 58.0, 46.0, yaw=20)
@@ -343,7 +345,7 @@ def j4():
     r.holder("Breakables")
     r.node("SmashWall", "StaticBody3D", "Breakables", (90.0, 0, 30.0))
     r.nodes[-1] = r.nodes[-1].replace('type="StaticBody3D" parent="Breakables"]', 'type="StaticBody3D" parent="Breakables" groups=["loader_smash"]]')
-    r.box("SmashWallMesh", 90.0, 3.0, 30.0, 4.0, 6.0, 9.0, r.lit((0.42, 0.34, 0.28)), parent="Breakables")
+    r.box("SmashWallMesh", 0.0, 3.0, 0.0, 4.0, 6.0, 9.0, r.lit((0.42, 0.34, 0.28)), parent="Breakables/SmashWall")
     r.node("SmashWallShape", "CollisionShape3D", "Breakables/SmashWall", (0, 3.0, 0), extra="shape = %s" % r.box_shape((4.0, 6.0, 9.0)))
     door(r, "DoorWest", "jk_j4_to_j3", 0.0, 30.0, 90)
     r.omni("StandLampN", 30.0, 9.0, 12.0, (1.0, 0.8, 0.5), 3.0, 24.0)
