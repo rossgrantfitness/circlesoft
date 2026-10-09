@@ -92,7 +92,7 @@ func _kill(enemy: Node3D) -> void:
 
 ## B7: an encounter's enemies come back at full health six seconds after they die (ActionEnemy's respawn, sandbox.json respawn_s),
 ## even after their fight has been cleared. Expected: a killed encounter enemy stays down, so a fight can end. See docs/bug_log.md.
-func test_xfail_B7_a_killed_encounter_enemy_stays_down_after_its_fight_is_cleared() -> void:
+func test_B7_a_killed_encounter_enemy_stays_down_after_its_fight_is_cleared() -> void:
 	var room: ActionRoom = await _boot(ROOM_ID, SPAWN)
 	if room == null:
 		return
@@ -114,7 +114,7 @@ func test_xfail_B7_a_killed_encounter_enemy_stays_down_after_its_fight_is_cleare
 	for cop: Node3D in cops:
 		if is_instance_valid(cop) and not bool(cop.get("dead")):
 			back += 1
-	known_bug("B7", back == 0, "%d of 2 cops came back at full health after their cleared fight (respawn_s 6 s)" % back)
+	assert_eq(back, 0, "B7: no cop comes back after its fight is cleared (%d of 2 did)" % back)
 	assert_eq(runner.state_of(FIGHT_ID), "cleared", "the cleared fight stays cleared")
 
 
@@ -137,22 +137,44 @@ func test_a_slice_room_pause_menu_offers_the_menu_row_for_items() -> void:
 	assert_has(rows, "menu", "the pause menu offers Menu (items and gear) in a slice room")
 
 
-## B13: the Juice Box (the Stand's head cache, junk_j4) restores Juice, a gauge the slice never uses, and no health. The slice's
-## health hand-off (HeroVitals) copies Red's health into her record while the menu is open, so only health counts for her.
-## Expected: the Juice Box heals Red (or the slice gives it a health effect). See docs/bug_log.md.
-func test_xfail_B13_the_juice_box_gives_red_no_health() -> void:
+## B13: the Stand's head cache held a Juice Box (it restores Juice, a gauge the slice never uses). Now the cache holds an item that
+## heals Red's health, and the Stand has one visible health pickup. The heal is used through the field menu's own Bag path.
+func test_B13_the_stand_gives_red_health_back() -> void:
+	var crates: Dictionary = DataDB.get_dict("slice/placements").get("crates", {}) as Dictionary
+	var cache: Dictionary = crates.get("jk_j4_head_cache", {}) as Dictionary
+	assert_false(cache.is_empty(), "the Stand's head cache is placed")
+	var items: Dictionary = {}
+	for raw: Variant in DataDB.get_dict("items/items").get("items", []) as Array:
+		items[str((raw as Dictionary).get("id", ""))] = raw
+	for raw: Variant in cache.get("items", []) as Array:
+		var item_id: String = str((raw as Dictionary).get("item", ""))
+		var effect: Dictionary = (items.get(item_id, {}) as Dictionary).get("effect", {}) as Dictionary
+		assert_true(effect.has("heal_hp"), "B13: %s in the head cache heals health" % item_id)
+	var pickups: Dictionary = DataDB.get_dict("slice/placements").get("pickups", {}) as Dictionary
+	var heals: int = 0
+	for id: Variant in pickups.keys():
+		var pickup: Dictionary = pickups[id] as Dictionary
+		if str(pickup.get("room", "")) == "junk_j4" and ((items.get(str(pickup.get("item", "")), {}) as Dictionary).get("effect", {}) as Dictionary).has("heal_hp"):
+			heals += 1
+	assert_gt(heals, 0, "B13: the Stand's room has a health pickup placed")
 	_state.call("start_new_game")
-	var red_id: String = "red"
-	var member: Dictionary = _state.call("get_member", red_id) as Dictionary
-	assert_false(member.is_empty(), "Red has a party record")
-	if member.is_empty():
+	_state.call("update_member", "red", {"hp": 20})
+	_state.call("add_item", "ration_bar", 1)
+	var result: Dictionary = Bag.use_item("ration_bar", "red", Bag.CTX_FIELD, _state)
+	assert_true(bool(result.get("ok", false)), "a Ration Bar can be used from the field menu")
+	assert_gt(int((_state.call("get_member", "red") as Dictionary).get("hp", 0)), 20, "and it gives Red health")
+
+
+## The Stand's health pickup is in the built room, in the group of pickups the interactor can use.
+func test_B13_the_stand_scene_has_its_health_pickup() -> void:
+	var room: ActionRoom = await _boot("junk_j4", "from_j3")
+	if room == null:
 		return
-	_state.call("update_member", red_id, {"hp": 20, "juice": 0})
-	_state.call("add_item", "juice_box", 1)
-	var result: Dictionary = Bag.use_item("juice_box", red_id, Bag.CTX_FIELD, _state)
-	assert_true(bool(result.get("ok", false)), "the Juice Box can be used from the field menu")
-	var after: Dictionary = _state.call("get_member", red_id) as Dictionary
-	known_bug("B13", int(after.get("hp", 0)) > 20, "using a Juice Box gives %s Juice and Red's health stays at %s (Juice is not a slice gauge)" % [str(after.get("juice")), str(after.get("hp"))])
+	var level: Node = room.get("level") as Node
+	var node: Node = level.get_node_or_null("StandHealPickup") if level != null else null
+	assert_not_null(node, "B13: the Stand has its health pickup")
+	if node != null:
+		assert_eq(str(node.get("placement_id")), "jk_j4_heal", "it is the placed heal")
 
 
 ## The J3 Crane Yard's wave-2 Brute (entrance container_gap) stands at its marker until Red comes near, then walks at her. The
@@ -185,7 +207,7 @@ func test_the_crane_yard_brute_comes_at_red_once_she_is_close() -> void:
 ## B9: the J4 loader's wake-up button is switched off in a real room. HackTarget._refresh runs when the loader is built, before
 ## RobotStage has joined its group, so the button (its Interactable) stays disabled and nothing re-checks it. Red can then never
 ## wake the loader, so the route from J4 to J5 is shut. Expected: from the floor beside it, the loader can be used.
-func test_xfail_B9_the_loader_can_be_woken_from_the_floor() -> void:
+func test_B9_the_loader_can_be_woken_from_the_floor() -> void:
 	var room: ActionRoom = await _boot("junk_j4", "from_j3")
 	if room == null:
 		return
@@ -206,4 +228,58 @@ func test_xfail_B9_the_loader_can_be_woken_from_the_floor() -> void:
 	await tree.physics_frame
 	var stage_joined: bool = tree.get_first_node_in_group(RobotStage.GROUP) != null
 	assert_true(stage_joined, "the robot stage is in its group once the room is up")
-	known_bug("B9", inter.enabled, "the loader's wake-up button is disabled after the room loads (enabled %s, robot stage in group %s); refreshing the target by hand turns it on" % [str(inter.enabled), str(stage_joined)])
+	assert_true(inter.enabled, "B9: the loader's wake-up button is on once the room is up (robot stage in group %s)" % str(stage_joined))
+
+
+## B6: Vela's wake-up greeting plays by itself once on New Game in the hideout (scene hideout_wake, trigger enter at spawn "start").
+func test_B6_the_hideout_wake_scene_plays_once_on_new_game() -> void:
+	var room: ActionRoom = await _boot("market_hideout", "start")
+	if room == null:
+		return
+	var story: StoryDirector = room.story
+	assert_not_null(story, "the hideout has a story director")
+	if story == null:
+		return
+	var started: Array[String] = []
+	story.scene_started.connect(func(id: String) -> void: started.append(id))
+	for i: int in 120:
+		await tree.physics_frame
+		if story.is_running() or WorldProgress.has_flag("hideout_wake_seen"):
+			break
+	assert_true(story.is_running() or WorldProgress.has_flag("hideout_wake_seen"), "B6: the wake scene starts on its own")
+	assert_eq(story.current_scene, "hideout_wake", "it is the wake scene")
+	assert_false(story.should_start("hideout_wake"), "it does not start a second time")
+
+
+## B18: ambient barks ran into a script error on every tick once a bubble closed (a freed bubble in a typed array), and then never
+## pruned the list. Runs the real barks next to a chatty townsperson for a while: more than one bark plays, the live list empties
+## when a bubble closes, and the log must stay free of SCRIPT ERROR lines (the suite's log is grepped for them).
+func test_B18_ambient_barks_keep_running_after_a_bubble_closes() -> void:
+	var room: ActionRoom = await _boot("market_square", "from_hideout")
+	if room == null:
+		return
+	var chatty: PlacedNpc = null
+	for node: Node in tree.get_nodes_in_group(Npc.GROUP):
+		var npc: PlacedNpc = node as PlacedNpc
+		if npc != null and room.is_ancestor_of(npc) and float(npc.data.get("bark_radius_m", 0.0)) > 0.0 and not (npc.data.get("barks", []) as Array).is_empty():
+			chatty = npc
+			break
+	assert_not_null(chatty, "the square has a townsperson who barks")
+	if chatty == null:
+		return
+	assert_not_null(room.barks, "the room has ambient barks")
+	var heard: Array[String] = []
+	room.barks.barked.connect(func(_speaker: String, text: String) -> void: heard.append(text))
+	var peak: int = 0
+	var emptied: bool = false
+	for i: int in 2400:
+		_put_hero(room, chatty.global_position + Vector3(0.0, 0.05, 2.0))
+		await tree.physics_frame
+		peak = maxi(peak, room.barks.live_count())
+		if peak > 0 and room.barks.live_count() == 0:
+			emptied = true
+		if heard.size() >= 2 and emptied:
+			break
+	assert_gt(peak, 0, "a bark bubble came up")
+	assert_true(emptied, "B18: the live list empties when the bubble closes")
+	assert_gt(heard.size(), 1, "B18: a second bark plays after the first one closed (%d heard)" % heard.size())

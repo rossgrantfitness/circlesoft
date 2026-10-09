@@ -10,6 +10,9 @@ extends TestCase
 ##   STAND-IN: walking is a straight-line walk at 6 m/s with no collision (walkability is tested by the walk-check tests); hack
 ##     targets are cast with take_hack() instead of the caster's aim (the caster is covered by test_hacks); saves go through
 ##     SaveManager.save_slot() instead of the terminal's menu (the menu is covered by test_slice_save).
+##     Also stand-ins: a fight walk that is blocked for 60 frames by a prop is set down near its target (counted as a blocked walk),
+##     and a wake button that lands mid-swing is followed by a walk into the loader's ring. No fight is forced clear any more and
+##     the loader's button is not switched on by hand (B7 and B9 are fixed; B7 is a hard check: no enemy may come back from the dead).
 ## Every step logs "BOT step ..." and any dead end is recorded with fail(), so one run lists every place the path stops.
 ## Run it alone: godot --headless --path game -s res://tests/run_all.gd -- --only=slice_playthrough
 
@@ -22,7 +25,6 @@ const LIMIT_ROOM: int = 600
 const FIGHT_WALL_LIMIT_MS: int = 150000  # a hard wall-clock cap on one fight (a clean dead end, never a hang)
 const BOSS_WALL_LIMIT_MS: int = 240000    # a hard wall-clock cap on the boss loop (the suite must never hang on it)
 const LIMIT_BOSS: int = 25000             # the generic bot cannot win the boss; this only bounds how long it tries
-const FORCE_CLEAR_AFTER_FRAMES: int = 1500   # a fight the bot cannot win in this many frames is forced clear (counted)
 const QUIET_FRAMES: int = 60              # no living enemies for this long = the wave is over
 const ATTACK_EVERY: int = 6
 const ROOMS_ID: String = "slice/rooms"
@@ -150,7 +152,6 @@ func _hero() -> ActionPlayer:
 
 var _blocked_walks: int = 0
 var _min_hp: float = INF
-var _forced_clears: int = 0
 var _teleports: int = 0
 
 
@@ -270,13 +271,6 @@ func _interact_target(target_id: String) -> bool:
 		break
 	await _set_down_near(spot.global_position, 0.5)
 	_face(spot.global_position)
-	if spot is Interactable and not (spot as Interactable).enabled:
-		# STAND-IN for B9: the loader's button is switched off after the room loads, so the bot turns it on the way a
-		# refresh would (HackTarget._refresh). Counted, and reported as a known bug in the summary.
-		_standins += 1
-		print("BOT stand-in B9: the loader's interact button is off after the room loads; refreshing the target")
-		node.call("_refresh")
-		await tree.physics_frame
 	if not _room.interactor.try_interact():
 		var target: Interactable = _room.interactor.get_target()
 		var stage: Node = _room.get_robot_stage()
@@ -302,6 +296,25 @@ func _drive_dialogue() -> void:
 			ExplorationKit.answer(_room, 0)
 		elif i % 20 == 0:
 			runner.confirm()
+
+
+## The hideout's wake-up scene starts by itself when the room is up (B6): wait for it, say its words, wait until it is over.
+func _let_the_wake_scene_play() -> void:
+	var story: StoryDirector = _room.story
+	if story == null:
+		return
+	for i: int in 300:
+		if story.is_running() or _flag("hideout_wake_seen"):
+			break
+		await tree.physics_frame
+	for i: int in 20:
+		await _drive_dialogue()
+		if not story.is_running():
+			break
+	for i: int in 120:
+		if not story.is_running():
+			break
+		await tree.physics_frame
 
 
 func _use_door(placement_id: String, to_room: String) -> bool:
@@ -346,6 +359,9 @@ func _fight_until_quiet(label: String) -> bool:
 	var quiet: int = 0
 	var since_press: int = ATTACK_EVERY
 	var zap_wait: int = 0
+	var walk_target: Node3D = null
+	var best_dist: float = INF
+	var stalled: int = 0
 	var hero: ActionPlayer = _hero()
 	var started_ms: int = Time.get_ticks_msec()
 	for i: int in LIMIT_FIGHT:
@@ -366,14 +382,6 @@ func _fight_until_quiet(label: String) -> bool:
 			for enemy: Node3D in alive:
 				hp_list.append("%s:%s@%s" % [enemy.name, str(enemy.get("hp")), str(enemy.global_position.round())])
 			print("BOT fight %s: red hp %s/%s at %s, enemies %s" % [label, str(hero.get("hp")), str(hero.get("hp_max")), str(hero.global_position.round()), ", ".join(hp_list)])
-		if i >= FORCE_CLEAR_AFTER_FRAMES and i % 300 == 0 and not alive.is_empty():
-			# The bot could not win this fight in time. Each survivor takes a lethal hit so the route goes on; logged, and
-			# counted in the summary, so a fight that needs a real answer is never silently skipped.
-			_forced_clears += 1
-			print("BOT FORCED CLEAR: %s still had %d enemies (%s) at frame %d (the bot cannot win it)" % [label, alive.size(), ", ".join(_names_of(alive)), i])
-			for enemy: Node3D in alive:
-				enemy.call("apply_hit", {"damage": 99999})
-			continue
 		if alive.is_empty():
 			quiet += 1
 			if quiet >= QUIET_FRAMES:
@@ -389,6 +397,25 @@ func _fight_until_quiet(label: String) -> bool:
 		var target: Node3D = _nearest(ground if not ground.is_empty() else alive)
 		var flat: Vector3 = target.global_position - hero.global_position
 		flat.y = 0.0
+		if target != walk_target:
+			walk_target = target
+			best_dist = INF
+			stalled = 0
+		if flat.length() > 3.0:
+			# The bot walks in straight lines. A prop in the way (the Crane Yard's girder pallet, a car) stops it, so a walk that
+			# makes no progress for 60 frames is set down near its target, the same stand-in _walk_to uses (counted as a blocked walk).
+			if flat.length() < best_dist - 0.05:
+				best_dist = flat.length()
+				stalled = 0
+			else:
+				stalled += 1
+			if stalled >= 60:
+				_blocked_walks += 1
+				stalled = 0
+				best_dist = INF
+				print("BOT note: BLOCKED walking at %s in %s from %s; set down near it" % [target.name, _room.room_id, hero.global_position])
+				await _set_down_near(target.global_position, 5.0)
+				continue
 		if flat.length() > 1.2:
 			hero.global_position += flat.normalized() * WALK_STEP_M
 		if flat.length() > 0.01:
@@ -410,7 +437,6 @@ var _dead_last_frame: Dictionary = {}     # enemy instance id -> was it dead las
 var _flown: Dictionary = {}               # enemy instance ids already counted as flyaways
 var _summary_printed: bool = false
 var _boss_limit: bool = false             # the boss fight ran out of frames (a bot limit, not a game dead end)
-var _standins: int = 0                    # stand-ins the route used for known bugs (B9: the loader's button)
 
 
 ## Counts every enemy that comes back from the dead (a respawn), and logs any body that has left the arena.
@@ -491,7 +517,8 @@ func test_slice_bot_playthrough_title_to_the_ending() -> void:
 	if not await _boot_from_title():
 		return
 	_say("hideout: Red wakes on the start spawn")
-	known_bug("B6", _flag("hideout_wake_seen"), "the hideout's wake-up scene (Vela's greeting) never plays on New Game: hideout_wake has no trigger")
+	await _let_the_wake_scene_play()
+	_check(_flag("hideout_wake_seen"), "B6: Vela's wake-up scene played on New Game (flag hideout_wake_seen)")
 	_say("save at the hideout's terminal (SaveManager stand-in)")
 	if not _check(bool(_manager.call("save_slot", 1)), "the hideout save writes slot 1"):
 		return
@@ -552,10 +579,28 @@ func test_slice_bot_playthrough_title_to_the_ending() -> void:
 	if not _check(_flag("loader_awake"), "the loader wakes at its hack target (loader_awake)"):
 		return
 	# Boarding is a timed sequence (she steps to the point and climbs in), so the bot waits for it, up to 15 s.
+	# If the wake button landed while she was still mid-swing, the loader is awake but the boarding has not begun. A real player
+	# then walks into the glowing ring (or presses interact at it), so the bot does the same: it walks to the boarding point.
+	_hero().release(&"light")
+	for i: int in 120:
+		if _room.get_robot_stage() != null and (_room.get_robot_stage().is_in_robot() or _room.get_robot_stage().boarding.is_in_sequence()):
+			break
+		await tree.physics_frame
+	var ring_stage: RobotStage = _room.get_robot_stage()
+	if ring_stage != null and not ring_stage.is_in_robot() and not ring_stage.boarding.is_in_sequence():
+		_say("  the wake button landed mid-swing; walking into the loader's ring")
+		if not await _walk_to(ring_stage.yard.small_display.boarding_point(), 0.6):
+			return
 	for i: int in 900:
 		if _room.get_robot_stage() != null and _room.get_robot_stage().is_in_robot():
 			break
 		await tree.physics_frame
+	var diag_stage: RobotStage = _room.get_robot_stage()
+	if diag_stage != null and not diag_stage.is_in_robot():
+		var rb: RobotBoarding = diag_stage.boarding
+		print("BOT diag boarding: mode %s free %s (control %s, input_locked %s, state %s, on_floor %s) enabled %s hero %s board_at %s" % [
+				rb.mode_name(), str(rb._free_to_act()), str(_hero().get_control_mode()), str(_hero().input_locked), str(_hero().get_state()),
+				str(_hero().is_on_floor()), str(rb.boarding_enabled), str(_hero().global_position), str(diag_stage.yard.small_display.boarding_point())])
 	if not _check(_room.get_robot_stage() != null and _room.get_robot_stage().is_in_robot(), "Red boards the loader after the wake"):
 		return
 	if not await _use_door("jk_j4_to_j5", "junk_j5"):
@@ -595,12 +640,11 @@ func test_slice_bot_playthrough_title_to_the_ending() -> void:
 
 func _print_summary() -> void:
 	_summary_printed = true
-	print("BOT summary: steps %d, deaths %d, forced clears %d, respawns seen %d, flyaway bodies %d, stand-ins %d, lowest Red health %s, blocked walks %d, teleports %d, dead end: %s" % [_steps, _deaths, _forced_clears, _respawns, _flyaways, _standins, str(_min_hp), _blocked_walks, _teleports, _dead_end if not _dead_end.is_empty() else "none"])
-	# The two stand-ins the route leans on: each forced clear and each flyaway is a known bug, so these are XFAILs until fixed.
-	known_bug("B7", _respawns == 0 and _forced_clears == 0, "%d respawns and %d forced clears: encounter enemies come back at full health" % [_respawns, _forced_clears])
+	print("BOT summary: steps %d, deaths %d, respawns seen %d, flyaway bodies %d, lowest Red health %s, blocked walks %d, teleports %d, dead end: %s" % [_steps, _deaths, _respawns, _flyaways, str(_min_hp), _blocked_walks, _teleports, _dead_end if not _dead_end.is_empty() else "none"])
+	# B7 (no enemy comes back from the dead) is a real check now; no fight is forced clear any more and the loader is woken by its button.
+	assert_eq(_respawns, 0, "B7: no encounter enemy came back from the dead (%d respawns)" % _respawns)
 	# B8 (no body leaves the level) is a real check now: two drones on one marker no longer throw each other away.
 	assert_eq(_flyaways, 0, "B8: no physics body left the level (%d did)" % _flyaways)
-	known_bug("B9", _standins == 0, "%d times the route had to switch the loader's wake-up button on by hand" % _standins)
 
 
 ## The boss: the bot fights (attacks, Zap when the battery allows) until slice_done is set, the way is lost, or the limit is hit.
