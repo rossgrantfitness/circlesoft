@@ -213,7 +213,9 @@ func test_a_version_2_save_loads_exactly() -> void:
 	var state: Node = _make()
 	var golden: Dictionary = _fixture("v2_golden.json")
 	state.call("from_dict", golden)
-	_assert_contains(_through_json(state.call("to_dict")), golden, "the golden v2 file survives load then save")
+	var expected: Dictionary = golden.duplicate(true)
+	expected["save_version"] = state.call("save_version")        # re-saving writes the current version; every other key survives
+	_assert_contains(_through_json(state.call("to_dict")), expected, "the golden v2 file survives load then save")
 	assert_eq(state.call("get_party_ids"), ["red", "mox"] as Array[String])
 	assert_almost_eq(float(state.call("get_play_time_s")), 3725.5)
 

@@ -40,10 +40,10 @@ func _initialize() -> void:
 	_hud.set("listen_input", false)
 	_hud.set("auto_router", false)
 	_hud.set("animations_enabled", false)
-	_hud.set_process(false)
 	root.add_child(_hud)
 	await process_frame
 	await process_frame
+	_hud.set_process(false)  # after _ready (which turns it on): the script ticks the HUD by hand
 	_hud.call("bind", _sandbox)
 	await _hacks_shots()
 	await _boss_shot()
@@ -101,7 +101,11 @@ func _hacks_shots() -> void:
 	await _tick(3.0)
 	_director.emit_signal("hack_cast", {"hack": "zap_drone"})
 	await _tick(0.25)
+	_hud.call("deck_choose")
+	await _tick(0.3)
 	await _grab("slice_hud_hacks.png")
+	await _crop("slice_deck_closeup.png", Rect2i(0, 600, 960, 480))
+	_hud.call("deck_choose")
 	await _crop("slice_hud_hacks_closeup.png", Rect2i(0, 0, 960, 540))
 	_director.emit_signal("hijack_changed", {"target": &"red", "active": false, "duration_s": 10.0})
 	# Quiet Hours: grey bar and static.
@@ -109,13 +113,17 @@ func _hacks_shots() -> void:
 	await _tick(1.7)
 	await _grab("slice_hud_hacks_jammed.png")
 	await _crop("slice_hud_hacks_jammed_closeup.png", Rect2i(0, 0, 960, 540))
+	_hud.call("deck_choose")
+	await _tick(0.2)
+	await _crop("slice_deck_jammed_closeup.png", Rect2i(0, 600, 960, 480))
+	_hud.call("deck_choose")
 	_director.emit_signal("hack_locked", false, 0.0)
 	# Automatic mode: one bar and the last hack used.
 	var knobs: Object = _director.get("feel") as Object
 	knobs.call("set_value", "hack_pick_mode", "automatic")
 	_director.emit_signal("hack_selected", &"emp")
 	await _tick(0.5)
-	await _crop("slice_hud_hacks_auto_closeup.png", Rect2i(0, 0, 960, 540))
+	await _crop("slice_hud_hacks_auto_closeup.png", Rect2i(0, 0, 960, 1080))
 	knobs.call("set_value", "hack_pick_mode", "pick_then_fire")
 
 
@@ -129,8 +137,6 @@ func _boss_shot() -> void:
 	_hud.call("radio_say", "vela", "Relay on its front left leg. Zap it, or put a turret on it.")
 	_hud.call("show_location", {"name": "Kasp's Arena", "kind": "arena"})
 	await _tick(2.2)
-	var card: Control = _hud.call("get_location_card") as Control
-	print("card amounts ", card.call("_amounts"), " life ", card.call("_life"), " vis ", card.is_visible_in_tree(), " mod ", card.get_parent().modulate, card.self_modulate)
 	await _grab("slice_hud_boss_bar.png")
 	await _crop("slice_hud_boss_bar_closeup.png", Rect2i(0, 540, 1920, 540))
 	_hud.call("hide_boss_bar")

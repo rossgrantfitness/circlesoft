@@ -96,7 +96,7 @@ func _sheet() -> void:
 	_label("junk mech  40 m", MECH_AT + Vector3(0.0, 42.5, 0.0), &"main")
 	_label("Hushmaster  12 m wide", HUSH_AT + Vector3(0.0, 10.0, 0.0), &"main")
 	_show_labels(&"main")
-	_cam(Vector3(2.0, 21.0, 158.0), Vector3(-4.0, 19.0, 0.0), 40.0)
+	_cam(Vector3(-8.0, 10.0, 150.0), Vector3(-8.0, 17.0, 0.0), 36.0)
 	var main_image: Image = await _grab()
 	_show_labels(&"a")
 	_cam(Vector3(-41.0, 2.4, 80.0), Vector3(-45.0, 3.4, 58.0), 52.0)
@@ -166,8 +166,8 @@ func _people(at: Vector3, group: StringName) -> void:
 	_gear(red)
 	var kasp: Node3D = _model(DIR + "kasp.glb", at + Vector3(0.8, 0.0, 0.0), "enemy")
 	kasp.rotation_degrees.y = -15.0
-	_label("Red 0.95 m", at + Vector3(-0.8, 1.3, 0.0), group)
-	_label("Kasp 1.05 m", at + Vector3(0.8, 1.4, 0.0), group)
+	_label("Red 0.95 m", at + Vector3(-2.0, 1.2, 0.0), group)
+	_label("Kasp 1.05 m", at + Vector3(2.0, 1.3, 0.0), group)
 
 
 func _arena_row(at: Vector3) -> void:

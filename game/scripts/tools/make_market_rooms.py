@@ -188,7 +188,7 @@ class M(Room):
     def omni(self, name, x, y, z, color, energy=1.6, rng=7.0):
         self.omni_count += 1
         self.node(name, "OmniLight3D", ".", (x, y, z), extra="light_color = Color(%s, %s, %s, 1)\nlight_energy = %s\nomni_range = %s" % (
-            color[0], color[1], color[2], energy, rng))
+            color[0], color[1], color[2], energy * 1.6, rng))
 
     def wires(self, name, x0, z0, x1, z1, y, mat, bulbs=0, bulb_mat=None):
         """A string of lights: a thin wire box between two points at height y, with small emissive bulbs along it."""
@@ -241,7 +241,7 @@ class M(Room):
 
 # ======================================================================= the room shell
 def start(room_id, title, w, d, yaw, cam_center, cam_size, wall_h, floor_tile, wall_tile, floor_tint=(1, 1, 1), wall_tint=(1, 1, 1),
-          moon=(0.55, 0.65, 0.95), moon_energy=0.75):
+          moon=(0.6, 0.7, 1.0), moon_energy=1.3):
     r = M(room_id, title, w, d)
     bounds_script = r.ext_res("Script", "res://scripts/field/camera_bounds.gd")
     cam_script = r.ext_res("Script", "res://scripts/field/diorama_camera.gd")
@@ -254,10 +254,14 @@ def start(room_id, title, w, d, yaw, cam_center, cam_size, wall_h, floor_tile, w
     r.node("Moon", "DirectionalLight3D", extra="light_color = Color(%s, %s, %s, 1)\nlight_energy = %s\nshadow_enabled = true\n"
            "directional_shadow_max_distance = 40.0\ntransform = %s" % (
                moon[0], moon[1], moon[2], moon_energy, aim_transform((w / 2.0, 9, d / 2.0), (0.45, -0.8, -0.5))))
+    # a soft warm fill from the camera side so the graybox reads (the look profile scales key lights)
+    r.node("Fill", "DirectionalLight3D", extra="light_color = Color(1, 0.82, 0.7, 1)\nlight_energy = 0.55\ntransform = %s" % aim_transform((w / 2.0, 9, d / 2.0), (-0.5, -0.7, 0.6)))
     r.node("CameraBounds", "Node3D", pos=(cam_center[0], 0, cam_center[1]),
            extra="script = %s\nsize = Vector3(%s, 0, %s)" % (bounds_script, cam_size[0], cam_size[1]))
     r.node("CameraRig", "Node3D", extra="script = %s\npitch_deg = 42.0\nyaw_deg = %s\nfov_deg = 30.0\ndistance = 11.0" % (cam_script, yaw))
     r.node("Collision", "StaticBody3D")
+    floor_tint = tuple(min(c * 1.5, 1.6) for c in floor_tint)
+    wall_tint = tuple(min(c * 1.35, 1.5) for c in wall_tint)
     r.plane("Floor", w / 2.0, 0, d / 2.0, w, d, r.tile(floor_tile, (w / TILE_M * 128.0 / ATLAS[floor_tile]["rect"][2], d / TILE_M * 128.0 / ATLAS[floor_tile]["rect"][3]), floor_tint))
     r.collide("FloorShape", w / 2.0, -0.1, d / 2.0, w + 2, 0.2, d + 2)
     r.wall_h = wall_h

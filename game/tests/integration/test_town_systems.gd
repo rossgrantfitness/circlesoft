@@ -138,8 +138,8 @@ func test_bubbles_follow_the_npcs_on_screen() -> void:
 	var vendor: Node3D = room.find_child("Vendor", true, false) as Node3D
 	await _stand_before(room, vendor, 3.0)
 	await tree.physics_frame
-	assert_ne(room.screen_pos_of(&"gb_vendor", &"head"), Vector2.ZERO, "ActionRoom gives the bubble the same answer for NPCs as for fighters")
-	assert_true(room.runner.has_speaker("gb_vendor"))
+	assert_ne(room.screen_pos_of(&"crowd_bettor", &"head"), Vector2.ZERO, "ActionRoom gives the bubble the same answer for NPCs as for fighters")
+	assert_true(room.runner.has_speaker("crowd_bettor"))
 	assert_eq(room.runner.camera, room.get_camera_3d(), "the runner projects through the hero's camera")
 
 

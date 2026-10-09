@@ -132,8 +132,12 @@ func _draw_hack_summary(rect: Rect2, focused: bool, dim: float) -> void:
 	SandboxStyle.text_right(self, "label", name_right, base_y, cost, cost_color, 24.0)
 	var name_color: Color = SandboxStyle.row_color(focused, hacks.can_afford(shown))
 	name_color.a = dim
-	SandboxStyle.text_right(self, "label", name_right - 26.0, base_y, hacks.display_name(shown).to_upper(), name_color, 66.0)
-	HackIcons.draw(self, Vector2(rect.end.x - 120.0 + 38.0, rect.position.y + floorf((rect.size.y - 9.0) / 2.0)), hacks.icon_of(shown), tint, 9.0)
+	var label_text: String = hacks.display_name(shown).to_upper()
+	SandboxStyle.text_right(self, "label", name_right - 26.0, base_y, label_text, name_color, 66.0)
+	var icon_x: float = name_right - 26.0 - SandboxStyle.text_width("label", label_text) - 12.0
+	var word_end: float = rect.position.x + 5.0 + SandboxStyle.text_width("body", SliceUiData.text("deck.hack")) + 4.0
+	if icon_x >= word_end:
+		HackIcons.draw(self, Vector2(icon_x, rect.position.y + floorf((rect.size.y - 9.0) / 2.0)), hacks.icon_of(shown), tint, 9.0)
 	var cooling: float = hacks.cooldown_frac(shown)
 	if cooling > 0.0:
 		var sweep_w: float = floorf(rect.size.x * cooling)

@@ -12,7 +12,7 @@ VS-A1 and VS-A2 files arrive). Ross's city tiles are read-only inputs, embedded 
                         Every leg and relay pivot is at its hip / mount point, so rotating or hiding a node is all a "drop" needs.
     kasp.glb            1.05 m, rigged on Red's bone names (scaled), so the free Quaternius clips retarget like the robots.
     junk_mech.glb       40 m, Red's bone names scaled x42, plus mount bones. One skin, several mesh nodes: junk_mech_body,
-                        floodlights, plate_* (six armour plates, each on its own mount bone plate_*_mount), cockpit_core (on
+                        floodlights, plate_* (four armour plates, each on its own mount bone plate_*_mount), cockpit_core (on
                         the bone cockpit_core_mount), and the bone kasp_seat inside the core. No face anywhere.
     arena/              wall, gate post, plateau rail, scrap piles, a giant heap and a turret pylon for Kasp's arena.
 
@@ -541,13 +541,12 @@ def build_kasp(path):
 # ------------------------------------------------------------------ THE GIANT JUNK MECH
 U = MECH_UNIT
 PLATES = {
-    # name: (parent bone, centre (m), size (m) w x h x d, material, tilt)
+    # name: (parent bone, centre (m), size (m) w x h x d, material, tilt). Four plates, as the Combat Designer's boss_design.md has it:
+    # a plate per shoulder (Scrap Swing), the chest (Wrecking Drop) and the back (Stomp March).
     "plate_chest_front": ("chest", (0.0, 23.3, 5.2), (9.0, 6.0, 0.6), "signals_plate", -4.0),
-    "plate_flank_l": ("chest", (7.0, 23.5, 0.3), (0.6, 6.5, 9.0), "mint", 0.0),
-    "plate_flank_r": ("chest", (-7.0, 23.5, 0.3), (0.6, 6.5, 9.0), "redpaint", 0.0),
     "plate_shoulder_l": ("shoulder_l", (7.6, 29.4, 0.0), (6.4, 0.6, 4.6), "mustard", -12.0),
     "plate_shoulder_r": ("shoulder_r", (-7.6, 29.4, 0.0), (6.4, 0.6, 4.6), "streak", 12.0),
-    "plate_belly": ("hips", (0.0, 18.4, 3.9), (8.0, 0.7, 5.6), "steel", 24.0),
+    "plate_back": ("chest", (-2.4, 23.3, -5.7), (8.0, 6.5, 0.6), "redpaint", 0.0),
 }
 CORE = ("chest", (0.0, 23.3, 1.9))          # the pod's centre; Kasp's seat is inside
 KASP_SEAT = (0.0, 22.6, 1.6)
@@ -723,12 +722,10 @@ def build_mech(path):
                 pd.box(bone, (1.8, 0.8 - k * 0.9, dd / 2 + 0.07), (2.6 - 0.5 * k, 0.28, 0.05), M["white"])   # lines of small print
             for sx in (-1, 1):
                 pd.prism(bone, (sx * (w / 2 - 0.5), h / 2, 0.0), (sx * (w / 2 - 0.5), h / 2 + 2.0, -0.6), 0.1, 0.1, M["frame"], n=6)   # chains
-        elif name in ("plate_flank_l", "plate_flank_r"):
-            sx = 1 if name.endswith("_l") else -1
-            pd.box(bone, (sx * (w / 2 + 0.03), 0, 0), (0.05, h - 0.6, dd - 0.6), M["steel"])
-            pd.box(bone, (sx * (w / 2 + 0.07), 1.2, 0), (0.05, 0.8, dd - 1.2), M["white"])
-        elif name == "plate_belly":
-            pd.box(bone, (0, dd * 0.0 + h / 2 + 0.03, 0), (w - 0.8, 0.05, dd - 0.8), M["hazard"])
+        elif name == "plate_back":
+            pd.box(bone, (0, 0, -dd / 2 - 0.03), (w - 0.8, h - 0.8, 0.05), M["steel"])
+            pd.box(bone, (0, 1.4, -dd / 2 - 0.07), (w - 2.0, 0.7, 0.05), M["hazard"])
+            pd.box(bone, (0, -1.2, -dd / 2 - 0.07), (3.0, 1.2, 0.05), M["white"])
         else:
             pd.box(bone, (0, h / 2 + 0.03, 0), (w - 0.8, 0.05, dd - 0.8), M["frame"])
         pd.pop()

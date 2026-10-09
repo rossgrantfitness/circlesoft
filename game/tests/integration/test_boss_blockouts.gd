@@ -8,7 +8,7 @@ const DIR: String = "res://art/placeholder/bosses/"
 const ARENA_DIR: String = "res://art/placeholder/bosses/arena/"
 const RED_PATH: String = "res://art/final/characters/red/red_ross_v1_rigged_ual.glb"
 const PAIRS: Array[String] = ["fl", "fr", "bl", "br"]
-const PLATE_NAMES: Array[String] = ["plate_chest_front", "plate_flank_l", "plate_flank_r", "plate_shoulder_l", "plate_shoulder_r", "plate_belly"]
+const PLATE_NAMES: Array[String] = ["plate_chest_front", "plate_shoulder_l", "plate_shoulder_r", "plate_back"]
 const BANNED_WORDS: Array[String] = ["face", "eye", "mouth", "drill", "spiral", "sunglass"]
 
 
@@ -258,7 +258,7 @@ func test_junk_mech_plates_are_detachable_mesh_nodes_on_mount_bones() -> void:
 		var mount: Vector3 = _bone_origin(skeleton, plate + "_mount")
 		assert_lt(box.get_center().distance_to(mount), 1.5, plate + " is drawn around its own mount bone")
 		assert_ge(box.position.y, 14.0, plate + " is on the body, not the legs")
-	assert_eq(PLATE_NAMES.size(), 6)
+	assert_eq(PLATE_NAMES.size(), 4, "four plates, as boss_design.md has it")
 
 
 func test_junk_mech_core_pod_sits_in_the_chest_behind_the_front_plate() -> void:

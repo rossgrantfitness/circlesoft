@@ -1,27 +1,26 @@
 # The Night Market: layout map (vertical slice, task VS-12)
 
-> Owner: Level Designer (proposes) · Ross (approves). Status: **proposed 2026-10-09, not approved.** The Taste Keeper logs a prediction before Ross decides.
+> Owner: Level Designer (proposes) · Ross (approves). Status: **the four layout decisions were answered by Ross on 2026-10-09 (below); the graybox is built (VS-14: `scripts/tools/make_market_rooms.py`, `scenes/slice/market/`, `data/slice/rooms.json`, `placements.json`).** Layout and look are still graybox placeholders; Ross approves the look at VS-35.
 > This is the 9-room Harrow Landing town (docs/maps/harrow_landing.md, approved 2026-10-07) re-dressed as a cosy neon night market, as Ross picked on 2026-10-09 (Town A). **Every wall, door and floor size is the approved Harrow layout.** Only names, what each room is for, the people and the dressing are new. Read this page first; the coordinates for the builder are at the bottom.
 > Sources: slice_pitch.md, slice_tech_plan.md (sections 2.2, 3), harrow_landing.md, the story bible's world, factions and Kasp sections, the Playbook Principles. Nothing from the twist section.
 
 ## Decisions for Ross
 
-DECISION NEEDED: How loud is the market?
-Option A: **A whisper market.** The Quiet Hours noise curfew is real (it is in the approved world), so the cosiness is murmured: stall-keepers chat low, music leaks out of headphones and sock-stuffed speakers, wind chimes are taped. On the hour a Signals patrol sweeps through and the whole market goes silent and polite until they pass. When Kasp falls, the market gets loud again: radios, arcade beeps, chimes back on the poles. — Pros: keeps "cute people, grim skyline" honest; gives the ending walk home a payoff you can hear; costs only audio and a patrol routine. / Cons: a hushed town can feel less festive for the first five minutes.
-Option B: **A loud, cheerful market** with the patrol as the only hush (they pass, everyone ducks, they leave). — Pros: instantly warm and busy. / Cons: it contradicts the approved Quiet Hours curfew, and the ending has nothing new to give.
-Recommendation: **A.** The hush is what makes the market feel like a pocket people are protecting, and the loud ending is free.
+## Decisions (answered by Ross, 2026-10-09)
 
-DECISION NEEDED: Where does the repair shop under Red's hideout go?
-Option A: **Reuse Otis's Dock Office room** (the small room off the wharf). The hideout is upstairs on the square side and the repair shop is the same building's lower floor on the wharf side (the town is built on a slope, the square sits above the wharf), joined by a ladder hatch inside. Mox runs the shop. Otis moves into the Gear Shop, which becomes his forge. No new room: still 9. — Pros: no new geometry; the old dock office has no job now that the dock fight is gone (no fighting in town); the hatch gives a cosy shortcut. / Cons: Otis's office and its story prop (the ship's bridge lamp, locked) move to the forge counter; the Creative Director must be told.
-Option B: **Add a tenth tiny room** on the square next to the hideout door, keep Otis's office as is. — Pros: nothing moves. / Cons: one more room to build and test; the office has nothing to do; the wharf gets quieter.
-Recommendation: **A.**
+- **How loud is the market? B, loud and cheerful from the start.** Music, radios, arcade beeps and chatter fill the market; the Signals patrol is the only hush: a short pass (about 15 s) where people duck and go quiet, then everything comes back. The whisper market, the muffled speakers and the taped-up chimes are dropped. (The Quiet Hours curfew is still the world's rule and Kasp's posters still say so, but nobody in the market obeys it until the patrol shows up.) Switch: `data/slice/market.json` `market_tone` = `loud`; sound sources are listed under `ambience` there.
+- **Where does the repair shop go? A.** Tuesday's Repair is the old dock-office room (`market_repair`, off the Wharf), Mox runs it, joined to the hideout by a ladder hatch; Otis moves to the Forge, bridge lamp and all. Still 9 rooms. (The Creative Director should be told the lamp prop moved; if the lamp goes, nothing else changes.)
+- **One way after the loader wakes? A** (junkyard map). `data/slice/market.json` `one_way_after_loader`.
+- **Colossus visible in boss phase 1? A** (arena map). `data/slice/market.json` `colossus_in_phase_1`.
+
+**The old 'market gets loud after Kasp' payoff is gone.** Suggested small replacements (Ross to pick; staging only): (A) a street party, stalls flash their string lights, Pop hands Red a free bowl; (B) the propaganda screen goes dark and the posters come down, Kasp's memo board empty (recommended, cheapest, with A's free bowl); (C) the patrol wolves wave and nobody ducks any more. Flag `market_party`, in `market.json` `ending_payoff`.
 
 ## For Ross (the short version)
 
 - **Nine rooms, same doors, same size.** The old lamp names are gone ("Lamp Square" is now **Tarp Square**). No window lamps, no relighting windows; the neon and string lights are dressing only.
 - **Red starts the game in her hideout**, a back room over Mox's repair shop. You wake up, a crackle from Vela in your ear, save at the deck on the desk, and go out.
 - **Two shops:** the Corner Shop (items) and the Forge (swords and gear, Otis). **One job board** at the Dispatch Counter: the main job ("Yard 9") hands Red a Courier Pass and opens the junkyard gate. Two optional side jobs.
-- **Things to see:** noodle carts, a bootleg arcade, Grandma Ume charging phones from her window, kids racing scrap drones on the wharf, propaganda screens, a Signals patrol that sweeps the square on the hour, a checkpoint line holding taped-up wind chimes.
+- **Things to see:** noodle carts, a bootleg arcade, Grandma Ume charging phones from her window, kids racing scrap drones on the wharf, propaganda screens, a Signals patrol that sweeps the square on the hour (the only hush), a checkpoint line with one confiscated wind chime. Music, radios and arcade beeps everywhere else.
 - **No fighting here.** The town is the warm pocket. Hacks and the sword are off; Red can run, jump and talk.
 - **Time:** about 5 minutes on the main path, up to 9 with every side thing.
 - **Borrowed, openly:** the compact hub where every shop is one scene from the square is the approved Harrow plan (Mario RPG's Rose Town, Kalm); the "town as home base between dungeons, a repair shop under the hero's room" is Mega Man Legends' Flutter and Roll's garage. Each is one borrowed role; the people, jokes and look are ours.
@@ -37,7 +36,7 @@ Recommendation: **A.**
 | H5 Courier Office (`harrow_courier`) | **Dispatch Counter** (`market_dispatch`) | Job board. |
 | H6 General Store (`harrow_store`) | **Corner Shop** (`market_corner`), shop 1 | Items. |
 | H7 Gear Shop (`harrow_gear`) | **The Forge** (`market_forge`), shop 2 | Swords and gear; Otis works here. |
-| H8 Otis's Dock Office (`harrow_dock_office`) | **Tuesday's Repair** (`market_repair`) | Mox's workshop (Decision 2, Option A). |
+| H8 Otis's Dock Office (`harrow_dock_office`) | **Tuesday's Repair** (`market_repair`) | Mox's workshop (repair shop, Ross's A). |
 | H9 The Bar (`harrow_bar`) | **Bootleg Arcade** (`market_arcade`) | The one warm room on the waterfront stays warm. |
 
 The old Harrow scenes in scenes/rooms/harrow/ are not touched; the shelved game keeps them.
@@ -74,7 +73,7 @@ The old Harrow scenes in scenes/rooms/harrow/ are not touched; the shelved game 
 2. **M1 Tarp Square → M5 Dispatch Counter.** The Dispatcher offers the **main job, "Yard 9"**: the Signals scrapyard behind the ore line, where the Corps dumps every confiscated receiver, bell and radio, and where Sergeant Kasp keeps his rigs. (Who is asking, what they want back and the exact words are the Writer's; this is the structure.) Taking it sets `job_main_taken` and hands over the **Courier Pass** (key item). About 0:45.
 3. **Free roam (optional).** Corner Shop and Forge to stock up; the two side jobs; secrets; the arcade; noodle carts.
 4. **M3 Gate 4.** Show the pass: a 15-second scene, the grunt stamps it, mutters about the paperwork, and lifts the barrier onto the junkyard road. About 0:30. This is the only lock in town.
-5. **Ending (after the boss, from docs/slice/slice_tech_plan.md section 0):** Red walks back through Gate 4 into the square. The 30-second walk across Tarp Square is the payoff: the market is loud again (Decision 1, A), the Odds Man pays out, a kid tells the "fifty troopers" tale and Red does her legend correction (three fingers, two more, a flex), and she goes home to the hideout. Staging only here; the words are the Writer's.
+5. **Ending (after the boss, from docs/slice/slice_tech_plan.md section 0):** Red walks back through Gate 4 into the square. The 30-second walk across Tarp Square is the payoff: the market is already loud, so the small reward is the street party or the torn-down posters (see Decisions), the Odds Man pays out, a kid tells the "fifty troopers" tale and Red does her legend correction (three fingers, two more, a flex), and she goes home to the hideout. Staging only here; the words are the Writer's.
 
 ## Rooms
 
@@ -89,7 +88,7 @@ Conventions (units, origin, camera, doors) are the Harrow ones: meters; origin a
   - *Cable and tape stall* on the east side: a keeper selling bundles of scrap wire and tape (flavour, bark only).
   - *Grandma Ume's window* above the Corner Shop: she leans out and charges the whole market's phones from a rack on a washing line, cords swinging down the facade, a price chalked on a plank. **Side job 1** sits here (the old balcony hop: two crates, then the ledge).
   - *The Odds Man* at the tarp pole: a chalkboard of bets on silly things ("Will the screen glitch before ten?").
-- **The patrol:** two Signals wolves in navy coats walk a slow loop (waypoints in the build notes) on the hour. They are scenery, not enemies (no combat in town). Within 8 m of them every NPC drops to a whisper and the stall music ducks; after they pass it comes back. They never block a door. A patrol bump is a glare and a shoulder-check bark, never a fine or a fight.
+- **The patrol:** two Signals wolves in navy coats walk a slow loop (waypoints in the build notes) on the hour. They are scenery, not enemies (no combat in town). Within 8 m of them everyone ducks and goes quiet and the music and radios duck for about 15 s (the only hush in a loud market); after they pass it all comes back. They never block a door. A patrol bump is a glare and a shoulder-check bark, never a fine or a fight.
 - **NPCs:** see the NPC list. About 9 here.
 - **Hidden item:** the alley alcove between Corner Shop and Forge (a notch in the north wall) has a chalked lantern on the wall and a stash crate behind trash cans (the same secret as Harrow; contents are the Combat Designer's).
 - **Examine spots:** the propaganda screen, Kasp's daily memo board, the bets chalkboard, the phone rack, the tarp pole's tangle of string lights.
@@ -103,7 +102,7 @@ Conventions (units, origin, camera, doors) are the Harrow ones: meters; origin a
 - **Examine spots:** the crane, a tide board, the race results chalkboard, a screen showing the Admiral's face with a sticker moustache.
 
 ### M3 Gate 4 (`market_gate`): the Signals checkpoint, 14 × 9 m
-- **What it is:** the grim edge of the warm pocket. A blue-gray booth, a boom barrier over a ramp down to the junkyard road, a slow searchlight, Kasp's face on "QUIET HOURS SAVE LIVES" posters with chalked moustaches, and a short line of Marchfolk waiting with their confiscated wind chimes taped up in socks.
+- **What it is:** the grim edge of the warm pocket. A blue-gray booth, a boom barrier over a ramp down to the junkyard road, a slow searchlight, Kasp's face on "QUIET HOURS SAVE LIVES" posters with chalked moustaches, and a short line of Marchfolk waiting with their confiscated wind chimes in evidence bags.
 - **Doors:** gate arch back to the square (south edge), the boom barrier to `junk_j1` (north wall, locked until the job is taken).
 - **Before the job:** two grunts at the barrier: "Road's closed. Papers?" and a little scene where one writes a noise ticket for a wind chime. After: the pass scene (route step 4).
 - **Side job 2, "Appeal in triplicate":** drop Pell's form in the booth's APPEALS slot; a recorded voice says the appeal is important to them.
@@ -113,7 +112,7 @@ Conventions (units, origin, camera, doors) are the Harrow ones: meters; origin a
 ### M4 Red's Hideout (`market_hideout`): 7 × 5 m, **game start and save**
 - **What it is:** a back room over the repair shop: a bunk, a hacker deck on a desk under a window onto the neon, a clothesline of spare jackets, a shelf with a photo and Mom's old flight charts, a wall of delivery stickers (one per run), a pantry tin. It hums faintly with the shop's grinder below. Cosy, cramped, hers.
 - **The deck (save terminal and rest):** at the north wall. Press to save (the lamp check is re-dressed as the deck check: a knuckle tap on the screen and a thumbs-up at the neon sky) and rest (free full heal). Auto-save on entering.
-- **The hatch:** a ladder hatch in the floor to Tuesday's Repair (Decision 2, Option A). Mox's voice and sounds drift up through it.
+- **The hatch:** a ladder hatch in the floor to Tuesday's Repair (repair shop, Ross's A). Mox's voice and sounds drift up through it.
 - **Pickup:** the pantry tin, a visible starter item.
 - **Examine:** the photo, the flight charts, the deck, the sticker wall, a parcel marked "MOX WUZ HERE". Text from the Writer.
 - **NPCs:** none. Red lives alone. (Vela is a voice, not a body.)
@@ -141,7 +140,7 @@ Conventions (units, origin, camera, doors) are the Harrow ones: meters; origin a
 - **NPCs:** Mox and Tuesday (the drone hovers; a cosmetic, not an enemy).
 
 ### M9 Bootleg Arcade (`market_arcade`): 9 × 6 m
-- **What it is:** a back-of-the-wharf arcade: six mismatched cabinets in neon, a prize claw, a snack counter, a high-score board. Every speaker is stuffed with a sock to stay under Quiet Hours, so the game sounds are tiny beeps. The one room where kids are loud, quietly. A small lit room in the grim, the warmest set in the slice.
+- **What it is:** a back-of-the-wharf arcade: six mismatched cabinets in neon, a prize claw, a snack counter, a high-score board. Every cabinet beeps a different beep and the speakers are turned all the way up. The loudest, brightest room in town. A small lit room in the grim, the warmest set in the slice.
 - **Cabinets:** examine only in the slice (each a one-line joke). Playable minigames are on the Later list, not the build.
 - **Hidden item:** behind the prize claw machine.
 - **NPCs:** about 5 here.
@@ -165,16 +164,16 @@ Final models: Ross makes Otis, Mox and Vela (portrait only here) plus **3 or 4 r
 | 11 | Cable-and-tape keeper | M1 | Sells scrap wire by the foot. |
 | 12 | The Odds Man | M1 | Bets on trivia. Mostly right, always upset. |
 | 13 | Neighbour by Red's door | M1 | Complains about Red's hours, bakes at 3am. |
-| 14 | Four shoppers (colour swaps) | M1 | Murmur barks as Red passes. |
+| 14 | Four shoppers (colour swaps) | M1 | Chatty barks as Red passes. |
 | 15, 16 | Two Signals patrol wolves | M1 | Scenery. The grim in the cosy. |
 | 17 | **Juno** (Ross model, suggested) and two drone kids | M2 | Race scrap drones; one drone always crashes. |
-| 18 | The race judge | M2 | A kid on a crate with a megaphone he has to whisper into. |
+| 18 | The race judge | M2 | A kid on a crate with a megaphone he uses a lot. |
 | 19 | Pell | M2 | Dockhand. Hands over the Appeal Form for side job 2. |
 | 20 | Late noodle cook | M2 | Pop's cousin, same menu. |
 | 21 | Fisher at the pier | M2 | Fishing in oily water with great hope. |
 | 22, 23 | Two grunts | M3 | Tired, ticketing a wind chime. |
-| 24 | Three people in the checkpoint line | M3 | Carry taped-up wind chimes. |
-| 25 | Arcade owner | M9 | Runs the snack counter and the sock rule. |
+| 24 | Three people in the checkpoint line | M3 | Carry confiscated wind chimes in evidence bags. |
+| 25 | Arcade owner | M9 | Runs the snack counter and the volume knob. |
 | 26 | Arcade kids (three) | M9 | Rival high scores. |
 | 27 | Zed | M9 | The high-score rival who is always one point behind. |
 
@@ -284,9 +283,17 @@ With every detour the walk is about 220 m. **If the slice runs long,** trim free
 
 **M9 `market_arcade`** (9 × 6; yaw 45; camera fixed (4.5, 3)): door S @ x=7 → `market_wharf:from_arcade`; four cabinets on the N wall (x=1.5, 3.2, 4.9, 6.6), two on the E wall; snack counter W wall z=1 to 4, owner (0.6, 2.5); high-score board N wall @ x=4.5; prize claw at (8.3, 0.6) with the pickup behind it at (8.6, 0.3). Kids (2, 2), (3, 4), (5.5, 2); Zed (6.5, 4). Spawn `from_wharf` (7, 5).
 
-**Flags (suggestions; the Gameplay Programmers own the files):** `job_main_taken`, `courier_pass` (key item), `job_charge_done`, `job_appeal_done`, `patrol_hush`, `kasp_beaten`, `market_loud` (set after the boss; turns the audio from whisper to loud).
+**Flags (suggestions; the Gameplay Programmers own the files):** `job_main_taken`, `courier_pass` (key item), `job_charge_done`, `job_appeal_done`, `patrol_hush`, `kasp_beaten`, `market_party` (set after the boss: the small ending reward, see Decisions).
 
 ## Test and screenshots
 
 - **Headless test (`integration/test_slice_rooms.gd`, Level Designer):** every `market_*` scene loads; every door's target room and spawn exist; the `start` spawn is on the floor and reachable to every door and placement by a walk check (steps 1.0 m or less, the two-crate hops within Red's 1.6 m jump); the barrier door is locked until `job_main_taken`; the hatch pair `market_hideout:from_repair` / `market_repair:from_hideout` connects both ways; every placement id matches a node.
 - **Screenshots for Ross (`docs/screenshots/slice_market_*.png`, taken by the Technical Artist's capture script):** the square at night with the patrol, the wharf drone track, the arcade, the hideout, the gate. Placeholders only until Ross's art arrives.
+
+## As built (VS-14, 2026-10-09)
+
+- **Generator and files.** `game/scripts/tools/make_market_rooms.py` (a derived copy of the Harrow generator; Harrow's own generator and `scenes/rooms/harrow/` are untouched) writes `game/scenes/slice/market/market_*.tscn`. Rows: `game/data/slice/rooms.json` (`start_room` = `market_hideout`, spawn `start`; `pending_rooms` lists `junk_j1:from_market` until the junkyard exists). Placements (doors, 35 people, spots, pickups, crates): `data/slice/placements.json`. Jobs: `data/slice/jobs.json` (`yard_9`, `charge_up`, `appeal_market`) and the two delivery scenes in `data/slice/story_scenes.json`. Shops: `data/shops/market_corner.json` and `market_forge.json` (Harrow stock copied as placeholders; the Combat Designer replaces them, VS-44). Key item `courier_pass` added to `data/items/items.json`. Switches, ambience sources, the patrol loop and the ending-payoff options: `data/slice/market.json`. Placeholder lines for every person and sign: `data/dialogue/market_placeholder.json` (the Writer replaces it).
+- **How the scenes plug in.** Each scene root is a plain level (no FieldRoom script); Main wraps it in an ActionRoom, which reads the row in `rooms.json` (`kind: town`, `camera: diorama`, `combat: false`, `form: red`). Look profile is `grim_ps2` until the Technical Artist's `market_ps2` exists (VS-39): then change the nine `look_profile` strings. Floors and walls use Ross's city tiles through the crisp PS2 shader, with the seam-fixed copies where the atlas has them; signs and screens use his sign and screen tiles; everything else is flat tinted boxes.
+- **Save and rest:** the hacker deck in the hideout is the existing `SaveLamp` script (`rest = true`, `spawn_id = start`), no lamp model. VS-16 re-dresses it as the save terminal.
+- **Not built (on purpose):** the patrol walk and hush routine (VS-43; the two wolves stand at idle spots, the loop is in `market.json`), sound (Audio Designer), race and arcade minigames (Later list), the pass scene at Gate 4 (Writer's story data).
+- **Test:** `game/tests/integration/test_slice_rooms.gd` (data, walk check with steps 1.0 m and hops 1.6 m, doors both ways, hatch pair, barrier lock, a real Main boot of every room). Screenshots: `docs/screenshots/market_square.png` (whole square), `market_square_camera.png` (the game camera), `market_hideout.png`, `market_wharf.png`; made by `game/tests/visual/capture_market.gd`.

@@ -7,6 +7,10 @@ extends SceneTree
 
 const MAIN_SCENE: String = "res://scenes/core/main.tscn"
 const SETTLE_FRAMES: int = 80
+## Where Red stands for the shot (room coordinates), when the default spawn would show a corner.
+const STAND: Dictionary = {"market_square": Vector3(11.0, 0.1, 7.6), "market_wharf": Vector3(14.0, 0.1, 6.5), "market_gate": Vector3(7.5, 0.1, 5.0)}
+## Wide shots: the room seen whole (distance in metres, the camera's fov stays).
+const WIDE: Dictionary = {"market_square": 34.0, "market_wharf": 36.0, "market_gate": 24.0}
 
 var _out_dir: String = "res://../docs/screenshots"
 var _rooms: PackedStringArray = ["market_hideout", "market_square"]
@@ -34,8 +38,28 @@ func _initialize() -> void:
 			router.call("go_to", room_id, "")
 		for i: int in SETTLE_FRAMES:
 			await process_frame
-		var image: Image = root.get_texture().get_image()
-		var path: String = _out_dir.path_join(room_id + ".png")
-		var err: Error = image.save_png(path)
-		print("saved %s (%s), error %d" % [path, image.get_size(), err])
+		var room: ActionRoom = main.get_room() as ActionRoom
+		if STAND.has(room_id) and room != null:
+			room.hero.global_position = STAND[room_id]
+			room.camera_rig.snap_to_target()
+			for i: int in 20:
+				await process_frame
+		_save(room_id + ".png")
+		if WIDE.has(room_id) and room != null:
+			var rig: DioramaCamera = room.camera_rig
+			var old: float = rig.distance
+			rig.clear_bounds()
+			rig.set_room_look(rig.pitch_deg, rig.yaw_deg, rig.fov_deg, float(WIDE[room_id]))
+			rig.snap_to_target()
+			for i: int in 10:
+				await process_frame
+			_save(room_id + "_wide.png")
+			rig.set_room_look(rig.pitch_deg, rig.yaw_deg, rig.fov_deg, old)
 	quit(0)
+
+
+func _save(file_name: String) -> void:
+	var image: Image = root.get_texture().get_image()
+	var path: String = _out_dir.path_join(file_name)
+	var err: Error = image.save_png(path)
+	print("saved %s (%s), error %d" % [path, image.get_size(), err])

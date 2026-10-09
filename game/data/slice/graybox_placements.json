@@ -29,7 +29,7 @@
  "npcs": {
   "gb_vendor": {
    "room": "gb_hub",
-   "speaker": "gb_vendor",
+   "speaker": "crowd_bettor",
    "look": {
     "body": "#8a6f4a",
     "head": "#d6b48a"

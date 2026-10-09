@@ -254,13 +254,13 @@ func test_a_bark_shows_in_the_radio_box() -> void:
 	assert_eq(line["shown"], "Turret on the left, Red.")
 
 
-func test_the_box_stays_in_the_bottom_left_whatever_the_window() -> void:
+func test_the_box_stays_inside_the_ui_whatever_the_window() -> void:
 	_setup()
 	for ui_size: Vector2 in [Vector2(384, 216), Vector2(640, 360)]:
 		var rect: Rect2 = _hud.get_radio().box_rect(ui_size)
 		assert_ge(rect.position.x, 0.0)
 		assert_le(rect.end.y, ui_size.y)
-		assert_lt(rect.end.x, ui_size.x / 2.0 + 120.0)
+		assert_le(rect.end.x, ui_size.x - 8.0 + 0.5)
 
 
 # ---- the location card ----

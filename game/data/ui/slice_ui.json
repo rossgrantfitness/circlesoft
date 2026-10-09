@@ -79,7 +79,7 @@
   "queue_max": 6,
   "static_step_s": 0.0833,
   "line_step": 14,
-  "x_min": 152
+  "x_min": 164
  },
  "location_card": {
   "h": 26,
@@ -173,7 +173,7 @@
  },
  "deck": {
   "x": 8,
-  "w": 136,
+  "w": 148,
   "bottom_gap": 22,
   "row_h": 11,
   "row_h_focus": 16,

@@ -2,11 +2,11 @@
  "conversations": {
   "gb_vendor_talk": [
    {
-    "speaker": "gb_vendor",
+    "speaker": "crowd_bettor",
     "text": "Noodles? Check the counter."
    },
    {
-    "speaker": "gb_vendor",
+    "speaker": "crowd_bettor",
     "text": "Come back when you are hungry."
    }
   ]
