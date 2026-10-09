@@ -38,6 +38,8 @@ const PART_NODES: Dictionary = {
 	"core": {"bone": "cockpit_core_mount", "mesh": ""},
 }
 const PLATE_IDS: Array[StringName] = [&"plate_shoulder_l", &"plate_shoulder_r", &"plate_chest", &"plate_back"]
+## Which hit-ledger slot an anchor name uses (see _handle_events).
+const ORIGIN_SLOTS: Dictionary = {"": 0, "locked_target": 1, "mech_foot_r": 2, "mech_foot_l": 3, "target_1": 4, "target_2": 5, "target_3": 6}
 const LAMP_IDLE: Color = Color(1.0, 0.69, 0.18)
 const LAMP_WINDUP: Color = Color(1.0, 0.6, 0.24)
 const LAMP_RED: Color = Color(1.0, 0.16, 0.1)
@@ -453,7 +455,9 @@ func _handle_events(events: Array[Dictionary]) -> void:
 				if director != null and director.feel != null and director.feel.has("heap_damage_scale"):
 					scale = director.feel.get_f("heap_damage_scale")
 				attack["damage"] = int(roundf(float(attack.get("damage", 0)) * scale))
-				get_hitbox().activate(box, attack, runner.swing_id())
+				# every anchor (a foot, a barrage circle) is its own hit: the second stomp and the later circles can hit
+				# someone the first already hit. Boxes on the same anchor (a foot and its ring) share one hit.
+				get_hitbox().activate(box, attack, runner.swing_id() * 16 + int(ORIGIN_SLOTS.get(str(box.get("origin", "")), 0)))
 			"hitbox_off":
 				get_hitbox().deactivate(int(event["index"]))
 			"pose":

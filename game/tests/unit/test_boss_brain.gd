@@ -300,16 +300,18 @@ func test_a_stage_only_uses_its_own_patterns() -> void:
 
 func test_the_attack_that_opens_a_standing_plate_is_favoured() -> void:
 	var counts: Dictionary = {"scrap_swing": 0, "wrecking_drop": 0, "stomp_march": 0, "scrap_barrage": 0}
-	for rng_seed: int in range(1, 200):
+	for rng_seed: int in range(1, 300):
 		var brain: BossBrain = _heap(rng_seed)
-		brain.begin(&"scrap_swing", 0.0)
-		brain.finish(0.0, 0, 0.0)
-		brain.begin(&"wrecking_drop", 0.0)
-		brain.finish(0.0, 0, 0.0)
-		var pick: Dictionary = brain.step(10.0, _heap_view({"dist_m": 32.0, "bias": {"stomp_march": 1.6}}))
+		# the fixed opening (swing, drop) done; a distance where all four fit (barrage needs 30 m or more, the swing 38 or less)
+		for opener: StringName in [&"scrap_swing", &"wrecking_drop"]:
+			var first: Dictionary = brain.step(0.0, _heap_view({"dist_m": 33.0}))
+			assert_eq(first["pattern"], opener)
+			brain.begin(opener, 0.0)
+			brain.finish(0.0, 0, 0.0)
+		var pick: Dictionary = brain.step(10.0, _heap_view({"dist_m": 33.0, "bias": {"stomp_march": 1.6}}))
 		if not pick.is_empty():
 			counts[String(pick["pattern"])] += 1
-	assert_gt(float(counts["stomp_march"]), float(counts["scrap_barrage"]), "weight 2 x 1.6 against weight 2")
+	assert_gt(float(counts["stomp_march"]), float(counts["scrap_barrage"]), "weight 2 x 1.6 against weight 2: %s" % [counts])
 
 
 func test_every_heap_attack_obeys_the_fair_play_rules_in_the_data() -> void:

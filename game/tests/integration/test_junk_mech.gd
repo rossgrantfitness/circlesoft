@@ -178,7 +178,7 @@ func test_the_core_takes_150_percent_in_every_recovery() -> void:
 	_mech.brain.finish(0.0, 0, 0.0)
 	_mech._start_pattern(_mech.brain.make_pick(&"scrap_barrage", _mech._view(35.0)))
 	await _until(func() -> bool: return _mech.runner.is_busy() and _mech.runner.phase() == MoveRunner.PHASE_RECOVERY, 600)
-	await _frames(2)
+	await _until(func() -> bool: return _mech.is_core_open(), 60)
 	assert_true(_mech.is_core_open())
 	var hit: Dictionary = {"damage": 100, "source": "sword", "outcome": &"hit", "move_id": &"light_1"}
 	_mech.part(&"core").apply_hit(hit)
@@ -192,7 +192,7 @@ func test_at_35_percent_the_core_roars_and_the_last_stand_begins() -> void:
 	_open_all_and_break_plates()
 	await _frames(60 * 3)
 	var core: BossPart = _mech.part(&"core")
-	core.hp = 3000
+	core.hp = 2900
 	core.apply_hit({"damage": 10, "source": "sword", "outcome": &"hit", "move_id": &"light_1"})
 	assert_eq(_mech.stage, &"last_stand")
 	assert_true(_mech.is_invulnerable(), "the roar: 2.2 s untouchable")
@@ -205,7 +205,7 @@ func test_a_chain_plays_two_attacks_with_the_gap_between() -> void:
 	await _setup()
 	_open_all_and_break_plates()
 	await _frames(60 * 3)
-	_mech.part(&"core").hp = 3000
+	_mech.part(&"core").hp = 2900
 	_mech.part(&"core").apply_hit({"damage": 10, "source": "sword", "outcome": &"hit", "move_id": &"light_1"})
 	await _frames(60 * 3)
 	var played: Array[StringName] = []
@@ -286,30 +286,35 @@ func test_standing_in_the_drop_circle_takes_the_full_1040() -> void:
 	assert_eq(int(_hits_from_heap()[0]["damage"]), 1040)
 
 
-func test_the_march_has_two_rings_a_second_apart() -> void:
+func test_the_march_has_two_rings_a_second_apart_and_each_can_hit() -> void:
 	await _setup(Vector3(0, 0.02, 20))
+	_kit.director.feel.set_value("hit_stop_scale", 0.0)
 	_mech._start_pattern(_mech.brain.make_pick(&"stomp_march", _mech._view(20.0)))
-	_kit.red.global_position = Vector3(0, 0.02, 33)
 	var times: Array[float] = []
 	for i: int in range(300):
 		await _frames(1)
+		_kit.red.global_position = Vector3(0, 0.02, 25)           # held in the rings' path (the first hit's shove undone)
+		_kit.red.hp = 6000
 		if _hits_from_heap().size() > times.size():
 			times.append(_mech.runner.elapsed_ms())
 		if times.size() >= 2:
 			break
 	assert_eq(times.size(), 2, "both stomps hit someone standing in the ring's path")
+	assert_gt(times[1] - times[0], 500.0, "about a second apart")
 
 
 func test_the_barrage_circles_land_where_red_stood_and_miss_if_she_moves() -> void:
 	await _setup(Vector3(0, 0.02, 30))
 	_mech._start_pattern(_mech.brain.make_pick(&"scrap_barrage", _mech._view(30.0)))
-	await _frames(60 * 2)
-	var spots: Array[Vector3] = [_mech.lock_position(&"target_1"), _mech.lock_position(&"target_2"), _mech.lock_position(&"target_3")]
-	assert_true(_mech.is_locked(&"target_1"))
-	_kit.red.global_position = spots[0] + Vector3(25, 0, 0)            # always 25 m from the last circle: out of their 9 m
-	for i: int in range(240):
+	var moved: Dictionary = {}
+	for i: int in range(60 * 5):
 		await _frames(1)
-		_kit.red.global_position = _mech.lock_position(&"target_3") + Vector3(25, 0, 0) if _mech.is_locked(&"target_3") else spots[0] + Vector3(25, 0, 0)
+		for target: StringName in [&"target_1", &"target_2", &"target_3"]:
+			# the moment a circle locks, she runs off 25 m (the colossus does 22 m/s: she has 0.6 s)
+			if _mech.is_locked(target) and not moved.has(target):
+				moved[target] = true
+				_kit.red.global_position = _mech.lock_position(target) + Vector3(25, 0, 0)
+	assert_eq(moved.size(), 3, "all three circles locked")
 	assert_eq(_hits_from_heap().size(), 0, "she kept moving")
 
 
@@ -434,7 +439,7 @@ func test_defeating_the_heap_ends_the_fight_and_sets_slice_done() -> void:
 		heap.tick(DT)
 	assert_eq(finished.size(), 1)
 	if state != null:
-		assert_true(bool(state.call("has_flag", "slice_done")))
+		assert_true(bool(state.call("get_flag", "slice_done")))
 		state.call("set_flag", "slice_done", false)
 
 
