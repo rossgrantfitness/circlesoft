@@ -261,3 +261,81 @@ func test_a_stomp_breaks_a_weakened_wall_and_the_gate_sets_its_flag() -> void:
 	assert_true(WorldProgress.has_flag("test_gate_smashed"), "and set the flag the data names")
 	var state: Node = tree.root.get_node("GameState")
 	state.call("set_flag", "test_gate_smashed", false)
+
+
+# ---- a real boot: J5 in the loader, through the door, and out at the arena gate ----
+
+var _main: Main = null
+
+
+func _boot_slice() -> void:
+	var router: Node = tree.root.get_node("SceneRouter")
+	_main = (load("res://scenes/core/main.tscn") as PackedScene).instantiate() as Main
+	_main.show_title = false
+	_main.debug_overlay_enabled = false
+	_main.sandbox_boot_enabled = false
+	add_to_root(_main)
+	_main.apply_mode(GameMode.Mode.SLICE)
+	router.set("main", _main)
+	router.set("instant", true)
+	_main.start_new_game()
+	await _until("market_hideout")
+
+
+func _until(room_id: String, limit: int = 400) -> ActionRoom:
+	var router: Node = tree.root.get_node("SceneRouter")
+	for i: int in limit:
+		await tree.physics_frame
+		var room: ActionRoom = _main.get_room() as ActionRoom
+		if room != null and room.room_id == room_id and not bool(router.call("is_busy")) and room.hero != null:
+			await tree.physics_frame
+			return room
+	fail("never reached %s" % room_id)
+	return null
+
+
+func _cleanup_boot() -> void:
+	var router: Node = tree.root.get_node("SceneRouter")
+	var state: Node = tree.root.get_node("GameState")
+	if _main != null and is_instance_valid(_main):
+		_main.apply_mode(GameMode.Mode.CLASSIC)
+	router.set("main", null)
+	router.set("instant", false)
+	router.set("current_room_id", "")
+	router.set("pending_room_id", "")
+	router.set("rooms_id", "world/rooms")
+	state.set("rooms_data_id", "world/rooms")
+	state.call("reset")
+	Placements.extra_ids = []
+	Placements.extra_scene_ids = []
+	Placements.extra_job_ids = []
+	InputSorting.revert()
+	for node: Node in tree.get_nodes_in_group(ActionRoom.GROUP_HUD):
+		node.queue_free()
+
+
+func test_j5_starts_in_the_loader_and_the_arena_climb_out_puts_her_on_foot() -> void:
+	await _boot_slice()
+	var router: Node = tree.root.get_node("SceneRouter")
+	router.call("go_to", "junk_j5", "from_j4")
+	var j5: ActionRoom = await _until("junk_j5")
+	assert_eq(j5.get_form(), &"small", "J5 starts with Red already in the loader")
+	assert_not_null(j5.get_robot_stage(), "the stage builds the smashables")
+	assert_ge(float(j5.get_robot_stage().yard.props.size()), 100.0, "119 props stand in the yard")
+	assert_true(j5.saving_blocked(), "no saving in the loader")
+	# through the gate's door into the arena (the carried form is the loader)
+	router.call("go_to", "kasp_arena", "from_j5")
+	var arena: ActionRoom = await _until("kasp_arena")
+	assert_not_null(arena.story, "the arena has a story director")
+	var waited: int = 0
+	while arena.get_robot_stage().form() != &"red" and waited < 900:
+		await tree.physics_frame
+		waited += 1
+	assert_eq(arena.get_robot_stage().form(), &"red", "the arena_climb_out scene climbs her out at the gate (the form step)")
+	waited = 0
+	while not WorldProgress.has_flag("arena_arrived") and waited < 300:
+		await tree.physics_frame
+		waited += 1
+	assert_true(WorldProgress.has_flag("arena_arrived"), "and its last step ran")
+	assert_false(arena.saving_blocked(), "on foot she can save at the arena gate's terminal")
+	_cleanup_boot()

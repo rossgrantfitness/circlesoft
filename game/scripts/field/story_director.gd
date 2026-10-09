@@ -236,12 +236,44 @@ func _do(step: Dictionary) -> void:
 			_goto(step)
 		"run":
 			await _run(step)
+		"form":
+			await _form(step)
 		"heal_party":
 			var healer: Node = WorldProgress.game_state(game_state)
 			if healer != null:
 				healer.call("rest_party")
 		_:
 			push_warning("StoryDirector: unknown step '%s' in scene %s" % [step.get("do", ""), current_scene])
+
+
+## `form` (slice): a robot form change on the room's RobotStage. action "disembark" climbs out and waits until she is on foot (the arena gate:
+## the loader stays parked), "board" and "dock" start those sequences and wait for the form to change. Needs a room with a RobotStage
+## (ActionRoom.get_robot_stage()); without one it only warns.
+func _form(step: Dictionary) -> void:
+	var stage: Node = room.call("get_robot_stage") as Node if room.has_method("get_robot_stage") else null
+	if stage == null:
+		push_warning("StoryDirector: the form step needs a room with a robot stage (scene %s)" % current_scene)
+		return
+	var before: StringName = stage.call("form") as StringName
+	var wanted: StringName = &"red"
+	match str(step.get("action", "")):
+		"disembark":
+			if before == &"red":
+				return
+			stage.call("disembark")
+		"board":
+			stage.call("board")
+			wanted = &"small"
+		"dock":
+			stage.call("dock")
+			wanted = &"huge"
+		_:
+			push_warning("StoryDirector: unknown form action '%s' in scene %s" % [step.get("action", ""), current_scene])
+			return
+	var waited: int = 0
+	while stage.call("form") != wanted and waited < MAX_WAIT_FRAMES * 4 and is_inside_tree() and not _gone:
+		await get_tree().physics_frame
+		waited += 1
 
 
 func _say(conversation_id: String) -> void:
