@@ -263,6 +263,8 @@ func test_dash_goes_the_way_the_stick_points_else_the_way_she_faces() -> void:
 
 func test_iframes_last_dash_iframes_ms() -> void:
 	await _arena()
+	_player.knobs.set_value("dash_time_ms", 180)
+	_player.knobs.set_value("dash_iframes_ms", 150)    # fixed here so a retune of the studio numbers can't break this check
 	_player.press(&"dash")
 	var frames: int = 0
 	_step(1)

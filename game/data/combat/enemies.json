@@ -176,8 +176,8 @@
       "launcher": 0.8,
       "air": 0.4
      },
-     "dodge_chance": 0.3,
-     "block_chance": 0.08,
+     "dodge_chance": 0.15,
+     "block_chance": 0.04,
      "dodge_cooldown_ms": 2500,
      "block_cooldown_ms": 1800,
      "fatigue_per_defence": 0.4,
@@ -186,14 +186,14 @@
      "combo_escape": {
       "after_hits": 3,
       "window_ms": 2500,
-      "chance": 0.5,
+      "chance": 0.25,
       "move": "dodge"
      },
      "dodge": {
       "side_pct": 70,
       "back_pct": 30,
       "back_if_closer_m": 1.6,
-      "counter_chance": 0.25,
+      "counter_chance": 0.15,
       "counter_move": "swipe"
      }
     },
@@ -233,15 +233,15 @@
     },
     "low_health": {
      "mode": "flee_or_flank",
-     "threshold_frac": 0.4,
-     "flee_chance_alone": 0.7,
-     "flee_chance_pack": 0.3,
+     "threshold_frac": 0.3,
+     "flee_chance_alone": 0.5,
+     "flee_chance_pack": 0.2,
      "pack_radius_m": 8.0,
      "flee": {
       "speed_mps": 4.6,
       "until_dist_m": 9.0,
       "max_ms": 3500,
-      "max_per_life": 2,
+      "max_per_life": 1,
       "bold_after_ms": 6000,
       "cornered_after_ms": 600,
       "cornered_move": "swipe",
@@ -255,7 +255,7 @@
       ],
       "radius_m": 3.6,
       "speed_mult": 1.3,
-      "hold_ms": 600,
+      "hold_ms": 800,
       "max_ms": 3500,
       "move": "swipe_flank",
       "track_ms": 480,
@@ -279,7 +279,7 @@
      "stagger_ms": 1100,
      "getup_roll_chance": 0.25,
      "getup_invuln_ms": 250,
-     "retaliate_chance": 0.15,
+     "retaliate_chance": 0.1,
      "retaliate_cooldown_ms": 3500,
      "retaliate_range_m": 2.1,
      "flinch_anims": [
@@ -423,7 +423,7 @@
       "air": 0.6
      },
      "dodge_chance": 0.0,
-     "block_chance": 0.45,
+     "block_chance": 0.22,
      "dodge_cooldown_ms": 0,
      "block_cooldown_ms": 1500,
      "fatigue_per_defence": 0.35,
@@ -448,7 +448,7 @@
      "break_poise": 30,
      "break_by_launcher": true,
      "max_in_row": 3,
-     "counter_chance": 0.45,
+     "counter_chance": 0.25,
      "hold_ms": [600, 1200],
      "drop_after_threat_ms": 300,
      "spark": "guard",
@@ -504,7 +504,7 @@
      "getup_roll_chance": 0.0,
      "getup_invuln_ms": 300,
      "armored_flinch": false,
-     "retaliate_chance": 0.35,
+     "retaliate_chance": 0.2,
      "retaliate_cooldown_ms": 3500,
      "retaliate_range_m": 2.6,
      "flinch_anims": [

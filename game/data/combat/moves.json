@@ -43,8 +43,8 @@
       "to_ms": 120
      },
      "magnet": {
-      "range_m": 3.5,
-      "cone_deg": 70
+      "range_m": 5.5,
+      "cone_deg": 120
      },
      "hit": {
       "damage": 8,
@@ -149,8 +149,8 @@
       "to_ms": 110
      },
      "magnet": {
-      "range_m": 3.5,
-      "cone_deg": 70
+      "range_m": 5.5,
+      "cone_deg": 120
      },
      "hit": {
       "damage": 8,
@@ -254,8 +254,8 @@
       "to_ms": 170
      },
      "magnet": {
-      "range_m": 3.5,
-      "cone_deg": 70
+      "range_m": 5.5,
+      "cone_deg": 120
      },
      "hit": {
       "damage": 12,
@@ -358,8 +358,8 @@
       "to_ms": 240
      },
      "magnet": {
-      "range_m": 3.5,
-      "cone_deg": 70
+      "range_m": 5.5,
+      "cone_deg": 120
      },
      "hit": {
       "damage": 32,
@@ -456,8 +456,8 @@
       "to_ms": 180
      },
      "magnet": {
-      "range_m": 3.5,
-      "cone_deg": 70
+      "range_m": 5.5,
+      "cone_deg": 120
      },
      "hit": {
       "damage": 12,
@@ -559,11 +559,11 @@
       "from_ms": 0,
       "to_ms": 100,
       "up_mps": 1.5,
-      "hang_ms": 150
+      "hang_ms": 300
      },
      "magnet": {
-      "range_m": 3.5,
-      "cone_deg": 70
+      "range_m": 6.0,
+      "cone_deg": 140
      },
      "hit": {
       "damage": 7,
@@ -665,11 +665,11 @@
       "from_ms": 0,
       "to_ms": 100,
       "up_mps": 1.0,
-      "hang_ms": 150
+      "hang_ms": 300
      },
      "magnet": {
-      "range_m": 3.5,
-      "cone_deg": 70
+      "range_m": 6.0,
+      "cone_deg": 140
      },
      "hit": {
       "damage": 7,
@@ -767,8 +767,8 @@
       "hang_ms": 180
      },
      "magnet": {
-      "range_m": 3.5,
-      "cone_deg": 70
+      "range_m": 6.0,
+      "cone_deg": 140
      },
      "hit": {
       "damage": 10,

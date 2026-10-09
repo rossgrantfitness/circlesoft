@@ -5,7 +5,7 @@
     "block":    {"nice_ms": 125, "rad_ms": 80, "totally_rad_ms": 50}
   },
   "listen_before_ms": 400,
-  "parry": {"nice_ms": 220, "rad_ms": 130, "totally_rad_ms": 70, "listen_before_ms": 400, "_about": "Action-combat parry (CS-7). One-sided: only a press BEFORE contact counts, so these are how early it may be. Scaled live by the parry_window_scale feel knob."},
+  "parry": {"nice_ms": 320, "rad_ms": 200, "totally_rad_ms": 110, "listen_before_ms": 340, "block_reduction": {"nice": 0.6, "rad": 1.0, "totally_rad": 1.0}, "_about": "Action-combat parry (CS-7). One-sided: only a press BEFORE contact counts, so these are how early it may be. Scaled live by the parry_window_scale feel knob."},
   "modifiers": {"wide_windows": 1.5, "defending_block": 1.25, "butterfingers": 0.75, "fired_up": 1.25},
   "juice_gain": {"rad": 1, "totally_rad": 2},
   "juice_gain_block": {"rad": 1, "totally_rad": 1},
