@@ -68,8 +68,8 @@
   "racks": {
     "interact_radius_m": 0.9,
     "ring_scale": 0.6,
-    "label_show_m": 3.0,
-    "label_fade_m": 1.0,
+    "label_show_m": 2.5,
+    "label_fade_m": 0.5,
     "stands": [
       {"sword": "katana_cyan", "pos": [-12.5, 0.0, 17.5]},
       {"sword": "heavy_duty", "pos": [-7.5, 0.0, 17.5]},

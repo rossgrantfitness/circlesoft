@@ -466,27 +466,58 @@ func _best_standing_height(arena: CombatSandbox, frames: int) -> float:
 	return best
 
 
-func test_rack_labels_show_only_when_red_is_close_and_the_rings_are_small() -> void:
+func test_rack_labels_show_only_for_the_nearest_stand_within_three_metres() -> void:
 	var arena: CombatSandbox = await _quiet_arena()
-	var rack: SwordRack = arena.get_racks()[2]
 	var player: ActionPlayer = arena.get_player() as ActionPlayer
-	player.global_position = rack.global_position + Vector3(0, 0, -10.0)
-	rack.tick(0.016)
-	assert_eq(rack.label_alpha(), 0.0, "far away: no label")
-	assert_false((rack.get_node_or_null("Label3D") as Label3D).visible if rack.get_node_or_null("Label3D") != null else false)
-	player.global_position = rack.global_position + Vector3(0, 0, -2.0)
-	rack.tick(0.016)
-	assert_eq(rack.label_alpha(), 1.0, "inside 3 m: full label")
-	player.global_position = rack.global_position + Vector3(0, 0, -3.5)
-	assert_gt(rack.label_alpha(), 0.0)
-	assert_lt(rack.label_alpha(), 1.0, "fading in between")
-	var found_ring: bool = false
+	var racks: Array[SwordRack] = arena.get_racks()
+	player.global_position = racks[2].global_position + Vector3(0, 0, -10.0)
+	arena.tick()
+	for rack: SwordRack in racks:
+		assert_eq(rack.label_alpha(), 0.0, "far from every stand: no label at all")
+	player.global_position = racks[2].global_position + Vector3(0.0, 0, -1.5)
+	arena.tick()
+	assert_eq(racks[2].label_alpha(), 1.0, "close to one stand: its label")
+	var shown: int = 0
+	for rack: SwordRack in racks:
+		if rack.label_alpha() > 0.0:
+			shown += 1
+	assert_eq(shown, 1, "never two labels at once")
+	player.global_position = racks[2].global_position + Vector3(0.0, 0, -2.8)
+	arena.tick()
+	assert_gt(racks[2].label_alpha(), 0.0)
+	assert_lt(racks[2].label_alpha(), 1.0, "fading at the edge of the range")
+	player.global_position = racks[2].global_position + Vector3(0.0, 0, -4.0)
+	arena.tick()
+	assert_eq(racks[2].label_alpha(), 0.0, "gone past about 3 m")
+
+
+func test_rack_labels_use_the_ui_font_white_with_a_black_drop_shadow_and_the_rings_are_dim() -> void:
+	var arena: CombatSandbox = await _quiet_arena()
+	var rack: SwordRack = arena.get_racks()[0]
+	var labels: Array[Label3D] = []
+	var ring: MeshInstance3D = null
 	for child: Node in rack.get_children():
-		var mesh_node: MeshInstance3D = child as MeshInstance3D
-		if mesh_node != null and mesh_node.mesh is TorusMesh:
-			found_ring = true
-			assert_lt((mesh_node.mesh as TorusMesh).outer_radius, 0.5, "the ring is small")
-	assert_true(found_ring)
+		if child is Label3D:
+			labels.append(child as Label3D)
+		elif child is MeshInstance3D and (child as MeshInstance3D).mesh is TorusMesh:
+			ring = child as MeshInstance3D
+	assert_eq(labels.size(), 2, "the name and its shadow")
+	for label: Label3D in labels:
+		assert_eq(label.font, UiFonts.get_font("tag"), "the sandbox UI font, not the default one")
+	var front: Label3D = labels[1]
+	var shadow: Label3D = labels[0]
+	assert_eq(front.modulate.r, 1.0)
+	assert_eq(front.modulate.g, 1.0)
+	assert_eq(shadow.modulate.r, 0.0)
+	assert_gt(shadow.offset.x, 0.0, "shadow goes right")
+	assert_lt(shadow.offset.y, 0.0, "and down")
+	assert_lt((mesh_ring_radius(ring)), 0.5, "the ring is small")
+	var material: StandardMaterial3D = ring.material_override as StandardMaterial3D
+	assert_le(material.emission_energy_multiplier, 0.5, "dim: it can't pass for an enemy wind-up warning")
+
+
+func mesh_ring_radius(ring: MeshInstance3D) -> float:
+	return (ring.mesh as TorusMesh).outer_radius
 
 
 func test_a_dash_run_uses_the_sandbox_user_folder() -> void:

@@ -86,6 +86,7 @@ func _physics_process(_delta: float) -> void:
 
 ## Per-frame housekeeping: anything that fell out of the world goes back to its spawn.
 func tick() -> void:
+	_update_rack_labels()
 	if _player != null and _player.global_position.y < FALL_LIMIT_Y:
 		_place_player()
 	for enemy: Node3D in _enemies:
@@ -96,6 +97,21 @@ func tick() -> void:
 
 
 # ---- binding ----
+
+## Only the stand nearest to Red shows its name (and only when she is close, which the stand checks).
+func _update_rack_labels() -> void:
+	if _player == null:
+		return
+	var nearest: SwordRack = null
+	var best: float = INF
+	for rack: SwordRack in _racks:
+		var d: float = rack.global_position.distance_squared_to(_player.global_position)
+		if d < best:
+			best = d
+			nearest = rack
+	for rack: SwordRack in _racks:
+		rack.label_enabled = rack == nearest
+
 
 func get_director() -> Node:
 	return _director

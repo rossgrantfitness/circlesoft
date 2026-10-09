@@ -16,6 +16,11 @@ const SWORDS_DATA_ID: String = "combat/swords"
 const SPIN_DEG_PER_S: float = 40.0
 const BOB_M: float = 0.06
 const FLOAT_HEIGHT_M: float = 1.15
+## The ring is a soft, dim marker, never bright enough to be mistaken for an enemy's wind-up warning.
+const RING_GLOW: float = 0.3
+const RING_GREY_MIX: float = 0.55
+const LABEL_FONT_KEY: String = "tag"
+const SHADOW_OFFSET_PX: Vector2 = Vector2(2.0, -2.0)
 
 @export var sword_id: StringName = &""
 @export var radius_m: float = 0.9
@@ -30,6 +35,9 @@ var watch: Node3D = null
 var _display: Node3D = null
 var _time: float = 0.0
 var _label: Label3D = null
+var _label_shadow: Label3D = null
+## Only the nearest stand shows its name (the sandbox sets this each frame).
+var label_enabled: bool = true
 var _ring: MeshInstance3D = null
 var _flash_left: float = 0.0
 
@@ -56,11 +64,13 @@ func tick(delta: float) -> void:
 	if _flash_left > 0.0:
 		_flash_left = maxf(_flash_left - delta, 0.0)
 		if _ring != null:
-			(_ring.material_override as StandardMaterial3D).emission_energy_multiplier = 1.0 + _flash_left * 6.0
+			(_ring.material_override as StandardMaterial3D).emission_energy_multiplier = RING_GLOW + _flash_left * 2.0
 
 
 ## 1 when Red is within label_show_m, fading to 0 over label_fade_m beyond it, else 0.
 func label_alpha() -> float:
+	if not label_enabled:
+		return 0.0
 	if watch == null or not is_instance_valid(watch):
 		return 1.0
 	var flat: Vector3 = watch.global_position - global_position
@@ -74,7 +84,9 @@ func _update_label() -> void:
 	var alpha: float = label_alpha()
 	_label.visible = alpha > 0.0
 	_label.modulate.a = alpha
-	_label.outline_modulate.a = alpha
+	if _label_shadow != null:
+		_label_shadow.visible = alpha > 0.0
+		_label_shadow.modulate.a = alpha
 
 
 ## The data entry for this stand's sword (empty when there is no swords.json yet).
@@ -138,11 +150,11 @@ func _build() -> void:
 	_ring.mesh = ring_mesh
 	_ring.position.y = 0.37
 	var ring_material: StandardMaterial3D = StandardMaterial3D.new()
-	var tint: Color = _trail_color()
+	var tint: Color = _trail_color().lerp(Color(0.5, 0.52, 0.55), RING_GREY_MIX)
 	ring_material.albedo_color = tint
 	ring_material.emission_enabled = true
 	ring_material.emission = tint
-	ring_material.emission_energy_multiplier = 1.0
+	ring_material.emission_energy_multiplier = RING_GLOW
 	ring_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	_ring.material_override = ring_material
 	add_child(_ring)
@@ -153,16 +165,28 @@ func _build() -> void:
 	add_child(_display)
 	_display.add_child(_make_sword_model())
 
-	_label = Label3D.new()
-	_label.text = display_name()
-	_label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	_label.pixel_size = 0.004
-	_label.font_size = 32
-	_label.outline_size = 10
-	_label.no_depth_test = true
-	_label.position.y = 1.65
-	_label.modulate = Color(1.0, 0.95, 0.8)
+	# The name: the sandbox UI font, white, with the black down-right drop shadow (a second label behind it).
+	var font: Font = UiFonts.get_font(LABEL_FONT_KEY)
+	_label_shadow = _make_label(font, Color.BLACK, Vector2.ZERO + SHADOW_OFFSET_PX, -1)
+	_label = _make_label(font, Color.WHITE, Vector2.ZERO, 0)
+	add_child(_label_shadow)
 	add_child(_label)
+
+
+func _make_label(font: Font, color: Color, offset_px: Vector2, priority: int) -> Label3D:
+	var label: Label3D = Label3D.new()
+	label.text = display_name()
+	label.font = font
+	label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	label.pixel_size = 0.004
+	label.font_size = 32
+	label.outline_size = 0
+	label.no_depth_test = true
+	label.render_priority = priority
+	label.offset = offset_px
+	label.position.y = 1.65
+	label.modulate = color
+	return label
 
 
 func _make_sword_model() -> Node3D:
