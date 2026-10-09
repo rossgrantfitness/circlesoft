@@ -85,7 +85,18 @@ func setup(for_host: Node3D, for_player: ActionPlayer, for_camera: OrbitCamera, 
 	boarding.mode_changed.connect(_on_mode_changed)
 	wake_flag = str((data.get("small_robot", {}) as Dictionary).get("wake_flag", ""))
 	boarding.boarding_enabled = is_awake()
+	_refresh_hack_targets()
 	return true
+
+
+## Hack targets (the J4 loader's wake button) are built before the stage joins its group, and decided then that no stage exists.
+## Tell them to look again now that it does (bug B9).
+func _refresh_hack_targets() -> void:
+	if not is_inside_tree():
+		return
+	for node: Node in get_tree().get_nodes_in_group(HackTarget.GROUP_TARGET_NODES):
+		if node is HackTarget:
+			(node as HackTarget).refresh()
 
 
 # ---- the loader's sleep ----

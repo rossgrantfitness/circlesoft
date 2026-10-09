@@ -178,6 +178,12 @@ func state() -> Node:
 	return WorldProgress.game_state(game_state)
 
 
+## Checks again whether the lock-on and the button should be live. Public so something that appears after this target (the
+## room's RobotStage joining its group) can tell it to look again (bug B9).
+func refresh() -> void:
+	_refresh()
+
+
 func _refresh() -> void:
 	var live: bool = lockable and not is_done()
 	if live and not is_in_group(GROUP_LOCK_TARGETS):
