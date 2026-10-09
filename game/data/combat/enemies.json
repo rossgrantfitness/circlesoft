@@ -19,6 +19,13 @@
   "min_aim_lock_before_impact_ms": 150,
   "rear_arc_deg": 120
  },
+ "play_bounds": {
+  "_about": "B8 safety net. An enemy that leaves the playable space (physics blow-up, bad launch) is taken out of play cleanly and counted as defeated, instead of flying off and flooding the log. All distances are from the enemy's spawn spot. kill_below_spawn_m: lower than this (negative) is below the floor; ceiling_above_spawn_m: higher than this is above the level; max_from_spawn_m: further than this sideways is out of the arena. spawn_gap_m: extra space left when an enemy spawned on top of an ally steps clear of it.",
+  "kill_below_spawn_m": -30.0,
+  "ceiling_above_spawn_m": 60.0,
+  "max_from_spawn_m": 300.0,
+  "spawn_gap_m": 0.1
+ },
  "player_read": {
   "_about": "How enemies read Red: her move as a class (light / heavy / launcher / air; a move not listed here is classed from its own data), how long a string of her hits stays 'a combo', and what counts as a dash toward an enemy.",
   "combo_gap_ms": 1200,

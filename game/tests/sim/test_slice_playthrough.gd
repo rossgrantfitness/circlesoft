@@ -598,7 +598,8 @@ func _print_summary() -> void:
 	print("BOT summary: steps %d, deaths %d, forced clears %d, respawns seen %d, flyaway bodies %d, stand-ins %d, lowest Red health %s, blocked walks %d, teleports %d, dead end: %s" % [_steps, _deaths, _forced_clears, _respawns, _flyaways, _standins, str(_min_hp), _blocked_walks, _teleports, _dead_end if not _dead_end.is_empty() else "none"])
 	# The two stand-ins the route leans on: each forced clear and each flyaway is a known bug, so these are XFAILs until fixed.
 	known_bug("B7", _respawns == 0 and _forced_clears == 0, "%d respawns and %d forced clears: encounter enemies come back at full health" % [_respawns, _forced_clears])
-	known_bug("B8", _flyaways == 0, "%d physics bodies (Signals drones) left the level; the Stand's drones are the ones seen" % _flyaways)
+	# B8 (no body leaves the level) is a real check now: two drones on one marker no longer throw each other away.
+	assert_eq(_flyaways, 0, "B8: no physics body left the level (%d did)" % _flyaways)
 	known_bug("B9", _standins == 0, "%d times the route had to switch the loader's wake-up button on by hand" % _standins)
 
 

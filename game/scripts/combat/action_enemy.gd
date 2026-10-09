@@ -42,8 +42,17 @@ const TELEGRAPH_HZ: float = 8.0
 const PATROL_LEG_M: float = 4.0
 const PATROL_SPEED_MULT: float = 0.4
 const DODGE_TELL_COLOR: Color = Color(0.3, 0.95, 1.0)
+const UNSTACK_TRIES: int = 8
+const UNSTACK_EPS_M: float = 0.001
+const REASON_NOT_FINITE: StringName = &"not_finite"
+const REASON_BELOW_FLOOR: StringName = &"below_floor"
+const REASON_ABOVE_CEILING: StringName = &"above_ceiling"
+const REASON_TOO_FAR: StringName = &"too_far"
 
 static var _spawn_counts: Dictionary = {}
+
+## It left the playable space (physics blow-up, bad launch) and was removed as defeated (B8). `reason` is a REASON_* name.
+signal left_play_area(reason: StringName)
 
 @export var enemy_id: StringName = &"grunt"
 @export var rng_seed: int = 0
@@ -126,11 +135,15 @@ var _patrol_flip: bool = false
 var _hijack_color: Color = Color(0.2, 0.95, 1.0)
 var _hijack_end_stun_ms: float = 800.0
 var _hijack_damage_scale: float = 1.0
+var _play_bounds: Dictionary = {}
+## How many times this enemy was removed for leaving the playable space (B8). Normally 0.
+var escapes: int = 0
 
 
 func _ready() -> void:
 	_load_data()
 	super._ready()
+	_unstack_from_allies()        # B8: two bodies on exactly the same spot make the physics engine throw both away
 	spawn_position = global_position
 	spawn_yaw = rotation.y
 	_build_body_shape()
@@ -225,6 +238,8 @@ func tick(delta: float) -> void:
 	var director: CombatDirector = find_director()
 	if director == null:
 		clock.step(int(roundf(delta * 1000000.0)), 1.0)
+	if _check_play_area():
+		return
 	var dt: float = local_delta(delta)
 	if body_state == ST_DEAD:
 		_tick_dead(delta)
@@ -669,6 +684,7 @@ func respawn() -> void:
 	hijacked_by = null
 	team = &"enemy"
 	global_position = spawn_position
+	_unstack_from_allies()
 	rotation.y = spawn_yaw
 	velocity = Vector3.ZERO
 	revive(true)
@@ -1086,6 +1102,93 @@ func _apply_hp_scale(director: CombatDirector) -> void:
 	director.hp_changed.emit(actor_id, hp, hp_max)
 
 
+# ---- staying in the level (B8) ----
+
+## Two enemies spawned on exactly the same spot (a wave of count 2 at one marker) make the physics engine's push-apart
+## degenerate: it shoves both along one axis, harder every frame, until they are over a kilometre away. So a new
+## enemy steps clear of any living ally it overlaps, along a fixed spiral so the same data always gives the same picture.
+## A static gun (speed 0, the turret) stays where it is bolted.
+func _unstack_from_allies() -> void:
+	if not is_inside_tree() or float(data.get("move_speed_mps", 1.0)) <= 0.0:
+		return
+	for attempt: int in UNSTACK_TRIES:
+		var blocker: CombatActor = _overlapping_ally()
+		if blocker == null:
+			return
+		var gap: float = radius_m + blocker.radius_m + float(_play_bounds.get("spawn_gap_m", 0.1))
+		var away: Vector3 = global_position - blocker.global_position
+		away.y = 0.0
+		if away.length() < UNSTACK_EPS_M:
+			var angle: float = float(attempt) * 2.399963 + float(hash(String(actor_id)) % 628) * 0.01
+			away = Vector3(cos(angle), 0.0, sin(angle))
+		global_position = blocker.global_position + away.normalized() * gap + Vector3(0.0, global_position.y - blocker.global_position.y, 0.0)
+
+
+func _overlapping_ally() -> CombatActor:
+	for node: Node in get_tree().get_nodes_in_group(CombatActor.GROUP):
+		var other: CombatActor = node as CombatActor
+		if other == null or other == self or other.dead or other.team != team or not other.is_inside_tree():
+			continue
+		var flat: Vector3 = global_position - other.global_position
+		var rise: float = flat.y
+		flat.y = 0.0
+		if flat.length() < radius_m + other.radius_m and absf(rise) < minf(height_m, other.height_m):
+			return other
+	return null
+
+
+## Why this enemy is out of the playable space, or &"" if it is fine: a position that is not a number, below the kill
+## height, above the ceiling, or too far from where it spawned (all in enemies.json `play_bounds`).
+func play_area_breach() -> StringName:
+	var at: Vector3 = global_position
+	if not (is_finite(at.x) and is_finite(at.y) and is_finite(at.z)) or not (is_finite(velocity.x) and is_finite(velocity.y) and is_finite(velocity.z)):
+		return REASON_NOT_FINITE
+	if at.y < spawn_position.y + float(_play_bounds.get("kill_below_spawn_m", -30.0)):
+		return REASON_BELOW_FLOOR
+	if at.y > spawn_position.y + float(_play_bounds.get("ceiling_above_spawn_m", 60.0)):
+		return REASON_ABOVE_CEILING
+	var flat: Vector2 = Vector2(at.x - spawn_position.x, at.z - spawn_position.z)
+	if flat.length() > float(_play_bounds.get("max_from_spawn_m", 300.0)):
+		return REASON_TOO_FAR
+	return &""
+
+
+## Every tick, first thing: true if the enemy had left the level and was just taken out of play.
+func _check_play_area() -> bool:
+	if not is_inside_tree():
+		return false
+	var reason: StringName = play_area_breach()
+	if reason == &"":
+		return false
+	remove_from_play(reason)
+	return true
+
+
+## Takes an enemy that has left the level out of play cleanly: back on its spawn spot with no speed, hidden, no longer
+## hittable, and dead, so its encounter counts it as defeated and its fight can still clear. In the sandbox arena (which
+## respawns) it comes back at its spawn like any other defeat.
+func remove_from_play(reason: StringName) -> void:
+	escapes += 1
+	if hijackable != null and hijackable.is_hijacked():
+		hijackable.end_hijack()
+	hijacked_by = null
+	global_position = spawn_position
+	velocity = Vector3.ZERO
+	_knock = Vector3.ZERO
+	if not dead:
+		hp = 0
+		dead = true
+		_on_death({})
+		died.emit(actor_id)
+	_dead_real_s = 0.0
+	_set_state(ST_DEAD)
+	collision_layer = 0
+	get_hurtbox().collision_layer = 0
+	if model_root != null:
+		model_root.visible = false
+	left_play_area.emit(reason)
+
+
 # ---- movement helpers ----
 
 func _apply_gravity(dt: float) -> void:
@@ -1144,6 +1247,7 @@ func _load_data() -> void:
 	radius_m = float(data.get("radius_m", 0.36))
 	for tag: Variant in data.get("tags", []) as Array:
 		tags.append(str(tag))
+	_play_bounds = (all.get("play_bounds", {}) as Dictionary).duplicate(true)
 	_telegraph_color = Color.html(str(data.get("telegraph_color", "#ff4a3a")))
 	var enrage: Dictionary = ((_beh.get("low_health", {}) as Dictionary).get("enrage", {}) as Dictionary)
 	_enrage_color = Color.html(str(enrage.get("color", "#ff3a1a")))
