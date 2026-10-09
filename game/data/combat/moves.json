@@ -1938,6 +1938,1371 @@
      "sfx": "combat_brute_slam"
     }
    }
+  },
+  "signals_drone": {
+   "entries": {},
+   "moves": {
+    "dive": {
+     "name": "Dive",
+     "state": "ground",
+     "startup_ms": 760,
+     "active_ms": 260,
+     "recovery_ms": 1100,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {
+      "damage": 7,
+      "hitstun_ms": 300,
+      "knockback_m": 1.2,
+      "launch_mps": 0.0,
+      "knockdown": false,
+      "hit_stop_ms": 50,
+      "poise_damage": 8,
+      "style_points": 0,
+      "shake": "medium",
+      "spark": "slash",
+      "sfx": "combat_hit_light"
+     },
+     "hitboxes": [
+      {
+       "from_ms": 760,
+       "to_ms": 1020,
+       "shape": "sphere",
+       "radius": 0.55,
+       "offset": [
+        0.0,
+        0.0,
+        0.5
+       ],
+       "rot_deg": [
+        0,
+        0,
+        0
+       ]
+      }
+     ],
+     "swing": {
+      "sfx": "combat_swing_heavy",
+      "trail": false
+     },
+     "anim": {
+      "clip": "attack_windup",
+      "keys": [],
+      "fallback": "thrust"
+     },
+     "telegraph_ms": 0,
+     "impact_ms": 760,
+     "parryable": true,
+     "dodge_flare": true,
+     "motion": {
+      "forward_m": 5.0,
+      "from_ms": 640,
+      "to_ms": 900
+     },
+     "note": "The drone rears up and glows for 760 ms, then darts 5 m straight along the line it locked 200 ms earlier. Sidestep or dash and it sails past, then sits low and slow for 1.1 s: free hits. Hit 7 of Red's 120."
+    },
+    "shock": {
+     "name": "Shock ring",
+     "state": "ground",
+     "startup_ms": 700,
+     "active_ms": 160,
+     "recovery_ms": 900,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {
+      "damage": 5,
+      "hitstun_ms": 280,
+      "knockback_m": 1.8,
+      "launch_mps": 0.0,
+      "knockdown": false,
+      "hit_stop_ms": 40,
+      "poise_damage": 6,
+      "style_points": 0,
+      "shake": "medium",
+      "spark": "slash",
+      "sfx": "combat_hit_light"
+     },
+     "hitboxes": [
+      {
+       "from_ms": 700,
+       "to_ms": 860,
+       "shape": "sphere",
+       "radius": 1.9,
+       "offset": [
+        0.0,
+        0.0,
+        0.0
+       ],
+       "rot_deg": [
+        0,
+        0,
+        0
+       ]
+      }
+     ],
+     "swing": {
+      "sfx": "combat_swing_heavy",
+      "trail": false
+     },
+     "anim": {
+      "clip": "attack_windup",
+      "keys": [],
+      "fallback": "brace"
+     },
+     "telegraph_ms": 0,
+     "impact_ms": 700,
+     "parryable": true,
+     "dodge_flare": true,
+     "note": "For a drone hovering right on top of Red: a short crackle ring (1.9 m) after 700 ms. 700 ms so it also meets the 650 ms floor from behind."
+    },
+    "strafe": {
+     "name": "Hover circle",
+     "state": "ground",
+     "kind": "locomotion",
+     "loop": true,
+     "startup_ms": 0,
+     "active_ms": 800,
+     "recovery_ms": 0,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {},
+     "hitboxes": [],
+     "speed_mps": 3.2,
+     "anim": {
+      "clip": "strafe",
+      "keys": [],
+      "fallback": "run_lean"
+     },
+     "note": "Drifts round Red at its hover height."
+    },
+    "retreat": {
+     "name": "Back off",
+     "state": "ground",
+     "kind": "locomotion",
+     "loop": true,
+     "startup_ms": 0,
+     "active_ms": 800,
+     "recovery_ms": 0,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {},
+     "hitboxes": [],
+     "speed_mps": 3.6,
+     "anim": {
+      "clip": "retreat",
+      "keys": [],
+      "fallback": "run_lean"
+     }
+    }
+   }
+  },
+  "wall_turret": {
+   "entries": {},
+   "moves": {
+    "burst": {
+     "name": "Burst",
+     "state": "ground",
+     "startup_ms": 1000,
+     "active_ms": 760,
+     "recovery_ms": 1300,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {
+      "damage": 7,
+      "hitstun_ms": 250,
+      "knockback_m": 0.6,
+      "launch_mps": 0.0,
+      "knockdown": false,
+      "hit_stop_ms": 40,
+      "poise_damage": 6,
+      "style_points": 0,
+      "shake": "medium",
+      "spark": "slash",
+      "sfx": "combat_hit_light"
+     },
+     "hitboxes": [
+      {
+       "from_ms": 1000,
+       "to_ms": 1080,
+       "shape": "box",
+       "size": [
+        0.5,
+        0.9,
+        28.0
+       ],
+       "offset": [
+        0.0,
+        0.2,
+        14.0
+       ],
+       "rot_deg": [
+        0,
+        0,
+        0
+       ]
+      },
+      {
+       "from_ms": 1350,
+       "to_ms": 1430,
+       "shape": "box",
+       "size": [
+        0.5,
+        0.9,
+        28.0
+       ],
+       "offset": [
+        0.0,
+        0.2,
+        14.0
+       ],
+       "rot_deg": [
+        0,
+        0,
+        0
+       ]
+      },
+      {
+       "from_ms": 1700,
+       "to_ms": 1780,
+       "shape": "box",
+       "size": [
+        0.5,
+        0.9,
+        28.0
+       ],
+       "offset": [
+        0.0,
+        0.2,
+        14.0
+       ],
+       "rot_deg": [
+        0,
+        0,
+        0
+       ]
+      }
+     ],
+     "swing": {
+      "sfx": "combat_swing_heavy",
+      "trail": false
+     },
+     "anim": {
+      "clip": "attack_windup",
+      "keys": [],
+      "fallback": "thrust"
+     },
+     "telegraph_ms": 0,
+     "impact_ms": 1000,
+     "parryable": false,
+     "dodge_flare": true,
+     "rehit_ms": 200,
+     "telegraph_kind": "dodge_only",
+     "aim_pitch": true,
+     "note": "Three bolts down ONE line, 350 ms apart. A thin red laser line shows from the first frame; the aim locks 350 ms before the first bolt, and the bolts all follow the locked line, so one step sideways (or a dash) beats all three. 1 s of laser before the first bolt. 7 each, 21 if she stands in the line for all three."
+    },
+    "burst_ally": {
+     "name": "Burst (hijacked)",
+     "state": "ground",
+     "startup_ms": 500,
+     "active_ms": 470,
+     "recovery_ms": 450,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {
+      "damage": 7,
+      "hitstun_ms": 250,
+      "knockback_m": 0.6,
+      "launch_mps": 0.0,
+      "knockdown": false,
+      "hit_stop_ms": 40,
+      "poise_damage": 6,
+      "style_points": 0,
+      "shake": "medium",
+      "spark": "slash",
+      "sfx": "combat_hit_light"
+     },
+     "hitboxes": [
+      {
+       "from_ms": 500,
+       "to_ms": 570,
+       "shape": "box",
+       "size": [
+        0.5,
+        0.9,
+        28.0
+       ],
+       "offset": [
+        0.0,
+        0.2,
+        14.0
+       ],
+       "rot_deg": [
+        0,
+        0,
+        0
+       ]
+      },
+      {
+       "from_ms": 700,
+       "to_ms": 770,
+       "shape": "box",
+       "size": [
+        0.5,
+        0.9,
+        28.0
+       ],
+       "offset": [
+        0.0,
+        0.2,
+        14.0
+       ],
+       "rot_deg": [
+        0,
+        0,
+        0
+       ]
+      },
+      {
+       "from_ms": 900,
+       "to_ms": 970,
+       "shape": "box",
+       "size": [
+        0.5,
+        0.9,
+        28.0
+       ],
+       "offset": [
+        0.0,
+        0.2,
+        14.0
+       ],
+       "rot_deg": [
+        0,
+        0,
+        0
+       ]
+      }
+     ],
+     "swing": {
+      "sfx": "combat_swing_heavy",
+      "trail": false
+     },
+     "anim": {
+      "clip": "attack_windup",
+      "keys": [],
+      "fallback": "thrust"
+     },
+     "telegraph_ms": 0,
+     "impact_ms": 500,
+     "parryable": false,
+     "dodge_flare": true,
+     "rehit_ms": 150,
+     "aim_pitch": true,
+     "note": "What the turret fires while Overclock has it: the same three bolts, 500 ms to first bolt and a short recovery, so it fires about every 1.4 s for 10 s. Enemies do not dodge turret fire, so no long laser. Used through hijack.attack_move, not the enemy attack list."
+    }
+   }
+  },
+  "hushmaster": {
+   "entries": {},
+   "moves": {
+    "leg_stomp": {
+     "name": "Leg Stomp",
+     "state": "ground",
+     "startup_ms": 1100,
+     "active_ms": 900,
+     "recovery_ms": 1000,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {
+      "damage": 14,
+      "hitstun_ms": 450,
+      "knockback_m": 2.2,
+      "launch_mps": 0.0,
+      "knockdown": false,
+      "hit_stop_ms": 90,
+      "poise_damage": 30,
+      "style_points": 0,
+      "shake": "heavy",
+      "spark": "slash_big",
+      "sfx": "combat_brute_slam"
+     },
+     "hitboxes": [
+      {
+       "from_ms": 1100,
+       "to_ms": 1180,
+       "shape": "sphere",
+       "radius": 1.2,
+       "offset": [
+        0.0,
+        0.0,
+        0.0
+       ],
+       "rot_deg": [
+        0,
+        0,
+        0
+       ],
+       "origin": "leg_foot",
+       "damage_mult": 1.2
+      },
+      {
+       "from_ms": 1100,
+       "to_ms": 1900,
+       "shape": "ring",
+       "origin": "leg_foot",
+       "inner_start_m": 0.6,
+       "width_m": 1.1,
+       "expand_mps": 9.0,
+       "max_radius_m": 7.0,
+       "clear_height_m": 0.6,
+       "offset": [
+        0.0,
+        0.0,
+        0.0
+       ],
+       "rot_deg": [
+        0,
+        0,
+        0
+       ],
+       "damage_mult": 0.85
+      }
+     ],
+     "swing": {
+      "sfx": "combat_swing_heavy",
+      "trail": false
+     },
+     "anim": {
+      "clip": "slam",
+      "keys": [],
+      "fallback": "overhead"
+     },
+     "telegraph_ms": 0,
+     "impact_ms": 1100,
+     "parryable": false,
+     "dodge_flare": true,
+     "telegraph_kind": "dodge_only",
+     "ground_marker": {
+      "shape": "circle",
+      "radius_m": 1.4,
+      "lock_before_impact_ms": 420,
+      "ring_preview_m": 7.0
+     },
+     "note": "The nearest standing leg glows amber and rises for 1.1 s; a circle on the floor shows where the foot will land (it stops following Red 420 ms before). The foot hurts only inside the circle (17). The shock ring leaves from the foot at 9 m/s out to 7 m, 0.6 m tall: JUMP it (or dash through it). Ring hit 12. Not parryable: the answer is the jump. 1 s of recovery with the leg planted."
+    },
+    "dish_sweep": {
+     "name": "Dish Sweep",
+     "state": "ground",
+     "startup_ms": 1400,
+     "active_ms": 1500,
+     "recovery_ms": 1200,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {
+      "damage": 14,
+      "hitstun_ms": 500,
+      "knockback_m": 2.4,
+      "launch_mps": 0.0,
+      "knockdown": false,
+      "hit_stop_ms": 80,
+      "poise_damage": 30,
+      "style_points": 0,
+      "shake": "heavy",
+      "spark": "slash_big",
+      "sfx": "combat_hit_heavy"
+     },
+     "hitboxes": [
+      {
+       "from_ms": 1400,
+       "to_ms": 2900,
+       "shape": "beam",
+       "origin": "dish",
+       "length_m": 38.0,
+       "width_m": 1.6,
+       "height_m": 1.4,
+       "clear_height_m": 0.0,
+       "sweep_deg": 80.0,
+       "sweep_deg_per_s": 55.0,
+       "offset": [
+        0.0,
+        0.0,
+        0.0
+       ],
+       "rot_deg": [
+        0,
+        0,
+        0
+       ]
+      }
+     ],
+     "swing": {
+      "sfx": "combat_swing_heavy",
+      "trail": false
+     },
+     "anim": {
+      "clip": "slam",
+      "keys": [],
+      "fallback": "spin"
+     },
+     "telegraph_ms": 0,
+     "impact_ms": 1400,
+     "parryable": false,
+     "dodge_flare": true,
+     "telegraph_kind": "dodge_only",
+     "floor_line": {
+      "from_ms": 0,
+      "to_ms": 1400,
+      "color": "#ff3a3a",
+      "width_m": 0.5,
+      "shows_full_arc": true,
+      "stays_until_ms": 2900
+     },
+     "note": "The dish turns and a red line crawls across the floor for 1.4 s, drawing the WHOLE arc (80 degrees) before anything hurts. Then a beam (1.6 m wide) sweeps along that exact line at 55 degrees a second, 1.5 s. Three safe answers: stand outside the fan, dash through the beam, or run with it. One hit per sweep (14). The dish is lowered to 2.2 m during the 1.2 s recovery: it can be hit."
+    },
+    "drone_drop": {
+     "name": "Drone Drop",
+     "state": "ground",
+     "kind": "summon",
+     "startup_ms": 1000,
+     "active_ms": 0,
+     "recovery_ms": 900,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {},
+     "hitboxes": [],
+     "swing": {
+      "sfx": "combat_swing_heavy",
+      "trail": false
+     },
+     "anim": {
+      "clip": "slam",
+      "keys": [],
+      "fallback": "brace"
+     },
+     "telegraph_ms": 0,
+     "impact_ms": 1000,
+     "parryable": false,
+     "dodge_flare": false,
+     "note": "Not an attack on Red. A floor hatch lid lights amber for 1 s (a one-second warning), then drones rise out of it (the pattern says how many and which hatch). The Hushmaster stands still for the 0.9 s afterwards."
+    },
+    "quiet_hours": {
+     "name": "Quiet Hours",
+     "state": "ground",
+     "kind": "status",
+     "startup_ms": 1400,
+     "active_ms": 0,
+     "recovery_ms": 800,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {},
+     "hitboxes": [],
+     "swing": {
+      "sfx": "combat_swing_heavy",
+      "trail": false
+     },
+     "anim": {
+      "clip": "slam",
+      "keys": [],
+      "fallback": "brace"
+     },
+     "telegraph_ms": 0,
+     "impact_ms": 1400,
+     "parryable": false,
+     "dodge_flare": false,
+     "dish_lowers_m": 2.2,
+     "note": "The dish lowers to 2.2 m and hums: it glows, the screen edges fizz, a rising whine plays. 1.4 s later Red's hacks are locked for 5 s (the pattern sets the lock). Hitting the dish 3 times (a Zap counts as 3) before the lock lands cancels it; hitting it 3 times during the lock ends the lock early. 0.8 s of venting after."
+    },
+    "walk": {
+     "name": "Walk",
+     "state": "ground",
+     "kind": "locomotion",
+     "loop": true,
+     "startup_ms": 0,
+     "active_ms": 800,
+     "recovery_ms": 0,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {},
+     "hitboxes": [],
+     "speed_mps": 2.4,
+     "anim": {
+      "clip": "walk",
+      "keys": [],
+      "fallback": "breathe"
+     },
+     "note": "The rig strides on its legs, turning slowly (90 degrees a second) to square up on Red."
+    },
+    "leg_drop": {
+     "name": "Leg pair drops",
+     "state": "ground",
+     "kind": "reaction",
+     "startup_ms": 0,
+     "active_ms": 0,
+     "recovery_ms": 1400,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {},
+     "hitboxes": [],
+     "anim": {
+      "clip": "hurt",
+      "keys": [],
+      "fallback": "recoil"
+     },
+     "note": "A relay breaks: sparks, the leg pair folds and the body sags toward that corner. No hitbox, no damage. It cannot start an attack for 1.4 s."
+    },
+    "dish_stagger": {
+     "name": "Dish cut short",
+     "state": "ground",
+     "kind": "reaction",
+     "startup_ms": 0,
+     "active_ms": 0,
+     "recovery_ms": 1600,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {},
+     "hitboxes": [],
+     "anim": {
+      "clip": "stagger",
+      "keys": [],
+      "fallback": "recoil"
+     },
+     "punish": {
+      "from_ms": 0,
+      "to_ms": 1600
+     },
+     "note": "Quiet Hours was cut short, or the dish broke: the rig reels for 1.6 s."
+    },
+    "topple": {
+     "name": "Topple",
+     "state": "ground",
+     "kind": "reaction",
+     "startup_ms": 0,
+     "active_ms": 0,
+     "recovery_ms": 2600,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {},
+     "hitboxes": [],
+     "anim": {
+      "clip": "knockdown",
+      "keys": [],
+      "fallback": "fall_flat"
+     },
+     "note": "The last pair drops: the rig crashes onto its belly at the centre. 2.6 s, then the jack-in prompt appears on the hack button."
+    },
+    "jack_in_hit": {
+     "name": "Jack-in",
+     "state": "ground",
+     "kind": "reaction",
+     "startup_ms": 0,
+     "active_ms": 0,
+     "recovery_ms": 2400,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {},
+     "hitboxes": [],
+     "anim": {
+      "clip": "hurt",
+      "keys": [],
+      "fallback": "recoil"
+     },
+     "note": "Red plugs into the dish; the big hit. A scripted beat (camera shot), the phase ends at its end."
+    }
+   }
+  },
+  "junk_mech": {
+   "entries": {},
+   "moves": {
+    "scrap_swing_l": {
+     "name": "Scrap Swing (left arm)",
+     "state": "ground",
+     "startup_ms": 2000,
+     "active_ms": 900,
+     "recovery_ms": 2200,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {
+      "damage": 900,
+      "hitstun_ms": 900,
+      "knockback_m": 6.0,
+      "launch_mps": 0.0,
+      "knockdown": false,
+      "hit_stop_ms": 140,
+      "poise_damage": 60,
+      "style_points": 0,
+      "shake": "heavy",
+      "spark": "slash_big",
+      "sfx": "combat_brute_slam"
+     },
+     "hitboxes": [
+      {
+       "from_ms": 2000,
+       "to_ms": 2300,
+       "shape": "box",
+       "size": [
+        14.0,
+        9.0,
+        34.0
+       ],
+       "offset": [
+        10.93,
+        4.5,
+        13.02
+       ],
+       "rot_deg": [
+        0,
+        40.0,
+        0
+       ]
+      },
+      {
+       "from_ms": 2300,
+       "to_ms": 2600,
+       "shape": "box",
+       "size": [
+        14.0,
+        9.0,
+        34.0
+       ],
+       "offset": [
+        0.0,
+        4.5,
+        17.0
+       ],
+       "rot_deg": [
+        0,
+        0.0,
+        0
+       ]
+      },
+      {
+       "from_ms": 2600,
+       "to_ms": 2900,
+       "shape": "box",
+       "size": [
+        14.0,
+        9.0,
+        34.0
+       ],
+       "offset": [
+        -10.93,
+        4.5,
+        13.02
+       ],
+       "rot_deg": [
+        0,
+        -40.0,
+        0
+       ]
+      }
+     ],
+     "swing": {
+      "sfx": "combat_swing_heavy",
+      "trail": false
+     },
+     "anim": {
+      "clip": "slam",
+      "keys": [],
+      "fallback": "swing_l"
+     },
+     "telegraph_ms": 0,
+     "impact_ms": 2000,
+     "parryable": true,
+     "dodge_flare": true,
+     "telegraph_kind": "parryable",
+     "opens": "plate_shoulder_l",
+     "authored": "world",
+     "floor_decal": {
+      "shape": "arc",
+      "radius_m": 34.0,
+      "arc_deg": 110.0,
+      "min_width_m": 12.0,
+      "from_ms": 0,
+      "to_ms": 2900
+     },
+     "note": "The left arm hauls back and its lamps go amber, then red, for 2 s while a 34 m arc (110 degrees) is painted on the floor. The sweep takes 0.9 s and is 9 m tall: back out of the arc (a 40 m dash does it), run round behind the arm, or JUMP it (12 m jump). 900 damage (15 percent of the colossus). Recovery 2.2 s with the arm dragging: the left shoulder plate is open."
+    },
+    "scrap_swing_r": {
+     "name": "Scrap Swing (right arm)",
+     "state": "ground",
+     "startup_ms": 2000,
+     "active_ms": 900,
+     "recovery_ms": 2200,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {
+      "damage": 900,
+      "hitstun_ms": 900,
+      "knockback_m": 6.0,
+      "launch_mps": 0.0,
+      "knockdown": false,
+      "hit_stop_ms": 140,
+      "poise_damage": 60,
+      "style_points": 0,
+      "shake": "heavy",
+      "spark": "slash_big",
+      "sfx": "combat_brute_slam"
+     },
+     "hitboxes": [
+      {
+       "from_ms": 2000,
+       "to_ms": 2300,
+       "shape": "box",
+       "size": [
+        14.0,
+        9.0,
+        34.0
+       ],
+       "offset": [
+        -10.93,
+        4.5,
+        13.02
+       ],
+       "rot_deg": [
+        0,
+        -40.0,
+        0
+       ]
+      },
+      {
+       "from_ms": 2300,
+       "to_ms": 2600,
+       "shape": "box",
+       "size": [
+        14.0,
+        9.0,
+        34.0
+       ],
+       "offset": [
+        -0.0,
+        4.5,
+        17.0
+       ],
+       "rot_deg": [
+        0,
+        -0.0,
+        0
+       ]
+      },
+      {
+       "from_ms": 2600,
+       "to_ms": 2900,
+       "shape": "box",
+       "size": [
+        14.0,
+        9.0,
+        34.0
+       ],
+       "offset": [
+        10.93,
+        4.5,
+        13.02
+       ],
+       "rot_deg": [
+        0,
+        40.0,
+        0
+       ]
+      }
+     ],
+     "swing": {
+      "sfx": "combat_swing_heavy",
+      "trail": false
+     },
+     "anim": {
+      "clip": "slam",
+      "keys": [],
+      "fallback": "swing_r"
+     },
+     "telegraph_ms": 0,
+     "impact_ms": 2000,
+     "parryable": true,
+     "dodge_flare": true,
+     "telegraph_kind": "parryable",
+     "opens": "plate_shoulder_r",
+     "authored": "world",
+     "floor_decal": {
+      "shape": "arc",
+      "radius_m": 34.0,
+      "arc_deg": 110.0,
+      "min_width_m": 12.0,
+      "from_ms": 0,
+      "to_ms": 2900
+     },
+     "note": "Mirror of the left swing; the right shoulder plate is open in the recovery."
+    },
+    "wrecking_drop": {
+     "name": "Wrecking Drop",
+     "state": "ground",
+     "startup_ms": 2400,
+     "active_ms": 1000,
+     "recovery_ms": 2800,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {
+      "damage": 1300,
+      "hitstun_ms": 1200,
+      "knockback_m": 8.0,
+      "launch_mps": 0.0,
+      "knockdown": false,
+      "hit_stop_ms": 180,
+      "poise_damage": 80,
+      "style_points": 0,
+      "shake": "heavy",
+      "spark": "slash_big",
+      "sfx": "combat_brute_slam"
+     },
+     "hitboxes": [
+      {
+       "from_ms": 2400,
+       "to_ms": 2500,
+       "shape": "box",
+       "size": [
+        32.0,
+        14.0,
+        32.0
+       ],
+       "offset": [
+        0.0,
+        7.0,
+        0.0
+       ],
+       "rot_deg": [
+        0,
+        0,
+        0
+       ],
+       "origin": "locked_target"
+      },
+      {
+       "from_ms": 2500,
+       "to_ms": 3400,
+       "shape": "ring",
+       "origin": "locked_target",
+       "inner_start_m": 16.0,
+       "width_m": 6.0,
+       "expand_mps": 40.0,
+       "max_radius_m": 52.0,
+       "clear_height_m": 10.0,
+       "offset": [
+        0.0,
+        0.0,
+        0.0
+       ],
+       "rot_deg": [
+        0,
+        0,
+        0
+       ],
+       "damage_mult": 0.55
+      }
+     ],
+     "swing": {
+      "sfx": "combat_swing_heavy",
+      "trail": false
+     },
+     "anim": {
+      "clip": "slam",
+      "keys": [],
+      "fallback": "overhead"
+     },
+     "telegraph_ms": 0,
+     "impact_ms": 2400,
+     "parryable": false,
+     "dodge_flare": true,
+     "telegraph_kind": "dodge_only",
+     "opens": "plate_chest",
+     "authored": "world",
+     "targets": [
+      {
+       "id": "locked_target",
+       "lock_ms": 1500
+      }
+     ],
+     "floor_decal": {
+      "shape": "circle",
+      "radius_m": 16.0,
+      "min_width_m": 12.0,
+      "from_ms": 600,
+      "to_ms": 2500,
+      "ring_preview_m": 52.0
+     },
+     "note": "Both arms rise over the head for 2.4 s: the biggest silhouette in the fight. A 16 m circle appears on the floor at 0.6 s and follows the colossus until 0.9 s before impact, then stops. Impact 1300 inside the circle; a shock ring then races out to 52 m at 40 m/s, 10 m tall (JUMP it, 12 m jump; 715). Recovery 2.8 s with both arms stuck in the ground: the chest plate hangs open and low."
+    },
+    "stomp_march": {
+     "name": "Stomp March",
+     "state": "ground",
+     "startup_ms": 1700,
+     "active_ms": 1900,
+     "recovery_ms": 2000,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {
+      "damage": 700,
+      "hitstun_ms": 800,
+      "knockback_m": 5.0,
+      "launch_mps": 0.0,
+      "knockdown": false,
+      "hit_stop_ms": 120,
+      "poise_damage": 50,
+      "style_points": 0,
+      "shake": "heavy",
+      "spark": "slash_big",
+      "sfx": "combat_brute_slam"
+     },
+     "hitboxes": [
+      {
+       "from_ms": 1700,
+       "to_ms": 1780,
+       "shape": "box",
+       "size": [
+        14.0,
+        12.0,
+        14.0
+       ],
+       "offset": [
+        6.0,
+        6.0,
+        8.0
+       ],
+       "rot_deg": [
+        0,
+        0,
+        0
+       ],
+       "origin": "mech_foot_r"
+      },
+      {
+       "from_ms": 1700,
+       "to_ms": 2500,
+       "shape": "ring",
+       "origin": "mech_foot_r",
+       "inner_start_m": 8.0,
+       "width_m": 5.0,
+       "expand_mps": 30.0,
+       "max_radius_m": 46.0,
+       "clear_height_m": 8.0,
+       "offset": [
+        0.0,
+        0.0,
+        0.0
+       ],
+       "rot_deg": [
+        0,
+        0,
+        0
+       ],
+       "damage_mult": 0.7
+      },
+      {
+       "from_ms": 2700,
+       "to_ms": 2780,
+       "shape": "box",
+       "size": [
+        14.0,
+        12.0,
+        14.0
+       ],
+       "offset": [
+        -6.0,
+        6.0,
+        8.0
+       ],
+       "rot_deg": [
+        0,
+        0,
+        0
+       ],
+       "origin": "mech_foot_l"
+      },
+      {
+       "from_ms": 2700,
+       "to_ms": 3500,
+       "shape": "ring",
+       "origin": "mech_foot_l",
+       "inner_start_m": 8.0,
+       "width_m": 5.0,
+       "expand_mps": 30.0,
+       "max_radius_m": 46.0,
+       "clear_height_m": 8.0,
+       "offset": [
+        0.0,
+        0.0,
+        0.0
+       ],
+       "rot_deg": [
+        0,
+        0,
+        0
+       ],
+       "damage_mult": 0.7
+      }
+     ],
+     "swing": {
+      "sfx": "combat_swing_heavy",
+      "trail": false
+     },
+     "anim": {
+      "clip": "slam",
+      "keys": [],
+      "fallback": "overhead"
+     },
+     "telegraph_ms": 0,
+     "impact_ms": 1700,
+     "parryable": false,
+     "dodge_flare": true,
+     "telegraph_kind": "dodge_only",
+     "opens": "plate_back",
+     "authored": "world",
+     "floor_decal": {
+      "shape": "ring",
+      "radius_m": 46.0,
+      "min_width_m": 12.0,
+      "from_ms": 0,
+      "to_ms": 3500
+     },
+     "note": "The right leg lifts high for 1.7 s (siren), then two stomps one second apart, right then left, each throwing a ring (8 m tall: JUMP) out to 46 m at 30 m/s. A faint 46 m ring is painted on the floor from the start. 490 per ring. Recovery 2 s while it catches its balance and turns its back: the back plate is open."
+    },
+    "scrap_barrage": {
+     "name": "Scrap Barrage",
+     "state": "ground",
+     "startup_ms": 1800,
+     "active_ms": 1600,
+     "recovery_ms": 1800,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {
+      "damage": 450,
+      "hitstun_ms": 700,
+      "knockback_m": 4.0,
+      "launch_mps": 0.0,
+      "knockdown": false,
+      "hit_stop_ms": 100,
+      "poise_damage": 40,
+      "style_points": 0,
+      "shake": "heavy",
+      "spark": "slash_big",
+      "sfx": "combat_brute_slam"
+     },
+     "hitboxes": [
+      {
+       "from_ms": 2200,
+       "to_ms": 2300,
+       "shape": "sphere",
+       "radius": 9.0,
+       "offset": [
+        0.0,
+        0.0,
+        0.0
+       ],
+       "rot_deg": [
+        0,
+        0,
+        0
+       ],
+       "origin": "target_1"
+      },
+      {
+       "from_ms": 2800,
+       "to_ms": 2900,
+       "shape": "sphere",
+       "radius": 9.0,
+       "offset": [
+        0.0,
+        0.0,
+        0.0
+       ],
+       "rot_deg": [
+        0,
+        0,
+        0
+       ],
+       "origin": "target_2"
+      },
+      {
+       "from_ms": 3400,
+       "to_ms": 3500,
+       "shape": "sphere",
+       "radius": 9.0,
+       "offset": [
+        0.0,
+        0.0,
+        0.0
+       ],
+       "rot_deg": [
+        0,
+        0,
+        0
+       ],
+       "origin": "target_3"
+      }
+     ],
+     "swing": {
+      "sfx": "combat_swing_heavy",
+      "trail": false
+     },
+     "anim": {
+      "clip": "slam",
+      "keys": [],
+      "fallback": "overhead"
+     },
+     "telegraph_ms": 0,
+     "impact_ms": 1800,
+     "parryable": false,
+     "dodge_flare": true,
+     "telegraph_kind": "dodge_only",
+     "authored": "world",
+     "rehit_ms": 0,
+     "targets": [
+      {
+       "id": "target_1",
+       "lock_ms": 1600
+      },
+      {
+       "id": "target_2",
+       "lock_ms": 2200
+      },
+      {
+       "id": "target_3",
+       "lock_ms": 2800
+      }
+     ],
+     "floor_decal": {
+      "shape": "circle",
+      "radius_m": 9.0,
+      "min_width_m": 12.0,
+      "per_target": true,
+      "show_before_impact_ms": 600
+     },
+     "note": "Both shoulder launchers rear back for 1.8 s and lob three scrap blocks, 0.6 s apart. Each lands in a 9 m circle painted on the floor 0.6 s ahead, where the colossus stood when that circle locked. Keep moving and none lands; stand still and all three do. 450 each. No plate opens: this is the space-maker."
+    },
+    "walk": {
+     "name": "Walk",
+     "state": "ground",
+     "kind": "locomotion",
+     "loop": true,
+     "startup_ms": 0,
+     "active_ms": 800,
+     "recovery_ms": 0,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {},
+     "hitboxes": [],
+     "speed_mps": 12.0,
+     "anim": {
+      "clip": "walk",
+      "keys": [],
+      "fallback": "breathe"
+     },
+     "note": "The heap strides at 12 m/s, 9 m/s while circling. Turns at 38 degrees a second, about half the colossus."
+    },
+    "plate_break": {
+     "name": "Plate breaks",
+     "state": "ground",
+     "kind": "reaction",
+     "startup_ms": 0,
+     "active_ms": 0,
+     "recovery_ms": 1000,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {},
+     "hitboxes": [],
+     "anim": {
+      "clip": "hurt",
+      "keys": [],
+      "fallback": "recoil"
+     },
+     "note": "A plate tears off and crashes down as a scrap pile. 1 s recoil, no attack can start."
+    },
+    "core_reveal": {
+     "name": "Cockpit opens",
+     "state": "ground",
+     "kind": "reaction",
+     "startup_ms": 0,
+     "active_ms": 0,
+     "recovery_ms": 2600,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {},
+     "hitboxes": [],
+     "anim": {
+      "clip": "stagger",
+      "keys": [],
+      "fallback": "recoil"
+     },
+     "armor": {
+      "from_ms": 0,
+      "to_ms": 2600
+     },
+     "note": "The last plate falls: the cab front folds open, Kasp's core shows in amber. 2.6 s, a camera shot, it cannot be hurt during it."
+    },
+    "last_stand": {
+     "name": "Last stand roar",
+     "state": "ground",
+     "kind": "reaction",
+     "startup_ms": 0,
+     "active_ms": 0,
+     "recovery_ms": 2200,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {},
+     "hitboxes": [],
+     "anim": {
+      "clip": "stagger",
+      "keys": [],
+      "fallback": "stretch_up"
+     },
+     "armor": {
+      "from_ms": 0,
+      "to_ms": 2200
+     },
+     "parryable": false,
+     "note": "At 35 percent core health: the mech roars (sirens, lamps all red), 2.2 s, not hurt during it, then the chain patterns begin."
+    },
+    "defeat": {
+     "name": "Collapse",
+     "state": "ground",
+     "kind": "reaction",
+     "startup_ms": 0,
+     "active_ms": 0,
+     "recovery_ms": 5000,
+     "cancels": {},
+     "links": {},
+     "launcher": false,
+     "hit": {},
+     "hitboxes": [],
+     "anim": {
+      "clip": "knockdown",
+      "keys": [],
+      "fallback": "fall_flat"
+     },
+     "note": "Core at zero: the scrap falls apart. 5 s, the ending."
+    }
+   }
   }
  }
 }

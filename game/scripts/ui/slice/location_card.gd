@@ -99,17 +99,15 @@ func _draw() -> void:
 		return
 	var amounts: Vector2 = _amounts()
 	var h: float = SliceUiData.num("location_card.h", 26)
-	var w: float = SliceUiData.num("location_card.w", 168)
-	var y: float = SliceUiData.num("location_card.y", 34)
+	var y: float = floorf(size.y * SliceUiData.num("location_card.y_frac", 0.36))
 	var ease_out: float = 1.0 - pow(1.0 - amounts.x, 2.0)
-	modulate = Color(1, 1, 1, amounts.y)
-	# A band from the left edge to a bit past the text, sliding in from the left.
-	var band_w: float = maxf(w, SandboxStyle.text_width("body", _title) + 36.0)
+	var fade: float = amounts.y
+	# A band across the whole picture; the words slide in from the right and settle in the middle.
+	var rect: Rect2 = Rect2(0.0, y, size.x, h)
+	SandboxStyle.bar(self, rect, Color(SandboxStyle.color("bar_top"), 0.92 * fade), Color(SandboxStyle.color("bar_bottom"), 0.92 * fade))
+	var accent: float = SliceUiData.num("location_card.accent_w", 3)
+	draw_rect(Rect2(0.0, y + h, size.x * ease_out, accent), Color(SandboxStyle.color("header_top"), fade))
 	var slide: float = floorf((1.0 - ease_out) * SliceUiData.num("location_card.slide_px", 24) * 3.0)
-	var rect: Rect2 = Rect2(-slide, y, band_w + 16.0, h)
-	SandboxStyle.bar(self, rect, SandboxStyle.color("bar_top"), SandboxStyle.color("bar_bottom"))
-	draw_rect(Rect2(rect.end.x, y, SliceUiData.num("location_card.accent_w", 3), h), SandboxStyle.color("header_top"))
-	var text_x: float = 12.0 - slide
 	if not _subtitle.is_empty():
-		SandboxStyle.label(self, Vector2(text_x, y + 8.0), _subtitle, SandboxStyle.color("label"))
-	SandboxStyle.text(self, "body", Vector2(text_x, y + h - 6.0), _title, SandboxStyle.color("text"))
+		SandboxStyle.text_center(self, "label", slide, y + 8.0, _subtitle.to_upper(), Color(SandboxStyle.color("label"), fade), size.x)
+	SandboxStyle.text_center(self, "body", slide, y + h - 6.0, _title, Color(SandboxStyle.color("text"), fade), size.x)

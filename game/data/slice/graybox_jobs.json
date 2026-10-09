@@ -1,0 +1,34 @@
+{
+ "_about": "THROWAWAY jobs for the graybox hub (see graybox_rooms.json). Same shape as world/jobs.json; laid over it by Placements.extra_job_ids.",
+ "jobs": {
+  "gb_job": {
+   "board": "gb_board",
+   "order": 1,
+   "title": "Main: Take the scrap run",
+   "taken_flag": "gb_job_taken",
+   "done_flag": "gb_job_done",
+   "description": [
+    "MAIN JOB. Clear the yard.",
+    "The vault is past it."
+   ],
+   "take": {
+    "text": "Job taken.",
+    "give_items": [
+     {
+      "item": "ration_bar",
+      "count": 1
+     }
+    ],
+    "set_flags": [
+     "gb_job_taken"
+    ]
+   },
+   "taken_text": [
+    "Clear the yard."
+   ],
+   "done_text": [
+    "Done."
+   ]
+  }
+ }
+}

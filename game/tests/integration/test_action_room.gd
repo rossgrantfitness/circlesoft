@@ -28,8 +28,10 @@ func after_each() -> void:
 	_state.set("rooms_data_id", "world/rooms")
 	_state.call("reset")
 	Placements.extra_ids = []
+	Placements.extra_job_ids = []
 	InputSorting.revert()
 	for node: Node in tree.get_nodes_in_group(ActionRoom.GROUP_HUD):
+		node.remove_from_group(ActionRoom.GROUP_HUD)
 		node.queue_free()
 	for action: StringName in [&"light", &"interact", &"jump"]:
 		Input.action_release(action)
@@ -48,6 +50,7 @@ func _start() -> void:
 	_router.set("instant", true)
 	_state.set("rooms_data_id", ROOMS_ID)
 	Placements.extra_ids = [PLACEMENTS_ID] as Array[String]
+	Placements.extra_job_ids = ["slice/graybox_jobs"] as Array[String]
 	_main.start_new_game()
 	await _until_room("gb_hub")
 
@@ -358,10 +361,11 @@ func test_a_knock_out_keeps_red_down_and_names_the_rule() -> void:
 func test_continue_restarts_the_room_with_the_health_she_walked_in_with() -> void:
 	await _start()
 	_room().hero.hp = 66
+	_state.call("add_credits", 40)
 	await _go("gb_yard", "from_hub")
 	var room: ActionRoom = _room()
 	assert_eq(room.hero.hp, 66)
-	_state.call("add_credits", 40)
+	_state.call("add_credits", 15)           # earned in the yard: lost on a restart
 	room.hero.global_position = Vector3(3.0, 0.1, 3.0)
 	_kill(room.hero)
 	assert_true(room.continue_after_knockout())
@@ -374,7 +378,7 @@ func test_continue_restarts_the_room_with_the_health_she_walked_in_with() -> voi
 	assert_eq(again.get_enemies().size(), 2, "and the enemies are fresh")
 	var spawn: Marker3D = again.find_spawn("from_hub")
 	assert_lt(again.hero.global_position.distance_to(spawn.global_position), 0.6, "at the spawn she entered by")
-	assert_eq(_state.call("get_credits"), 40, "no credit cost by default")
+	assert_eq(_state.call("get_credits"), 40, "back to the credits she walked in with; no cost by default")
 	assert_false(is_instance_valid(room) and room.continue_after_knockout(), "an old room cannot restart twice")
 
 
@@ -404,10 +408,10 @@ func test_a_checkpoint_room_restarts_at_its_own_entrance_and_later_rooms_return_
 
 func test_the_credit_cost_is_a_data_switch() -> void:
 	await _start()
+	_state.call("add_credits", 100)
 	await _go("gb_yard", "from_hub")
 	var room: ActionRoom = _room()
 	room._slice["retry"] = {"rule": "room_entrance", "credit_cost": 25, "auto_continue_s": 0.0}
-	_state.call("add_credits", 100)
 	_kill(room.hero)
 	assert_true(room.continue_after_knockout())
 	assert_eq(_state.call("get_credits"), 75, "option C: a small cost")

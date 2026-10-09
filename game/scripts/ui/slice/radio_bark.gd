@@ -64,17 +64,30 @@ func tick(delta: float) -> void:
 		queue_redraw()
 
 
-func box_rect(ui_size: Vector2) -> Rect2:
-	var w: float = SliceUiData.num("radio.w", 220)
-	var h: float = SliceUiData.num("radio.h", 34)
+## The box's rectangle, bottom-left. It grows taller for a line that wraps to a second or third row (decided from the
+## whole line, so it doesn't jump while the letters type), never shorter than the portrait.
+func box_rect(ui_size: Vector2, line_count: int = 2) -> Rect2:
+	var w: float = SliceUiData.num("radio.w", 240)
+	var pad: float = SliceUiData.num("radio.pad", 4)
+	var step: float = SliceUiData.num("radio.line_step", 14)
+	var h: float = maxf(SliceUiData.num("radio.portrait", 26) + pad * 2.0, 14.0 + step * float(line_count) + pad)
 	return Rect2(SliceUiData.num("radio.x_from_left", 8), ui_size.y - SliceUiData.num("radio.bottom_gap", 22) - h, w, h)
+
+
+## The line wrapped to the box's text width (at most `radio.max_lines` rows).
+func wrapped_lines(text: String) -> PackedStringArray:
+	var wrap_w: int = int(SliceUiData.num("radio.w", 240) - SliceUiData.num("radio.text_x", 36) - SliceUiData.num("radio.pad", 4) - 2.0)
+	var lines: PackedStringArray = TextWrap.wrap(SandboxStyle.font("body"), SandboxStyle.font_size("body"), text, wrap_w)
+	return lines.slice(0, SliceUiData.whole("radio.max_lines", 3))
 
 
 func _draw() -> void:
 	if not queue.is_showing():
 		return
 	var presence: float = queue.presence()
-	var rect: Rect2 = box_rect(size)
+	var line: Dictionary = current_line()
+	var lines: PackedStringArray = wrapped_lines(str(line["text"]))
+	var rect: Rect2 = box_rect(size, lines.size())
 	rect.position.x -= floorf((1.0 - presence) * 30.0)
 	modulate = Color(1, 1, 1, presence)
 	var pad: float = SliceUiData.num("radio.pad", 4)
@@ -82,22 +95,20 @@ func _draw() -> void:
 	draw_rect(Rect2(rect.position, Vector2(rect.size.x, 1.0)), SliceUiData.color("radio_edge"))
 	draw_rect(Rect2(rect.position + Vector2(0.0, rect.size.y - 1.0), Vector2(rect.size.x, 1.0)), SliceUiData.color("radio_edge").darkened(0.5))
 	_draw_portrait(Rect2(rect.position + Vector2(pad, pad), Vector2.ONE * SliceUiData.num("radio.portrait", 26)))
-	var line: Dictionary = current_line()
 	var text_x: float = rect.position.x + SliceUiData.num("radio.text_x", 36)
 	SandboxStyle.label(self, Vector2(text_x, rect.position.y + 10.0), str(line["name"]), SliceUiData.color("radio_edge"))
 	var tag: String = SliceUiData.text("radio.static_tag")
 	SandboxStyle.text_right(self, "label", rect.end.x - pad, rect.position.y + 10.0, tag.to_upper(), SandboxStyle.color("label_dim"), 40.0)
-	var wrap_w: int = int(rect.end.x - text_x - pad - 2.0)
-	var lines: PackedStringArray = TextWrap.wrap(SandboxStyle.font("body"), SandboxStyle.font_size("body"), str(line["text"]), wrap_w)
 	var shown: int = str(line["shown"]).length()
-	var y: float = rect.position.y + 24.0
+	var step: float = SliceUiData.num("radio.line_step", 14)
+	var y: float = rect.position.y + 11.0 + step
 	var spent: int = 0
-	for i: int in mini(lines.size(), SliceUiData.whole("radio.max_lines", 2)):
+	for i: int in lines.size():
 		var piece: String = lines[i]
 		var take: int = clampi(shown - spent, 0, piece.length())
 		SandboxStyle.text(self, "body", Vector2(text_x, y), piece.substr(0, take), SandboxStyle.color("text"))
 		spent += piece.length() + 1
-		y += 13.0
+		y += step
 
 
 ## The portrait stand-in: a dark teal tile, the speaker's first letter, and scan lines that crawl while she talks.

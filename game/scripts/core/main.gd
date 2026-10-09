@@ -148,6 +148,8 @@ func apply_mode(mode: GameMode.Mode) -> void:
 		return
 	var rooms: String = GameMode.rooms_id(mode)
 	Placements.extra_ids = GameMode.placements_ids(mode)
+	Placements.extra_scene_ids = GameMode.story_scene_ids(mode)
+	Placements.extra_job_ids = GameMode.job_ids(mode)
 	if mode == GameMode.Mode.SLICE:
 		InputSorting.install(_config())       # Decision 3 and the pad B conflict (data/slice/input_sorting.json)
 	else:

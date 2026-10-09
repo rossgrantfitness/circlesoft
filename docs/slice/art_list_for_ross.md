@@ -14,7 +14,7 @@ DECISION NEEDED: What is Vela now that Red is a bunny? (Only needed when you rea
 Option A: **Keep her a bunny,** with upright ears to Red's lop ears. — Pros: no change. / Cons: two bunny girls blur "the hacker bunny" as Red's thing.
 Option B: **A fennec fox:** huge ears for the radio listener who switched sides. — Pros: her ears tell you her job; a clearly different shape from Red. / Cons: a new design.
 Option C: **Your pick.**
-Recommendation: **C, your pick.** (Correction: we first recommended a fennec fox, but you already said "I dont want a fennec fox either" back when Red was being designed, so that option is withdrawn.)
+**Ross, 2026-10-09: B, a fennec fox** ("DONT WORRY ABOUT THIS FOR NOW BYT B I GUESS"). Not needed until the town people.
 
 ## What to make, in order
 

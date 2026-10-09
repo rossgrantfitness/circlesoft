@@ -3,9 +3,9 @@
  "hack": {
   "battery": "Batt",
   "auto": "Auto",
-  "auto_last": "last: {name}",
+  "auto_last": "{name}",
   "auto_none": "reads the room",
-  "jammed": "Signal jammed",
+  "jammed": "Jammed",
   "jammed_time": "{seconds}s",
   "link": "Link",
   "no_signal": "No signal",

@@ -2,7 +2,7 @@ class_name BossBar
 extends Control
 ## The boss bar (VS-11): the boss's name in the slanted face, a wide gradient health bar with a trailing chip, and a
 ## row of phase pips (the current phase lit, a flash when it changes) with the phase's own name. Bottom center,
-## sliding up when a fight starts and away when it ends. 2D UI at window resolution; nothing floats in the 3D scene.
+## sliding down when a fight starts and away when it ends. 2D UI at window resolution; nothing floats in the 3D scene.
 ## BossBarModel holds the numbers; the HUD feeds it (`show_boss_bar`, `set_boss_hp`, `set_boss_phase`, `hide_boss_bar`).
 
 var model: BossBarModel = BossBarModel.new()
@@ -18,11 +18,13 @@ func tick(delta: float) -> void:
 	queue_redraw()
 
 
-## The bar's rectangle for a given UI size (also used by the tests and the screenshot).
+## The bar's rectangle for a given UI size (also used by the tests and the screenshot): top center, between Red's
+## health on the left and the Noise meter on the right, as wide as that gap allows.
 func bar_rect(ui_size: Vector2) -> Rect2:
-	var w: float = SliceUiData.num("boss_bar.w", 232)
+	var room: float = ui_size.x - 2.0 * SliceUiData.num("boss_bar.side_room", 136)
+	var w: float = clampf(room, SliceUiData.num("boss_bar.w_min", 128), SliceUiData.num("boss_bar.w_max", 232))
 	var h: float = SliceUiData.num("boss_bar.h", 5)
-	return Rect2(floorf((ui_size.x - w) / 2.0), ui_size.y - SliceUiData.num("boss_bar.bottom_gap", 26), w, h)
+	return Rect2(floorf((ui_size.x - w) / 2.0), SliceUiData.num("boss_bar.top", 22), w, h)
 
 
 func _draw() -> void:
@@ -31,7 +33,7 @@ func _draw() -> void:
 	var alpha: float = clampf(model.presence, 0.0, 1.0)
 	var lift: float = floorf((1.0 - alpha) * 10.0)
 	var bar: Rect2 = bar_rect(size)
-	bar.position.y += lift
+	bar.position.y -= lift
 	var top: Color = SliceUiData.color("boss_top")
 	var bottom: Color = SliceUiData.color("boss_bottom")
 	var flash: float = model.flash()

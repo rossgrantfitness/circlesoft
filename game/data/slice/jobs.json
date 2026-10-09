@@ -1,0 +1,93 @@
+{
+ "_about": "The Dispatch Counter's job board (VS-14; structure is the Level Designer's, the words are placeholders for the Writer). Same shape as world/jobs.json (JobBoard reads that shape). 'board' is the placement id of the job board node in market_dispatch (mk_dp_board). Main job 'Yard 9': taking it sets job_main_taken and hands over the Courier Pass; that flag opens Gate 4's boom barrier (door mk_gt_to_junk). It is done when the slice boss is beaten (flag kasp_beaten). Side 1 'Charge-up delivery' (battery brick to Grandma Ume's window: crate, crate, ledge; done flag job_charge_done) and side 2 'Appeal in triplicate' (Pell's form to the APPEALS slot at Gate 4; done flag job_appeal_done). Job ids are yard_9, charge_up and appeal_market (not main/appeal) so they never clash with Harrow's ids when the two jobs files are merged. Placements.job() and JobBoard read this file in slice mode (GameMode.job_ids).",
+ "text": {
+  "menu": "JOB BOARD. Pick one.",
+  "tag_available": "",
+  "tag_taken": "- taken",
+  "tag_done": "- DONE"
+ },
+ "jobs": {
+  "yard_9": {
+   "board": "mk_dp_board",
+   "order": 1,
+   "title": "Main: Yard 9",
+   "taken_flag": "job_main_taken",
+   "done_flag": "kasp_beaten",
+   "description": [
+    "MAIN JOB. The Signals scrapyard behind the ore line. Everything they confiscate ends up there. Bring back what is ours.",
+    "Show the pass at Gate 4. Do not make a noise on the road."
+   ],
+   "take": {
+    "text": "Job taken. Courier Pass in hand. Gate 4 is through the arch.",
+    "give_items": [
+     {
+      "item": "courier_pass",
+      "count": 1
+     }
+    ],
+    "set_flags": [
+     "job_main_taken"
+    ]
+   },
+   "taken_text": [
+    "Yard 9. Gate 4, show the pass. Why are you still reading?"
+   ],
+   "done_text": [
+    "Yard 9 cleared. Stamped DONE. The whole market is whispering about it."
+   ]
+  },
+  "charge_up": {
+   "board": "mk_dp_board",
+   "order": 2,
+   "title": "Side: Charge-up delivery",
+   "taken_flag": "job_charge_taken",
+   "done_flag": "job_charge_done",
+   "description": [
+    "SIDE JOB. One battery brick to Grandma Ume's window above the Corner Shop. Two crates, then the ledge.",
+    "Pay: a Lucky Bolt and 100 credits. Do not touch the cords."
+   ],
+   "take": {
+    "text": "Battery brick handed over. Heavier than it looks.",
+    "give_items": [
+     {
+      "item": "side_job_parcel",
+      "count": 1
+     }
+    ],
+    "set_flags": [
+     "job_charge_taken"
+    ]
+   },
+   "taken_text": [
+    "Battery brick to Ume's window. Hop the crates to the ledge."
+   ],
+   "done_text": [
+    "Phones charged. Stamped DONE. Pay's on the sill."
+   ]
+  },
+  "appeal_market": {
+   "board": "mk_dp_board",
+   "order": 3,
+   "title": "Side: Appeal in triplicate",
+   "taken_flag": "job_appeal_taken",
+   "done_flag": "job_appeal_done",
+   "description": [
+    "SIDE JOB. Collect a form from Pell on the Wharf. Drop it in the APPEALS slot at Gate 4.",
+    "Pay: 150 credits and a useful item."
+   ],
+   "take": {
+    "text": "Job taken. Pell is on the Wharf.",
+    "give_items": [],
+    "set_flags": [
+     "job_appeal_taken"
+    ]
+   },
+   "taken_text": [
+    "Get the form from Pell on the Wharf. Drop it in Gate 4's APPEALS slot."
+   ],
+   "done_text": [
+    "Appeal filed, in triplicate. Stamped DONE."
+   ]
+  }
+ }
+}

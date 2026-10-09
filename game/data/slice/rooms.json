@@ -1,0 +1,180 @@
+{
+ "_about": "Every slice room the SceneRouter can load (slice mode: GameMode.rooms_id = slice/rooms). Same shape as world/rooms.json plus the ActionRoom keys of docs/slice/slice_tech_plan.md 2.2: kind (town / dungeon / arena), camera (diorama / orbit), combat, look_profile, form, robots, checkpoint, autosave, music, spawns, default_spawn. The night market (VS-14, docs/maps/night_market.md): nine town rooms, scenes made by scripts/tools/make_market_rooms.py. look_profile is grim_ps2 until the Technical Artist's market_ps2 profile exists (VS-39); then change the nine strings. start_room is where a New Game begins (Red's hideout, spawn 'start'). pending_rooms: rooms that doors already point at but that are not built yet (the junkyard, VS-17 on); the rooms test accepts them only while they are listed here, with the spawns the door needs.",
+ "fade": {
+  "out_s": 0.24,
+  "in_s": 0.24,
+  "steps": 8
+ },
+ "start_room": "market_hideout",
+ "pending_rooms": {
+  "junk_j1": [
+   "from_market"
+  ]
+ },
+ "rooms": {
+  "market_hideout": {
+   "name": "Red's Hideout",
+   "scene": "res://scenes/slice/market/market_hideout.tscn",
+   "kind": "town",
+   "camera": "diorama",
+   "combat": false,
+   "look_profile": "grim_ps2",
+   "form": "red",
+   "robots": "",
+   "checkpoint": false,
+   "autosave": true,
+   "music": "market",
+   "spawns": [
+    "start",
+    "from_square",
+    "from_repair"
+   ],
+   "default_spawn": "start"
+  },
+  "market_square": {
+   "name": "Tarp Square",
+   "scene": "res://scenes/slice/market/market_square.tscn",
+   "kind": "town",
+   "camera": "diorama",
+   "combat": false,
+   "look_profile": "grim_ps2",
+   "form": "red",
+   "robots": "",
+   "checkpoint": false,
+   "autosave": false,
+   "music": "market",
+   "spawns": [
+    "from_hideout",
+    "from_dispatch",
+    "from_corner",
+    "from_forge",
+    "from_gate",
+    "from_wharf"
+   ],
+   "default_spawn": "from_hideout"
+  },
+  "market_wharf": {
+   "name": "The Wharf",
+   "scene": "res://scenes/slice/market/market_wharf.tscn",
+   "kind": "town",
+   "camera": "diorama",
+   "combat": false,
+   "look_profile": "grim_ps2",
+   "form": "red",
+   "robots": "",
+   "checkpoint": false,
+   "autosave": false,
+   "music": "market",
+   "spawns": [
+    "from_square",
+    "from_repair",
+    "from_arcade"
+   ],
+   "default_spawn": "from_square"
+  },
+  "market_gate": {
+   "name": "Gate 4",
+   "scene": "res://scenes/slice/market/market_gate.tscn",
+   "kind": "town",
+   "camera": "diorama",
+   "combat": false,
+   "look_profile": "grim_ps2",
+   "form": "red",
+   "robots": "",
+   "checkpoint": false,
+   "autosave": false,
+   "music": "market",
+   "spawns": [
+    "from_square",
+    "from_junk"
+   ],
+   "default_spawn": "from_square"
+  },
+  "market_dispatch": {
+   "name": "Dispatch Counter",
+   "scene": "res://scenes/slice/market/market_dispatch.tscn",
+   "kind": "town",
+   "camera": "diorama",
+   "combat": false,
+   "look_profile": "grim_ps2",
+   "form": "red",
+   "robots": "",
+   "checkpoint": false,
+   "autosave": false,
+   "music": "market",
+   "spawns": [
+    "from_square"
+   ],
+   "default_spawn": "from_square"
+  },
+  "market_corner": {
+   "name": "Corner Shop",
+   "scene": "res://scenes/slice/market/market_corner.tscn",
+   "kind": "town",
+   "camera": "diorama",
+   "combat": false,
+   "look_profile": "grim_ps2",
+   "form": "red",
+   "robots": "",
+   "checkpoint": false,
+   "autosave": false,
+   "music": "market",
+   "spawns": [
+    "from_square"
+   ],
+   "default_spawn": "from_square"
+  },
+  "market_forge": {
+   "name": "The Forge",
+   "scene": "res://scenes/slice/market/market_forge.tscn",
+   "kind": "town",
+   "camera": "diorama",
+   "combat": false,
+   "look_profile": "grim_ps2",
+   "form": "red",
+   "robots": "",
+   "checkpoint": false,
+   "autosave": false,
+   "music": "market",
+   "spawns": [
+    "from_square"
+   ],
+   "default_spawn": "from_square"
+  },
+  "market_repair": {
+   "name": "Tuesday's Repair",
+   "scene": "res://scenes/slice/market/market_repair.tscn",
+   "kind": "town",
+   "camera": "diorama",
+   "combat": false,
+   "look_profile": "grim_ps2",
+   "form": "red",
+   "robots": "",
+   "checkpoint": false,
+   "autosave": false,
+   "music": "market",
+   "spawns": [
+    "from_wharf",
+    "from_hideout"
+   ],
+   "default_spawn": "from_wharf"
+  },
+  "market_arcade": {
+   "name": "Bootleg Arcade",
+   "scene": "res://scenes/slice/market/market_arcade.tscn",
+   "kind": "town",
+   "camera": "diorama",
+   "combat": false,
+   "look_profile": "grim_ps2",
+   "form": "red",
+   "robots": "",
+   "checkpoint": false,
+   "autosave": false,
+   "music": "market",
+   "spawns": [
+    "from_wharf"
+   ],
+   "default_spawn": "from_wharf"
+  }
+ }
+}

@@ -69,7 +69,13 @@ var hero: ActionPlayer = null
 var orbit: OrbitCamera = null
 var lock: LockOn = null
 
+## Ambient one-liners from townspeople as she walks past.
+var barks: AmbientBarks = null
+
 var _slice: Dictionary = {}
+var _entry_snapshot: RoomSnapshot = null
+var _menu_holds_game: bool = false
+var _saving_blocked_by_us: bool = false
 var _sandbox_data: Dictionary = {}
 var _feel: FeelKnobs = null
 var _fx: Node = null
@@ -117,8 +123,11 @@ func _ready() -> void:
 	_build_parts()
 	_setup_talking_action()
 	_setup_story()
+	_setup_barks()
+	_setup_field_menu()
 	_spawn_enemies()
 	_apply_session()
+	_setup_saving()
 	_connect_router()
 	_attach_hud()
 	_make_relay()
@@ -150,6 +159,11 @@ func _exit_tree() -> void:
 	set_mouse_captured(false)
 	if not _session_written:
 		save_session()
+	_release_menu_hold()
+	_teardown_saving()
+	if _hud != null and is_instance_valid(_hud) and _hud.has_signal("field_menu_requested") \
+			and _hud.is_connected("field_menu_requested", open_field_menu):
+		_hud.disconnect("field_menu_requested", open_field_menu)
 	if _relay != null and is_instance_valid(_relay):
 		_relay.queue_free()
 	if _hud != null and is_instance_valid(_hud) and _hud.get_meta(META_HOST, null) == self:
@@ -454,6 +468,8 @@ func _load_session() -> void:
 	var carried: HeroSession = HeroSession.from_dict(run.get(KEY_SESSION, {}) as Dictionary)
 	_entry_session = carried.duplicate_session()
 	_form = carried.form_for_room(str(entry.get("form", "red")))
+	var state: Node = _state()
+	_entry_snapshot = RoomSnapshot.capture(_entry_session.to_dict(), state.call("run_snapshot") as Dictionary if state != null else {})
 
 
 func _apply_session() -> void:
@@ -529,7 +545,8 @@ func _record_checkpoint() -> void:
 	if not is_checkpoint() or _entry_session == null:
 		return
 	var run: Dictionary = _slice_run().duplicate(true)
-	run[KEY_CHECKPOINT] = {"room": room_id, "spawn": entry_spawn, "session": _entry_session.to_dict()}
+	run[KEY_CHECKPOINT] = {"room": room_id, "spawn": entry_spawn, "session": _entry_session.to_dict(),
+			"snapshot": _entry_snapshot.to_dict() if _entry_snapshot != null else {}}
 	_put_slice_run(run)
 
 
@@ -544,6 +561,110 @@ func _connect_router() -> void:
 func _on_transition_started(_next_room: String) -> void:
 	save_session()
 
+
+
+# ---- barks, the field menu, saving (VS-15, VS-16) ----
+
+func _setup_barks() -> void:
+	barks = AmbientBarks.new()
+	barks.name = "AmbientBarks"
+	barks.hero = hero
+	barks.camera = _hero_camera
+	add_child(barks)
+
+
+## The field menu (Items, Sword, Config, Save) opened from the pause menu, not from the `menu` button. Red's health is
+## handed to the menu's party member while it is open (so healing items work on her) and read back when it closes.
+func _setup_field_menu() -> void:
+	var options: Dictionary = {"listen_open_action": false, "commands": (_cfg("menu").get("commands", []) as Array)}
+	field_menu = FieldMenu.install(get_tree(), hero, options)
+	field_menu.opened.connect(_on_menu_opened)
+	field_menu.closed.connect(_on_menu_closed)
+
+
+## Opens the field menu (the HUD's pause menu calls this). In a room with enemies the world stands still meanwhile.
+func open_field_menu() -> bool:
+	if field_menu == null or not is_instance_valid(field_menu) or hero == null or hero.dead:
+		return false
+	if not field_menu.open():
+		return false
+	if is_combat():
+		SandboxPauseGate.hold(get_tree(), field_menu)
+		_menu_holds_game = true
+	return true
+
+
+func _on_menu_opened() -> void:
+	HeroVitals.push(_state(), hero)
+
+
+func _on_menu_closed() -> void:
+	HeroVitals.pull(_state(), hero)
+	_release_menu_hold()
+
+
+func _release_menu_hold() -> void:
+	if _menu_holds_game and field_menu != null and is_instance_valid(field_menu):
+		SandboxPauseGate.release(get_tree(), field_menu)
+	_menu_holds_game = false
+
+
+## True when saving is off in this room: a robot room (the entry names robots) or any room she walks into in a robot form.
+func saving_blocked() -> bool:
+	if not bool(_cfg("saving").get("blocked_in_robot_rooms", true)):
+		return false
+	return not str(entry.get("robots", "")).is_empty() or _form != HeroSession.FORM_RED
+
+
+func _setup_saving() -> void:
+	var state: Node = _state()
+	if state != null:
+		state.set("live_flush", _flush_to_state)
+		if not state.is_connected("party_rested", _on_party_rested):
+			state.connect("party_rested", _on_party_rested)
+	var manager: Node = get_node_or_null("/root/SaveManager")
+	if manager != null and saving_blocked():
+		manager.set("saving_allowed", false)
+		_saving_blocked_by_us = true
+		for lamp: Node in get_tree().get_nodes_in_group(SaveLamp.GROUP_LAMP):
+			if is_ancestor_of(lamp) and lamp is Interactable:
+				(lamp as Interactable).enabled = false
+
+
+func _teardown_saving() -> void:
+	var state: Node = _state()
+	if state != null:
+		var flush: Callable = state.get("live_flush") as Callable
+		if flush.is_valid() and flush.get_object() == self:
+			state.set("live_flush", Callable())
+		if state.is_connected("party_rested", _on_party_rested):
+			state.disconnect("party_rested", _on_party_rested)
+	var manager: Node = get_node_or_null("/root/SaveManager")
+	if manager != null and _saving_blocked_by_us:
+		manager.set("saving_allowed", true)
+	_saving_blocked_by_us = false
+
+
+## GameState is about to write a save: put Red's live health and sword into the run first.
+func _flush_to_state() -> void:
+	if hero == null or not is_instance_valid(hero) or _session_locked:
+		return
+	var run: Dictionary = _slice_run().duplicate(true)
+	run[KEY_SESSION] = capture_session().to_dict()
+	_put_slice_run(run)
+
+
+## A terminal or inn rested the party: Red is fully healed and the battery is full.
+func _on_party_rested() -> void:
+	if hero == null or not is_instance_valid(hero):
+		return
+	hero.hp = hero.hp_max
+	hero.dead = false
+	if director != null:
+		director.hp_changed.emit(hero.actor_id, hero.hp, hero.hp_max)
+	var battery: Object = _battery()
+	if battery != null and battery.has_method("reset_full"):
+		battery.call("reset_full")
 
 # ---- knock-out and retry (Decision 2) ----
 
@@ -564,8 +685,9 @@ func _on_knocked_out() -> void:
 func continue_target() -> Dictionary:
 	var run: Dictionary = _slice_run()
 	var checkpoint: Dictionary = run.get(KEY_CHECKPOINT, {}) as Dictionary
-	if checkpoint.is_empty():
-		return {"room": room_id, "spawn": entry_spawn, "session": _entry_session.to_dict() if _entry_session != null else {}}
+	if checkpoint.is_empty() or is_checkpoint():
+		return {"room": room_id, "spawn": entry_spawn, "session": _entry_session.to_dict() if _entry_session != null else {},
+				"snapshot": _entry_snapshot.to_dict() if _entry_snapshot != null else {}}
 	return checkpoint
 
 
@@ -580,13 +702,22 @@ func continue_after_knockout() -> bool:
 	var retry: Dictionary = _cfg("retry")
 	var cost: int = int(retry.get("credit_cost", 0))
 	var state: Node = _state()
-	if cost > 0 and state != null and state.has_method("get_credits") and state.has_method("add_credits"):
-		state.call("add_credits", -mini(cost, int(state.call("get_credits"))))
 	if retry_rule() == RULE_SAVE:
+		if cost > 0 and state != null:
+			state.call("add_credits", -mini(cost, int(state.call("get_credits"))))
 		var main: Node = get_tree().get_first_node_in_group(&"main_flow")
 		continue_started.emit("", "")
 		return main != null and main.has_method("continue_game") and bool(main.call("continue_game"))
 	var target: Dictionary = continue_target()
+	var snapshot_data: Dictionary = target.get("snapshot", {}) as Dictionary
+	if state != null:
+		if snapshot_data.is_empty():
+			if cost > 0:
+				state.call("add_credits", -mini(cost, int(state.call("get_credits"))))
+		else:
+			# Items, credits, flags and opened ids go back to the entrance, except the sticky puzzle ids; the cost comes off.
+			var snap: RoomSnapshot = RoomSnapshot.from_dict(snapshot_data)
+			state.call("restore_run_snapshot", snap.restored(state.call("run_snapshot") as Dictionary, sticky_ids(), cost))
 	var run: Dictionary = _slice_run().duplicate(true)
 	run[KEY_SESSION] = (target.get("session", {}) as Dictionary).duplicate(true)
 	_put_slice_run(run)
@@ -598,6 +729,24 @@ func continue_after_knockout() -> bool:
 	if route != null and route.has_method("start_at"):
 		route.call("start_at", to_room, to_spawn)
 	return true
+
+
+## Flag ids and opened ids that a knock-out restart must NOT rewind: placements marked `"sticky": true` (an opened fuse-box
+## door stays open). The ids come from the entry's `flag`, `opened_id` and `target_id` keys, plus `door_<id>` for a door.
+func sticky_ids() -> Array:
+	var ids: Array = []
+	for section_name: String in Placements.section_names():
+		var block: Dictionary = Placements.section(section_name)
+		for placement_id: String in block:
+			var info: Dictionary = block[placement_id] as Dictionary
+			if not bool(info.get("sticky", false)):
+				continue
+			for key: String in ["flag", "opened_id", "target_id"]:
+				if info.has(key):
+					ids.append(str(info[key]))
+			if section_name == Placements.SECTION_DOORS:
+				ids.append(Door.UNLOCK_PREFIX + placement_id)
+	return ids
 
 
 ## The HUD pause menu's "reset": back to the entrance with the entrance snapshot, in place.
@@ -713,7 +862,7 @@ func _attach_hud() -> void:
 	if not hud_enabled:
 		return
 	var existing: Node = get_tree().get_first_node_in_group(GROUP_HUD)
-	if existing != null and is_instance_valid(existing):
+	if existing != null and is_instance_valid(existing) and not existing.is_queued_for_deletion():
 		_hud = existing
 	else:
 		var path: String = str(_cfg("hud").get("scene", ""))
@@ -728,6 +877,9 @@ func _attach_hud() -> void:
 	if _hud.has_method("bind"):
 		_hud.call("bind", self)
 		_hud.set_meta(META_HOST, self)
+	# The pause menu's "Menu" row opens the field menu (the HUD only shows the row while somebody listens).
+	if _hud.has_signal("field_menu_requested") and field_menu != null and not _hud.is_connected("field_menu_requested", open_field_menu):
+		_hud.connect("field_menu_requested", open_field_menu)
 
 
 func get_hud() -> Node:

@@ -28,6 +28,8 @@ const NAME_SANDBOX: String = "sandbox"
 const ROOMS_ID_CLASSIC: String = "world/rooms"
 const ROOMS_ID_SLICE: String = "slice/rooms"
 const PLACEMENTS_ID_SLICE: String = "slice/placements"
+const STORY_SCENES_ID_SLICE: String = "slice/story_scenes"
+const JOBS_ID_SLICE: String = "slice/jobs"
 const SAVE_DIR_CLASSIC: String = "user://saves"
 const SAVE_DIR_SLICE: String = "user://slice_saves"
 const SAVE_DIR_SANDBOX: String = "user://feel"
@@ -74,6 +76,21 @@ static func placements_ids(mode: Mode) -> Array[String]:
 	var out: Array[String] = []
 	if mode == Mode.SLICE:
 		out.append(PLACEMENTS_ID_SLICE)
+	return out
+
+
+## Extra story-scene files (Placements.extra_scene_ids) and job files (extra_job_ids) a mode lays over the old game's.
+static func story_scene_ids(mode: Mode) -> Array[String]:
+	var out: Array[String] = []
+	if mode == Mode.SLICE:
+		out.append(STORY_SCENES_ID_SLICE)
+	return out
+
+
+static func job_ids(mode: Mode) -> Array[String]:
+	var out: Array[String] = []
+	if mode == Mode.SLICE:
+		out.append(JOBS_ID_SLICE)
 	return out
 
 

@@ -3,12 +3,18 @@
  "default_mode": "classic",
  "new_game": {
   "room": "market_hideout",
-  "spawn": "default"
+  "spawn": "default",
+  "hacks": [
+   "zap_drone",
+   "emp",
+   "overclock",
+   "reboot"
+  ]
  },
  "retry": {
   "rule": "room_entrance",
   "credit_cost": 0,
-  "auto_continue_s": 3.0
+  "auto_continue_s": 0.0
  },
  "interact": {
   "mode": "attack_button",
@@ -33,5 +39,34 @@
    "script": "res://scripts/combat/fx/combat_fx.gd",
    "bind": true
   }
- ]
+ ],
+ "new_game_hacks_note": "Which hacks a new slice game starts with (placeholder: all four of the pitch; the Combat Designer decides any unlock order).",
+ "menu": {
+  "commands": [
+   {
+    "id": "items",
+    "page": "items"
+   },
+   {
+    "id": "sword",
+    "page": "sword"
+   },
+   {
+    "id": "config",
+    "page": "config"
+   },
+   {
+    "id": "save",
+    "page": "save"
+   }
+  ]
+ },
+ "barks": {
+  "cooldown_s": 12.0,
+  "show_s": 3.2,
+  "max_at_once": 1
+ },
+ "saving": {
+  "blocked_in_robot_rooms": true
+ }
 }

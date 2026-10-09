@@ -233,6 +233,8 @@ func test_the_boss_bar_draws_inside_the_ui_at_any_window_size() -> void:
 		assert_le(rect.end.x, ui_size.x)
 		assert_le(rect.end.y, ui_size.y)
 		assert_almost_eq(rect.get_center().x, ui_size.x / 2.0, 1.0, "centered")
+		assert_ge(rect.position.x, 124.0, "clear of Red's health")
+		assert_le(rect.end.x, ui_size.x - 124.0, "clear of the Noise meter")
 
 
 # ---- the radio ----

@@ -56,6 +56,9 @@ var clock: Callable = Callable()
 var auto_save_enabled: bool = true
 ## True while a fight is on (Main sets it): the auto-save never writes then.
 var battle_active: bool = false
+## Off while saving is not allowed (the slice's robot rooms: saving needs Red on foot). ActionRoom sets it for the room it
+## runs; every save, by hand or automatic, is refused while it is off.
+var saving_allowed: bool = true
 
 var _skip_arrival_room: String = ""
 var _skip_arrival: bool = false
@@ -119,14 +122,14 @@ func _now() -> float:
 
 ## Saves by hand into a manual slot (1..3). The auto-save slot (0) is refused. Returns true on success.
 func save_slot(slot: int) -> bool:
-	if slot < 1 or slot > slot_count():
+	if slot < 1 or slot > slot_count() or not saving_allowed:
 		return false
 	return _write_slot(slot)
 
 
 ## Writes the auto-save. Does nothing (false) during a battle. Only area entry should call this.
 func auto_save() -> bool:
-	if battle_active:
+	if battle_active or not saving_allowed:
 		return false
 	return _write_slot(AUTO_SLOT)
 
@@ -146,8 +149,18 @@ func notify_room_entered(room_id: String, spawn_id: String = "") -> void:
 		_skip_arrival = false
 		if was_load:
 			return
-	if auto_save_enabled:
+	if auto_save_enabled and room_autosaves(room_id):
 		auto_save()
+
+
+## True when saving is allowed right now (not in a fight, not in a robot room).
+func can_save() -> bool:
+	return saving_allowed and not battle_active
+
+
+## The rooms file's `autosave` for a room (default true: the old game saves on every area entry; slice rooms say which ones do).
+func room_autosaves(room_id: String) -> bool:
+	return bool(DataDB.get_value(rooms_data_id, "rooms.%s.autosave" % room_id, true))
 
 
 func _write_slot(slot: int) -> bool:

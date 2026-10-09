@@ -51,7 +51,7 @@ func origin() -> Vector2:
 
 
 func panel_width() -> float:
-	return SliceUiData.num("hack_panel.w", 112)
+	return SliceUiData.num("hack_panel.w", 128)
 
 
 ## The bar rect of each hack row, in pick mode, from the top (for tests and the screenshots).
@@ -99,12 +99,12 @@ func _shake_x() -> float:
 func _draw_battery(shake: float) -> void:
 	var at: Vector2 = origin()
 	var locked: bool = model.is_locked()
-	var tint: Color = SandboxStyle.color("label_dim") if locked else SandboxStyle.color("label")
-	SandboxStyle.label(self, at + Vector2(shake, 7.0), SliceUiData.text("hack.battery"), tint)
 	var number_right: float = at.x + panel_width()
 	if locked:
-		SandboxStyle.text_right(self, "label", number_right, at.y + 7.0, "%s %s" % [SliceUiData.text("hack.jammed"), SliceUiData.fmt("hack.jammed_time", {"seconds": "%.1f" % model.lock_left_s()})], SliceUiData.color("jam"), 120.0)
+		SandboxStyle.label(self, at + Vector2(shake, 7.0), SliceUiData.text("hack.jammed"), SliceUiData.color("jam"))
+		SandboxStyle.text_right(self, "label", number_right, at.y + 7.0, SliceUiData.fmt("hack.jammed_time", {"seconds": "%.1f" % model.lock_left_s()}).to_upper(), SliceUiData.color("jam"), 50.0)
 	else:
+		SandboxStyle.label(self, at + Vector2(shake, 7.0), SliceUiData.text("hack.battery"), SandboxStyle.color("label"))
 		OffsetStat.draw(self, Vector2(number_right, at.y + 8.0), "", str(roundi(model.charge)), "", SandboxStyle.color("text"), true)
 	var bar: Rect2 = Rect2(at.x + shake, at.y + SliceUiData.num("hack_panel.label_gap", 9), panel_width(), SliceUiData.num("hack_panel.battery_h", 4))
 	var top: Color = SliceUiData.color("battery_locked_top" if locked else "battery_top")
@@ -166,15 +166,14 @@ func _draw_row(id: String, rect_in: Rect2, lit: bool, shake: float, show_cost: b
 		SandboxStyle.text_right(self, "label", rect.end.x - 3.0, rect.position.y + rect.size.y - 3.0, cost_text, cost_color, 24.0)
 
 
-## Left / right hints beside the picked hack's bar: the d-pad changes it.
+## Left / right hints just past the picked hack's bar: the d-pad changes it. They nudge outward in turn.
 func _draw_pick_arrows(rect: Rect2) -> void:
 	var mid: float = rect.position.y + rect.size.y / 2.0
-	var pulse: bool = int(_clock / 0.4) % 2 == 0
 	var tint: Color = SandboxStyle.color("arrow")
-	if not pulse:
-		tint = tint.darkened(0.2)
-	SandboxStyle.arrow(self, Vector2(rect.position.x + rect.size.x - 24.0, mid), Vector2i.LEFT, tint)
-	SandboxStyle.arrow(self, Vector2(rect.end.x + 6.0, mid), Vector2i.RIGHT, tint)
+	var nudge: float = 1.0 if int(_clock / 0.4) % 2 == 0 else 0.0
+	# SandboxStyle.arrow's names are the way the triangle's flat side faces; these two point left and right on screen.
+	SandboxStyle.arrow(self, Vector2(rect.end.x + 4.0 - nudge, mid), Vector2i.RIGHT, tint)
+	SandboxStyle.arrow(self, Vector2(rect.end.x + 11.0 + nudge, mid), Vector2i.LEFT, tint)
 
 
 ## Automatic mode: one bar, "Auto", and the last hack used.
@@ -216,15 +215,16 @@ func _draw_fizz(end_y: float) -> void:
 	var density: float = SliceUiData.num("hack_panel.fizz_density", 0.38)
 	var light: Color = SliceUiData.color("fizz_light")
 	var dark: Color = SliceUiData.color("fizz_dark")
+	var top_y: float = at.y + SliceUiData.num("hack_panel.label_gap", 9) - 1.0
 	var cols: int = int(panel_width() / px)
-	var rows: int = int((end_y - at.y) / px)
+	var rows: int = int((end_y - top_y) / px)
 	for row: int in rows:
 		for col: int in cols:
 			var h: int = _hash(col, row, step)
 			if float(h % 1000) / 1000.0 < density * 0.5:
-				draw_rect(Rect2(at.x + float(col) * px, at.y + float(row) * px, px, px), Color(light, 0.55))
+				draw_rect(Rect2(at.x + float(col) * px, top_y + float(row) * px, px, px), Color(light, 0.55))
 			elif float(h % 1000) / 1000.0 > 1.0 - density * 0.5:
-				draw_rect(Rect2(at.x + float(col) * px, at.y + float(row) * px, px, px), Color(dark, 0.6))
+				draw_rect(Rect2(at.x + float(col) * px, top_y + float(row) * px, px, px), Color(dark, 0.6))
 
 
 static func _hash(a: int, b: int, c: int) -> int:

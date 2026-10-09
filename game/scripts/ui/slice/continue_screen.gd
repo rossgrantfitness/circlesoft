@@ -16,8 +16,9 @@ const ITEM_IDS: Array[String] = ["continue", "quit"]
 var audio: UiAudio = UiAudio.new()
 var manual_ticks: bool = false
 var listen_input: bool = true
-## Off: opening does not pause the game (tests).
-var pause_game: bool = true
+## On: opening pauses the game. Off by default: Red is already down, the room's own auto-continue timer (slice.json
+## retry.auto_continue_s, used by bots) must keep running, and nothing hits a knocked-out hero.
+var pause_game: bool = false
 var animations_enabled: bool = true
 
 var _layout: Dictionary = {}

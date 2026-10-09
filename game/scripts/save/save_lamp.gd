@@ -157,6 +157,8 @@ func start_check() -> bool:
 	var manager: Node = _manager()
 	if manager == null:
 		return false
+	if manager.has_method("can_save") and not bool(manager.call("can_save")):
+		return false          # saving is off here (a robot room); the terminal does nothing
 	_full = bool(manager.call("is_first_lamp_check"))
 	_beats = DataDB.get_value(DATA_ID, "lamp_check.full" if _full else "lamp_check.short", [])
 	_grace_left = float(DataDB.get_value(DATA_ID, "lamp_check.skip_grace_s", 0.25))

@@ -562,7 +562,7 @@ func _stick_is_back() -> bool:
 func _press_hack(usec: int) -> void:
 	var caster: HackCaster = hack_caster()
 	if caster != null:
-		if scale_profile == null and not dead:
+		if _form_id == &"red" and not dead:
 			caster.on_button_down(usec)
 		return
 	var hack: Dictionary = (_combo_cfg.get("buttons", {}) as Dictionary).get("hack", {})

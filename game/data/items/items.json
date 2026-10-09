@@ -22,6 +22,7 @@
     {"id": "side_job_parcel", "name": "Side-Job Parcel", "kind": "key", "key": true, "desc": "A small delivery for somebody in Harrow Landing.", "price": 0, "icon": "key", "tint": "#E0782B", "use_in": []},
     {"id": "kasp_access_card", "name": "Kasp's Access Card", "kind": "key", "key": true, "desc": "Laminated, his photo on every one. Opens Signals doors.", "price": 0, "icon": "key", "tint": "#7FB4D6", "use_in": []},
     {"id": "bell_tune_napkin", "name": "Bell Tune Napkin", "kind": "key", "key": true, "desc": "A tune written down on a napkin. For the bell.", "price": 0, "icon": "key", "tint": "#F2E8D0", "use_in": []},
-    {"id": "beacon_part", "name": "Beacon Part", "kind": "key", "key": true, "desc": "Pulled from the Hushmaster's wreck. It plays the call, clear as a bell.", "price": 0, "icon": "key", "tint": "#9FD6C4", "use_in": []}
+    {"id": "beacon_part", "name": "Beacon Part", "kind": "key", "key": true, "desc": "Pulled from the Hushmaster's wreck. It plays the call, clear as a bell.", "price": 0, "icon": "key", "tint": "#9FD6C4", "use_in": []},
+    {"id": "courier_pass", "name": "Courier Pass", "kind": "key", "key": true, "desc": "Stamped for Gate 4. Opens the boom barrier to the junkyard road.", "price": 0, "icon": "key", "tint": "#7FB4D6", "use_in": []}
   ]
 }

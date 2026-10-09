@@ -12,6 +12,8 @@ extends Node
 
 signal item_changed(item_id: String, count: int)
 signal flag_changed(flag_id: String, value: bool)
+## A save terminal or inn rested the party (rest_party). The slice's ActionRoom heals the live Red when it hears this.
+signal party_rested
 
 const PARTY_DATA_ID: String = "party/party"
 const ITEMS_DATA_ID: String = "items/items"
@@ -21,8 +23,8 @@ const KEY_MEMBERS: String = "members"
 const KEY_STARTING_ITEMS: String = "starting_items"
 const KEY_ITEMS: String = "items"
 ## Bump when the saved shape changes and add a step to MIGRATIONS (key = the version it upgrades FROM).
-const SAVE_VERSION: int = 2
-const MIGRATIONS: Dictionary[int, StringName] = {1: &"_migrate_1_to_2"}
+const SAVE_VERSION: int = 3
+const MIGRATIONS: Dictionary[int, StringName] = {1: &"_migrate_1_to_2", 2: &"_migrate_2_to_3"}
 const MEMBER_SAVE_KEYS: Array[String] = ["level", "xp", "hp", "hp_max", "juice", "juice_max", "skills", "bonus", "equipment"]
 const INT_MEMBER_KEYS: Array[String] = ["level", "xp", "hp", "hp_max", "juice", "juice_max"]
 const EQUIPMENT_SLOTS: Array[String] = ["weapon", "armor", "charm"]
@@ -55,6 +57,10 @@ var _location: Dictionary = {"room": "", "spawn": ""}
 var _story_beat: String = ""
 var _opened: Dictionary[String, bool] = {}
 var _hero_name: String = DEFAULT_HERO_NAME
+## The slice's hack ids Red has unlocked (saved as "hacks"). Which ones start unlocked is data/slice/slice.json "new_game".
+var _unlocked_hacks: Array[String] = []
+## Called at the start of to_dict() so the live Red (ActionRoom) can write her health and sword into slice_run first.
+var live_flush: Callable = Callable()
 
 ## While true, _process adds the frame time to the play time. Main turns it on in the field and
 ## off on the title screen. Off by default so tests and menus never tick it.
@@ -111,6 +117,7 @@ func _sync_starting_stats() -> void:
 ## Back to a fresh run: starting bag, no flags, starting member stats, the new-game place and beat.
 func reset() -> void:
 	slice_run = {}
+	_unlocked_hacks.clear()
 	_bag.clear()
 	_flags.clear()
 	_opened.clear()
@@ -132,6 +139,9 @@ func reset() -> void:
 ## later through join_party().
 func start_new_game() -> void:
 	reset()
+	if rooms_data_id != ROOMS_DATA_ID:
+		for hack: Variant in DataDB.get_value(SLICE_DATA_ID, "new_game.hacks", []) as Array:
+			unlock_hack(str(hack))
 	var level: int = int(_new_game_party.get("level", 0))
 	if level > 0:
 		var growth: Dictionary = BattleData.shared().growth
@@ -427,12 +437,57 @@ func rest_party() -> void:
 			member["hp"] = member["hp_max"]
 		if member.has("juice_max"):
 			member["juice"] = member["juice_max"]
+	var session: Dictionary = slice_run.get("session", {}) as Dictionary
+	if not session.is_empty():
+		session = session.duplicate()
+		session["hp"] = 0               # 0 reads as "full" (HeroSession.health_for)
+		slice_run["session"] = session
+	party_rested.emit()
+
+
+# ---- the slice: hacks and the run snapshot ----
+
+func unlocked_hacks() -> Array[String]:
+	return _unlocked_hacks.duplicate()
+
+
+func has_hack(hack_id: String) -> bool:
+	return _unlocked_hacks.has(hack_id)
+
+
+## Unlocks a hack. True when it was new.
+func unlock_hack(hack_id: String) -> bool:
+	if hack_id.is_empty() or _unlocked_hacks.has(hack_id):
+		return false
+	_unlocked_hacks.append(hack_id)
+	return true
+
+
+## What a knock-out restart puts back (RoomSnapshot): items, credits, flags and opened ids.
+func run_snapshot() -> Dictionary:
+	return {"bag": _bag.duplicate(), "flags": _flags.duplicate(), "opened": _opened.keys(), "credits": _credits}
+
+
+## Puts a run_snapshot() back. Flags and opened ids not in it are dropped, so a retry really rewinds the room.
+func restore_run_snapshot(snap: Dictionary) -> void:
+	_bag.clear()
+	for id: String in (snap.get("bag", {}) as Dictionary):
+		_bag[id] = int((snap["bag"] as Dictionary)[id])
+	_flags.clear()
+	for id: String in (snap.get("flags", {}) as Dictionary):
+		_flags[id] = bool((snap["flags"] as Dictionary)[id])
+	_opened.clear()
+	for id: Variant in (snap.get("opened", []) as Array):
+		_opened[str(id)] = true
+	_credits = int(snap.get("credits", 0))
 
 
 # ---- save round trip ----
 
 ## Everything a save needs, as plain JSON-safe data.
 func to_dict() -> Dictionary:
+	if live_flush.is_valid():
+		live_flush.call()
 	var member_state: Dictionary = {}
 	for id: String in _members:
 		var member: Dictionary = _members[id]
@@ -448,10 +503,12 @@ func to_dict() -> Dictionary:
 		member_state[id] = kept
 	var opened: Array = _opened.keys()
 	opened.sort()
+	var session: Dictionary = slice_run.get("session", {}) as Dictionary
 	return {"save_version": SAVE_VERSION, "bag": _bag.duplicate(), "flags": _flags.duplicate(),
 		"party": _party_ids.duplicate(), "credits": _credits, "member_state": member_state,
 		"play_time_s": snappedf(_play_time_s, PLAY_TIME_STEP_S), "location": _location.duplicate(),
-		"story_beat": _story_beat, "opened": opened, "hero_name": _hero_name}
+		"story_beat": _story_beat, "opened": opened, "hero_name": _hero_name,
+		"sword": str(session.get("sword", "")), "hacks": _unlocked_hacks.duplicate(), "hero_hp": int(session.get("hp", 0))}
 
 
 ## Loads a dictionary from to_dict() of any version. Old versions are migrated first. Anything
@@ -478,6 +535,12 @@ func from_dict(data: Dictionary) -> void:
 	for id: String in member_state:
 		update_member(id, _clean_member_fields(member_state[id]))
 	set_hero_name(str(current.get("hero_name", DEFAULT_HERO_NAME)))
+	for hack: Variant in current.get("hacks", []) as Array:
+		unlock_hack(str(hack))
+	var sword: String = str(current.get("sword", ""))
+	var hero_hp: int = int(current.get("hero_hp", 0))
+	if not sword.is_empty() or hero_hp > 0:
+		slice_run = {"session": {"hp": hero_hp, "sword": sword}}      # Red walks into the saved room with these (battery full, form red)
 	var party: Array = current.get("party", [])
 	if not party.is_empty():
 		_party_ids.clear()
@@ -527,6 +590,19 @@ func migrate(data: Dictionary) -> Dictionary:
 		version += 1
 		current["save_version"] = version
 	return current
+
+
+## 2 -> 3 (the slice): adds the equipped sword, the unlocked hacks and Red's health. An older save has none of them:
+## no sword (she keeps the default), no hacks, full health.
+func _migrate_2_to_3(old: Dictionary) -> Dictionary:
+	var upgraded: Dictionary = old.duplicate(true)
+	if not upgraded.has("sword"):
+		upgraded["sword"] = ""
+	if not upgraded.has("hacks"):
+		upgraded["hacks"] = []
+	if not upgraded.has("hero_hp"):
+		upgraded["hero_hp"] = 0
+	return upgraded
 
 
 ## 1 -> 2: adds play time, location, story beat, opened ids, hero name and gear. A version-1 save

@@ -36,6 +36,7 @@ const PAGE_EQUIP: String = "equip"
 const PAGE_STATUS: String = "status"
 const PAGE_PARTY: String = "party"
 const PAGE_CONFIG: String = "config"
+const PAGE_SWORD: String = "sword"
 const PAGE_SAVE: String = "save"
 const ACTION_OPEN: StringName = &"menu"
 const RELEASE_FRAMES: int = 2
@@ -51,6 +52,11 @@ const PAGE_INSET: int = 4
 
 ## Red, frozen while the menu is open (released two frames after it closes).
 var player: CharacterBody3D = null
+## The slice opens the menu from its pause menu, not from the `menu` button (that is lock-on and the hack button there).
+var listen_open_action: bool = true
+## Replaces the command list in data/ui/field_menu.json ([{"id", "page"}]) when not empty: the slice hides Skills, Status
+## and Party and adds Sword. Set before the menu enters the tree (install() does).
+var commands_override: Array = []
 ## Off: the menu does not open (cutscenes, battles).
 var enabled: bool = true
 var manual_ticks: bool = false
@@ -104,6 +110,9 @@ func _ready() -> void:
 	_step_s = float(theme_data["timing"]["ui_step_s"])
 	layout = DataDB.get_dict(LAYOUT_ID)
 	text = DataDB.get_dict(TEXT_ID)
+	if not commands_override.is_empty():
+		layout = layout.duplicate(true)
+		layout["commands"] = commands_override
 	for command: Dictionary in layout["commands"]:
 		_command_ids.append(str(command["id"]))
 	backend = GearBridge.new(game_state)
@@ -250,10 +259,12 @@ func save_manager_node() -> Node:
 
 ## Builds the menu on the UI stage (making the stage if needed) and returns it. `player` is frozen
 ## while the menu is open. Call once when a room loads; remove it with queue_free() when it unloads.
-static func install(tree: SceneTree, player_to_freeze: CharacterBody3D = null) -> FieldMenu:
+static func install(tree: SceneTree, player_to_freeze: CharacterBody3D = null, options: Dictionary = {}) -> FieldMenu:
 	var stage: UiStage = UiStage.get_or_create(tree)
 	var menu: FieldMenu = (load(SCENE_PATH) as PackedScene).instantiate() as FieldMenu
 	menu.player = player_to_freeze
+	menu.listen_open_action = bool(options.get("listen_open_action", true))
+	menu.commands_override = options.get("commands", []) as Array
 	stage.get_stage_root().add_child(menu)
 	return menu
 
@@ -462,7 +473,7 @@ func finish_animations() -> void:
 
 func _input(event: InputEvent) -> void:
 	if _state == State.CLOSED:
-		if event.is_action_pressed(ACTION_OPEN) and not event.is_echo():
+		if listen_open_action and event.is_action_pressed(ACTION_OPEN) and not event.is_echo():
 			if open():
 				get_viewport().set_input_as_handled()
 		return
@@ -577,6 +588,8 @@ func _make_page(page: String) -> MenuPage:
 			return PageParty.new(self, _page_root)
 		PAGE_CONFIG:
 			return PageConfig.new(self, _page_root)
+		PAGE_SWORD:
+			return PageSword.new(self, _page_root)
 	return PageMain.new(self, _page_root)
 
 

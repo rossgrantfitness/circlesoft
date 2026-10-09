@@ -32,7 +32,7 @@ func job_state(job_id: String) -> String:
 
 func job_ids() -> Array[String]:
 	var ids: Array[String] = []
-	var jobs: Dictionary = DataDB.get_dict(Placements.JOBS_ID).get("jobs", {})
+	var jobs: Dictionary = Placements.jobs_doc()
 	var ordered: Array = jobs.keys()
 	ordered.sort_custom(func(a: Variant, b: Variant) -> bool:
 		return int(jobs[a].get("order", 0)) < int(jobs[b].get("order", 0)))
@@ -46,7 +46,7 @@ func use(_player: CharacterBody3D, interactor: PlayerInteractor) -> bool:
 	var runner: DialogueRunner = interactor.runner
 	if runner == null:
 		return false
-	var text: Dictionary = DataDB.get_dict(Placements.JOBS_ID).get("text", {})
+	var text: Dictionary = Placements.jobs_text()
 	var labels: Array = []
 	var nexts: Array = []
 	var conversations: Dictionary = {}

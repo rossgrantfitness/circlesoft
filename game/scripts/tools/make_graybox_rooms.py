@@ -17,7 +17,11 @@ ROOMS = {
 
 def build(room_id, hx, hz, doors, spawns):
     lines = ['[gd_scene load_steps=4 format=3]', '',
-             '[ext_resource type="PackedScene" path="res://scenes/props/door.tscn" id="1_door"]', '',
+             '[ext_resource type="PackedScene" path="res://scenes/props/door.tscn" id="1_door"]',
+             '[ext_resource type="PackedScene" path="res://scenes/props/job_board.tscn" id="2_board"]',
+             '[ext_resource type="PackedScene" path="res://scenes/actors/placed_npc.tscn" id="3_npc"]',
+             '[ext_resource type="Script" path="res://scripts/ui/shop/shop_counter.gd" id="4_shop"]',
+             '[ext_resource type="Script" path="res://scripts/save/save_lamp.gd" id="5_lamp"]', '',
              '[sub_resource type="Environment" id="Env_1"]', 'background_mode = 1',
              'background_color = Color(0.12, 0.145, 0.25, 1)', 'ambient_light_source = 2',
              'ambient_light_color = Color(0.7, 0.7, 0.95, 1)', 'ambient_light_energy = 0.9', '',
@@ -57,6 +61,18 @@ def build(room_id, hx, hz, doors, spawns):
         lines += ['[node name="%s" parent="." instance=ExtResource("1_door")]' % pid.title().replace("_", ""),
                   'transform = Transform3D(%d, 0, %d, 0, 1, 0, %d, 0, %d, %g, 0, %g)' % (c, s, -s, c, x, z),
                   'placement_id = "%s"' % pid, '']
+    if room_id == "gb_hub":
+        # town systems props: a save terminal that rests, a shop counter, a job board and a townsperson who barks
+        lines += ['[node name="Terminal" type="Node3D" parent="."]',
+                  'transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 5)',
+                  'script = ExtResource("5_lamp")', 'rest = true', 'room_id = "gb_hub"', 'spawn_id = "start"', '',
+                  '[node name="Counter" type="Node3D" parent="."]',
+                  'transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, 5)',
+                  'script = ExtResource("4_shop")', 'shop_id = "test_general"', '',
+                  '[node name="Board" parent="." instance=ExtResource("2_board")]',
+                  'transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 6.5)', 'placement_id = "gb_board"', '',
+                  '[node name="Vendor" parent="." instance=ExtResource("3_npc")]',
+                  'transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, -2)', 'placement_id = "gb_vendor"', '']
     return "\n".join(lines)
 
 

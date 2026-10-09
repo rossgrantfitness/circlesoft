@@ -1,0 +1,437 @@
+{
+ "_about": "PLACEHOLDER lines for the night market's townsfolk and examine spots (VS-14), so every placed person and sign says something while the town is graybox. Whisper-market tone (docs/maps/night_market.md, Decision 1A): murmured, nervous, warm. The Writer replaces these with data/dialogue/market.json (same conversation ids or new ones; update slice/placements.json to match). Dialogue & writing is Level 0: Ross approves final words.",
+ "conversations": {
+  "mk_sq_pop": [
+   {
+    "speaker": "mk_sq_pop",
+    "text": "Noodles. Quietly, please. Sit, sit."
+   },
+   {
+    "speaker": "mk_sq_pop",
+    "text": "Everyone eats here. Even them. ...Especially them."
+   }
+  ],
+  "mk_sq_dumpling": [
+   {
+    "speaker": "mk_sq_dumpling",
+    "text": "Sample? It is a little cold. ...Mm. Asleep. Sorry. Sample?"
+   }
+  ],
+  "mk_sq_tape": [
+   {
+    "speaker": "mk_sq_tape",
+    "text": "Scrap wire by the foot. Tape by the mood. Whisper your length."
+   }
+  ],
+  "mk_sq_odds": [
+   {
+    "speaker": "mk_sq_odds",
+    "text": "Will the screen glitch before ten? Two rations says yes."
+   },
+   {
+    "speaker": "mk_sq_odds",
+    "text": "I am right most days. That is the problem."
+   }
+  ],
+  "mk_sq_neighbor": [
+   {
+    "speaker": "mk_sq_neighbor",
+    "text": "You were out at all hours again. I bake at three. We are not so different."
+   },
+   {
+    "speaker": "mk_sq_neighbor",
+    "text": "Keep it down. ...I said keep it down, I did not say stop."
+   }
+  ],
+  "mk_sq_ume": [
+   {
+    "speaker": "mk_sq_ume",
+    "text": "Phones, five minutes a bar. Do not touch the cords."
+   },
+   {
+    "speaker": "mk_sq_ume",
+    "text": "I said do not touch the cords!"
+   }
+  ],
+  "mk_sq_shopper_a": [
+   {
+    "speaker": "mk_sq_shopper_a",
+    "text": "...four for the price of three. Shh."
+   }
+  ],
+  "mk_sq_shopper_b": [
+   {
+    "speaker": "mk_sq_shopper_b",
+    "text": "The screen is looking at us again. Pretend to browse."
+   }
+  ],
+  "mk_sq_shopper_c": [
+   {
+    "speaker": "mk_sq_shopper_c",
+    "text": "Headphones. In my ears. Loud. In my head only."
+   }
+  ],
+  "mk_sq_shopper_d": [
+   {
+    "speaker": "mk_sq_shopper_d",
+    "text": "Wind chimes are in socks this week. Do not ask me why."
+   }
+  ],
+  "mk_sq_wolf_a": [
+   {
+    "speaker": "mk_sq_wolf_a",
+    "text": "..."
+   },
+   {
+    "speaker": "mk_sq_wolf_a",
+    "text": "Move along."
+   }
+  ],
+  "mk_sq_wolf_b": [
+   {
+    "speaker": "mk_sq_wolf_b",
+    "text": "...Quiet hours, courier. Not that you were loud."
+   }
+  ],
+  "mk_wf_juno": [
+   {
+    "speaker": "mk_wf_juno",
+    "text": "Watch the track! Tuesday-class drones only. ...Mine crashes. Always the green one."
+   }
+  ],
+  "mk_wf_kid_a": [
+   {
+    "speaker": "mk_wf_kid_a",
+    "text": "Don't tell the patrol it is a race. It is a... delivery rehearsal."
+   }
+  ],
+  "mk_wf_kid_b": [
+   {
+    "speaker": "mk_wf_kid_b",
+    "text": "Shh, shh, it is turning!"
+   }
+  ],
+  "mk_wf_judge": [
+   {
+    "speaker": "mk_wf_judge",
+    "text": "(whisper-shouting into the megaphone) FIRST. PLACE. Green one crashed."
+   }
+  ],
+  "mk_wf_pell": [
+   {
+    "speaker": "mk_wf_pell",
+    "text": "Hello, courier. Papers are my hobby. Ask me about papers, quietly."
+   }
+  ],
+  "mk_wf_late_cook": [
+   {
+    "speaker": "mk_wf_late_cook",
+    "text": "Pop's cousin. Same menu. Better view."
+   }
+  ],
+  "mk_wf_fisher": [
+   {
+    "speaker": "mk_wf_fisher",
+    "text": "Something bit. ...Once. Last Tuesday."
+   }
+  ],
+  "mk_gt_grunt_a": [
+   {
+    "speaker": "mk_gt_grunt_a",
+    "text": "Road's closed. Papers?"
+   }
+  ],
+  "mk_gt_grunt_b": [
+   {
+    "speaker": "mk_gt_grunt_b",
+    "text": "Noise ticket. One wind chime. Form 12. ...I did not write the rules. I write the tickets."
+   }
+  ],
+  "mk_gt_line_a": [
+   {
+    "speaker": "mk_gt_line_a",
+    "text": "It's only a wind chime. In a sock."
+   }
+  ],
+  "mk_gt_line_b": [
+   {
+    "speaker": "mk_gt_line_b",
+    "text": "Third week in this line."
+   }
+  ],
+  "mk_gt_line_c": [
+   {
+    "speaker": "mk_gt_line_c",
+    "text": "Do not make eye contact with the searchlight."
+   }
+  ],
+  "mk_dp_sleeper": [
+   {
+    "speaker": "mk_dp_sleeper",
+    "text": "...zzz..."
+   }
+  ],
+  "mk_cs_keeper": [
+   {
+    "speaker": "mk_cs_keeper",
+    "text": "Everything you need, nothing you want. The usual?"
+   }
+  ],
+  "mk_cs_clerk": [
+   {
+    "speaker": "mk_cs_clerk",
+    "text": "Antacids. Do not look at the badge. I am just a guy."
+   }
+  ],
+  "mk_fg_otis": [
+   {
+    "speaker": "mk_fg_otis",
+    "text": "Friend! Welcome. Mind the anvil. ...Sorry, anvil."
+   },
+   {
+    "speaker": "mk_fg_otis",
+    "text": "Swords are on the wall. Ask, and I will tinker."
+   }
+  ],
+  "mk_rp_mox": [
+   {
+    "speaker": "mk_rp_mox",
+    "text": "Red! The deck is a hundred percent... forty percent finished. Tuesday, say hi. ...Tuesday?"
+   }
+  ],
+  "mk_ar_owner": [
+   {
+    "speaker": "mk_ar_owner",
+    "text": "Socks on the speakers. House rule. Quiet Hours does not get to hear the game over."
+   }
+  ],
+  "mk_ar_kid_a": [
+   {
+    "speaker": "mk_ar_kid_a",
+    "text": "Beep. Beep beep. Beeeep. (That was a win.)"
+   }
+  ],
+  "mk_ar_kid_b": [
+   {
+    "speaker": "mk_ar_kid_b",
+    "text": "Zed is one point ahead. I will fix that."
+   }
+  ],
+  "mk_ar_kid_c": [
+   {
+    "speaker": "mk_ar_kid_c",
+    "text": "Shhh, I'm on the last level."
+   }
+  ],
+  "mk_ar_zed": [
+   {
+    "speaker": "mk_ar_zed",
+    "text": "Nine thousand nine hundred ninety. ...You are at nine nine eight nine? One point. Always one point."
+   }
+  ],
+  "mk_gt_grunt_a_open": [
+   {
+    "speaker": "mk_gt_grunt_a",
+    "text": "...Pass is in order. Stamp, stamp. Boom's up. Do not make a noise on the road."
+   }
+  ],
+  "mk_dp_dispatcher_taken": [
+   {
+    "speaker": "mk_dp_dispatcher",
+    "text": "Yard 9. Gate 4, show the pass, mind the quiet. Why are you still here?"
+   }
+  ],
+  "mk_dp_dispatcher_done": [
+   {
+    "speaker": "mk_dp_dispatcher",
+    "text": "Stamped DONE. ...Everyone is talking about it, in whispers."
+   }
+  ],
+  "mk_dp_dispatcher": [
+   {
+    "speaker": "mk_dp_dispatcher",
+    "text": "Job board is on the wall. Main job is the Yard 9 pickup. Do not dawdle, the deadline is already angry."
+   }
+  ],
+  "mk_sq_screen": [
+   {
+    "speaker": "narrator",
+    "text": "The Admiral's broadcast, looping. A scrolling memo underneath: 'KASP: QUIET HOURS ARE EVERY HOUR.'"
+   }
+  ],
+  "mk_sq_phone_rack": [
+   {
+    "speaker": "narrator",
+    "text": "A washing line of phones, all charging off Grandma Ume's window. Cords swing like vines."
+   }
+  ],
+  "mk_sq_window_ledge": [
+   {
+    "speaker": "narrator",
+    "text": "Ume's window. A ledge under it, two crates to get up. The sill is warm."
+   }
+  ],
+  "mk_sq_tarp_pole": [
+   {
+    "speaker": "narrator",
+    "text": "The pole holds the tarps and a tangle of string lights. Somebody taped a tiny flag to it."
+   }
+  ],
+  "mk_sq_bets_board": [
+   {
+    "speaker": "narrator",
+    "text": "BETS: Will the screen glitch before ten? / Will Pop run out of broth? / Will the patrol smile? (odds: never)"
+   }
+  ],
+  "mk_sq_memo_board": [
+   {
+    "speaker": "narrator",
+    "text": "Kasp's daily memo: 'Noise is a choice. Choose less.'"
+   }
+  ],
+  "mk_wf_screen": [
+   {
+    "speaker": "narrator",
+    "text": "The Admiral's face with a sticker moustache. Somebody added eyebrows."
+   }
+  ],
+  "mk_wf_tide_board": [
+   {
+    "speaker": "narrator",
+    "text": "TIDE: in. Then out. Then in."
+   }
+  ],
+  "mk_wf_crane": [
+   {
+    "speaker": "narrator",
+    "text": "A crane silhouette. Still. Somebody hung a laundry line off the arm."
+   }
+  ],
+  "mk_wf_results": [
+   {
+    "speaker": "narrator",
+    "text": "RACE RESULTS: 1st Tuesday-class (blue). 2nd Tuesday-class (red). Green: crashed, again."
+   }
+  ],
+  "mk_gt_appeals_slot": [
+   {
+    "speaker": "narrator",
+    "text": "APPEALS. A slot in the booth. A recorded voice: 'Your appeal is important to us.' Nothing to drop in it yet."
+   }
+  ],
+  "mk_gt_poster": [
+   {
+    "speaker": "narrator",
+    "text": "QUIET HOURS SAVE LIVES. Someone chalked a moustache on Kasp."
+   }
+  ],
+  "mk_hd_stickers": [
+   {
+    "speaker": "narrator",
+    "text": "One sticker per delivery. The wall is nearly full."
+   }
+  ],
+  "mk_hd_photo": [
+   {
+    "speaker": "narrator",
+    "text": "Mom, young, grinning, in a flight jacket. Written on the back: 'Keep it down. Fly anyway.'"
+   }
+  ],
+  "mk_hd_charts": [
+   {
+    "speaker": "narrator",
+    "text": "Mom's old flight charts. The lines go somewhere you can no longer fly."
+   }
+  ],
+  "mk_hd_parcel": [
+   {
+    "speaker": "narrator",
+    "text": "A parcel marked 'MOX WUZ HERE'. Heavy. Ticks faintly. You leave it."
+   }
+  ],
+  "mk_rp_scratch": [
+   {
+    "speaker": "narrator",
+    "text": "Scratched into the counter: MOX WUZ HERE. Underneath, smaller: 'and Tuesday.'"
+   }
+  ],
+  "mk_fg_bridge_lamp": [
+   {
+    "speaker": "narrator",
+    "text": "A rusty ship's bridge lamp, locked tight to the counter. Otis polishes it when he thinks nobody is looking."
+   }
+  ],
+  "mk_ar_scores": [
+   {
+    "speaker": "narrator",
+    "text": "HIGH SCORES: ZED 9990. RED 9989. A third line has been scratched out."
+   }
+  ],
+  "mk_dp_board": [
+   {
+    "speaker": "narrator",
+    "text": "(job board)"
+   }
+  ],
+  "mk_wf_pell_done": [
+   {
+    "speaker": "mk_wf_pell",
+    "text": "Filed. They said my appeal is important to them. ...Nobody has said that to me in years."
+   }
+  ],
+  "mk_wf_pell_form": [
+   {
+    "speaker": "mk_wf_pell",
+    "text": "An Appeal Form! Signals hands out the tickets and never mentions the forms. You have to know somebody."
+   },
+   {
+    "speaker": "mk_wf_pell",
+    "text": "Drop it in the APPEALS slot at Gate 4. In triplicate. Well, once. It is a start.",
+    "give_item": "side_job_parcel",
+    "set_flag": "job_appeal_form_got"
+   }
+  ],
+  "mk_wf_pell_go": [
+   {
+    "speaker": "mk_wf_pell",
+    "text": "Booth slot, Gate 4. Do not fold it. They hate it when you fold it."
+   }
+  ],
+  "mk_gt_appeals_done": [
+   {
+    "speaker": "narrator",
+    "text": "The slot hums. A recorded voice: 'Your appeal is important to us.'"
+   }
+  ],
+  "mk_sq_window_ledge_done": [
+   {
+    "speaker": "narrator",
+    "text": "Ume's phones are charged. The window glows a bit warmer."
+   }
+  ],
+  "mk_charge_drop": [
+   {
+    "speaker": "narrator",
+    "text": "You set the battery brick on the sill. A phone on the line blinks awake. Ume's hand snatches the brick inside."
+   }
+  ],
+  "mk_charge_reward": [
+   {
+    "speaker": "mk_sq_ume",
+    "text": "Do not touch the cords! ...Thank you. The sill has something for you. Quietly."
+   }
+  ],
+  "mk_appeal_drop": [
+   {
+    "speaker": "narrator",
+    "text": "You slide the form into the APPEALS slot. It is eaten. A recorded voice: 'Your appeal is important to us.'"
+   }
+  ],
+  "mk_appeal_paid": [
+   {
+    "speaker": "mk_wf_pell",
+    "text": "(a note slides out of the slot) 'Filed. Payment attached.' ...Two rations and some credits."
+   }
+  ]
+ }
+}

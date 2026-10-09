@@ -1,6 +1,10 @@
 [gd_scene load_steps=17 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/props/door.tscn" id="1_door"]
+[ext_resource type="PackedScene" path="res://scenes/props/job_board.tscn" id="2_board"]
+[ext_resource type="PackedScene" path="res://scenes/actors/placed_npc.tscn" id="3_npc"]
+[ext_resource type="Script" path="res://scripts/ui/shop/shop_counter.gd" id="4_shop"]
+[ext_resource type="Script" path="res://scripts/save/save_lamp.gd" id="5_lamp"]
 
 [sub_resource type="Environment" id="Env_1"]
 background_mode = 1

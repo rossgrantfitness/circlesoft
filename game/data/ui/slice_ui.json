@@ -25,7 +25,7 @@
  "hack_panel": {
   "x": 8,
   "y": 52,
-  "w": 112,
+  "w": 128,
   "label_gap": 9,
   "battery_h": 4,
   "list_y": 12,
@@ -34,11 +34,11 @@
   "list_inset": 3,
   "icon_x": 3,
   "name_x": 16,
-  "cost_right": 106,
+  "cost_right": 0,
   "dim_alpha": 0.55,
   "fizz_px": 2,
   "fizz_step_s": 0.0833,
-  "fizz_density": 0.38,
+  "fizz_density": 0.3,
   "denied_shake_px": 2,
   "denied_s": 0.3,
   "chip_per_s": 1.4,
@@ -54,7 +54,6 @@
  "boss_bar": {
   "w": 232,
   "h": 5,
-  "bottom_gap": 26,
   "name_gap": 4,
   "pip_w": 14,
   "pip_h": 3,
@@ -64,11 +63,15 @@
   "chip_delay_s": 0.4,
   "chip_per_s": 0.5,
   "flash_s": 0.45,
-  "hp_per_s": 1.6
+  "hp_per_s": 1.6,
+  "w_max": 232,
+  "w_min": 120,
+  "side_room": 132,
+  "top": 22
  },
  "radio": {
-  "w": 220,
-  "h": 34,
+  "w": 240,
+  "h": 46,
   "x_from_left": 8,
   "bottom_gap": 22,
   "portrait": 26,
@@ -80,20 +83,20 @@
   "hold_base_s": 1.2,
   "hold_per_char_s": 0.035,
   "between_s": 0.15,
-  "max_lines": 2,
+  "max_lines": 3,
   "queue_max": 6,
-  "static_step_s": 0.0833
+  "static_step_s": 0.0833,
+  "line_step": 14
  },
  "location_card": {
-  "y": 34,
   "h": 26,
-  "w": 168,
   "slide_px": 24,
   "slide_s": 0.3,
   "hold_s": 2.2,
   "fade_s": 0.5,
   "delay_s": 0.35,
-  "accent_w": 3
+  "accent_w": 3,
+  "y_frac": 0.36
  },
  "continue": {
   "x": 124,

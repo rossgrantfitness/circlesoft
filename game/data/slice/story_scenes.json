@@ -1,0 +1,62 @@
+{
+ "_about": "Staged scenes for the night market (VS-14), same shape as world/story_scenes.json; Placements.scenes_doc() lays this file over it in slice mode. The words are PLACEHOLDERS (data/dialogue/market_placeholder.json) for the Writer. charge_delivery: side job 1, the battery brick to Grandma Ume's window (from the ledge spot mk_sq_window_ledge). appeal_market: side job 2, Pell's form in the APPEALS slot at Gate 4 (spot mk_gt_appeals_slot).",
+ "scenes": {
+  "charge_delivery": {
+   "room": "market_square",
+   "steps": [
+    {
+     "do": "say",
+     "conversation": "mk_charge_drop"
+    },
+    {
+     "do": "take_item",
+     "item": "side_job_parcel",
+     "count": 1
+    },
+    {
+     "do": "set_flag",
+     "flag": "job_charge_done"
+    },
+    {
+     "do": "wait",
+     "s": 0.6
+    },
+    {
+     "do": "say",
+     "conversation": "mk_charge_reward"
+    }
+   ]
+  },
+  "appeal_market": {
+   "room": "market_gate",
+   "steps": [
+    {
+     "do": "say",
+     "conversation": "mk_appeal_drop"
+    },
+    {
+     "do": "take_item",
+     "item": "side_job_parcel",
+     "count": 1
+    },
+    {
+     "do": "set_flag",
+     "flag": "job_appeal_done"
+    },
+    {
+     "do": "credits",
+     "amount": 150
+    },
+    {
+     "do": "give_item",
+     "item": "ration_bar",
+     "count": 2
+    },
+    {
+     "do": "say",
+     "conversation": "mk_appeal_paid"
+    }
+   ]
+  }
+ }
+}

@@ -20,10 +20,26 @@ const JOBS_ID: String = "world/jobs"
 ## Extra placement files laid over world/placements (DataDB ids). Main adds "slice/placements" in slice mode, so the
 ## slice's doors, pickups and spots sit beside the old game's without touching them. A later file wins on a clash.
 static var extra_ids: Array[String] = []
+## The same for story scenes (world/story_scenes) and jobs (world/jobs): "slice/story_scenes" and "slice/jobs" in slice mode.
+static var extra_scene_ids: Array[String] = []
+static var extra_job_ids: Array[String] = []
 
 
 static func data() -> Dictionary:
 	return DataDB.get_dict(DATA_ID)
+
+
+## Every section name in the placements files (pickups, doors, ... and any the slice adds, like hack targets).
+static func section_names() -> Array[String]:
+	var names: Array[String] = []
+	var docs: Array[Dictionary] = [data()]
+	for extra_id: String in extra_ids:
+		docs.append(DataDB.get_dict(extra_id))
+	for doc: Dictionary in docs:
+		for key: Variant in doc.keys():
+			if doc[key] is Dictionary and not str(key).begins_with("_") and not names.has(str(key)):
+				names.append(str(key))
+	return names
 
 
 static func section(section_name: String) -> Dictionary:
@@ -68,18 +84,42 @@ static func spot(placement_id: String) -> Dictionary:
 
 ## A story scene from data/world/story_scenes.json.
 static func scene(scene_id: String) -> Dictionary:
-	return DataDB.get_dict(SCENES_ID).get("scenes", {}).get(scene_id, {})
+	return scenes_doc().get(scene_id, {})
 
 
 static func scene_ids() -> Array[String]:
 	var found: Array[String] = []
-	found.assign((DataDB.get_dict(SCENES_ID).get("scenes", {}) as Dictionary).keys())
+	found.assign(scenes_doc().keys())
 	return found
 
 
-## A job from data/world/jobs.json.
+## Every story scene: world/story_scenes plus the extra files (a later file wins on a clash).
+static func scenes_doc() -> Dictionary:
+	var merged: Dictionary = (DataDB.get_dict(SCENES_ID).get("scenes", {}) as Dictionary).duplicate()
+	for extra_id: String in extra_scene_ids:
+		merged.merge(DataDB.get_dict(extra_id).get("scenes", {}) as Dictionary, true)
+	return merged
+
+
+## A job from data/world/jobs.json (or an extra jobs file).
 static func job(job_id: String) -> Dictionary:
-	return DataDB.get_dict(JOBS_ID).get("jobs", {}).get(job_id, {})
+	return jobs_doc().get(job_id, {})
+
+
+## Every job: world/jobs plus the extra files.
+static func jobs_doc() -> Dictionary:
+	var merged: Dictionary = (DataDB.get_dict(JOBS_ID).get("jobs", {}) as Dictionary).duplicate()
+	for extra_id: String in extra_job_ids:
+		merged.merge(DataDB.get_dict(extra_id).get("jobs", {}) as Dictionary, true)
+	return merged
+
+
+## The job board's words: world/jobs "text", with the extra files' keys laid over it.
+static func jobs_text() -> Dictionary:
+	var merged: Dictionary = (DataDB.get_dict(JOBS_ID).get("text", {}) as Dictionary).duplicate()
+	for extra_id: String in extra_job_ids:
+		merged.merge(DataDB.get_dict(extra_id).get("text", {}) as Dictionary, true)
+	return merged
 
 
 static func ids(section_name: String) -> Array[String]:

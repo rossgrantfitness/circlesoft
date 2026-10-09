@@ -1,0 +1,14 @@
+{
+ "conversations": {
+  "gb_vendor_talk": [
+   {
+    "speaker": "gb_vendor",
+    "text": "Noodles? Check the counter."
+   },
+   {
+    "speaker": "gb_vendor",
+    "text": "Come back when you are hungry."
+   }
+  ]
+ }
+}

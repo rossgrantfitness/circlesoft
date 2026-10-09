@@ -1,0 +1,82 @@
+{
+ "_about": "Night market switches and cosmetic routines (docs/maps/night_market.md). The four layout decisions Ross has not answered yet are built as their recommended option A; each is one line here so flipping it is a data edit (and, where the line says so, a re-run of a generator). Nothing here is code. Others read it: Audio Designer (market_tone, hush), Gameplay Programmers (town life, VS-43), the junkyard and arena generators (one_way_after_loader, colossus_in_phase_1).",
+ "switches": {
+  "market_tone": {
+   "value": "whisper",
+   "options": [
+    "whisper",
+    "loud"
+   ],
+   "decision": "A whisper market (Quiet Hours curfew is real, the market murmurs; goes loud when Kasp falls, flag market_loud). B loud and cheerful.",
+   "affects": "audio, patrol hush, ambient bark volume; no geometry"
+  },
+  "repair_shop": {
+   "value": "dock_office",
+   "options": [
+    "dock_office",
+    "new_room"
+   ],
+   "decision": "A the repair shop is the old dock-office room (market_repair, off the Wharf), Otis moves to the Forge, hatch from the hideout. B a tenth tiny room beside the hideout door and Otis stays in his office.",
+   "affects": "rooms and placements (B would add a room to make_market_rooms.py and rooms.json)"
+  },
+  "one_way_after_loader": {
+   "value": true,
+   "decision": "A one way from the loader onward (junkyard map). B she can climb out and walk back to town.",
+   "affects": "junkyard generator only"
+  },
+  "colossus_in_phase_1": {
+   "value": "visible",
+   "options": [
+    "visible",
+    "hidden"
+   ],
+   "decision": "A the dormant colossus is visible from the first frame of the arena. B hidden behind a hangar door until phase 2.",
+   "affects": "arena generator only"
+  }
+ },
+ "flags": {
+  "job_main_taken": "main job taken; Courier Pass given; opens Gate 4's barrier",
+  "job_charge_done": "side job 1 done",
+  "job_appeal_done": "side job 2 done",
+  "patrol_hush": "set for 15 s while the Signals patrol is within 8 m of an NPC",
+  "kasp_beaten": "slice boss beaten (main job done)",
+  "market_loud": "set after the boss; the market goes from whisper to loud"
+ },
+ "patrol": {
+  "_about": "Cosmetic Signals patrol in Tarp Square: two wolves walk this loop on the hour at 1.2 m/s. Scenery, not enemies (no combat in town). Waypoints are [x, z] in room metres. Until the town-life work (VS-43) they stand at their idle spots (mk_sq_wolf_a / mk_sq_wolf_b). NPCs within hush_radius_m drop to a whisper and the stall music ducks for hush_s seconds (flag patrol_hush). They never block a door.",
+  "room": "market_square",
+  "wolves": [
+   "mk_sq_wolf_a",
+   "mk_sq_wolf_b"
+  ],
+  "speed_mps": 1.2,
+  "on_the_hour": true,
+  "hush_radius_m": 8.0,
+  "hush_s": 15.0,
+  "loop": [
+   [
+    20.0,
+    2.5
+   ],
+   [
+    20.0,
+    10.5
+   ],
+   [
+    6.0,
+    10.5
+   ],
+   [
+    6.0,
+    2.5
+   ],
+   [
+    20.0,
+    2.5
+   ]
+  ]
+ },
+ "pending": {
+  "junk_j1": "the junkyard's first room (docs/maps/junkyard.md); Gate 4's barrier door leads to it with spawn from_market"
+ }
+}
