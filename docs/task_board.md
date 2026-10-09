@@ -2,12 +2,12 @@
 
 > Owner: Producer. Current milestone: **VERTICAL SLICE**. Anything beyond the slice goes in Later.
 
-**Status (2026-10-08)**
-- **Decisions needed from Ross:** none right now.
-- **Done:** battle system (M2-1 to M2-9), Harrow systems and graybox (M3-1 to M3-10), the dynamic battle camera, the grim look test. Ross approved the grim package (look, tone, structure).
-- **In progress:** A-pose reference sheets for Ross (G-0); art and audio request lists (G-2, Creative Director).
-- **Next:** edge light and grim look everywhere, Harrow slum re-dress, re-toned lines, stencil rating lettering, structure docs made official; then the train opening and M4 (the Spillway and the jammer factory).
-- **Waiting on Ross:** his art for the party (M2-10, art rows 1–6; best next, using the A-pose sheets) and Harrow (M3-11, rows 7–18). Later sign-offs: dialogue (M6-2) and every art drop.
+**Status (2026-10-09)** *(updated by the Technical Director while the Producer role isn't running)*
+- **The vertical slice has started.** Ross approved its shape today (night market, robot junkyard, Kasp, four hacks) and answered the robot finale: C, robots at the end of the boss fight. Tech plan: docs/slice/slice_tech_plan.md. Board: "Vertical slice" below.
+- **Decisions needed from Ross:** three, at the top of the tech plan: how Red picks a hack, what happens when she's knocked out, and which button talks. Builders use the recommended options (built as switches) until he answers.
+- **Done:** the combat sandbox (CS-0 to CS-22), builds 1 and 2 played by Ross.
+- **Next:** VS-2 to VS-13 (art list for Ross, slice boot, the new Red in town, the one room script, hacks, HUD, the two map docs).
+- **Waiting on Ross:** the three decisions; then the map docs (VS-12, VS-13); his art for the slice (VS-A1 to VS-A7) whenever he's ready.
 
 ## To Do
 
@@ -18,7 +18,97 @@
 
 > Milestones 0 and 1 are Done (see Done).
 
-### Combat sandbox (approved 2026-10-08; current milestone)
+### Vertical slice (approved 2026-10-09; current milestone)
+> Shape approved by Ross 2026-10-09 (docs/decisions.md; docs/slice/slice_pitch.md): Loop A (Mega Man Legends), the Harrow night market with Red's hideout over a repair shop, the robot junkyard (loader midway), Kasp in the Hushmaster, hacks A (Zap Drone, EMP, Overclock, Reboot; battery refilled by sword hits). Robot finale: **C** (Ross: "We want to save our giant robo battles for the end of levels and boss fights and some boss fights are on foot first then transition to robo battles"): phase 1 on foot against the Hushmaster, phase 2 Kasp's giant junk mech against Red's loader docked into the colossus.
+> Contract: **docs/slice/slice_tech_plan.md** (owners, flow, hacks, robots, boss, tests). Combat contract: docs/pivot/combat_api.md. Each row is one agent run. Order: phases 1 and 2 give a **playable town-to-boss graybox** (VS-35); phases 3 and 4 add content, the look, Ross's art and polish. Estimate: about 6 to 8 weeks of studio time; Ross's art sets the calendar.
+> Now in scope from the sandbox's Later list: hacks on the second button, the Level Designer, saving, towns under the hybrid camera, sorting field buttons against combat buttons. The turn-based milestones further down (G, M2 to M7) are shelved with the turn-based game, not deleted.
+> Ross sign-off follows the Playbook ledger: area layouts, dialogue, the look, music direction, new combat mechanics and every art drop go to him; numbers and names are Level 1; shop stock, menus and saves are Level 2 (show after). The Taste Keeper records a prediction before each.
+
+**Phase 1: foundations (start now)**
+
+| ID | Task | Assigned to | Depends on | Ross sign-off | Notes |
+|---|---|---|---|---|---|
+| VS-1 | Slice tech plan (docs/slice/slice_tech_plan.md) and code review of every VS task | Technical Director | | Three decisions inside (hack picking, knock-out, talk button) | **Written 2026-10-09.** Changes go in its "Changes" section. |
+| VS-2 | Slice art and audio request lists: docs/art_requests.md rows for VS-A1 to VS-A7 (name, use, size, poly budget, palette, format, path; the junk mech is new), docs/audio_requests.md rows for hacks, the boss, the mech and the market | Creative Director (Technical Artist sets sizes and budgets) | VS-1 | No (lists; Ross's art drops are signed off when they arrive) | First, so Ross can start on Kasp and the Hushmaster. |
+| VS-3 | Game modes and slice boot: `GameMode` (slice / sandbox / classic), rooms data and save folder per mode, `-- --classic` for the shelved game, slice feature tag and the two Slice export presets; editor Play stays on the sandbox for now | Gameplay Programmer | VS-1 | No | Plan 2.1. Every old test still green. |
+| VS-4 | Hero contract: `HeroLink`, field / works / dialogue / shop / menu type hints moved off PlayerController, ActionPlayer's contract methods and town mode, input sorting (interact per Decision 3, recommended A as a switch) | Gameplay Programmer | VS-1 | No | Plan 2.6 and 3. Test: test_hero_contract. |
+| VS-5 | `ActionRoom`: one room script from `data/slice/rooms.json` (camera, combat, look, form, checkpoint), combat host methods, director in every room, health / battery / sword / form carried through doors, persistent HUD re-binding | Gameplay Programmer | VS-3, VS-4 | No | Plan 2.2, 2.3. Test in two tiny test rooms. |
+| VS-6 | Feature switches `data/slice/features.json` (`lights_on`, `lamp_flare`, `noise_meter`, all on): the Lights On switch-off point, nothing removed | Combat Programmer | VS-1 | No (flipping one off is Ross's call) | Plan 7. Test: test_features. |
+| VS-7 | Hack design and data: `hacks.json` (battery, costs, targets, effects), the four cast moves in `moves.json`, the `hacks` feel group, the automatic-pick rules for option C, docs/slice/hacks_design.md | Combat Designer | VS-1 | No (numbers and names, Level 1); how hacks are picked is Decision 1 | Plan 4.1. |
+| VS-8 | Hack core: `HackBattery`, `HackRules`, `HackSelector` (pure, unit-tested), the battery in the director fed by sword hits, `battery_changed` / `hack_locked` signals | Combat Programmer | VS-7 | No | Plan 4.2. |
+| VS-9 | Hacks in the world: `HackCaster` on Red, Zap Drone, EMP, Overclock link, Reboot through `report_hack_hit`; `Hijackable` and hijacked enemy targeting; lock-on reaches `lock_targets`; works in the sandbox arena too | Combat Programmer | VS-8 | No (Ross judges by playing at VS-35) | Plan 4.3 to 4.5. Gameplay Programmer reviews the lock_on.gd edit. |
+| VS-10 | Red's four hack clips from the free Quaternius library (zap, EMP, Overclock, Reboot) with pose keys | Animator/Rigger | VS-7 | No | No new authored clips (Ross 2026-10-08). Fallback tweens until then. |
+| VS-11 | Action HUD: binds to any combat host; hack panel (battery, selected hack, lockout fizz, hijack timer), boss bar, radio bark box, location card, Continue screen, slice pause menu; Lights On element follows its switch | UI Programmer | VS-5, VS-8 (stub is fine) | No (Level 2: show Ross after) | Plan 2.5, 4.6. |
+| VS-12 | Night market map (docs/maps/night_market.md): the 9 Harrow rooms re-dressed and renamed as the market, Red's hideout over a repair shop, NPC list, shops, job board (main job opens the junkyard) | Level Designer | VS-1 | **Yes** (one page; walls and doors are the approved 2026-10-07 Harrow layout, so only names, the hideout and dressing are new); goes with VS-13 | Taste Keeper predicts first. |
+| VS-13 | Junkyard and arena map (docs/maps/junkyard.md, docs/maps/kasp_arena.md): J1 to J4 on foot, J4 loader wake, J5 loader run, the one-scene two-scale arena; hack targets, encounters, save terminals, pacing | Level Designer | VS-1 | **Yes** (area layouts) | Plan 5, 6.2. |
+
+**Phase 2: playable town-to-boss graybox**
+
+| ID | Task | Assigned to | Depends on | Ross sign-off | Notes |
+|---|---|---|---|---|---|
+| VS-14 | Market graybox: `make_market_rooms.py` (from the Harrow generator), `market_*` scenes and room entries, ActionRoom on each, placeholder NPCs, shops, job board, save terminal in the hideout | Level Designer | VS-5, VS-12 | No (Ross plays it at VS-35) | Harrow's own scenes stay untouched. Test: test_slice_rooms. |
+| VS-15 | Town systems end to end with the new Red: talking, bubbles and ambient barks, shops (ShopLogic), job board, save terminal and rest, field menu from the pause menu | Gameplay Programmer | VS-4, VS-5 | No | Plan 3. Test: test_town_systems. |
+| VS-16 | Knock-out, retry and saving: `RoomSnapshot`, Continue from the room entrance (Decision 2, recommended A as the default rule), save terminals, auto-save rooms, save fields `sword` and `hacks` (migration 2 to 3), no saving in robot rooms | Gameplay Programmer | VS-5 | No (Level 2: show after) | Plan 2.4. |
+| VS-17 | Slice enemy roster and encounters: Signals cop (Grunt by data), Signals drone, wall turret, the heavy (Brute until Ross's model); `enemies.json` entries, tags, `data/slice/encounters.json`, docs/slice/enemy_roster.md | Combat Designer | VS-13 | No (numbers; any new behaviour goes to Ross) | |
+| VS-18 | The flying Signals drone and the wall turret (code), both hijackable; EMP stun and Zap bonus by tag | Combat Programmer | VS-9, VS-17 | No | Test: test_drone_turret. |
+| VS-19 | World hack targets: `HackTarget`, fuse-box door, crane (Overclock moves a container along a path), drone line, terminal; sticky flags | Gameplay Programmer | VS-9 | No | Plan 4.5, 5.2. Test: test_hack_targets. |
+| VS-20 | Junkyard graybox J1 to J4 (on foot): rooms, encounters, hack targets, midpoint save terminal | Level Designer | VS-13, VS-18, VS-19 | No (Ross plays it at VS-35) | |
+| VS-21 | `RobotStage`: robots in a level from `robot_rooms/*.json`, boarding started by a hack or a script, `place_in(form)` for rooms that start in a robot, hacks off in robot forms | Gameplay Programmer | VS-5 | No | Plan 5.3. Reuses CS-21 unchanged in the sandbox. |
+| VS-22 | Loader section: J4 loader wake, J5 loader run (smash props, cops and drones at Red's scale, loader-only scrap walls), climb out at the arena gate | Level Designer | VS-20, VS-21 | No | |
+| VS-23 | Boss design as data: `bosses/hushmaster.json` (relays, leg pairs, Leg Stomp, Dish Sweep, Drone Drop, Quiet Hours, topple, jack-in) and `bosses/junk_mech.json` (**the giant junk mech's robot-scale attack patterns**, plates, core, scaled wind-ups); boss move sets; docs/slice/boss_design.md | Combat Designer | VS-7 | **Yes** (the junk mech's attack list is new: one page) | Plan 6.4. The Hushmaster's patterns are the approved pitch. |
+| VS-24 | Boss blockouts in art/placeholder/: the Hushmaster (8 legs in 4 pairs, 4 relay boxes, dish, seat), **the giant junk mech (~40 m, Red's bone names, plates and cockpit core)**, Kasp, arena wall turrets | Technical Artist | VS-13 | No (placeholders) | Original designs; the mech must not read as any existing robot. |
+| VS-25 | Clips on Kasp and the junk mech (retargeted like the robots), townsfolk idle / talk / walk | Animator/Rigger | VS-24 | No | |
+| VS-26 | Boss core: `BossFight` (phases, forms, retry points), `BossPart`, `BossBrain`, `BossPhases`; `ring` and `beam` hitbox shapes | Combat Programmer | VS-9, VS-23 | No | Plan 6.3, 6.4. |
+| VS-27 | Phase 1, the Hushmaster: relays drop leg pairs, the four patterns, Quiet Hours lockout cut short by the dish, topple and jack-in | Combat Programmer | VS-24, VS-26 | No (Ross plays it at VS-35) | Test: test_hushmaster. |
+| VS-28 | Phase 2, **the junk mech robot round**: `scale_form` enemies, robot-scale patterns from data, telegraphs readable from 75 m, plates and core, colossus-vs-mech hit tuning hooks | Combat Programmer | VS-21, VS-24, VS-26 | No (Ross plays it at VS-35) | Plan 6.5. About 1.5 to 2 weeks with VS-29 and VS-30: the biggest single cost in the slice. |
+| VS-29 | Kasp's arena graybox: one scene, two scales (the 40 m plateau inside the junkyard bowl, scrap piles, the dormant colossus, the parked loader spot), turrets, drone drop points, intro shots | Level Designer | VS-13, VS-24 | No | Plan 6.2. |
+| VS-30 | **Phase transition**: Kasp escapes, the junk mech assembles from the yard, Red boards the loader, docks into the colossus (CS-21 docking), the scale switch mid-scene, per-phase retry (phase 2 restarts already docked) | Gameplay Programmer | VS-16, VS-27, VS-28, VS-29 | No (Ross plays it at VS-35) | Test: test_boss_transition. |
+| VS-31 | Placeholder words: market NPCs and barks, job board, Kasp's barks and spec recitals, Vela's radio lines, memo posters | Writer | VS-12, VS-13 | No (placeholder; final text at VS-37) | |
+| VS-32 | Placeholder sounds: hacks, battery, boss patterns, the mech, the transition; market and junkyard ambience and music stand-ins | Audio Designer | VS-7, VS-23 | No (placeholders) | |
+| VS-33 | Graybox QA: slice data tests, smoke test, the bot playthrough town to boss (plan 8), bug log | QA Tester | VS-14 to VS-32 | No | |
+| VS-34 | Graybox feel pass: town, junkyard, loader, both boss phases, pacing | Playtester | VS-33 | No | Report, not fixes. |
+| VS-35 | **Graybox build to Ross** (Windows and Mac): title to the end of the boss; editor Play switches to the slice (sandbox stays on `--sandbox`); studio log with screenshots | Producer + Gameplay Programmer | VS-33, VS-34 | **Yes** (plays it; feel, layouts, hacks, the robot round) | Taste Keeper predicts first. |
+
+**Phase 3: content and look**
+
+| ID | Task | Assigned to | Depends on | Ross sign-off | Notes |
+|---|---|---|---|---|---|
+| VS-36 | Slice script: hideout start, the job, the loader wake, Kasp's intro, the escape into the junk mech, the ending | Writer + Creative Director | VS-35 | **Yes** | Story from the approved setup, lamp names swapped out. |
+| VS-37 | Final words: market NPCs, job board, barks, radio, item text | Writer | VS-36 | **Yes** (dialogue) | Item text is Level 2. |
+| VS-38 | Cutscenes from the approved script: StoryDirector's new steps (`radio`, `form`, `boss_phase`, `camera_shot`) and the shot director's storyboard shots | Gameplay Programmer | VS-36 | No | |
+| VS-39 | Market look: `market_ps2` profile (warm neon night, string lights) and dressing placeholders (stalls, carts, sign slots for Ross's signage) | Technical Artist | VS-14 | **Yes** (the look; screenshots) | |
+| VS-40 | Junkyard and arena look: `junkyard_ps2`, junk dressing, the yard at colossus scale, huge-scale telegraph look | Technical Artist | VS-22, VS-29 | **Yes** (the look; screenshots) | |
+| VS-41 | Hack, Quiet Hours, part-break and scale-switch effects | Technical Artist | VS-9, VS-27, VS-30 | No | |
+| VS-42 | Tuning pass from Ross's graybox notes: hacks, battery, enemies, both boss phases | Combat Designer | VS-35 | No (numbers, Level 1; new mechanics go to Ross) | Log each call in docs/decisions.md. |
+| VS-43 | Town life: NPC routines, crowd colour swaps, ambient barks, voices per NPC | Level Designer | VS-15, VS-25 | No | |
+| VS-44 | Shop stock and items for the slice | Combat Designer | VS-15 | No (Level 2: show after) | |
+| VS-45 | Music direction brief for the slice (market, junkyard, loader, Hushmaster, mech round), then the music and SFX hooks | Audio Designer | VS-35 | **Yes** (music direction) | |
+| VS-46 | HUD polish and UI art in (hack icons, portraits in the radio box and dialogue) | UI Programmer | VS-11, VS-A7 | No (Level 2) | |
+
+**Ross's art for the slice (from the pitch's list; full rows in docs/art_requests.md after VS-2)**
+
+| ID | Task | Assigned to | Depends on | Ross sign-off | Notes |
+|---|---|---|---|---|---|
+| VS-A1 | Art in: Kasp and the Hushmaster (rows 33 and 34, updated for the action game: 4 relay boxes, legs in pairs, dish) | Technical Artist + Animator/Rigger + Asset Checker | VS-2, VS-24, Ross's delivery | **Yes** (his art) | Highest priority on the pitch's list. |
+| VS-A2 | Art in: **the giant junk mech** (new; built from junkyard scrap, Kasp's cockpit core, plates that come off; about 40 m; on Red's bone names) | Technical Artist + Animator/Rigger + Asset Checker | VS-2, VS-24, Ross's delivery | **Yes** (his art) | New with Ross's answer C. Blockout until then. |
+| VS-A3 | Art in: enemy types beside the Cyberwolf (a Signals drone; a heavy to replace the Brute blockout) | Technical Artist + Animator/Rigger + Asset Checker | VS-2, VS-18, Ross's delivery | **Yes** | |
+| VS-A4 | Art in: town people (Otis, Mox, Vela, 3 or 4 market residents; the rest are colour swaps) | Technical Artist + Animator/Rigger + Asset Checker | VS-2, VS-14, Ross's delivery | **Yes** | |
+| VS-A5 | Art in: market kit (stalls, carts, signs) | Technical Artist + Asset Checker | VS-2, VS-39, Ross's delivery | **Yes** | His city textures cover walls and floors. |
+| VS-A6 | Art in: junkyard kit (scrap piles, crane, wall turret, terminal, fuse box, drone line, the loader bay) | Technical Artist + Asset Checker | VS-2, VS-40, Ross's delivery | **Yes** | Was the "Works kit" in the pitch; recast for the junkyard. |
+| VS-A7 | Art in: small items (the Zap Drone model, four hack icons, dialogue portraits for the 4 or 5 main speakers) | Technical Artist + UI Programmer + Asset Checker | VS-2, Ross's delivery | **Yes** | |
+
+**Phase 4: QA, playtest, builds**
+
+| ID | Task | Assigned to | Depends on | Ross sign-off | Notes |
+|---|---|---|---|---|---|
+| VS-47 | Full QA pass: all headless tests, both bot playthroughs (main path; side jobs and shops), real-renderer 60 fps check, bug log | QA Tester | VS-36 to VS-46 | No | |
+| VS-48 | Playtest report: pacing (30 to 45 minutes to the boss kill), difficulty, hack readability, robot round readability | Playtester | VS-47 | No | |
+| VS-49 | Fix pass on QA and playtest findings | Owners per bug | VS-47, VS-48 | No | New ideas go to Later. |
+| VS-50 | Windows and Mac slice builds; Ross plays the slice and signs off | Producer + Gameplay Programmer | VS-49 | **Yes** | Placeholders left in only with Ross's OK. |
+
+**Later (not in the slice):** more robot fights at the ends of later levels (the parts are built to be reused); a whole boss at robot scale; room streaming instead of fades; hacks while piloting robots; swords with random affixes; swappable faces; Ross's motion capture; removing Lights On code (only when Ross says).
+
+### Combat sandbox (approved 2026-10-08; done, kept as a test bed)
 > Ross approved the action RPG plan (docs/decisions.md, 2026-10-08). Contract: **docs/pivot/combat_api.md** (owners, buttons, move data, interfaces, tests). Plan: docs/pivot/buildability.md section 6. Scope is exactly D2; anything else goes to Later below. Combat mechanics are Ross's (Level 1 covers numbers and names only), so contested calls are feel-panel toggles he picks by playing. The turn-based milestones further down are shelved, not active.
 
 | ID | Task | Assigned to | Depends on | Ross sign-off | Notes |
