@@ -72,6 +72,9 @@ var orbit: OrbitCamera = null
 var lock: LockOn = null
 ## The robots of a room whose entry names `robots` (VS-21); null in every other room.
 var robot_stage: RobotStage = null
+## A boss fight's own restart point (VS-30): while set, a knock-out restarts here instead of at the room's entrance. See
+## set_phase_checkpoint().
+var phase_checkpoint: Dictionary = {}
 
 ## Ambient one-liners from townspeople as she walks past.
 var barks: AmbientBarks = null
@@ -722,12 +725,33 @@ func _on_knocked_out() -> void:
 ## Where a restart goes: the room and spawn she last entered through a checkpoint room (this room, if it is one), and
 ## the session to restore. With no checkpoint at all, this room's own entrance.
 func continue_target() -> Dictionary:
+	if not phase_checkpoint.is_empty():
+		return phase_checkpoint
 	var run: Dictionary = _slice_run()
 	var checkpoint: Dictionary = run.get(KEY_CHECKPOINT, {}) as Dictionary
 	if checkpoint.is_empty() or is_checkpoint():
 		return {"room": room_id, "spawn": entry_spawn, "session": _entry_session.to_dict() if _entry_session != null else {},
 				"snapshot": _entry_snapshot.to_dict() if _entry_snapshot != null else {}}
 	return checkpoint
+
+
+## A boss fight's per-phase retry point (the BossFight calls it when a phase begins): a knock-out now reloads this room at
+## `spawn` with Red in `form`. `full_health` true (phase 2: "restarts already docked at full colossus health") records full health
+## and a full battery; false keeps the health and battery she walked in with. Flags, items and credits are as they are now.
+## `clear_phase_checkpoint()` goes back to the room's entrance.
+func set_phase_checkpoint(spawn: String, form: StringName, full_health: bool = true) -> void:
+	var session: HeroSession = (_entry_session.duplicate_session() if _entry_session != null and not full_health else HeroSession.new())
+	if full_health:
+		session.hp = 0
+		session.battery = HeroSession.FULL
+	session.form = form
+	var state: Node = _state()
+	var snapshot: RoomSnapshot = RoomSnapshot.capture(session.to_dict(), state.call("run_snapshot") as Dictionary if state != null else {})
+	phase_checkpoint = {"room": room_id, "spawn": spawn, "session": session.to_dict(), "snapshot": snapshot.to_dict()}
+
+
+func clear_phase_checkpoint() -> void:
+	phase_checkpoint = {}
 
 
 ## Restarts after a knock-out: health, battery, sword and form go back to what she walked in with, credits are docked by

@@ -25,6 +25,11 @@
    "combat": true, "look_profile": "grim_ps2", "form": "red", "robots": "gb_loader", "checkpoint": true, "autosave": false,
    "music": "", "spawns": ["from_hub", "from_vault"], "default_spawn": "from_hub"
   },
+  "gb_arena": {
+   "name": "Graybox Arena (VS-30)", "scene": "res://scenes/slice/graybox/gb_yard.tscn", "kind": "arena", "camera": "orbit",
+   "combat": true, "look_profile": "grim_ps2", "form": "red", "robots": "gb_arena", "checkpoint": true, "autosave": false,
+   "music": "", "spawns": ["from_hub", "from_vault"], "default_spawn": "from_hub"
+  },
   "gb_cab": {
    "name": "Graybox Loader Run (VS-21)", "scene": "res://scenes/slice/graybox/gb_yard.tscn", "kind": "dungeon", "camera": "orbit",
    "combat": true, "look_profile": "grim_ps2", "form": "small", "robots": "gb_cab", "checkpoint": true, "autosave": false,

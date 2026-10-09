@@ -1436,10 +1436,10 @@ shader_parameter/albedo_tint = Color(0.8, 0.7, 0.65, 1)
 shader_parameter/use_orm = 0.0
 
 [sub_resource type="BoxMesh" id="BoxMesh_314"]
-size = Vector3(22.4, 0.5, 12.0)
+size = Vector3(22.4, 4.6, 12.0)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_315"]
-size = Vector3(22.4, 0.5, 12.0)
+size = Vector3(22.4, 4.6, 12.0)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_316"]
 shader = ExtResource("1_r")
@@ -1501,10 +1501,10 @@ shader_parameter/use_orm = 0.0
 shader_parameter/roughness_base = 0.85
 
 [sub_resource type="BoxMesh" id="BoxMesh_330"]
-size = Vector3(16.5, 0.5, 6.0)
+size = Vector3(16.5, 4.6, 6.0)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_331"]
-size = Vector3(16.5, 0.5, 6.0)
+size = Vector3(16.5, 4.6, 6.0)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_332"]
 shader = ExtResource("3_r")
@@ -2948,12 +2948,12 @@ mesh = SubResource("PlaneMesh_312")
 surface_material_override/0 = SubResource("ShaderMaterial_311")
 
 [node name="Bay3Ramp" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.98389, -0.17880, 0.00000, 0.17880, 0.98389, -0.00000, 0.00000, 0.00000, 1.00000, 109.04, 1.75, 14.0)
+transform = Transform3D(0.98389, -0.17880, 0.00000, 0.17880, 0.98389, -0.00000, 0.00000, 0.00000, 1.00000, 109.41, -0.26, 14.0)
 mesh = SubResource("BoxMesh_314")
 surface_material_override/0 = SubResource("ShaderMaterial_313")
 
 [node name="Bay3RampShape" type="CollisionShape3D" parent="Collision"]
-transform = Transform3D(0.98389, -0.17880, 0.00000, 0.17880, 0.98389, -0.00000, 0.00000, 0.00000, 1.00000, 109.04, 1.75, 14.0)
+transform = Transform3D(0.98389, -0.17880, 0.00000, 0.17880, 0.98389, -0.00000, 0.00000, 0.00000, 1.00000, 109.41, -0.26, 14.0)
 shape = SubResource("BoxShape3D_315")
 
 [node name="Bay3High" type="MeshInstance3D" parent="."]
@@ -3000,12 +3000,12 @@ transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 37.6, 0.
 shape = SubResource("BoxShape3D_328")
 
 [node name="LedgeRamp" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.97013, -0.24260, 0.00000, 0.24260, 0.97013, -0.00000, 0.00000, 0.00000, 1.00000, 54.06, 1.76, 5.0)
+transform = Transform3D(0.97013, -0.24260, 0.00000, 0.24260, 0.97013, -0.00000, 0.00000, 0.00000, 1.00000, 54.56, -0.23, 5.0)
 mesh = SubResource("BoxMesh_330")
 surface_material_override/0 = SubResource("ShaderMaterial_329")
 
 [node name="LedgeRampShape" type="CollisionShape3D" parent="Collision"]
-transform = Transform3D(0.97013, -0.24260, 0.00000, 0.24260, 0.97013, -0.00000, 0.00000, 0.00000, 1.00000, 54.06, 1.76, 5.0)
+transform = Transform3D(0.97013, -0.24260, 0.00000, 0.24260, 0.97013, -0.00000, 0.00000, 0.00000, 1.00000, 54.56, -0.23, 5.0)
 shape = SubResource("BoxShape3D_331")
 
 [node name="NorthLedge" type="MeshInstance3D" parent="."]

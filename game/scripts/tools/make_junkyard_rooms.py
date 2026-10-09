@@ -171,7 +171,7 @@ def j2():
     r.holder("Cliffs")
     r.cliffs(walk, (-30, -22, 190, 62), seed="j2", hmin=13, hmax=19)
     # bay 3's ramp up 4 m (x 98 to 120), then the high ground to the gate
-    r.tilted_box("Bay3Ramp", 109.04, 1.75, 14.0, 22.4, 0.5, 12.0, r.tile("floor_diamond_plate_rust", (11, 6), (0.8, 0.7, 0.65)), rz_deg=10.3)
+    r.tilted_box("Bay3Ramp", 109.41, -0.26, 14.0, 22.4, 4.6, 12.0, r.tile("floor_diamond_plate_rust", (11, 6), (0.8, 0.7, 0.65)), rz_deg=10.3)
     r.box("Bay3High", 135.0, 1.9, 14.0, 30.0, 4.2, 12.0, r.tile("floor_diamond_plate_rust", (15, 6), (0.8, 0.7, 0.65)), solid=True)
     # bay 1, the Chute: T1 on its ledge in the alcove (30, 3), a container for cover, a crate hop
     r.box("T1Ledge", 30.0, 2.0, 4.5, 6.0, 4.0, 9.0, r.lit((0.35, 0.36, 0.4)), solid=True)
@@ -179,7 +179,7 @@ def j2():
     r.box("HopCrateA", 36.5, 0.45, 12.0, 0.9, 0.9, 0.9, r.lit((0.8, 0.5, 0.35)), solid=True)
     r.box("HopCrateB", 37.6, 0.9, 12.0, 0.9, 1.8, 0.9, r.lit((0.7, 0.45, 0.32)), solid=True)
     # bay 2, the Pit Stop: a scrap ramp up to the north ledge (T2 at (62, 2), 4 m up), the ledge stash S2
-    r.tilted_box("LedgeRamp", 54.06, 1.76, 5.0, 16.5, 0.5, 6.0, r.lit((0.42, 0.34, 0.28)), rz_deg=14.04)
+    r.tilted_box("LedgeRamp", 54.56, -0.23, 5.0, 16.5, 4.6, 6.0, r.lit((0.42, 0.34, 0.28)), rz_deg=14.04)
     r.box("NorthLedge", 71.0, 2.0, 5.0, 18.0, 4.0, 6.0, r.lit((0.38, 0.32, 0.28)), solid=True)
     prop(r, "RoofCar", "car", 78.0, 6.6, yaw=90, y=4.0)
     crate_at(r, "S2Stash", "jk_j2_stash", 78.0, 5.4, 6.6)
@@ -214,17 +214,15 @@ def j2():
 # ====================================================================================== J3 Crane Yard (100 x 80)
 def j3():
     r = Y("junk_j3", "JunkJ3", 100, 80, SUB)
-    pit = (46, 8, 55, 72)
-    walk_rects = [(0, 0, 46, 80), (55, 0, 100, 80), (46, 0, 55, 8), (46, 72, 55, 80), (-6, 56, 0, 64), (100, 36, 106, 44)]
-    r.shell([(0, 0, 46, 80), (55, 0, 100, 80), (46, 0, 55, 8), (46, 72, 55, 80), (-6, 56, 0, 64), (100, 36, 106, 44)], "floor_rust_plate_quad", (0.72, 0.68, 0.66))
+    pit = (46, 0, 55, 80)
+    walk_rects = [(0, 0, 46, 80), (55, 0, 100, 80), (-6, 56, 0, 64), (100, 36, 106, 44)]
+    r.shell([(0, 0, 46, 80), (55, 0, 100, 80), (-6, 56, 0, 64), (100, 36, 106, 44)], "floor_rust_plate_quad", (0.72, 0.68, 0.66))
     r.holder("Cliffs")
     r.cliffs(walk_rects, (-30, -22, 136, 102), seed="j3", hmin=12, hmax=18, holes=[pit])
     # the pit: a dark water plane far below; no floor (a fall puts her back at the entrance)
-    r.plane("PitWater", 50.5, -8.5, 40.0, 9.0, 64.0, r.glow((0.03, 0.08, 0.1), 0.4))
-    r.box("PitRimA", 45.7, -4.0, 40.0, 0.6, 8.0, 64.0, r.lit((0.3, 0.26, 0.24)), solid=False)
-    r.box("PitRimB", 55.3, -4.0, 40.0, 0.6, 8.0, 64.0, r.lit((0.3, 0.26, 0.24)), solid=False)
-    r.box("PitEndN", 50.5, -4.0, 7.7, 9.0, 8.0, 0.6, r.lit((0.3, 0.26, 0.24)), solid=False)
-    r.box("PitEndS", 50.5, -4.0, 72.3, 9.0, 8.0, 0.6, r.lit((0.3, 0.26, 0.24)), solid=False)
+    r.plane("PitWater", 50.5, -8.5, 40.0, 9.0, 80.0, r.glow((0.03, 0.08, 0.1), 0.4))
+    r.box("PitRimA", 45.7, -4.0, 40.0, 0.6, 8.0, 80.0, r.lit((0.3, 0.26, 0.24)), solid=False)
+    r.box("PitRimB", 55.3, -4.0, 40.0, 0.6, 8.0, 80.0, r.lit((0.3, 0.26, 0.24)), solid=False)
     # the gantry crane straddling the pit: legs, rail x 44 to 66, a trolley and hook; controls at (44, 44)
     metal = r.lit((0.65, 0.55, 0.2))
     r.box("CraneLegW", 44.0, 9.0, 30.0, 1.4, 18.0, 1.4, metal, solid=True)
@@ -355,7 +353,7 @@ def j4():
     encounters(r, "junk_j4")
     barks(r, [("bark_j4_wrecks", 6.0, 30.0, 8.0), ("bark_j4_stand", 16.0, 30.0, 5.0), ("bark_j4_loader", 70.0, 30.0, 9.0), ("bark_j4_smash", 84.0, 30.0, 6.0)])
     r.spawn("from_j3", 2.0, 30.0, face=(1, 0))
-    r.spawn("from_j5", 88.0, 30.0, face=(-1, 0))
+    r.spawn("from_j5", 86.5, 30.0, face=(-1, 0))
     r.write("junk_j4.tscn")
 
 

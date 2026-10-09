@@ -1,0 +1,17 @@
+{
+ "_about": "PLACEHOLDER words for the junkyard's signs (VS-20). The Writer replaces them (data/dialogue/junkyard.json).",
+ "conversations": {
+  "jk_j1_screen": [
+   {
+    "speaker": "narrator",
+    "text": "SIGNALS YARD 9: QUIET PLEASE. A weighbridge screen, looping a memo about noise tickets."
+   }
+  ],
+  "jk_j1_memo": [
+   {
+    "speaker": "narrator",
+    "text": "Kasp's memo on a clipboard-shaped sign: 'Noise is a choice. Choose less.' Someone has underlined 'less' twice."
+   }
+  ]
+ }
+}

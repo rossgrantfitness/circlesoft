@@ -29,6 +29,32 @@
    "room": "market_arcade",
    "item": "juice_box",
    "count": 1
+  },
+  "jk_j1_glint_a": {
+   "room": "junk_j1",
+   "credits": 20
+  },
+  "jk_j1_glint_b": {
+   "room": "junk_j1",
+   "credits": 30
+  },
+  "jk_j2_glint_a": {
+   "room": "junk_j2",
+   "credits": 25
+  },
+  "jk_j2_glint_b": {
+   "room": "junk_j2",
+   "credits": 25
+  },
+  "jk_j2_cell": {
+   "room": "junk_j2",
+   "item": "juice_box",
+   "count": 1
+  },
+  "jk_j3_heal": {
+   "room": "junk_j3",
+   "item": "can_of_chili",
+   "count": 1
   }
  },
  "crates": {
@@ -52,6 +78,66 @@
      "count": 1
     }
    ]
+  },
+  "jk_j1_stash": {
+   "room": "junk_j1",
+   "style": "chalk",
+   "items": [
+    {
+     "item": "ration_bar",
+     "count": 1
+    }
+   ],
+   "credits": 80
+  },
+  "jk_j2_stash": {
+   "room": "junk_j2",
+   "style": "chalk",
+   "credits": 90
+  },
+  "jk_j3_node_cache": {
+   "room": "junk_j3",
+   "style": "wood",
+   "items": [
+    {
+     "item": "canned_coffee",
+     "count": 1
+    }
+   ],
+   "credits": 50
+  },
+  "jk_j3_roof_stash": {
+   "room": "junk_j3",
+   "style": "chalk",
+   "items": [
+    {
+     "item": "ration_bar",
+     "count": 1
+    }
+   ],
+   "credits": 70
+  },
+  "jk_j3_vault_cache": {
+   "room": "junk_j3",
+   "style": "supply",
+   "items": [
+    {
+     "item": "camp_stove",
+     "count": 1
+    }
+   ],
+   "credits": 300
+  },
+  "jk_j4_head_cache": {
+   "room": "junk_j4",
+   "style": "wood",
+   "items": [
+    {
+     "item": "juice_box",
+     "count": 1
+    }
+   ],
+   "credits": 120
   }
  },
  "doors": {
@@ -169,6 +255,63 @@
    "room": "market_arcade",
    "to_room": "market_wharf",
    "to_spawn": "from_arcade"
+  },
+  "jk_j1_to_market": {
+   "room": "junk_j1",
+   "to_room": "market_gate",
+   "to_spawn": "from_junk",
+   "width": 6.0,
+   "style": "arch"
+  },
+  "jk_j1_to_j2": {
+   "room": "junk_j1",
+   "to_room": "junk_j2",
+   "to_spawn": "from_j1",
+   "width": 5.0,
+   "style": "arch",
+   "requires": {
+    "flag": "hack_j1_door_open"
+   },
+   "locked_message": "The gate is shut. That fuse box up on the pylon is wired to it."
+  },
+  "jk_j2_to_j1": {
+   "room": "junk_j2",
+   "to_room": "junk_j1",
+   "to_spawn": "from_j2",
+   "width": 5.0,
+   "style": "arch"
+  },
+  "jk_j2_to_j3": {
+   "room": "junk_j2",
+   "to_room": "junk_j3",
+   "to_spawn": "from_j2",
+   "width": 6.0,
+   "style": "arch",
+   "requires": {
+    "flag": "term_j2_gate_open"
+   },
+   "locked_message": "The gate is latched. The terminal at the top of the ramp opens it."
+  },
+  "jk_j3_to_j2": {
+   "room": "junk_j3",
+   "to_room": "junk_j2",
+   "to_spawn": "from_j3",
+   "width": 6.0,
+   "style": "arch"
+  },
+  "jk_j3_to_j4": {
+   "room": "junk_j3",
+   "to_room": "junk_j4",
+   "to_spawn": "from_j3",
+   "width": 6.0,
+   "style": "arch"
+  },
+  "jk_j4_to_j3": {
+   "room": "junk_j4",
+   "to_room": "junk_j3",
+   "to_spawn": "from_j4",
+   "width": 6.0,
+   "style": "arch"
   }
  },
  "enemies": {},
@@ -1258,10 +1401,28 @@
     }
    ],
    "reach": 1.5
+  },
+  "jk_j1_screen": {
+   "room": "junk_j1",
+   "kind": "examine",
+   "variants": [
+    {
+     "conversation": "jk_j1_screen"
+    }
+   ]
+  },
+  "jk_j1_memo": {
+   "room": "junk_j1",
+   "kind": "examine",
+   "variants": [
+    {
+     "conversation": "jk_j1_memo"
+    }
+   ]
   }
  },
  "hack_targets": {
-  "_about": "VS-19, World hack targets (Gameplay Programmer). One entry per node in a room scene that carries `target_id` (HackDoor, HackTerminal, HackCrane, DroneLine, HackLoader in scripts/slice/targets/). Common keys: room, kind, accepts (zap / emp / overclock / interact), lockable, sticky (true: the `flag` stays set after a retry, a reload and a save; ActionRoom.sticky_ids reads `flag` and each crane job's `flag`), flag (GameState flag set when done; a `Door` placement with requires.flag opens by it), aim_height_m, reach_m. Per kind: fuse door - slab {size, offset} or door_path, open_s, also_flags; terminal - message [lines], scene, also_flags, once; crane - jobs [{id, flag, path [[x,y,z]...] world metres, speed_mps, cargo {size} or cargo_path, smash {radius_m, group}}] done in order, each by one Overclock (10 s) or several; drone line - enemy, interval_s, first_after_s, max_alive, total_max, emp_stops_s, zaps_needed, node_pos, spawn_offset; loader - flag (same as the robot room's wake_flag). Coordinates are the map's metres (origin at the room's NW floor corner, +x east, +z south) and the Level Designer checks them against the scenes (VS-20). The crane's path points here are PLACEHOLDERS from docs/maps/junkyard.md.",
+  "_about": "VS-19, World hack targets (Gameplay Programmer). One entry per node in a room scene that carries `target_id` (HackDoor, HackTerminal, HackCrane, DroneLine, HackLoader in scripts/slice/targets/). Common keys: room, kind, accepts (zap / emp / overclock / interact), lockable, sticky (true: the `flag` stays set after a retry, a reload and a save; ActionRoom.sticky_ids reads `flag` and each crane job's `flag`), flag (GameState flag set when done; a `Door` placement with requires.flag opens by it), aim_height_m, reach_m. Per kind: fuse door - slab {size, offset} or door_path, open_s, also_flags; terminal - message [lines], scene, also_flags, once; crane - jobs [{id, flag, path [[x,y,z]...] world metres, speed_mps, cargo {size} or cargo_path, smash {radius_m, group}}] done in order, each by one Overclock (10 s) or several; drone line - enemy, interval_s, first_after_s, max_alive, total_max, emp_stops_s, zaps_needed, node_pos, spawn_offset; loader - flag (same as the robot room's wake_flag). Coordinates are the map's metres (origin at the room's NW floor corner, +x east, +z south) and the Level Designer checks them against the scenes (VS-20). Level Designer (VS-20): the crane's bridge path now lands the girder across the pit rims (x 44.5 to 56.5, rims at 46 and 55), the vault path ends at the vault wall (72.4, 20), and the two fuse doors carry their slabs (offsets are local to the fuse box).",
   "hack_j1_door": {
    "room": "junk_j1",
    "kind": "fuse_door",
@@ -1271,7 +1432,19 @@
    "lockable": true,
    "sticky": true,
    "flag": "hack_j1_door_open",
-   "aim_height_m": 0.9
+   "aim_height_m": 0.9,
+   "slab": {
+    "size": [
+     0.6,
+     5.0,
+     5.0
+    ],
+    "offset": [
+     9.6,
+     -5.0,
+     10.0
+    ]
+   }
   },
   "term_j2_gate": {
    "room": "junk_j2",
@@ -1320,12 +1493,12 @@
        40.0
       ],
       [
-       56.0,
+       50.5,
        8.0,
        40.0
       ],
       [
-       56.0,
+       50.5,
        0.3,
        40.0
       ]
@@ -1344,24 +1517,24 @@
      },
      "path": [
       [
-       48.0,
+       60.0,
        0.3,
-       56.0
+       44.0
       ],
       [
-       48.0,
+       60.0,
        6.0,
-       56.0
+       44.0
       ],
       [
-       72.0,
+       70.0,
        6.0,
        26.0
       ],
       [
-       72.0,
+       71.0,
        2.0,
-       22.0
+       21.0
       ]
      ],
      "smash": {
@@ -1399,7 +1572,19 @@
     "zap"
    ],
    "sticky": true,
-   "flag": "hack_j3_vault_open"
+   "flag": "hack_j3_vault_open",
+   "slab": {
+    "size": [
+     3.0,
+     3.0,
+     0.4
+    ],
+    "offset": [
+     0.0,
+     -1.0,
+     2.0
+    ]
+   }
   },
   "loader_j4": {
    "room": "junk_j4",

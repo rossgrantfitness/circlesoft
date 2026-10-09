@@ -1,0 +1,8 @@
+{
+ "_about": "VS-21/VS-30. The robots of Kasp's arena (docs/maps/kasp_arena.md): the loader parked at the south gate and the dormant colossus in its cradle on the east side, facing west. rooms.json `robots: kasp_arena`. Coordinates are the arena's own (origin at the plateau's centre, +x east, +z south). The loader faces north (yaw 180); the colossus faces west (yaw -90) and the boss transition (BossTransition) walks it from the cradle to colossus_dock_pos (84, 0). The boss transition re-parks the loader at the scene's `loader_parked` marker if Red climbed out somewhere else. A retry in phase 2 (form huge) hides both displays: she is wearing the colossus. The Level Designer adds the smashable bowl clusters here in VS-29 (kinds from combat/robot_yard.json).",
+ "version": 1,
+ "ground": false,
+ "small_robot": {"pos": [8.0, 0.0, 56.0], "yaw_deg": 180.0},
+ "huge_robot": {"pos": [105.0, 0.0, 0.0], "yaw_deg": -90.0},
+ "props": []
+}

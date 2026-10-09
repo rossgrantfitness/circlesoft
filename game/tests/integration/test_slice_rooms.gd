@@ -11,12 +11,7 @@ const PLACEMENTS_ID: String = "slice/placements"
 const MARKET_PREFIX: String = "market_"
 const START_ROOM: String = "market_hideout"
 const START_SPAWN: String = "start"
-const GRID: float = 0.25
-const STEP_UP_M: float = 1.0           # Red steps up this much with no jump
-const JUMP_M: float = 1.6              # and jumps this high
-const JUMP_REACH_M: float = 1.0        # across a gap this wide
-const DROP_M: float = 2.0
-const BLOCKED_M: float = 2.0           # a cell taller than this is a wall
+const WalkGrid = preload("res://tests/integration/walk_grid_kit.gd")
 const REACH_M: float = 1.8             # how close a reachable cell must be to a prop to use it
 const NODE_SECTIONS: Array[String] = ["doors", "pickups", "crates", "npcs", "spots"]
 
@@ -263,8 +258,8 @@ func test_every_door_leads_somewhere_and_comes_back() -> void:
 			edges.append({"id": item["id"], "from": id, "to": to_room, "spawn": to_spawn})
 	assert_eq(door_count, 19, "19 doors in nine rooms")
 	for edge: Dictionary in edges:
-		if not _rooms().has(edge["to"]):
-			continue
+		if not _rooms().has(edge["to"]) or not str(edge["to"]).begins_with(MARKET_PREFIX):
+			continue          # a door out of the market (Gate 4 to the junkyard): the way back is checked in test_slice_yard_rooms.gd
 		var back: bool = false
 		for other: Dictionary in edges:
 			if other["from"] == edge["to"] and other["to"] == edge["from"]:
@@ -290,7 +285,7 @@ func test_the_boom_barrier_is_locked_until_the_main_job_is_taken() -> void:
 	assert_false(str(door_data.get("locked_message", "")).is_empty(), "the lock says why")
 	assert_eq(door_data.get("room"), "market_gate")
 	for pid: String in _section("doors"):
-		if pid != "mk_gt_to_junk":
+		if pid != "mk_gt_to_junk" and str((_section("doors")[pid] as Dictionary).get("room", "")).begins_with(MARKET_PREFIX):
 			assert_false((_section("doors")[pid] as Dictionary).has("requires"), "%s is open from the start" % pid)
 	var jobs: Dictionary = DataDB.get_dict("slice/jobs").get("jobs", {}) as Dictionary
 	var main_job: Dictionary = {}
@@ -303,101 +298,6 @@ func test_the_boom_barrier_is_locked_until_the_main_job_is_taken() -> void:
 
 
 # ---- the walk check ----
-
-## One level scene as a height grid: every box in the Collision body, rasterised; then breadth-first from a spawn with
-## steps up of 1.0 m or less, drops of 2.0 m or less, and jumps of 1.6 m across gaps of up to 1.0 m.
-class WalkGrid extends RefCounted:
-	var x0: float = -1.0
-	var z0: float = -1.0
-	var nx: int = 0
-	var nz: int = 0
-	var height: PackedFloat32Array = PackedFloat32Array()    # -99 = void
-
-	func _init(level: Node3D, max_x: float, max_z: float) -> void:
-		nx = int(ceil((max_x - x0) / GRID))
-		nz = int(ceil((max_z - z0) / GRID))
-		height.resize(nx * nz)
-		height.fill(-99.0)
-		var body: Node = level.get_node("Collision")
-		for child: Node in body.get_children():
-			var shape_node: CollisionShape3D = child as CollisionShape3D
-			if shape_node == null or not shape_node.shape is BoxShape3D:
-				continue
-			var size: Vector3 = (shape_node.shape as BoxShape3D).size
-			var box: AABB = shape_node.transform * AABB(-size * 0.5, size)
-			var top: float = box.position.y + box.size.y
-			for iz: int in nz:
-				for ix: int in nx:
-					var c: Vector2 = cell_center(ix, iz)
-					if c.x >= box.position.x and c.x <= box.position.x + box.size.x and c.y >= box.position.z and c.y <= box.position.z + box.size.z:
-						height[iz * nx + ix] = maxf(height[iz * nx + ix], top)
-
-	func cell_center(ix: int, iz: int) -> Vector2:
-		return Vector2(x0 + (ix + 0.5) * GRID, z0 + (iz + 0.5) * GRID)
-
-	func cell_of(x: float, z: float) -> Vector2i:
-		return Vector2i(clampi(int(floor((x - x0) / GRID)), 0, nx - 1), clampi(int(floor((z - z0) / GRID)), 0, nz - 1))
-
-	func h(ix: int, iz: int) -> float:
-		if ix < 0 or iz < 0 or ix >= nx or iz >= nz:
-			return -99.0
-		return height[iz * nx + ix]
-
-	func standable(ix: int, iz: int) -> bool:
-		var v: float = h(ix, iz)
-		return v > -50.0 and v <= BLOCKED_M
-
-	## All cells Red can reach from (x, z): Vector2i -> true.
-	func reach_from(x: float, z: float) -> Dictionary:
-		var start: Vector2i = cell_of(x, z)
-		var seen: Dictionary = {start: true}
-		var queue: Array[Vector2i] = [start]
-		var dirs: Array[Vector2i] = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
-		var jump_dirs: Array[Vector2i] = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1), Vector2i(1, 1), Vector2i(1, -1), Vector2i(-1, 1), Vector2i(-1, -1)]
-		var jump_cells: int = int(JUMP_REACH_M / GRID)
-		while not queue.is_empty():
-			var at: Vector2i = queue.pop_back()
-			var here: float = h(at.x, at.y)
-			for d: Vector2i in dirs:
-				var next: Vector2i = at + d
-				if seen.has(next) or not standable(next.x, next.y):
-					continue
-				var rise: float = h(next.x, next.y) - here
-				if rise <= STEP_UP_M and rise >= -DROP_M:
-					seen[next] = true
-					queue.append(next)
-			for d: Vector2i in jump_dirs:
-				for k: int in range(2, jump_cells + 1):
-					var next: Vector2i = at + d * k
-					if seen.has(next) or not standable(next.x, next.y):
-						continue
-					var rise: float = h(next.x, next.y) - here
-					if rise > JUMP_M or rise < -DROP_M:
-						continue
-					var clear: bool = true
-					for j: int in range(1, k):
-						var mid: Vector2i = at + d * j
-						if h(mid.x, mid.y) > maxf(here, h(next.x, next.y)) + 0.4:
-							clear = false
-					if clear:
-						seen[next] = true
-						queue.append(next)
-		return seen
-
-	## True when a reached cell is within `radius` of (x, z) and about as high as `y`.
-	func reaches(reached: Dictionary, x: float, z: float, y: float, radius: float) -> bool:
-		var span: int = int(ceil(radius / GRID))
-		var centre: Vector2i = cell_of(x, z)
-		for dz: int in range(-span, span + 1):
-			for dx: int in range(-span, span + 1):
-				var cell: Vector2i = centre + Vector2i(dx, dz)
-				if not reached.has(cell):
-					continue
-				var c: Vector2 = cell_center(cell.x, cell.y)
-				if c.distance_to(Vector2(x, z)) <= radius and absf(h(cell.x, cell.y) - y) <= STEP_UP_M + 0.2:
-					return true
-		return false
-
 
 func test_every_spawn_is_on_the_floor_and_every_door_and_prop_is_reachable_from_it() -> void:
 	for id: String in _market_ids():

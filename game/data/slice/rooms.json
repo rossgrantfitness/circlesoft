@@ -1,5 +1,5 @@
 {
- "_about": "Every slice room the SceneRouter can load (slice mode: GameMode.rooms_id = slice/rooms). Same shape as world/rooms.json plus the ActionRoom keys of docs/slice/slice_tech_plan.md 2.2: kind (town / dungeon / arena), camera (diorama / orbit), combat, look_profile, form, robots, checkpoint, autosave, music, spawns, default_spawn. The night market (VS-14, docs/maps/night_market.md): nine town rooms, scenes made by scripts/tools/make_market_rooms.py. look_profile is grim_ps2 until the Technical Artist's market_ps2 profile exists (VS-39); then change the nine strings. start_room is where a New Game begins (Red's hideout, spawn 'start'). pending_rooms: rooms that doors already point at but that are not built yet (the junkyard, VS-17 on); the rooms test accepts them only while they are listed here, with the spawns the door needs.",
+ "_about": "Every slice room the SceneRouter can load (slice mode: GameMode.rooms_id = slice/rooms). Same shape as world/rooms.json plus the ActionRoom keys of docs/slice/slice_tech_plan.md 2.2: kind (town / dungeon / arena), camera (diorama / orbit), combat, look_profile, form, robots, checkpoint, autosave, music, spawns, default_spawn. The night market (VS-14, docs/maps/night_market.md): nine town rooms, scenes made by scripts/tools/make_market_rooms.py. look_profile is grim_ps2 until the Technical Artist's market_ps2 profile exists (VS-39); then change the nine strings. start_room is where a New Game begins (Red's hideout, spawn 'start'). pending_rooms: rooms that doors already point at but that are not built yet (the junkyard, VS-17 on); the rooms test accepts them only while they are listed here, with the spawns the door needs. The junkyard (VS-20, docs/maps/junkyard.md): junk_j1 to junk_j4 on foot, scenes by scripts/tools/make_junkyard_rooms.py. look_profile is grim_ps2 until the Technical Artist's junkyard_ps2 and arena_ps2 profiles exist. Encounters are not in 'enemies' here: who fights is data/slice/encounters.json (marker nodes in each scene), waiting for the encounter runner.",
  "fade": {
   "out_s": 0.24,
   "in_s": 0.24,
@@ -7,8 +7,11 @@
  },
  "start_room": "market_hideout",
  "pending_rooms": {
-  "junk_j1": [
-   "from_market"
+  "junk_j5": [
+   "from_j4"
+  ],
+  "kasp_arena": [
+   "from_j5"
   ]
  },
  "rooms": {
@@ -175,6 +178,78 @@
     "from_wharf"
    ],
    "default_spawn": "from_wharf"
+  },
+  "junk_j1": {
+   "name": "Yard Gate",
+   "scene": "res://scenes/slice/junkyard/junk_j1.tscn",
+   "kind": "dungeon",
+   "camera": "orbit",
+   "combat": true,
+   "look_profile": "grim_ps2",
+   "form": "red",
+   "robots": "",
+   "checkpoint": true,
+   "autosave": true,
+   "music": "junkyard",
+   "spawns": [
+    "from_market",
+    "from_j2"
+   ],
+   "default_spawn": "from_market"
+  },
+  "junk_j2": {
+   "name": "Scrap Canyon",
+   "scene": "res://scenes/slice/junkyard/junk_j2.tscn",
+   "kind": "dungeon",
+   "camera": "orbit",
+   "combat": true,
+   "look_profile": "grim_ps2",
+   "form": "red",
+   "robots": "",
+   "checkpoint": true,
+   "autosave": false,
+   "music": "junkyard",
+   "spawns": [
+    "from_j1",
+    "from_j3"
+   ],
+   "default_spawn": "from_j1"
+  },
+  "junk_j3": {
+   "name": "Crane Yard",
+   "scene": "res://scenes/slice/junkyard/junk_j3.tscn",
+   "kind": "dungeon",
+   "camera": "orbit",
+   "combat": true,
+   "look_profile": "grim_ps2",
+   "form": "red",
+   "robots": "",
+   "checkpoint": true,
+   "autosave": false,
+   "music": "junkyard",
+   "spawns": [
+    "from_j2",
+    "from_j4"
+   ],
+   "default_spawn": "from_j2"
+  },
+  "junk_j4": {
+   "name": "Wreck Row",
+   "scene": "res://scenes/slice/junkyard/junk_j4.tscn",
+   "kind": "dungeon",
+   "camera": "orbit",
+   "combat": true,
+   "look_profile": "grim_ps2",
+   "form": "red",
+   "robots": "junk_j4",
+   "checkpoint": true,
+   "autosave": false,
+   "music": "junkyard",
+   "spawns": [
+    "from_j3",
+    "from_j5"
+   ],
+   "default_spawn": "from_j3"
   }
  }
 }
