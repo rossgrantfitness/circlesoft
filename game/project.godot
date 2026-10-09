@@ -294,3 +294,7 @@ psx_color_depth_enabled={
 "type": "float",
 "value": 1.0
 }
+
+[editor]
+
+run/main_run_args="-- --sandbox"
