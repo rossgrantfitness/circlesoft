@@ -47,7 +47,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	_layout = SandboxUiData.ui("pause", {})
+	_layout = _load_layout()
 	_dim = ColorRect.new()
 	_dim.name = "Dim"
 	_dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -123,7 +123,23 @@ func get_cursor_index() -> int:
 
 
 func get_item_id(index: int) -> String:
-	return ITEM_IDS[index] if index >= 0 and index < ITEM_IDS.size() else ""
+	var ids: Array[String] = item_ids()
+	return ids[index] if index >= 0 and index < ids.size() else ""
+
+
+## The rows, top to bottom. A subclass (the slice's pause menu) returns its own.
+func item_ids() -> Array[String]:
+	return ITEM_IDS
+
+
+## The layout block this menu reads. A subclass reads its own.
+func _load_layout() -> Dictionary:
+	return SandboxUiData.ui("pause", {})
+
+
+## A word of this menu by path ("title", "resume", "hints.quit", "info_label").
+func _word(path: String) -> String:
+	return SandboxUiData.text("pause.%s" % path)
 
 
 func get_card() -> ControlsCard:
@@ -157,7 +173,7 @@ func tick(delta: float) -> void:
 
 ## Moves the cursor (wraps).
 func move(direction: int) -> void:
-	_index = posmod(_index + direction, ITEM_IDS.size())
+	_index = posmod(_index + direction, item_ids().size())
 	audio.sfx("tick")
 	_overlay.queue_redraw()
 
@@ -165,7 +181,13 @@ func move(direction: int) -> void:
 ## Picks the row under the cursor.
 func activate() -> void:
 	audio.sfx("confirm")
-	match ITEM_IDS[_index]:
+	_activate_item(get_item_id(_index))
+	_overlay.queue_redraw()
+
+
+## What a row does when picked. A subclass adds its own rows and calls super() for the shared ones.
+func _activate_item(id: String) -> void:
+	match id:
 		"resume":
 			resume()
 		"reset":
@@ -175,7 +197,6 @@ func activate() -> void:
 			_card.open_card()
 		"quit":
 			quit_requested.emit()
-	_overlay.queue_redraw()
 
 
 func _on_card_closed() -> void:
@@ -297,7 +318,7 @@ func _row_rect(index: int) -> Rect2:
 
 
 func _row_at(at: Vector2) -> int:
-	for i: int in ITEM_IDS.size():
+	for i: int in item_ids().size():
 		if _row_rect(i).has_point(at):
 			return i
 	return -1
@@ -312,18 +333,19 @@ func _draw_overlay() -> void:
 	SandboxStyle.header_bar(_overlay, header)
 	if _reveal < 1.0:
 		return
-	SandboxStyle.text(_overlay, "body", Vector2(header.position.x + 8.0, header.position.y + 12.0), SandboxUiData.text("pause.title"), SandboxStyle.color("text_on_header"))
+	SandboxStyle.text(_overlay, "body", Vector2(header.position.x + 8.0, header.position.y + 12.0), _word("title"), SandboxStyle.color("text_on_header"))
 	var browsing: bool = not is_sub_page_open()
-	for i: int in ITEM_IDS.size():
+	var ids: Array[String] = item_ids()
+	for i: int in ids.size():
 		var rect: Rect2 = _row_rect(i)
 		var selected: bool = i == _index and browsing
 		SandboxStyle.list_bar(_overlay, rect, selected)
 		if selected:
 			SandboxStyle.cursor(_overlay, Vector2(rect.position.x + 3.0, rect.position.y + rect.size.y / 2.0))
-		SandboxStyle.text(_overlay, "body", Vector2(float(_layout["x"]) + float(_layout.get("text_x", 22)), rect.position.y + 11.0), SandboxUiData.text("pause.%s" % ITEM_IDS[i]), SandboxStyle.row_color(selected))
+		SandboxStyle.text(_overlay, "body", Vector2(float(_layout["x"]) + float(_layout.get("text_x", 22)), rect.position.y + 11.0), _word(ids[i]), SandboxStyle.row_color(selected))
 	if browsing:
 		var info_y: float = float(_layout["info_y"])
 		var info_x: float = float(_layout.get("info_x", 16))
-		SandboxStyle.label(_overlay, Vector2(info_x + 2.0, info_y - 3.0), SandboxUiData.text("pause.info_label"))
+		SandboxStyle.label(_overlay, Vector2(info_x + 2.0, info_y - 3.0), _word("info_label"))
 		SandboxStyle.list_bar(_overlay, Rect2(info_x, info_y, float(_layout.get("info_w", 352)), float(_layout["info_h"])))
-		SandboxStyle.text(_overlay, "label", Vector2(info_x + 6.0, info_y + 10.0), SandboxUiData.text("pause.hints.%s" % ITEM_IDS[_index]).to_upper(), SandboxStyle.color("text"))
+		SandboxStyle.text(_overlay, "label", Vector2(info_x + 6.0, info_y + 10.0), _word("hints.%s" % get_item_id(_index)).to_upper(), SandboxStyle.color("text"))

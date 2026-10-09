@@ -1,7 +1,37 @@
 {
- "_about": "Slice settings (docs/slice/slice_tech_plan.md 2.1, 2.4, Decision 3). default_mode: what a run with no --classic, --sandbox or --slice word and no feature tag boots (classic, slice or sandbox); it stays classic until the slice has rooms to boot, VS-35 flips it. new_game: where a slice New Game starts when slice/rooms.json has no start_room (the Level Designer's room ids replace these). retry: Decision 2 (knock-out), recommended A. interact: Decision 3 (the talk button), recommended A: mode attack_button = the attack button talks when a prompt shows and no living enemy is within clear_m metres (in town it only talks); mode own_button = option B, a separate interact button and the attack button never talks.",
+ "_about": "Slice settings (docs/slice/slice_tech_plan.md 2.1, 2.4, Decision 3). default_mode: what a run with no --classic, --sandbox or --slice word and no feature tag boots (classic, slice or sandbox); it stays classic until the slice has rooms to boot, VS-35 flips it. new_game: where a slice New Game starts when slice/rooms.json has no start_room (the Level Designer's room ids replace these). retry: Decision 2 (knock-out), recommended A. interact: Decision 3 (the talk button), recommended A: mode attack_button = the attack button talks when a prompt shows and no living enemy is within clear_m metres (in town it only talks); mode own_button = option B, a separate interact button and the attack button never talks. hero.scene: Red's scene. hud.scene: the persistent HUD node (the UI Programmer's ActionHud replaces the sandbox HUD stand-in). room_parts: what every ActionRoom adds besides the director (scripts with bind(host)). retry.rule: room_entrance (Decision 2 A, default: continue from the room's entrance with the health and battery she walked in with), last_save (B) or none (she just gets up); credit_cost: credits docked per knock-out (C); auto_continue_s: seconds before the room restarts by itself (the stand-in for the Continue screen; 0 = wait for the UI). look.default_profile: used when a room names none.",
  "default_mode": "classic",
- "new_game": {"room": "market_hideout", "spawn": "default"},
- "retry": {"from": "room", "credit_cost": 0},
- "interact": {"mode": "attack_button", "clear_m": 5.0, "attack_action": "light"}
+ "new_game": {
+  "room": "market_hideout",
+  "spawn": "default"
+ },
+ "retry": {
+  "rule": "room_entrance",
+  "credit_cost": 0,
+  "auto_continue_s": 3.0
+ },
+ "interact": {
+  "mode": "attack_button",
+  "clear_m": 5.0,
+  "attack_action": "light"
+ },
+ "hero": {
+  "scene": "res://scenes/actors/action_player.tscn"
+ },
+ "hud": {
+  "scene": "res://scenes/ui/slice/action_hud.tscn"
+ },
+ "look": {
+  "default_profile": "grim_ps2"
+ },
+ "camera": {
+  "capture_mouse": true
+ },
+ "room_parts": [
+  {
+   "id": "fx",
+   "script": "res://scripts/combat/fx/combat_fx.gd",
+   "bind": true
+  }
+ ]
 }

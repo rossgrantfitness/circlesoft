@@ -13,6 +13,7 @@ const FILE_STYLE: String = "style.json"
 const FILE_ENEMIES: String = "enemies.json"
 const FILE_SANDBOX: String = "sandbox.json"
 const FILE_COMBO: String = "combo.json"
+const FILE_HACKS: String = "hacks.json"
 
 static var _cache: Dictionary = {}
 
@@ -61,6 +62,11 @@ static func enemies() -> Dictionary:
 ## The one-button combo rules (data/combat/combo.json).
 static func combo() -> Dictionary:
 	return combat_file(FILE_COMBO)
+
+
+## Red's hacks: the battery, the four hacks and the automatic rules (data/combat/hacks.json).
+static func hacks() -> Dictionary:
+	return combat_file(FILE_HACKS)
 
 
 static func timing_windows() -> Dictionary:

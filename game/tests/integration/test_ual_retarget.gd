@@ -14,6 +14,7 @@ const RIGS: Dictionary = {
 		"hand": "hand_r",
 		"socket": "weapon_socket",
 		"strikes": ["light_1", "light_2", "light_3", "heavy", "launcher"],
+		"casts": ["hack_zap", "hack_emp", "hack_overclock", "hack_reboot"],
 	},
 	"wolf": {
 		"settings": "res://data/animation/retarget_wolf.json",
@@ -190,6 +191,28 @@ func test_every_clip_has_key_data_and_the_striking_ones_have_a_contact_frame() -
 			assert_true(str(entry["source"]).contains(CLIPS_FROM_THE_FREE_PACK), "%s: %s comes from the free pack" % [rig, clip])
 
 
+func test_hack_casts_come_from_the_free_pack_with_a_release_frame_and_license() -> void:
+	# VS-10: Red's four hack clips are existing CC0 clips (no new authoring); the release frame is the contact_s the cast move snaps to
+	var spec: Dictionary = RIGS["red"]
+	var settings: Dictionary = _json(str(spec["settings"]))
+	var clips: Dictionary = _json(str(spec["keys"])).get("clips", {})
+	var model: Node3D = _model(_output(settings))
+	var player: AnimationPlayer = _player(model)
+	var credits: String = FileAccess.get_file_as_string(str(spec["credits"]))
+	for source: String in ["Spell_Simple_Enter", "NinjaJump_Land", "Consume", "LayToIdle"]:
+		assert_true(credits.contains(source), "the credits file names the hack source clip " + source)
+	var specs: Dictionary = {}
+	for clip: Dictionary in settings["clips"]:
+		specs[str(clip["name"])] = clip
+	for cast: String in spec["casts"]:
+		assert_true(specs.has(cast), cast + " is in the retarget settings")
+		assert_true(player.has_animation(cast), cast + " is in the retargeted file")
+		assert_true(clips.has(cast), cast + " has key data")
+		assert_true(str(clips[cast]["source"]).contains(CLIPS_FROM_THE_FREE_PACK), cast + " comes from the free pack")
+		assert_true(clips[cast].has("contact_s"), cast + " has a release frame")
+		assert_false(bool(clips[cast]["loop"]), cast + " plays once")
+
+
 func test_the_contact_frame_is_where_the_blade_is_fastest() -> void:
 	# the contact times were found on the source clips by the peak speed of the blade tip; after retargeting the same moment must
 	# still be the fastest one of the swing (so the hit lands on the real strike, not on the wind-up)
@@ -257,7 +280,7 @@ func test_move_data_pose_keys_put_the_contact_on_the_data_timed_hit() -> void:
 				if clips.has(key_clip):
 					assert_le(float(key["clip_s"]), float((clips[key_clip] as Dictionary)["length_s"]) + 0.001, "%s.%s: key %d ms stays inside %s" % [rig, move_id, int(key["at_ms"]), key_clip])
 			assert_eq(int(keys[0]["at_ms"]), 0, "%s.%s: the first key is at 0" % [rig, move_id])
-	assert_ge(checked, 8, "Red's six moves and the Grunt's two swipes are timed from the real clips")
+	assert_ge(checked, 12, "Red's six moves, her four hack casts and the Grunt's two swipes are timed from the real clips")
 
 
 func test_playback_look_comes_from_the_data_file() -> void:

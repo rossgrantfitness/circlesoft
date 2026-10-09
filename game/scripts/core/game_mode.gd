@@ -27,6 +27,7 @@ const NAME_SANDBOX: String = "sandbox"
 
 const ROOMS_ID_CLASSIC: String = "world/rooms"
 const ROOMS_ID_SLICE: String = "slice/rooms"
+const PLACEMENTS_ID_SLICE: String = "slice/placements"
 const SAVE_DIR_CLASSIC: String = "user://saves"
 const SAVE_DIR_SLICE: String = "user://slice_saves"
 const SAVE_DIR_SANDBOX: String = "user://feel"
@@ -66,6 +67,14 @@ static func rooms_id(mode: Mode) -> String:
 		Mode.CLASSIC:
 			return ROOMS_ID_CLASSIC
 	return ""
+
+
+## Extra placement files a mode lays over world/placements (Placements.extra_ids): the slice's own.
+static func placements_ids(mode: Mode) -> Array[String]:
+	var out: Array[String] = []
+	if mode == Mode.SLICE:
+		out.append(PLACEMENTS_ID_SLICE)
+	return out
 
 
 ## The folder a mode keeps its files in. The slice never touches the old game's `user://saves`.

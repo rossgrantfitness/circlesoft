@@ -22,7 +22,6 @@
    "length_s": 1.3333,
    "loop": true,
    "source": "UAL1:Walk_Loop",
-   "stride_mps": 0.38,
    "keys": [
     {
      "frame": 0,
@@ -32,13 +31,13 @@
      "frame": 40,
      "clip_s": 1.3333
     }
-   ]
+   ],
+   "stride_mps": 0.38
   },
   "run": {
    "length_s": 0.6667,
    "loop": true,
    "source": "UAL1:Sprint_Loop",
-   "stride_mps": 2.52,
    "keys": [
     {
      "frame": 0,
@@ -48,7 +47,8 @@
      "frame": 20,
      "clip_s": 0.6667
     }
-   ]
+   ],
+   "stride_mps": 2.52
   },
   "jump_up": {
    "length_s": 0.5,
@@ -293,6 +293,94 @@
      "clip_s": 1.5333
     }
    ]
+  },
+  "hack_zap": {
+   "length_s": 1.0333,
+   "loop": false,
+   "source": "UAL1:Spell_Simple_Enter + UAL1:Spell_Simple_Shoot",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 13,
+     "clip_s": 0.43
+    },
+    {
+     "frame": 31,
+     "clip_s": 1.0333
+    }
+   ],
+   "contact_s": 0.43,
+   "contact_frame": 13,
+   "note": "Zap Drone cast: left hand raised and pushed out (UAL1 Spell_Simple_Enter then Spell_Simple_Shoot); the drone leaves the open hand at the contact. The sword hand stays low."
+  },
+  "hack_emp": {
+   "length_s": 1.1,
+   "loop": false,
+   "source": "UAL2:NinjaJump_Land",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 6,
+     "clip_s": 0.2
+    },
+    {
+     "frame": 33,
+     "clip_s": 1.1
+    }
+   ],
+   "contact_s": 0.2,
+   "contact_frame": 6,
+   "note": "EMP cast: a crouch with a hand on the floor (UAL2 NinjaJump_Land), the pulse rings out from the slam, then she stands up."
+  },
+  "hack_overclock": {
+   "length_s": 1.3333,
+   "loop": false,
+   "source": "UAL2:Consume",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 12,
+     "clip_s": 0.4
+    },
+    {
+     "frame": 40,
+     "clip_s": 1.3333
+    }
+   ],
+   "contact_s": 0.4,
+   "contact_frame": 12,
+   "note": "Overclock cast: left hand reaches out palm up and holds (UAL2 Consume), the link takes hold at the contact."
+  },
+  "hack_reboot": {
+   "length_s": 1.1333,
+   "loop": false,
+   "source": "UAL2:LayToIdle",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 16,
+     "clip_s": 0.55
+    },
+    {
+     "frame": 34,
+     "clip_s": 1.1333
+    }
+   ],
+   "contact_s": 0.55,
+   "contact_frame": 16,
+   "note": "Reboot cast: the second half of the get-up (UAL2 LayToIdle), crouch to standing; the heal pops as she rises."
   },
   "air_1": {
    "length_s": 0.4667,

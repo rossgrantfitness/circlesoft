@@ -25,6 +25,13 @@ signal stagger(info: Dictionary)               ## {target, by: "parry" / "poise"
 signal noise_changed(points: float, fill: float, rank_id: StringName, rank_name: String)
 signal noise_rank_changed(rank_id: StringName, rank_name: String, went_up: bool)
 signal lights_on_changed(active: bool, duration_s: float)
+# ---- the hack battery and the hacks (slice tech plan 4; HUD, FX and audio listen to these) ----
+signal battery_changed(charge: float, capacity: float)     ## the hack battery moved (a sword hit, a cast, a door, a reset)
+signal hack_locked(active: bool, ms: float)                ## Kasp's Quiet Hours jams (active) or frees the hacks; ms = how long it will last
+signal hack_selected(hack_id: StringName)                  ## pick mode: the selected hack changed; auto mode: the last one used
+signal hack_cast(info: Dictionary)                         ## {hack, name, cost, position, target}: a cast began (its cost is spent)
+signal hack_refused(info: Dictionary)                      ## {hack, name, reason, cost, charge}: the button was pressed and nothing fired (HUD fizz and words)
+signal hijack_changed(info: Dictionary)                    ## {target, active, duration_s}: Overclock took something over, or let it go
 
 const GROUP: StringName = &"combat_director"
 const PRIORITY: int = -100
@@ -38,6 +45,8 @@ var style: StyleMeter = null
 var lights_on: LightsOn = null
 var tokens: AttackTokens = null
 var feel: FeelKnobs = null
+## The hack battery (HackBattery): sword hits fill it, hacks spend it. Owned here so it survives anything Red does.
+var battery: HackBattery = null
 var hit_feel: Dictionary = {}
 ## True in the game: the fighters' real-time axis follows the engine clock, so a press stamped by `_input`
 ## lines up. Headless tests that step by hand set it false and use stamp_usec().
@@ -57,6 +66,10 @@ var _features_seen: Dictionary = {}         # id -> on, as last applied
 var _features_version: int = -1             # Features.version() last applied
 var _last_rank_index: int = 0
 var _lights_was_active: bool = false
+var _last_battery_charge: float = -1.0
+var _last_battery_locked: bool = false
+var _finishers: Array = []
+var _hack_swing: int = 100000000            # swing ids for hack hits start high so they never clash with a move's
 ## What enemies see of Red (enemy_ai_design 2.1): her current swing, how long her string of hits is, her dash.
 var _read: Dictionary = {}
 var _swing: Dictionary = {}                 # {id, move_id, class, zone: {enemy id: bool}, end_ms (Red's clock)}
@@ -143,7 +156,7 @@ func get_actor(actor_id: StringName) -> CombatActor:
 ## Red (the first registered fighter on the player team), or null.
 func player() -> CombatActor:
 	for actor: CombatActor in _actors:
-		if is_instance_valid(actor) and actor.team == PLAYER_TEAM:
+		if is_instance_valid(actor) and actor.team == PLAYER_TEAM and not _is_hijacked(actor):
 			return actor
 	return null
 
@@ -198,6 +211,7 @@ func tick(delta: float) -> void:
 		elif Features.is_on(Features.LIGHTS_ON) and feel.get_s("lights_on_trigger") == "auto" and lights_on.can_start(style):
 			_start_lights_on(now_ms)
 		_sync_noise()
+	sync_battery()
 	_prune_threats()
 	_prune_presses()
 
@@ -452,27 +466,35 @@ func _on_parry(attacker: CombatActor, target: CombatActor, attack: Dictionary, r
 
 
 func _on_damage(attacker: CombatActor, target: CombatActor, attack: Dictionary, result: Dictionary, position: Vector3,
-		red_now_ms: float) -> void:
+		red_now_ms: float, by_hack: bool = false) -> void:
 	var outcome: StringName = result["outcome"]
 	var guard_hit: bool = outcome == HitResolver.OUTCOME_BLOCKED or outcome == HitResolver.OUTCOME_GUARD_BROKEN
+	# Red herself: not an enemy Overclock has taken over (its hits are not hers to score).
+	var by_red: bool = attacker.team == PLAYER_TEAM and not _is_hijacked(attacker)
 	if outcome == HitResolver.OUTCOME_GUARDED:
 		var guard_rating: String = ClutchJudge.RATING_NICE
 		parry_judged.emit({"attacker": attacker.actor_id, "rating": guard_rating, "outcome": outcome,
 				"delta_ms": 0.0, "position": position})
 	target.apply_hit(result)
 	attacker.on_hit_landed(result)
-	time.add_hit_stop([attacker.actor_id, target.actor_id] as Array[StringName], float(result["hit_stop_ms"]))
-	if attacker.team == PLAYER_TEAM and outcome != HitResolver.OUTCOME_GUARDED and not guard_hit:
+	# A hack hit freezes only what it hit: the drone, not Red, made the contact.
+	var frozen: Array[StringName] = [target.actor_id]
+	if not by_hack:
+		frozen.append(attacker.actor_id)
+	time.add_hit_stop(frozen, float(result["hit_stop_ms"]))
+	if by_red and not by_hack:
+		_feed_battery(attacker, attack, result, red_now_ms)
+	if by_red and outcome != HitResolver.OUTCOME_GUARDED and not guard_hit:
 		style.add_hit(StringName(attack.get("move_id", &"")), float(result["style_points"]), red_now_ms)
 		if bool(result["launched"]) and float(attack.get("launch_mps", 0.0)) > 0.0:
 			style.add_bonus(&"launch", red_now_ms)
 		elif bool(result["air_hit"]):
 			style.add_bonus(&"air_hit", red_now_ms)
-	elif attacker.team == PLAYER_TEAM and outcome == HitResolver.OUTCOME_GUARD_BROKEN:
+	elif by_red and outcome == HitResolver.OUTCOME_GUARD_BROKEN:
 		style.add_bonus(&"guard_break", red_now_ms)      # worth points once style.json has bonuses.guard_break
 	elif target.team == PLAYER_TEAM and int(result["damage"]) > 0 and not lights_on.is_active():
 		style.took_damage(red_now_ms)
-	if attacker.team == PLAYER_TEAM and outcome != HitResolver.OUTCOME_IGNORED:
+	if by_red and not by_hack and outcome != HitResolver.OUTCOME_IGNORED:
 		_note_player_hit(red_now_ms)
 	elif target.team == PLAYER_TEAM and int(result["damage"]) > 0:
 		_combo_len = 0
@@ -493,11 +515,110 @@ func _on_damage(attacker: CombatActor, target: CombatActor, attack: Dictionary, 
 			"outcome": outcome, "damage": int(result["damage"]), "launch": float(result["launch_mps"]),
 			"knockdown": bool(result["knockdown"]), "airborne": bool(result["air_hit"]),
 			"hit_stop_ms": float(result["hit_stop_ms"]), "shake": shake,
-			"spark": spark, "sfx": sfx, "position": position})
+			"spark": spark, "sfx": sfx, "position": position, "source": str(result.get("source", "sword"))})
 	if bool(result["launched"]):
 		launched.emit({"attacker": attacker.actor_id, "target": target.actor_id, "launch_mps": float(result["launch_mps"])})
 	if bool(result["staggered_target"]):
 		stagger.emit({"target": target.actor_id, "by": "guard" if outcome == HitResolver.OUTCOME_GUARD_BROKEN else "poise"})
+
+
+# ---- the hack battery (slice tech plan 4.2) ----
+
+## A sword hit by Red landed: fill the battery by what the outcome is worth (a finisher and an air hit add a bonus).
+func _feed_battery(_attacker: CombatActor, attack: Dictionary, result: Dictionary, now_ms: float) -> void:
+	if battery == null:
+		return
+	var move_id: StringName = StringName(str(attack.get("move_id", &"")))
+	if _finishers.is_empty():
+		_finishers = ((CombatData.combo().get("params", {}) as Dictionary).get("finishers", []) as Array).duplicate()
+	var scale: float = feel.get_f("hack_gain_scale") if feel != null and feel.has("hack_gain_scale") else 1.0
+	battery.add_from_hit(result["outcome"], move_id, bool(result.get("air_hit", false)), _finishers.has(String(move_id)),
+			now_ms, scale, StringName(str(attack.get("source", HackBattery.SOURCE_SWORD))))
+	sync_battery()
+
+
+## A hack (a Zap Drone, an EMP pulse, a hijacked turret's shot) hit `target`. Same chain as a sword hit: resolver,
+## apply, hit-stop on the victim, sparks, numbers, launches and the enemy's reaction. `hit` is a moves.json style `hit`
+## block (damage, hitstun_ms, knockback_m, hit_stop_ms, poise_damage, style_points, spark, shake, sfx, guard_break...).
+## `info` may carry `position` (the contact point), `origin` and `direction` (where the shot came from, for knockback
+## and the guard arc) and `move_id`. The attacker is `source`. Hack hits never refill the battery.
+## Returns the HitResolver result (plus position and source), `outcome == ignored` when nothing happened.
+func report_hack_hit(source: CombatActor, target: CombatActor, hit: Dictionary, info: Dictionary = {}) -> Dictionary:
+	_ensure_parts()
+	_sync_features()
+	if source == null or target == null:
+		return {"outcome": HitResolver.OUTCOME_IGNORED}
+	var attack: Dictionary = hit.duplicate(true)
+	_hack_swing += 1
+	attack["move_id"] = StringName(str(info.get("move_id", hit.get("move_id", &"hack"))))
+	attack["swing_id"] = _hack_swing
+	attack["launcher"] = bool(hit.get("launcher", false))
+	attack["parryable"] = false
+	attack["dodge_flare"] = false
+	attack["source"] = str(info.get("source", "hack"))
+	var snap: Dictionary = source.snapshot()
+	if info.has("origin"):
+		snap["position"] = info["origin"]
+	if info.has("direction"):
+		snap["forward"] = info["direction"]
+	var ctx: Dictionary = {"parry": {"rating": ClutchJudge.RATING_MISS}, "lights_on": _lights_ctx(), "feel": feel, "hit_feel": hit_feel}
+	var result: Dictionary = HitResolver.resolve(attack, snap, target.snapshot(), ctx)
+	result["source"] = attack["source"]
+	var outcome: StringName = result["outcome"]
+	if outcome == HitResolver.OUTCOME_IGNORED or outcome == HitResolver.OUTCOME_EVADED:
+		return result
+	var position: Vector3 = info.get("position", target.anchor(&"center"))
+	result["position"] = position
+	_on_damage(source, target, attack, result, position, _red_now_ms(), true)
+	_sync_noise()
+	return result
+
+
+## The battery moved or the lock changed: tell the HUD. Cheap when nothing did. Free casting (a testing knob) keeps it full.
+func sync_battery() -> void:
+	_ensure_parts()
+	if feel != null and feel.has("hack_free_cast") and feel.get_b("hack_free_cast") and not battery.is_full():
+		battery.reset_full()
+	var charge: float = battery.charge()
+	if not is_equal_approx(charge, _last_battery_charge):
+		_last_battery_charge = charge
+		battery_changed.emit(charge, battery.capacity())
+	var now_ms: float = _red_now_ms()
+	var locked: bool = battery.is_locked(now_ms)
+	if locked != _last_battery_locked:
+		_last_battery_locked = locked
+		hack_locked.emit(locked, battery.lock_left_ms(now_ms))
+
+
+## Kasp's Quiet Hours: the hacks are jammed for `ms` of Red's time.
+func lock_hacks(ms: float) -> void:
+	_ensure_parts()
+	battery.lock(ms, _red_now_ms())
+	sync_battery()
+
+
+## The jam ends early (the dish is hit during the hum).
+func unlock_hacks() -> void:
+	_ensure_parts()
+	battery.unlock()
+	sync_battery()
+
+
+func hacks_locked() -> bool:
+	_ensure_parts()
+	return battery.is_locked(_red_now_ms())
+
+
+## Back to a fresh run: new-game charge, no jam, no recent gains. (The arena reset calls it.)
+func reset_hacks() -> void:
+	_ensure_parts()
+	battery.reset_start()
+	sync_battery()
+
+
+## Is `actor` an enemy that Overclock has taken over (it is on Red's side for now)?
+static func _is_hijacked(actor: CombatActor) -> bool:
+	return "hijacked_by" in actor and actor.get("hijacked_by") != null
 
 
 # ---- the Lamp Flare ----
@@ -534,6 +655,8 @@ func _ensure_parts() -> void:
 		lights_on = LightsOn.from_data(CombatData.style(), style)
 	if tokens == null:
 		tokens = AttackTokens.from_data(CombatData.enemies())
+	if battery == null:
+		battery = HackBattery.load_default()
 	if not time.flare_ended.is_connected(_on_flare_ended):
 		time.flare_ended.connect(_on_flare_ended)
 

@@ -57,6 +57,10 @@
     "move": "parry",
     "stick_scale": 0.25
   },
+  "death": {
+    "_note": "'sandbox': at 0 health she gets up after a moment (the feel prototype). 'retry': she stays down and the room restarts her (the slice; ActionRoom sets this from data/slice/slice.json 'retry').",
+    "mode": "sandbox"
+  },
   "town": {
     "_note": "Town mode (the night market, no fighting; docs/slice/slice_tech_plan.md 3). The buttons listed do nothing there. The clip map turns the field clip names the town code uses (HeroLink.play_clip) into this model's clips.",
     "blocked_buttons": ["light", "heavy", "parry"],

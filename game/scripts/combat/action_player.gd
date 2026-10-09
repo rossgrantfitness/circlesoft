@@ -34,6 +34,8 @@ signal state_changed(state: State)
 signal hack_pressed(info: Dictionary)
 ## The body size changed (CS-21): red, small or huge. See set_scale_profile().
 signal form_changed(form_id: StringName)
+## Death mode "retry" (the slice, Decision 2): she was knocked out and stays down until the room restarts her.
+signal knocked_out
 
 ## NORMAL: she plays. SCRIPTED: a cutscene or boarding sequence moves her (visible, no physics, no input). GHOST: hidden and
 ## untouchable (she is inside a robot being docked).
@@ -52,6 +54,7 @@ const TOKEN_PARRY: StringName = &"parry"
 const TOKEN_LIGHT: StringName = &"light"
 const TOKEN_HEAVY: StringName = &"heavy"
 const TOKEN_LAUNCH: StringName = &"launch"
+const TOKEN_HACK: StringName = &"hack"
 const ATTACK_TOKENS: Array[StringName] = [&"light", &"heavy", &"launch"]
 const MOVE_PARRY: StringName = &"parry"
 const MOVE_HEAVY: StringName = &"heavy"
@@ -134,6 +137,11 @@ var _queued_restart: bool = false
 ## The combo's follow-jump is an automatic jump: nobody holds the jump button, so the release-cut must not shorten it.
 var _auto_jump_hold: bool = false
 var _last_hack_usec: int = -1000000000
+## Red's hack button, from press to effect (HackCaster). Made the first time a CombatDirector is found; null in a bare test
+## or when `hacks_enabled` is false, and then the hack button only shows the old call-out.
+var hacks_enabled: bool = true
+var _hacks: HackCaster = null
+var _hack_request: Dictionary = {}
 ## CS-21, the giant-robot scale test: the body size she has now. Null = Red as always. All the numbers are in
 ## data/combat/scale_profiles.json; the ScaleController and the robot boarding drive it.
 var scale_profile: ScaleProfile = null
@@ -162,6 +170,10 @@ var town_mode: bool = false
 ## Asked about every press before it reaches the buffer: func(action: StringName) -> bool. True = the press was
 ## used (the interact button, Decision 3 option A) and must not also attack. PlayerInteractor installs it.
 var press_filter: Callable = Callable()
+## What happens at 0 health: "sandbox" (she gets up after a moment, as in the feel prototype) or "retry" (she stays
+## down and `knocked_out` fires; the room restarts her, ActionRoom.continue_after_knockout). data: player_action.json
+## "death.mode"; ActionRoom sets it from data/slice/slice.json "retry".
+var death_mode: StringName = &"sandbox"
 var _blink_left_s: float = 0.0
 var _jump_blocked_frames: int = 0
 var _ground_y: float = 0.0
@@ -183,6 +195,7 @@ func _ready() -> void:
 	_hit_feel = CombatData.hit_feel()
 	hp_max = int(_data.get("hp_max", hp_max))
 	hp = hp_max
+	death_mode = StringName(str((_data.get("death", {}) as Dictionary).get("mode", "sandbox")))
 	var body: Dictionary = _data.get("body", {}) as Dictionary
 	radius_m = float(body.get("radius_m", 0.3))
 	height_m = float(body.get("height_m", 0.9))
@@ -245,6 +258,9 @@ func handle_input_event(event: InputEvent) -> void:
 			press(action, Time.get_ticks_usec())
 		elif event.is_action_released(action):
 			release(action)
+	var caster: HackCaster = hack_caster()
+	if caster != null:
+		caster.handle_input_event(event)
 
 
 # ---- the contract surface (CombatActor) ----
@@ -381,14 +397,17 @@ func _on_hit_reaction(result: Dictionary) -> void:
 ## She can't lose: at 0 HP she drops, Noise resets, and after a couple of seconds she gets up at full health.
 func _on_death(_result: Dictionary) -> void:
 	_go_down(true)
+	if death_mode == &"retry":
+		knocked_out.emit()
 	var director: CombatDirector = find_director()
 	if director != null and director.style != null:
 		director.style.reset()
 
 
 ## The attacker side: one of her swings connected.
-func _on_hit_landed(_result: Dictionary) -> void:
-	_hit_landed_in_move = true
+func _on_hit_landed(result: Dictionary) -> void:
+	if str(result.get("source", "sword")) == "sword":
+		_hit_landed_in_move = true       # a Zap Drone's hit is not a swing that connected (no follow-jump off it)
 
 
 ## Back to full health, standing at `where`, nothing queued (a reset, a respawn).
@@ -406,6 +425,8 @@ func reset_to(where: Transform3D) -> void:
 	_parry_stamps.clear()
 	if _buffer != null:
 		_buffer.clear()
+	if _hacks != null:
+		_hacks.reset()
 	_invuln_left_s = 0.0
 	_hurt_left_s = 0.0
 	_down_left_s = 0.0
@@ -468,6 +489,8 @@ func tick(delta: float) -> void:
 			_tick_free(dt, scale, now)
 	_hitbox.tick(dt)
 	_update_animation(dt)
+	if _hacks != null:
+		_hacks.tick(delta)
 
 
 func _read_engine_input() -> void:
@@ -476,6 +499,8 @@ func _read_engine_input() -> void:
 		_held[action] = Input.is_action_pressed(action)
 		if not _event_fed and Input.is_action_just_pressed(action):
 			press(action, Time.get_ticks_usec())
+	if not _event_fed and _hacks != null:
+		_hacks.poll_input()
 
 
 ## Turns queued presses into buffered tokens on her own clock.
@@ -530,14 +555,75 @@ func _stick_is_back() -> bool:
 	return get_move_direction().dot(get_facing()) < -0.5
 
 
-## The hack button. Only a call-out for now ("Hack: coming later"); a short cooldown stops a mashed button from
-## stacking pop-ups. Text and times are data (combo.json buttons.hack).
+## The hack button. With a HackCaster (a CombatDirector is in the room) it is the real thing: pick mode asks for a cast at once,
+## automatic mode waits to learn tap or hold. Without one it only shows the old call-out ("Hack: coming later"); a short
+## cooldown stops a mashed button from stacking pop-ups. Text and times are data (combo.json buttons.hack).
+## Hacks are off while she is in a robot (the slice keeps them to Red on foot).
 func _press_hack(usec: int) -> void:
+	var caster: HackCaster = hack_caster()
+	if caster != null:
+		if scale_profile == null and not dead:
+			caster.on_button_down(usec)
+		return
 	var hack: Dictionary = (_combo_cfg.get("buttons", {}) as Dictionary).get("hack", {})
 	if usec - _last_hack_usec < int(float(hack.get("cooldown_ms", 800.0)) * 1000.0):
 		return
 	_last_hack_usec = usec
 	hack_pressed.emit({"text": str(hack.get("callout", "Hack: coming later")), "callout_ms": float(hack.get("callout_ms", 1200.0))})
+
+
+## The HackCaster on Red, made on first use. Null when there is no director (a bare test) or hacks are switched off.
+func hack_caster() -> HackCaster:
+	if _hacks != null and is_instance_valid(_hacks):
+		return _hacks
+	if not hacks_enabled or find_director() == null or not is_inside_tree():
+		return null
+	_hacks = HackCaster.new()
+	_hacks.name = "HackCaster"
+	add_child(_hacks)
+	_hacks.attach(self)
+	return _hacks
+
+
+## HackCaster asks for a cast: a `hack` token goes into the buffer like any press, so a press made a little early still counts.
+func queue_hack(request: Dictionary, real_usec: int) -> void:
+	_hack_request = request
+	var local: int = clock.local_at_real(real_usec)
+	_buffer.push(TOKEN_HACK, local)
+	_press_local[TOKEN_HACK] = local
+
+
+## Untouchable for `ms` (Reboot's 600 ms), on her own clock.
+func grant_iframes(ms: float) -> void:
+	_invuln_left_s = maxf(_invuln_left_s, ms / 1000.0)
+
+
+## A buffered hack token can start: the caster picks and pays, this plays the cast move. True if a cast move began.
+func _begin_hack(now: int, direction: Vector3, in_move: bool) -> bool:
+	var caster: HackCaster = hack_caster()
+	if caster == null:
+		return false
+	var plan: Dictionary = caster.begin_cast(_hack_request)
+	if not bool(plan["started"]):
+		return false
+	var aim: Vector3 = plan["aim"] as Vector3
+	if aim.length() < 0.01:
+		aim = direction
+	var move: StringName = plan["move"]
+	var began: bool = false
+	_next_restart = true
+	if in_move:
+		var chained: StringName = _runner.offer_move(move, now, int(_press_local.get(TOKEN_HACK, now)))
+		if chained != &"":
+			_on_move_began(chained, aim, now)
+			began = true
+	else:
+		began = _begin_move(move, now, aim)
+	if began:
+		caster.cast_move_started(_runner.swing_id())
+	else:
+		caster.cancel_cast()
+	return began
 
 
 # ---- locomotion and air ----
@@ -577,6 +663,10 @@ func _tick_free(dt: float, scale: float, now: int) -> void:
 				return
 			TOKEN_PARRY:
 				if _begin_move(MOVE_PARRY, now, direction):
+					_tick_move(dt, scale, now)
+					return
+			TOKEN_HACK:
+				if _begin_hack(now, direction, false):
 					_tick_move(dt, scale, now)
 					return
 			TOKEN_JUMP:
@@ -639,6 +729,8 @@ func _free_accepts(token: StringName, on_floor: bool, now: int) -> bool:
 			return _dash_cooldown_left_s <= 0.0 and (on_floor or _air_dashes_left > 0)
 		TOKEN_PARRY:
 			return on_floor and _moves.has_move(SET_ID, MOVE_PARRY)
+		TOKEN_HACK:
+			return _hacks != null
 		TOKEN_LIGHT:
 			if _queued_move != &"":
 				return false            # the follow-jump's air attack is already on its way
@@ -900,6 +992,9 @@ func _handle_move_inputs(now: int, direction: Vector3, on_floor: bool) -> void:
 			TOKEN_PARRY:
 				_begin_move(MOVE_PARRY, now, direction)
 				return
+			TOKEN_HACK:
+				if _begin_hack(now, direction, true):
+					return          # the cast move took over from the one that was playing
 			TOKEN_LIGHT:
 				if _apply_combo_pick(_combo_pick_cache, now, direction, true):
 					return          # the string moved on, or she jumped up after the target
@@ -927,6 +1022,8 @@ func _move_accepts(token: StringName, now: int, on_floor: bool) -> bool:
 			return _runner.can_cancel(&"dash", now) and _dash_cooldown_left_s <= 0.0 and (on_floor or _air_dashes_left > 0)
 		TOKEN_PARRY:
 			return _runner.can_cancel(&"parry", now) and on_floor
+		TOKEN_HACK:
+			return _hacks != null and _state == State.ATTACK and _runner.chain_window_open(now)      # a hack follows a swing in its chain window
 		TOKEN_JUMP:
 			return _runner.can_cancel(&"jump", now) and (on_floor or _follow_jump_ready())
 		TOKEN_LIGHT:
@@ -1092,6 +1189,9 @@ func _tick_knockdown(dt: float, scale: float, _now: int) -> void:
 	_slide(scale)
 	_down_left_s -= dt
 	if _down_left_s <= 0.0:
+		if _downed_for_good and death_mode == &"retry":
+			_down_left_s = 0.0
+			return                  # stays down until the room restarts her
 		if _downed_for_good:
 			_downed_for_good = false
 			revive(true)
@@ -1537,6 +1637,15 @@ func block_jump_for_frames(frames: int) -> void:
 func start_blink(seconds: float = -1.0) -> void:
 	_blink_left_s = seconds if seconds >= 0.0 else float(_town_cfg().get("blink_s", 1.5))
 	_apply_blink_look()
+
+
+func set_death_mode(mode: StringName) -> void:
+	death_mode = mode
+
+
+## Down for good in retry mode (waiting for the room to restart her).
+func is_knocked_out() -> bool:
+	return death_mode == &"retry" and dead
 
 
 func is_blinking() -> bool:

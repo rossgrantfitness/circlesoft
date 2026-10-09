@@ -57,6 +57,11 @@ var model_root: Node3D = null
 ## Pose of the last intent, for tests and the debug overlay.
 var last_intent: Dictionary = {}
 var test_target: CombatActor = null        ## tests may aim an enemy at a stand-in; normally the player
+## What the hacks read about it (enemies.json `tags`: drone, turret, robot, relay, boss): bonus damage, EMP stun time.
+var tags: PackedStringArray = PackedStringArray()
+## Set while Overclock has taken it over (Red's side, fights the nearest enemy); null otherwise. See on_hijack_begin().
+var hijacked_by: CombatActor = null
+var hijackable: Hijackable = null
 
 var _moves: MoveSet = null
 var _hit_feel: Dictionary = {}
@@ -102,6 +107,9 @@ var _face_red_ms: float = 0.0
 var _cornered: bool = false
 var _commanded_speed: float = 0.0
 var _clip_speed: float = 1.0
+var _hijack_color: Color = Color(0.2, 0.95, 1.0)
+var _hijack_end_stun_ms: float = 800.0
+var _hijack_damage_scale: float = 1.0
 
 
 func _ready() -> void:
@@ -113,6 +121,7 @@ func _ready() -> void:
 	_build_visual()
 	brain = _make_brain()
 	runner = MoveRunner.create(_moves, move_set_id)
+	_make_hijackable()
 	set_physics_process(true)
 
 
@@ -230,7 +239,25 @@ func _target() -> CombatActor:
 	if test_target != null:
 		return test_target
 	var director: CombatDirector = find_director()
+	if hijacked_by != null:
+		return _nearest_enemy(director)       # taken over by Overclock: it fights Red's enemies now
 	return director.player() if director != null else null
+
+
+## The living enemy nearest to this one (what a hijacked unit goes for), or null.
+func _nearest_enemy(director: CombatDirector) -> CombatActor:
+	if director == null:
+		return null
+	var best: CombatActor = null
+	var best_dist: float = INF
+	for other: CombatActor in director.living_enemies():
+		if other == self:
+			continue
+		var gap: float = other.global_position.distance_squared_to(global_position)
+		if gap < best_dist:
+			best_dist = gap
+			best = other
+	return best
 
 
 ## The geometry of the moment: the unit vector toward Red on the floor, and how far she is.
@@ -253,6 +280,10 @@ func _tick_free(dt: float, now_ms: float, director: CombatDirector) -> void:
 	var tokens: AttackTokens = director.tokens if director != null else null
 	var has_token: bool = tokens != null and tokens.has_token(actor_id)
 	var enabled: bool = director.feel.get_b("enemies_attack") if director != null else true
+	if hijacked_by != null:
+		tokens = null            # a hijacked unit queues for nothing: it is on Red's side and attacks when it likes
+		has_token = true
+		enabled = true
 	enabled = enabled and target != null and not target.dead
 	var view: Dictionary = _make_view(target, dist, has_token, enabled, EnemyBrain.FREE, director)
 	if runner.is_busy():
@@ -344,7 +375,9 @@ func _handle_events(events: Array[Dictionary]) -> void:
 					director.notify_move_started(self, runner.current_move(), event.get("swing", {}))
 			"hitbox_on":
 				var attack: Dictionary = runner.attack_data()
-				attack["damage"] = int(roundf(float(attack.get("damage", 0)) * brain.damage_mult()))
+				attack["damage"] = int(roundf(float(attack.get("damage", 0)) * brain.damage_mult() * _hijack_damage_scale))
+				if hijacked_by != null:
+					attack["source"] = "hijacked"
 				get_hitbox().activate(event["box"], attack, runner.swing_id())
 			"hitbox_off":
 				get_hitbox().deactivate(int(event["index"]))
@@ -589,6 +622,10 @@ func _tick_dead(real_delta: float) -> void:
 
 
 func respawn() -> void:
+	if hijackable != null and hijackable.is_hijacked():
+		hijackable.end_hijack()
+	hijacked_by = null
+	team = &"enemy"
 	global_position = spawn_position
 	rotation.y = spawn_yaw
 	velocity = Vector3.ZERO
@@ -751,6 +788,84 @@ func _set_state(next: StringName) -> void:
 	_state_ms = 0.0
 
 
+# ---- Overclock: hijacked and stunned (slice tech plan 4.4) ----
+
+## Does the data say Overclock can take this enemy? (enemies.json `hijackable`; bosses say no.)
+func hijack_allowed() -> bool:
+	return bool(data.get("hijackable", false)) and not tags.has("boss")
+
+
+func _make_hijackable() -> void:
+	if not bool(data.get("hijackable", false)):
+		return
+	hijackable = get_node_or_null("Hijackable") as Hijackable
+	if hijackable == null:
+		hijackable = Hijackable.new()
+		hijackable.name = "Hijackable"
+		hijackable.allowed = hijack_allowed()
+		hijackable.aim_height_m = height_m * 0.9
+		add_child(hijackable)
+	var spec: Dictionary = data.get("hijack", {}) as Dictionary
+	_hijack_color = Color.html(str(spec.get("color", "#33f2ff")))
+
+
+## Overclock took it over: Red's side for `duration_s`, it fights the nearest enemy, gives up its attack token and
+## glows cyan. Its hits go through the director as a player-team attacker (so they hurt enemies and boss parts).
+func on_hijack_begin(by: CombatActor, duration_s: float) -> bool:
+	if dead or hijacked_by != null or body_state == ST_DEAD:
+		return false
+	hijacked_by = by
+	team = by.team if by != null else CombatDirector.PLAYER_TEAM
+	var director: CombatDirector = find_director()
+	_cut_attack()
+	if director != null and director.tokens != null:
+		director.tokens.release(actor_id)
+	brain.notify(&"move_finished")
+	_hijack_end_stun_ms = float(CombatData.hacks().get("hacks", {}).get("overclock", {}).get("effect", {}).get("end_stun_ms", 800.0))
+	_hijack_damage_scale = 1.0
+	if director != null and director.feel != null and director.feel.has("hack_damage_scale"):
+		_hijack_damage_scale = director.feel.get_f("hack_damage_scale")
+	_hijack_damage_scale *= float(CombatData.hacks().get("hacks", {}).get("overclock", {}).get("effect", {}).get("ally_damage_scale", 1.0))
+	if body_state == ST_STAGGER or body_state == ST_RECOIL or body_state == ST_HURT:
+		_stun_ms = minf(_stun_ms, 200.0)          # shaken awake: it fights for Red almost at once
+	return true
+
+
+## Time is up (or the link broke): back to its owners, dazed for a moment (no instant revenge). A dead one just stays dead.
+func on_hijack_end() -> void:
+	if hijacked_by == null:
+		return
+	hijacked_by = null
+	team = &"enemy"
+	_hijack_damage_scale = 1.0
+	var director: CombatDirector = find_director()
+	if dead or body_state == ST_DEAD:
+		return
+	_cut_attack()
+	if director != null and director.tokens != null:
+		director.tokens.release(actor_id)
+	apply_stun(_hijack_end_stun_ms)
+
+
+## Knocks it out for `ms` (EMP, the end of a hijack): it stands dazed, attacks cancelled, and cannot act until the time is up.
+## A longer stun already running is kept. No effect on the dead.
+func apply_stun(ms: float) -> void:
+	if dead or body_state == ST_DEAD or ms <= 0.0:
+		return
+	_cut_attack()
+	if body_state == ST_LAUNCHED or body_state == ST_DOWN or body_state == ST_GETUP:
+		return                  # already out of the fight; the stun would only cut its get-up short
+	if body_state == ST_STAGGER or body_state == ST_RECOIL or body_state == ST_HURT:
+		_stun_ms = maxf(_stun_ms, ms)
+	else:
+		_stun_ms = ms
+		_set_state(ST_STAGGER)
+		_stagger_clip = &"stagger"
+		brain.notify(&"staggered")
+	if body_state == ST_HURT:
+		_set_state(ST_STAGGER)
+
+
 # ---- allies ----
 
 func _alert_allies(event: StringName) -> void:
@@ -784,8 +899,8 @@ func _make_view(target: CombatActor, dist: float, has_token: bool, enabled: bool
 			"player_attacking": false, "has_token": has_token, "state": body,
 			"poise_frac": poise / poise_max if poise_max > 0.0 else 1.0, "attacks_enabled": enabled,
 			"hp_frac": float(hp) / float(maxi(hp_max, 1)), "knobs": _knob_view(director), "cornered": _cornered}
-	if target == null or director == null:
-		return view
+	if target == null or director == null or hijacked_by != null:
+		return view            # (a hijacked unit has no use for what Red's swing looks like)
 	var angle: float = EnemyRules.relative_angle_deg(target.global_position, target.forward(), global_position)
 	view["my_angle_deg"] = angle
 	view["in_rear_arc"] = EnemyRules.in_rear_arc(angle, float(_rules.get("rear_arc_deg", 120.0)))
@@ -917,6 +1032,8 @@ func _load_data() -> void:
 	launchable = bool(data.get("launchable", true))
 	height_m = float(data.get("height_m", 1.2))
 	radius_m = float(data.get("radius_m", 0.36))
+	for tag: Variant in data.get("tags", []) as Array:
+		tags.append(str(tag))
 	_telegraph_color = Color.html(str(data.get("telegraph_color", "#ff4a3a")))
 	var enrage: Dictionary = ((_beh.get("low_health", {}) as Dictionary).get("enrage", {}) as Dictionary)
 	_enrage_color = Color.html(str(enrage.get("color", "#ff3a1a")))
@@ -1246,6 +1363,9 @@ func _update_overlay(dt: float) -> void:
 		var pulse: float = 0.5 + 0.5 * sin(TAU * TELEGRAPH_HZ * clock.now_ms() / 1000.0)
 		var alpha: float = lerpf(0.2, 0.65, progress) * (0.45 + 0.55 * pulse)
 		_overlay.albedo_color = Color(_telegraph_color.r, _telegraph_color.g, _telegraph_color.b, alpha)
+		return
+	if hijacked_by != null and body_state != ST_DEAD:
+		_overlay.albedo_color = Color(_hijack_color.r, _hijack_color.g, _hijack_color.b, 0.32)       # cyan edge: Red's for now
 		return
 	if is_enraged() and body_state != ST_DEAD:
 		_overlay.albedo_color = Color(_enrage_color.r, _enrage_color.g, _enrage_color.b, 0.2)

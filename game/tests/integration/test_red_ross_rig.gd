@@ -14,7 +14,7 @@ const REQUIRED_BONES: Array[String] = ["root", "hips", "spine", "chest", "neck",
 const OPTIONAL_BONES: Array[String] = ["ear_l", "ear_l_2", "ear_r", "ear_r_2", "tail", "prop_socket", "head_gear", "back", "lamp_socket",
 		"shoulder_l", "shoulder_r"]
 const REQUIRED_CLIPS: Array[String] = ["idle", "run", "jump_up", "fall", "land", "dash", "light_1", "light_2", "light_3", "heavy",
-		"launcher", "air_1", "air_2", "air_3", "parry", "hurt", "knockdown"]
+		"launcher", "air_1", "air_2", "air_3", "parry", "hurt", "knockdown", "hack_zap", "hack_emp", "hack_overclock", "hack_reboot"]
 const OPTIONAL_CLIPS: Array[String] = ["walk", "parry_success", "getup"]
 ## air_dash has no free clip that fits: the game plays `dash` instead (contract section 5), so it is allowed to be absent
 const ABSENT_ON_PURPOSE: Array[String] = ["air_dash"]
@@ -24,6 +24,8 @@ const STAND_INS: Array[String] = ["air_1", "air_2", "air_3", "parry_success"]
 ## clips whose strike lands on a contact frame (contact_s in data/combat/red_clip_keys.json)
 const STRIKES: Array[String] = ["light_1", "light_2", "light_3", "heavy", "launcher"]
 const MAX_CLIP_S: float = 2.6
+## Red's four hack casts (VS-10): free Quaternius clips, no hitbox, so no strike test; the cast moves in moves.json name them
+const HACK_CLIPS: Array[String] = ["hack_zap", "hack_emp", "hack_overclock", "hack_reboot"]
 
 
 func _red() -> Node3D:
@@ -183,6 +185,58 @@ func test_attack_clips_have_a_contact_frame_and_the_strike_pose_arrives_there() 
 				found = true
 				assert_almost_eq(float(key["clip_s"]), contact, 1.0 / 30.0, clip + ": the key at the hit is the contact frame")
 		assert_true(found, clip + ": the move data has a pose key at its hit time")
+
+
+func test_the_four_hack_clips_have_a_release_frame_and_the_cast_moves_snap_to_it() -> void:
+	# the hack moves have no blade, so contact_s is the release frame (drone leaves the hand, pulse rings out, link takes hold, heal
+	# pops); sync_move_keys.py puts it on the move's startup_ms, exactly like a strike
+	var animations: AnimationPlayer = _player(_red())
+	var clips: Dictionary = _clip_keys()
+	var moves: Dictionary = (JSON.parse_string(FileAccess.get_file_as_string("res://data/combat/moves.json")) as Dictionary)["sets"]["red"]["moves"]
+	for clip: String in HACK_CLIPS:
+		assert_true(animations.has_animation(clip), clip + " is in the file")
+		var entry: Dictionary = clips[clip]
+		assert_true(str(entry["source"]).contains("UAL"), clip + " comes from the free pack (no clip authored)")
+		assert_true(entry.has("contact_s") and entry.has("contact_frame"), clip + " has a release frame")
+		assert_lt(float(entry["contact_s"]), animations.get_animation(clip).length - 0.1, clip + " has a follow-through")
+		var move: Dictionary = moves[clip]
+		assert_eq(str((move["anim"] as Dictionary)["clip"]), clip, clip + ": the cast move plays its own clip")
+		var found: bool = false
+		for key: Dictionary in (move["anim"] as Dictionary)["keys"]:
+			if int(key["at_ms"]) == int(move["startup_ms"]):
+				found = true
+				assert_almost_eq(float(key["clip_s"]), float(entry["contact_s"]), 1.0 / 30.0, clip + ": the key at the cast is the release frame")
+		assert_true(found, clip + ": the move data has a pose key at its cast time")
+
+
+func _pose_at(model: Node3D, clip: String, seconds: float) -> Skeleton3D:
+	var skeleton: Skeleton3D = _skeleton(model)
+	var player: AnimationPlayer = _player(model)
+	player.stop()
+	player.play(clip)
+	player.seek(seconds, true)
+	player.pause()
+	skeleton.force_update_all_bone_transforms()
+	return skeleton
+
+
+func test_the_hack_clips_read_differently_and_keep_the_sword_hand_down_for_the_hand_casts() -> void:
+	var clips: Dictionary = _clip_keys()
+	var idle: Skeleton3D = _pose_at(_red(), "idle", 0.5)
+	var idle_head: float = idle.get_bone_global_pose(idle.find_bone("head")).origin.y
+	var reach: Dictionary = {}
+	var head_y: Dictionary = {}
+	for clip: String in HACK_CLIPS:
+		var skeleton: Skeleton3D = _pose_at(_red(), clip, float(clips[clip]["contact_s"]))
+		reach[clip] = skeleton.get_bone_global_pose(skeleton.find_bone("hand_l")).origin
+		head_y[clip] = skeleton.get_bone_global_pose(skeleton.find_bone("head")).origin.y
+		assert_true(float(head_y[clip]) > 0.15 and float(head_y[clip]) < 1.2, "%s: head at a sane height at the release (%.2f)" % [clip, head_y[clip]])
+	# Zap and Overclock are hand casts: the left hand is out in front at the release
+	assert_gt(float(reach["hack_zap"].z), 0.12, "Zap: the left hand is pushed out in front")
+	assert_gt(float(reach["hack_overclock"].z), 0.12, "Overclock: the left hand reaches out in front")
+	# EMP and Reboot are body casts: she is crouched, so the head is lower than at idle
+	for clip: String in ["hack_emp", "hack_reboot"]:
+		assert_lt(float(head_y[clip]), idle_head - 0.1, "%s: crouched at the release (head %.3f, idle %.3f)" % [clip, head_y[clip], idle_head])
 
 
 func test_stand_ins_that_are_kept_are_listed_as_stand_ins_and_still_play() -> void:

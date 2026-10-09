@@ -7,3 +7,5 @@ No credit is required; it is given anyway. License texts: art/placeholder/animat
 They were retargeted onto Red offline (bone names kept) by scripts/tools/retarget_ual.py from the settings in
 data/animation/retarget_*.json. The mesh, skeleton and textures are the rigged copy beside this file; the clips are placeholders
 (Ross, 2026-10-08: everything is placeholder for now). The only exceptions are air_1, air_2, air_3 and parry_success: the Technical Artist's earlier hand-posed stand-ins, kept because no free clip fits them.
+
+Red's four hack casts (VS-10, 2026-10-09) are the same free clips, nothing authored: hack_zap = UAL1 Spell_Simple_Enter + Spell_Simple_Shoot, hack_emp = UAL2 NinjaJump_Land (0 to 1.1 s), hack_overclock = UAL2 Consume, hack_reboot = UAL2 LayToIdle (0.4 s to the end).

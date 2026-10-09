@@ -51,6 +51,12 @@ var relocate_to_window: bool = true
 
 var _director: Object = null
 var _lock_on: Object = null
+var _knobs: Object = null
+## The feature switches (data/slice/features.json) as the HUD last saw them; see _refresh_features().
+var _show_lights_on: bool = true
+var _show_noise: bool = true
+var _show_flare: bool = true
+var _features_seen: int = -1
 var _camera: Object = null
 var _bindings: Array[Array] = []
 var _red_id: String = "red"
@@ -206,7 +212,7 @@ func _build() -> void:
 	_panel.listen_input = listen_input
 	_panel.animations_enabled = animations_enabled
 	add_child(_panel)
-	_pause = (load(PAUSE_SCENE) as PackedScene).instantiate() as SandboxPause
+	_pause = (load(_pause_scene_path()) as PackedScene).instantiate() as SandboxPause
 	_pause.name = "Pause"
 	_pause.audio = audio
 	_pause.manual_ticks = manual_ticks
@@ -216,6 +222,11 @@ func _build() -> void:
 	_pause.quit_requested.connect(_on_quit_requested)
 	add_child(_pause)
 	_update_camera_text()
+
+
+## Which pause menu scene to build. The slice HUD swaps in its own.
+func _pause_scene_path() -> String:
+	return PAUSE_SCENE
 
 
 # ---- binding ----
@@ -247,14 +258,17 @@ func bind(target: Object) -> void:
 		_link(_director, &"noise_changed", _on_noise_changed)
 		_link(_director, &"noise_rank_changed", _on_noise_rank_changed)
 		_link(_director, &"lights_on_changed", _on_lights_on_changed)
+		_link(_director, &"feature_changed", _on_feature_changed)
 		_seed_from_actors()
 	var knobs: Object = null
 	if _director != null:
 		knobs = _director.get(&"feel") as Object
 	if knobs == null:
 		knobs = _call(sandbox, &"get_feel") as Object
+	_knobs = knobs
 	if knobs != null:
 		_panel.bind(knobs)
+	_refresh_features()
 	if _lock_on != null:
 		_link(_lock_on, &"target_changed", _on_target_changed)
 	if _camera != null:
@@ -275,6 +289,7 @@ func unbind() -> void:
 	_director = null
 	_lock_on = null
 	_camera = null
+	_knobs = null
 	sandbox = null
 
 
@@ -546,6 +561,39 @@ func _on_lights_on_changed(active: bool, duration_s: float) -> void:
 	_lights_left = duration_s if active else 0.0
 
 
+## A feature switch flipped: hide or show its part, and rebuild the feel panel's list (hidden knobs leave it).
+func _on_feature_changed(_id: StringName, _on: bool) -> void:
+	_refresh_features()
+	if _knobs != null and _panel != null:
+		_panel.bind(_knobs)
+
+
+## Reads the switches once (not every frame): the Lights On bulb, the Noise meter and the Lamp Flare tag
+## only draw while their feature is on. Turning one off also drops what was running.
+func _refresh_features() -> void:
+	_features_seen = Features.version()
+	_show_lights_on = Features.is_on(Features.LIGHTS_ON)
+	_show_noise = Features.is_on(Features.NOISE_METER)
+	_show_flare = Features.is_on(Features.LAMP_FLARE)
+	if not _show_lights_on:
+		_lights_active = false
+		_lights_left = 0.0
+	if not _show_flare:
+		_flare_active = false
+		_flare_left = 0.0
+	for layer: Control in [_meters, _tr]:
+		if layer != null:
+			layer.queue_redraw()
+
+
+func is_lights_on_shown() -> bool:
+	return _show_lights_on
+
+
+func is_noise_shown() -> bool:
+	return _show_noise
+
+
 func _on_target_changed(target: Object) -> void:
 	_lock_age = 0.0
 	if target == null:
@@ -641,6 +689,8 @@ func _over_red(lift: int) -> Vector2:
 
 func tick(delta: float) -> void:
 	_clock += delta
+	if Features.version() != _features_seen:
+		_refresh_features()
 	for floater: SandboxFloater in _floaters.duplicate():
 		if is_instance_valid(floater):
 			floater.tick(delta)
@@ -725,12 +775,15 @@ func open_pause() -> void:
 
 func _draw_tl() -> void:
 	_draw_hp()
-	_draw_lights()
+	if _show_lights_on:
+		_draw_lights()
 
 
 func _draw_tr() -> void:
-	_draw_noise()
-	_draw_flare()
+	if _show_noise:
+		_draw_noise()
+	if _show_flare:
+		_draw_flare()
 	_draw_callouts()
 
 

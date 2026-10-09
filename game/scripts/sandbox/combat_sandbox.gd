@@ -235,6 +235,7 @@ func _reset_director() -> void:
 			director.style.reset()
 		if director.time != null:
 			director.time.end_flare()
+		director.reset_hacks()          # the hack battery back to its new-game charge, no jam
 
 
 func get_player_spawn() -> Transform3D:

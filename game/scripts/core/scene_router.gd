@@ -39,6 +39,9 @@ var current_room_id: String = ""
 ## reads slice/rooms, the shelved game world/rooms. Tests keep the default.
 var rooms_id: String = ROOMS_ID
 var current_spawn_id: String = ""
+## The room being loaded right now (set just before the host swaps the scene in, so an ActionRoom that has just
+## been created can ask which room it is). Equal to current_room_id once the change is done.
+var pending_room_id: String = ""
 
 var _busy: bool = false
 var _fade: DitherFade = null
@@ -149,6 +152,7 @@ func _change_room(room_id: String, spawn_id: String, fade_out: bool) -> bool:
 	_hold_player(host.call("get_room") as Node)
 	if fade_out:
 		await _fade_to(fade_steps(), fade_out_s())
+	pending_room_id = room_id
 	var room: Node = host.call("enter_room", scene, wanted_spawn) as Node
 	if room == null:
 		_busy = false

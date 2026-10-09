@@ -111,7 +111,7 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	# Ignore the frame a state began on, so the same Enter press that started the demo can't
 	# also send us back. (Nodes in the SubViewport get no input events, so poll here.)
-	if _state == State.ROOM and Engine.get_process_frames() > _state_frame \
+	if _state == State.ROOM and _mode != GameMode.Mode.SLICE and Engine.get_process_frames() > _state_frame \
 			and not UiStage.is_busy(get_tree()) and Input.is_action_just_pressed(BACK_ACTION):
 		go_to_title()
 
@@ -147,6 +147,7 @@ func apply_mode(mode: GameMode.Mode) -> void:
 		apply_sandbox_identity()
 		return
 	var rooms: String = GameMode.rooms_id(mode)
+	Placements.extra_ids = GameMode.placements_ids(mode)
 	if mode == GameMode.Mode.SLICE:
 		InputSorting.install(_config())       # Decision 3 and the pad B conflict (data/slice/input_sorting.json)
 	else:
@@ -343,6 +344,8 @@ func enter_room(scene: PackedScene, spawn_id: String = "") -> Node:
 	_free_title()
 	_free_kept_room()
 	var room: Node = scene.instantiate()
+	if _mode == GameMode.Mode.SLICE and not room is FieldRoom:
+		room = ActionRoom.wrap(room, spawn_id)       # a plain generated level: the one slice room script goes around it
 	if not spawn_id.is_empty() and ENTRY_SPAWN_PROPERTY in room:
 		room.set(ENTRY_SPAWN_PROPERTY, spawn_id)
 	screen.clear_world()

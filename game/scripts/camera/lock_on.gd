@@ -20,6 +20,10 @@ const DATA_ID: String = "combat/camera"
 const GROUP_DIRECTOR: StringName = &"combat_director"
 const ACTION_LOCK_ON: StringName = &"lock_on"
 const TEAM_ENEMY: StringName = &"enemy"
+## Things that are not enemies but can be locked on to: relays on the Hushmaster, turrets, fuse boxes marked `lockable`
+## (slice tech plan 4.3). A node in this group is a target while it is alive (`hp` > 0 when it has one) and `lockable`
+## is not false. Enemies stay the first choice for a fresh lock; a flick switches between the two kinds.
+const GROUP_LOCK_TARGETS: StringName = &"lock_targets"
 
 ## Poll the lock_on action in tick() (the game). Tests turn it off and call toggle() themselves.
 @export var read_engine_input: bool = true
@@ -114,7 +118,10 @@ func release() -> void:
 
 ## The best eligible target for a fresh lock (null if none).
 func best_target() -> Node3D:
-	var list: Array[Node3D] = _eligible(_f(_params, "max_range_m", 16.0) * range_scale, true)
+	var reach: float = _f(_params, "max_range_m", 16.0) * range_scale
+	var list: Array[Node3D] = _eligible(reach, true)       # enemies first ...
+	if list.is_empty():
+		list = _eligible(reach, true, true)                 # ... then hack targets (relays, turrets, fuse boxes)
 	if list.is_empty():
 		return null
 	var entries: Array[Dictionary] = _entries(list)
@@ -129,7 +136,7 @@ func best_target() -> Node3D:
 func switch(flick: Vector2) -> Node3D:
 	if not has_target():
 		return null
-	var list: Array[Node3D] = _eligible(_f(_params, "break_range_m", 21.0) * range_scale, true)
+	var list: Array[Node3D] = _eligible(_f(_params, "break_range_m", 21.0) * range_scale, true, false, true)
 	if not list.has(_target):
 		list.append(_target)
 	var entries: Array[Dictionary] = _entries(list)
@@ -166,8 +173,16 @@ func magnet_target(stick_dir: Vector3, facing: Vector3, range_m: float, cone_deg
 
 # ---- helpers ----
 
-func _candidates() -> Array[Node3D]:
+## Enemies (from the provider or the director), or the `lock_targets` group, or both.
+func _candidates(world_targets: bool = false, with_enemies: bool = true) -> Array[Node3D]:
 	var out: Array[Node3D] = []
+	if world_targets and is_inside_tree():
+		for node: Node in get_tree().get_nodes_in_group(GROUP_LOCK_TARGETS):
+			var spot: Node3D = node as Node3D
+			if spot != null and is_instance_valid(spot) and spot.is_inside_tree() and _is_alive(spot) and _is_lockable(spot):
+				out.append(spot)
+	if not with_enemies:
+		return out
 	var raw: Variant = null
 	if candidate_provider.is_valid():
 		raw = candidate_provider.call()
@@ -178,15 +193,16 @@ func _candidates() -> Array[Node3D]:
 	if raw is Array:
 		for item: Variant in raw as Array:
 			var node: Node3D = item as Node3D
-			if node != null and is_instance_valid(node) and node.is_inside_tree() and _is_alive(node):
+			if node != null and is_instance_valid(node) and node.is_inside_tree() and _is_alive(node) and not out.has(node):
 				out.append(node)
 	return out
 
 
-func _eligible(reach: float, need_sight: bool) -> Array[Node3D]:
+## Who is in reach (and, with `need_sight`, in view). `only_world`: just the lock_targets group; `with_world`: enemies plus it.
+func _eligible(reach: float, need_sight: bool, only_world: bool = false, with_world: bool = false) -> Array[Node3D]:
 	var out: Array[Node3D] = []
 	var origin: Vector3 = _origin()
-	for node: Node3D in _candidates():
+	for node: Node3D in _candidates(only_world or with_world, not only_world):
 		if LockOnMath.flat_offset(origin, node.global_position).length() > reach:
 			continue
 		if need_sight and not _can_see(node):
@@ -200,6 +216,10 @@ func _entries(list: Array[Node3D]) -> Array[Dictionary]:
 	for node: Node3D in list:
 		out.append({"pos": node.global_position, "node": node})
 	return out
+
+
+func _is_lockable(node: Node3D) -> bool:
+	return not ("lockable" in node) or bool(node.get("lockable"))
 
 
 func _is_alive(node: Node3D) -> bool:

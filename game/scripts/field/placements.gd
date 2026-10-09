@@ -17,12 +17,25 @@ const SCENES_ID: String = "world/story_scenes"
 const JOBS_ID: String = "world/jobs"
 
 
+## Extra placement files laid over world/placements (DataDB ids). Main adds "slice/placements" in slice mode, so the
+## slice's doors, pickups and spots sit beside the old game's without touching them. A later file wins on a clash.
+static var extra_ids: Array[String] = []
+
+
 static func data() -> Dictionary:
 	return DataDB.get_dict(DATA_ID)
 
 
 static func section(section_name: String) -> Dictionary:
-	return data().get(section_name, {})
+	var base: Dictionary = data().get(section_name, {})
+	if extra_ids.is_empty():
+		return base
+	var merged: Dictionary = base.duplicate()
+	for extra_id: String in extra_ids:
+		var more: Dictionary = DataDB.get_dict(extra_id).get(section_name, {})
+		for placement_id: String in more:
+			merged[placement_id] = more[placement_id]
+	return merged
 
 
 static func entry(section_name: String, placement_id: String) -> Dictionary:

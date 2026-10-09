@@ -1,0 +1,9 @@
+{
+ "_about": "THROWAWAY doors for the graybox rooms (slice/graybox_rooms.json). Laid over world/placements by Placements.extra_ids; the real slice doors go in slice/placements.json (Level Designer).",
+ "doors": {
+  "gb_hub_to_yard": {"room": "gb_hub", "to_room": "gb_yard", "to_spawn": "from_hub", "label": "Yard"},
+  "gb_yard_to_hub": {"room": "gb_yard", "to_room": "gb_hub", "to_spawn": "from_yard", "label": "Hub"},
+  "gb_yard_to_vault": {"room": "gb_yard", "to_room": "gb_vault", "to_spawn": "from_yard", "label": "Vault"},
+  "gb_vault_to_yard": {"room": "gb_vault", "to_room": "gb_yard", "to_spawn": "from_vault", "label": "Yard"}
+ }
+}

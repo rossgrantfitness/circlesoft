@@ -1124,7 +1124,24 @@
      },
      "anim": {
       "clip": "hack_zap",
-      "keys": [],
+      "keys": [
+       {
+        "at_ms": 0,
+        "clip_s": 0.32
+       },
+       {
+        "at_ms": 110,
+        "clip_s": 0.43
+       },
+       {
+        "at_ms": 160,
+        "clip_s": 0.48
+       },
+       {
+        "at_ms": 350,
+        "clip_s": 0.67
+       }
+      ],
       "fallback": "thrust"
      },
      "note": "Cast move for Zap Drone (hacks.json). The drone leaves Red's hand at the end of startup (impact_ms = startup, no hitbox of its own; the damage is in hacks.json). Fast and cancellable: a Light or Heavy can follow it, so Zap is a route filler, not a dead end. Cost is spent when the cast starts. Can be cast in the air."
@@ -1158,7 +1175,24 @@
      },
      "anim": {
       "clip": "hack_emp",
-      "keys": [],
+      "keys": [
+       {
+        "at_ms": 0,
+        "clip_s": 0.04
+       },
+       {
+        "at_ms": 160,
+        "clip_s": 0.2
+       },
+       {
+        "at_ms": 220,
+        "clip_s": 0.26
+       },
+       {
+        "at_ms": 520,
+        "clip_s": 0.56
+       }
+      ],
       "fallback": "brace"
      },
      "note": "Cast move for EMP. A 160 ms charge-up (the ring of static gathers round her), then the pulse. Dash-cancels early so it works as an escape, but it is not free: she is stuck for 220 ms before the cancel opens. Can be cast in the air."
@@ -1191,7 +1225,24 @@
      },
      "anim": {
       "clip": "hack_overclock",
-      "keys": [],
+      "keys": [
+       {
+        "at_ms": 0,
+        "clip_s": 0.2
+       },
+       {
+        "at_ms": 200,
+        "clip_s": 0.4
+       },
+       {
+        "at_ms": 280,
+        "clip_s": 0.48
+       },
+       {
+        "at_ms": 560,
+        "clip_s": 0.76
+       }
+      ],
       "fallback": "thrust"
      },
      "note": "Cast move for Overclock. A 200 ms reach (the link line streaks to the target), then the take-over. Refused with no target, so this move never starts without one. Ground only. A short window to read the cast: if the target dies during startup the link fizzles and the battery is refunded (HackCaster rule)."
@@ -1216,7 +1267,24 @@
      },
      "anim": {
       "clip": "hack_reboot",
-      "keys": [],
+      "keys": [
+       {
+        "at_ms": 0,
+        "clip_s": 0.29
+       },
+       {
+        "at_ms": 260,
+        "clip_s": 0.55
+       },
+       {
+        "at_ms": 360,
+        "clip_s": 0.65
+       },
+       {
+        "at_ms": 740,
+        "clip_s": 1.03
+       }
+      ],
       "fallback": "stretch_up"
      },
      "note": "Cast move for Reboot. The longest cast on purpose: 260 ms of reboot-sequence, then 600 ms of invincibility from the active frame (iframes_ms in hacks.json), then a long recovery. Nothing cancels it but a late dash, so a Reboot in the middle of a pack is a choice, not a reflex. Ground only."

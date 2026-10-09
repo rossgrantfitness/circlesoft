@@ -59,6 +59,7 @@ var _snapshot: Dictionary = {}
 var _open: bool = false
 var _zone: Zone = Zone.ROWS
 var _tab: int = 0
+var _tab_first: int = 0   ## first tab shown when the strip has to scroll
 var _row: int = 0
 var _top: int = 0
 var _button: int = 0
@@ -792,6 +793,9 @@ func _row_at(at: Vector2) -> int:
 	return -1
 
 
+## One rect per group. When every tab fits it is the old even row; with more groups than fit
+## (the "Hacks" and "Boss" groups made that happen) the strip scrolls: the tabs outside the window
+## get an empty rect on the edge they scrolled off, and the active tab is always inside the window.
 func _tab_rects() -> Array[Rect2]:
 	var out: Array[Rect2] = []
 	var gap: float = float(_layout.get("tab_gap", 2))
@@ -801,28 +805,73 @@ func _tab_rects() -> Array[Rect2]:
 		var text_w: float = SandboxStyle.text_width("label", FeelFormat.group_title(group).to_upper())
 		widths.append(text_w)
 		text_total += text_w
-	# Padding shrinks when many groups would not fit the panel width.
-	var room: float = _width() - gap * float(maxi(0, _groups.size() - 1))
-	var pad: float = clampf((room - text_total) / maxf(1.0, float(_groups.size()) * 2.0), 1.0, float(_layout.get("tab_pad_x", 6)))
-	var x: float = _left()
-	for i: int in _groups.size():
-		var w: float = widths[i] + pad * 2.0
-		out.append(Rect2(x, float(_layout["tab_y"]), w, float(_layout["tab_h"])))
-		x += w + gap
+	var count: int = _groups.size()
+	var room: float = _width() - gap * float(maxi(0, count - 1))
+	var max_pad: float = float(_layout.get("tab_pad_x", 6))
+	var min_pad: float = float(_layout.get("tab_min_pad_x", 3))
+	var y: float = float(_layout["tab_y"])
+	var h: float = float(_layout["tab_h"])
+	var pad: float = clampf((room - text_total) / maxf(1.0, float(count) * 2.0), min_pad, max_pad)
+	var needed: float = text_total + pad * 2.0 * float(count)
+	if needed <= room + 0.01:
+		_tab_first = 0
+		var x: float = _left()
+		for i: int in count:
+			var w: float = widths[i] + pad * 2.0
+			out.append(Rect2(x, y, w, h))
+			x += w + gap
+		return out
+	# Scrolling strip at the minimum padding.
+	var span: Array[float] = []
+	for i: int in count:
+		span.append(widths[i] + pad * 2.0)
+	_tab_first = clampi(_tab_first, 0, maxi(0, count - 1))
+	var last: int = _tab_last_for(_tab_first, span, gap)
+	if _tab < _tab_first:
+		_tab_first = _tab
+		last = _tab_last_for(_tab_first, span, gap)
+	while _tab > last and _tab_first < count - 1:
+		_tab_first += 1
+		last = _tab_last_for(_tab_first, span, gap)
+	# Pull the window back when there is empty room on the right.
+	while _tab_first > 0 and _tab_strip_w(_tab_first - 1, last, span, gap) <= _width() + 0.01:
+		_tab_first -= 1
+	var x2: float = _left()
+	for i: int in count:
+		if i < _tab_first:
+			out.append(Rect2(_left(), y, 0.0, h))
+		elif i > last:
+			out.append(Rect2(_left() + _width(), y, 0.0, h))
+		else:
+			out.append(Rect2(x2, y, span[i], h))
+			x2 += span[i] + gap
 	return out
 
 
-func _tab_pad() -> float:
-	var rects: Array[Rect2] = _tab_rects()
-	if rects.is_empty():
-		return 0.0
-	return (rects[0].size.x - SandboxStyle.text_width("label", FeelFormat.group_title(_groups[0]).to_upper())) / 2.0
+## The last tab index that fits in the strip when it starts at `first`.
+func _tab_last_for(first: int, span: Array[float], gap: float) -> int:
+	var used: float = 0.0
+	var last: int = first
+	for i: int in range(first, span.size()):
+		var next: float = used + span[i] + (gap if i > first else 0.0)
+		if next > _width() + 0.01 and i > first:
+			break
+		used = next
+		last = i
+	return last
+
+
+func _tab_strip_w(first: int, last: int, span: Array[float], gap: float) -> float:
+	var total: float = 0.0
+	for i: int in range(first, last + 1):
+		total += span[i] + (gap if i > first else 0.0)
+	return total
 
 
 func _tab_at(at: Vector2) -> int:
 	var rects: Array[Rect2] = _tab_rects()
 	for i: int in rects.size():
-		if rects[i].has_point(at):
+		if rects[i].size.x > 0.0 and rects[i].has_point(at):
 			return i
 	return -1
 
@@ -877,6 +926,8 @@ func _draw_tabs() -> void:
 	var rects: Array[Rect2] = _tab_rects()
 	for i: int in rects.size():
 		var rect: Rect2 = rects[i]
+		if rect.size.x <= 0.0:
+			continue
 		var active: bool = i == _tab
 		SandboxStyle.list_bar(_overlay, rect, active, not active)
 		var pad: float = (rect.size.x - SandboxStyle.text_width("label", FeelFormat.group_title(_groups[i]).to_upper())) / 2.0
@@ -886,8 +937,10 @@ func _draw_tabs() -> void:
 		if _group_changed(_groups[i]):
 			_overlay.draw_rect(Rect2(rect.end.x - 4.0, rect.position.y + 2.0, 2.0, 2.0), SandboxStyle.color("pip"))
 	var mid: float = float(_layout["tab_y"]) + float(_layout["tab_h"]) / 2.0
-	SandboxStyle.arrow(_overlay, Vector2(_left() - 7.0, mid), Vector2i.LEFT)
-	SandboxStyle.arrow(_overlay, Vector2(_left() + _width() + 7.0, mid), Vector2i.RIGHT)
+	var more_left: bool = not rects.is_empty() and rects[0].size.x <= 0.0
+	var more_right: bool = not rects.is_empty() and rects.back().size.x <= 0.0
+	SandboxStyle.arrow(_overlay, Vector2(_left() - 7.0, mid), Vector2i.LEFT, SandboxStyle.color("pip") if more_left else Color(0, 0, 0, 0))
+	SandboxStyle.arrow(_overlay, Vector2(_left() + _width() + 7.0, mid), Vector2i.RIGHT, SandboxStyle.color("pip") if more_right else Color(0, 0, 0, 0))
 
 
 func _draw_rows() -> void:

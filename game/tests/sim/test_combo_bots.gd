@@ -253,7 +253,7 @@ func test_two_enemies_close_are_not_a_crowd_and_get_the_launcher() -> void:
 
 # ---- the second button ----
 
-func test_the_hack_button_only_shows_the_call_out_in_the_sandbox() -> void:
+func test_the_hack_button_fires_a_real_hack_now_and_the_coming_later_call_out_is_gone() -> void:
 	await _boot(["grunt_1"])
 	var texts: Array[String] = []
 	_red.hack_pressed.connect(func(info: Dictionary) -> void: texts.append(str(info["text"])))
@@ -263,6 +263,6 @@ func test_the_hack_button_only_shows_the_call_out_in_the_sandbox() -> void:
 	for frame: int in range(_frames(0.6)):
 		await tree.physics_frame
 		_red.release(&"heavy")
-	assert_eq(texts, ["Hack: coming later"] as Array[String])
-	assert_eq(_moves, [] as Array[StringName], "no attack started")
-	assert_eq(_hits.size(), 0)
+	assert_does_not_have(texts, "Hack: coming later", "a real hack fires, so the placeholder call-out is gone")
+	assert_eq(_moves, [&"hack_zap"] as Array[StringName], "the cast move, not a sword swing")
+	assert_gt(float(_hits_by(&"hack_zap").size()), 0.0, "and the drone hit the grunt in front of her")

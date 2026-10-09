@@ -43,6 +43,9 @@ var _default_party_ids: Array[String] = []
 var _members: Dictionary[String, Dictionary] = {}
 var _starting_items: Dictionary[String, int] = {}
 var _new_game_party: Dictionary = {}
+## The slice's run-time state that is not a flag or an item: what Red carries from room to room (HeroSession) and the
+## last checkpoint {room, spawn, session}. Cleared by reset(). Not saved yet (the save fields come with VS-16).
+var slice_run: Dictionary = {}
 ## The rooms file a New Game reads its start room from. Main sets it from the game mode (GameMode.rooms_id).
 var rooms_data_id: String = ROOMS_DATA_ID
 var _base_members: Dictionary[String, Dictionary] = {}
@@ -107,6 +110,7 @@ func _sync_starting_stats() -> void:
 
 ## Back to a fresh run: starting bag, no flags, starting member stats, the new-game place and beat.
 func reset() -> void:
+	slice_run = {}
 	_bag.clear()
 	_flags.clear()
 	_opened.clear()

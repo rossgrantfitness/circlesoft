@@ -34,6 +34,8 @@
  "enemies": {
   "grunt": {
    "name": "Cyberwolf Sentinel",
+   "hijackable": true,
+   "hijack": {"_about": "Overclock can take this enemy for a few seconds (plan 4.4 lists the cop/Grunt). Added by the Combat Programmer so the sandbox has something to hijack; the Combat Designer owns whether it stays. 'tags' (drone, turret, robot, relay, boss) are the Designer's: the Grunt has none yet.", "color": "#33f2ff"},
    "model": "res://art/final/enemies/cyberwolf_sentinel_rigged_ual.glb",
    "fallback_model": "res://art/final/enemies/cyberwolf_sentinel_ross_v1.glb",
    "blockout": {"shape": "capsule", "color": "#5d6f8c", "face_color": "#e8d36a"},

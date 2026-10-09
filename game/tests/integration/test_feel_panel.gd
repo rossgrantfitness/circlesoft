@@ -469,10 +469,16 @@ func test_clicking_a_slider_sets_that_spot_and_dragging_follows() -> void:
 
 func test_clicking_a_toggle_flips_it_and_a_tab_selects_it() -> void:
 	_setup()
-	var fx_tab: int = _panel.get_knob_groups().find("fx")
 	var rects: Array[Rect2] = _panel._tab_rects()
-	_click(_stage_point(rects[fx_tab].get_center()))
-	assert_eq(_panel.get_tab(), fx_tab)
+	var clicked: int = -1
+	for i: int in rects.size():
+		if i != _panel.get_tab() and rects[i].size.x > 0.0:
+			clicked = i
+			break
+	assert_ne(clicked, -1, "some other tab is on screen to click")
+	_click(_stage_point(rects[clicked].get_center()))
+	assert_eq(_panel.get_tab(), clicked)
+	_panel.focus_knob("trails_on")
 	var before: bool = _knobs.get_b("trails_on")
 	var index: int = _panel.get_rows().find(_knob("trails_on"))
 	_click(_row_point(index, 40.0))
@@ -514,3 +520,25 @@ func test_the_tabs_always_fit_inside_the_panel() -> void:
 	assert_eq(rects.size(), _panel.get_knob_groups().size())
 	var right: float = float(SandboxUiData.ui("feel_panel.x", 16)) + float(SandboxUiData.ui("feel_panel.w", 352))
 	assert_le(rects.back().end.x, right + 0.5, "the last tab ends inside the panel")
+
+
+func test_a_tab_strip_with_too_many_groups_scrolls_and_keeps_the_active_tab_visible() -> void:
+	_setup()
+	var groups: Array[String] = []
+	for i: int in 14:
+		groups.append("group_number_%d" % i)
+	_panel._groups = groups
+	var right: float = float(SandboxUiData.ui("feel_panel.x", 16)) + float(SandboxUiData.ui("feel_panel.w", 352))
+	var left: float = float(SandboxUiData.ui("feel_panel.x", 16))
+	var hidden_seen: bool = false
+	for tab: int in groups.size():
+		_panel._tab = tab
+		var rects: Array[Rect2] = _panel._tab_rects()
+		assert_eq(rects.size(), groups.size())
+		assert_gt(rects[tab].size.x, 0.0, "tab %d is on screen while it is active" % tab)
+		for rect: Rect2 in rects:
+			assert_ge(rect.position.x, left - 0.5)
+			assert_le(rect.end.x, right + 0.5)
+			if rect.size.x <= 0.0:
+				hidden_seen = true
+	assert_true(hidden_seen, "a long strip hides the tabs that scrolled away")

@@ -388,6 +388,43 @@
    "source": "UAL2:LayToIdle"
   },
   {
+   "name": "hack_zap",
+   "parts": [
+    {
+     "source": "UAL1:Spell_Simple_Enter"
+    },
+    {
+     "source": "UAL1:Spell_Simple_Shoot"
+    }
+   ],
+   "contact_src_s": 0.43,
+   "note": "Zap Drone cast: left hand raised and pushed out (UAL1 Spell_Simple_Enter then Spell_Simple_Shoot); the drone leaves the open hand at the contact. The sword hand stays low."
+  },
+  {
+   "name": "hack_emp",
+   "source": "UAL2:NinjaJump_Land",
+   "from_s": 0.0,
+   "to_s": 1.1,
+   "contact_src_s": 0.2,
+   "note": "EMP cast: a crouch with a hand on the floor (UAL2 NinjaJump_Land), the pulse rings out from the slam, then she stands up."
+  },
+  {
+   "name": "hack_overclock",
+   "source": "UAL2:Consume",
+   "from_s": 0.0,
+   "to_s": 1.33,
+   "contact_src_s": 0.4,
+   "note": "Overclock cast: left hand reaches out palm up and holds (UAL2 Consume), the link takes hold at the contact."
+  },
+  {
+   "name": "hack_reboot",
+   "source": "UAL2:LayToIdle",
+   "from_s": 0.4,
+   "to_s": 1.53,
+   "contact_src_s": 0.95,
+   "note": "Reboot cast: the second half of the get-up (UAL2 LayToIdle), crouch to standing; the heal pops as she rises."
+  },
+  {
    "name": "air_1",
    "source": "UAL2:Sword_Regular_A",
    "ground": "free",

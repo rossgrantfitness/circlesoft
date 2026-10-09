@@ -1,0 +1,64 @@
+{
+ "_about": "Words for the slice HUD (VS-11): hack panel, boss bar, radio bark box, location card, Continue screen and the slice pause menu. Hack names come from data/combat/hacks.json. Layout and timing: data/ui/slice_ui.json.",
+ "hack": {
+  "battery": "Batt",
+  "auto": "Auto",
+  "auto_last": "last: {name}",
+  "auto_none": "reads the room",
+  "jammed": "Signal jammed",
+  "jammed_time": "{seconds}s",
+  "link": "Link",
+  "no_signal": "No signal",
+  "need_full": "Needs a full battery",
+  "left_hint": "<",
+  "right_hint": ">",
+  "cost_all": "All"
+ },
+ "boss": {
+  "phase": "Phase {n}",
+  "phase_of": "{n}/{count}"
+ },
+ "radio": {
+  "speakers": {
+   "vela": "Vela",
+   "red": "Red",
+   "kasp": "Kasp"
+  },
+  "default_speaker": "Vela",
+  "static_tag": "Comm"
+ },
+ "location": {
+  "kinds": {
+   "town": "Town",
+   "dungeon": "Dungeon",
+   "arena": "Arena"
+  }
+ },
+ "continue": {
+  "title": "Knocked out",
+  "continue": "Continue",
+  "quit": "Quit to title",
+  "info_label": "Information",
+  "hint_room": "Back to the start of this room, with what you walked in with.",
+  "hint_save": "Back to your last save.",
+  "hint_boss": "Back to the start of this fight.",
+  "hint_quit": "Give up for now and go back to the title screen.",
+  "cost": "Costs {credits} credits."
+ },
+ "pause": {
+  "title": "Paused",
+  "resume": "Resume",
+  "menu": "Menu",
+  "controls": "Controls",
+  "feel": "Tuning",
+  "quit": "Quit to title",
+  "info_label": "Information",
+  "hints": {
+   "resume": "Back to the game.",
+   "menu": "Items, gear and save info.",
+   "controls": "See the buttons, and change them.",
+   "feel": "Open the tuning panel (F12) to change how the game feels.",
+   "quit": "Go back to the title screen."
+  }
+ }
+}

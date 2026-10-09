@@ -157,7 +157,8 @@ static func _resolve_guard(result: Dictionary, attack: Dictionary, attacker: Dic
 	var drain: float = float(attack.get("poise_damage", 0.0))
 	var breaks: bool = (bool(attack.get("launcher", false)) and bool(guard.get("break_by_launcher", true))) \
 			or drain >= float(guard.get("break_poise", 999.0)) \
-			or float(guard.get("meter", 0.0)) - drain <= 0.0
+			or float(guard.get("meter", 0.0)) - drain <= 0.0 \
+			or bool(attack.get("guard_break", false))          # EMP: a pulse breaks a raised guard whatever the poise
 	var chip: int = _damage(base_damage * float(guard.get("chip_scale", 0.25)), false)
 	if base_damage > 0.0:
 		chip = maxi(chip, int(guard.get("min_chip", 1)))
@@ -196,6 +197,7 @@ static func _blank(attack: Dictionary, attacker: Dictionary, target: Dictionary)
 		"move_id": attack.get("move_id", &""), "swing_id": int(attack.get("swing_id", 0)),
 		"parry_rating": ClutchJudge.RATING_MISS, "launched": false, "staggered_target": false,
 		"staggered_attacker": false, "armored": false, "air_hit": false, "lethal": false, "guard_drain": 0.0,
+		"source": str(attack.get("source", "sword")),          # "sword", "hack" or "hijacked": BossPart and the HUD read it
 	}
 
 
