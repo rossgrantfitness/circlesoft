@@ -124,6 +124,16 @@ func select_id(id: StringName) -> bool:
 	return select_index(_order.find(id))
 
 
+## The menu's names for the same thing (the command deck's hack submenu drives these): `set_current` chooses, `current` reads.
+## Works in either mode; false if there is no such hack.
+func set_current(id: StringName) -> bool:
+	return select_id(id)
+
+
+func current() -> StringName:
+	return selected()
+
+
 # ---- what the HUD shows ----
 
 ## Pick: the selected hack. Auto: the last one used (the HUD never lets the guess be a surprise), else the selected one.

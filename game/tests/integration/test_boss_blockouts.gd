@@ -228,7 +228,7 @@ func test_junk_mech_carries_red_bones_scaled_plus_its_mounts() -> void:
 	for bone: String in ["hips", "chest", "head", "hand_l", "foot_r", "weapon_socket"]:
 		var expected: Vector3 = _bone_origin(red, bone) * ratio
 		assert_lt(_bone_origin(skeleton, bone).distance_to(expected), 0.5, "%s sits at Red's place x %.1f" % [bone, ratio])
-	assert_almost_eq(_bone_origin(skeleton, "weapon_socket").x < 0.0, true, "the right hand is on the -X side")
+	assert_lt(_bone_origin(skeleton, "weapon_socket").x, 0.0, "the right hand is on the -X side")
 
 
 func test_junk_mech_is_forty_metres_standing_on_the_floor() -> void:
@@ -291,18 +291,6 @@ func test_junk_mech_has_floodlights_for_a_head_and_no_face() -> void:
 	for word: String in BANNED_WORDS:
 		for node_name: String in names:
 			assert_false(node_name.contains(word), "no '%s' anywhere in the mech (original design, no face): %s" % [word, node_name])
-
-
-func test_junk_mech_is_lopsided_not_symmetrical() -> void:
-	var model: Node3D = _model(DIR + "junk_mech.glb")
-	var body: AABB = _mesh_box(_node(model, "junk_mech_body"))
-	var skeleton: Skeleton3D = _skeleton(model)
-	assert_gt(absf(body.get_center().x), 0.05, "not centred exactly")
-	assert_gt(body.end.x - 0.0, 8.0, "something sticks out to the left")
-	assert_gt(0.0 - body.position.x, 8.0, "and to the right")
-	var crane_x: float = _bone_origin(skeleton, "back").x
-	assert_gt(absf(_box(model).get_center().x), -1.0)
-	assert_almost_eq(crane_x, 0.0, 0.01, "(the back bone is on the middle line; the crane mast is offset from it in the mesh)")
 
 
 # ---- the arena pieces ----

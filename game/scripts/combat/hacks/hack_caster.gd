@@ -140,6 +140,75 @@ func overclock_preview() -> Node3D:
 	return found.get("node", null)
 
 
+# ---- the command deck's API (Ross, Decision 1: a Kingdom Hearts style menu with a hack submenu) ----
+# The menu (UI Programmer, VS-11) drives these; the hack button, the 1 to 4 keys and the automatic pick use the same casting path.
+
+## Chooses the hack the hack button fires. False if there is no such hack. Announces it (`hack_selected`).
+func set_current(id: StringName) -> bool:
+	if selector == null or not selector.set_current(id):
+		return false
+	if director != null:
+		director.hack_selected.emit(id)
+	return true
+
+
+func current() -> StringName:
+	return selector.current() if selector != null else &""
+
+
+## Fires the current hack, as the hack button would in pick mode (buffered, then the rules decide). True if the request was made.
+func cast_current() -> bool:
+	return cast_direct(current())
+
+
+## Fires `id` now without changing the current one (a shortcut, or a menu entry picked and confirmed). The cost, cooldown,
+## jam, target and air rules still apply; a refusal comes back through `hack_refused`. True if the request was made.
+func cast_direct(id: StringName) -> bool:
+	if player == null or rules == null or not rules.has_hack(id) or player.town_mode or player.get_form_id() != &"red" or player.dead:
+		return false
+	player.queue_hack({"held_ms": 0.0, "hack": id}, player.clock.real_now_usec())
+	return true
+
+
+## Everything a menu row needs about one hack: {id, name, icon, role, cost (number, the whole battery for Reboot), cost_all,
+## affordable (the battery can pay), ready (no cooldown or jam in the way), castable (a cast now would start), reason (why not,
+## or &""), cooldown (0..1 left)}. `castable` includes needing a target (Overclock) and the air.
+func hack_status(id: StringName) -> Dictionary:
+	if rules == null or director == null or not rules.has_hack(id):
+		return {"id": id, "castable": false, "reason": HackRules.R_UNKNOWN}
+	var battery_now: HackBattery = director.battery
+	var knobs: Dictionary = _knobs()
+	var now_ms: float = _now_ms()
+	var found: Dictionary = _find_target(id, _aim_dir())
+	var verdict: Dictionary = rules.check(id, {
+		"charge": battery_now.charge(), "capacity": battery_now.capacity(), "now_ms": now_ms,
+		"locked": battery_now.is_locked(now_ms), "airborne": player.is_airborne(),
+		"has_target": found.has("node"), "hijack_active": hijack() != null, "knobs": knobs})
+	var spec: Dictionary = rules.hack(id)
+	return {"id": id, "name": rules.display_name(id), "icon": str(spec.get("icon", "")), "role": str(spec.get("role", "")),
+			"cost": rules.cost(id, battery_now.charge(), knobs), "cost_all": str(spec.get("cost", 0.0)) == HackRules.COST_ALL,
+			"affordable": rules.affordable(id, battery_now.charge(), battery_now.capacity(), knobs),
+			"ready": rules.cooldown_left_ms(id, now_ms) <= 0.0 and not battery_now.is_locked(now_ms),
+			"castable": bool(verdict["ok"]), "reason": StringName(str(verdict["reason"])),
+			"cooldown": rules.cooldown_fraction(id, now_ms, knobs)}
+
+
+## The statuses of all four, in menu order.
+func hack_list() -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	for id: StringName in rules.order():
+		out.append(hack_status(id))
+	return out
+
+
+func battery_charge() -> float:
+	return director.battery.charge() if director != null else 0.0
+
+
+func battery_capacity() -> float:
+	return director.battery.capacity() if director != null else 0.0
+
+
 # ---- the selection (option A) ----
 
 func select_step(direction: int) -> void:
@@ -245,8 +314,12 @@ func begin_cast(request: Dictionary) -> Dictionary:
 	var knobs: Dictionary = _knobs()
 	var aim: Vector3 = _aim_dir()
 	var now_ms: float = _now_ms()
-	var hack: StringName = &""
-	if selector.mode == HackSelector.MODE_AUTO:
+	var hack: StringName = StringName(str(request.get("hack", "")))       # a menu or shortcut named the hack: no picking
+	if hack != &"" and not rules.has_hack(hack):
+		return none
+	if hack != &"":
+		pass
+	elif selector.mode == HackSelector.MODE_AUTO:
 		var pick: Dictionary = selector.pick_auto(_situation(request, aim, knobs), knobs)
 		hack = pick["hack"]
 		if hack == &"" or bool(pick["fizz"]):
