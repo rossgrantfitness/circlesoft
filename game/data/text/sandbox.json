@@ -2,6 +2,7 @@
   "_about": "Every word in the combat sandbox UI (scripts/ui/sandbox/). {n}, {value}, {path} and similar words in braces are filled in by the code. Names such as Lamp Flare and the Noise rank names are working names (Level 1): change them here, no code needed. The knob hints below are a fallback: a knob's own \"hint\" in data/combat/feel.json wins.",
   "hud": {
     "hp": "HP",
+    "dash": "Dash",
     "noise": "Noise",
     "lights_on": "LIGHTS ON",
     "lights_off": "Lights",

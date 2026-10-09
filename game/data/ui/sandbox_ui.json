@@ -23,7 +23,10 @@
     "red_damage": "#FF7A59",
     "armored": "#8D97A5",
     "good": "#9BE35A",
-    "warn": "#FF7A59"
+    "warn": "#FF7A59",
+    "dash_pip": "#7FE8FF",
+    "dash_pip_low": "#2E7F99",
+    "dash_pip_denied": "#FF5A36"
   },
   "hud": {
     "hp_text_pos": [
@@ -39,6 +42,18 @@
     "hp_low_pct": 25,
     "hp_chip_delay_s": 0.35,
     "hp_chip_per_s": 0.9,
+    "dash_pips": {
+      "x": 128,
+      "y": 20,
+      "w": 8,
+      "h": 4,
+      "gap": 2,
+      "label_pos": [
+        128,
+        16
+      ],
+      "denied_s": 0.3
+    },
     "lights_icon_pos": [
       8,
       30

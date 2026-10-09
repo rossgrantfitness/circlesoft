@@ -522,3 +522,86 @@ func test_menus_center_themselves_in_a_larger_ui() -> void:
 	assert_eq(offset, Vector2(128, 72))
 	assert_eq(_hud.get_feel_panel().get_node("Overlay").position, offset)
 	assert_eq(_hud.get_feel_panel().size, Vector2(640, 360), "the dim covers the whole UI")
+
+
+# ---- the dash charge pips (Ross 2026-10-09, dash on charges) ----
+
+func _show_charges(charges: DashCharges) -> void:
+	_sandbox.player.dash_charges = charges.snapshot()
+	_hud.tick(STEP)
+
+
+func test_the_pips_show_every_charge_when_she_is_full() -> void:
+	_setup()
+	var charges: DashCharges = DashCharges.create(int(FeelKnobs.load_defaults().get_f("dash_charges")))
+	_show_charges(charges)
+	var fills: Array[float] = _hud.get_dash_pip_fills()
+	assert_eq(fills.size(), charges.max_count, "one pip per charge she can hold")
+	for fill: float in fills:
+		assert_almost_eq(fill, 1.0, 0.0001)
+
+
+func test_spent_pips_go_dark_from_the_right_and_the_refilling_one_shows_its_progress() -> void:
+	_setup()
+	var recharge: float = FeelKnobs.load_defaults().get_f("dash_recharge_s")
+	var charges: DashCharges = DashCharges.create(int(FeelKnobs.load_defaults().get_f("dash_charges")))
+	charges.spend()
+	charges.spend()
+	charges.tick(recharge * 0.5, recharge)
+	_show_charges(charges)
+	var fills: Array[float] = _hud.get_dash_pip_fills()
+	var held: int = charges.count
+	for i: int in fills.size():
+		if i < held:
+			assert_almost_eq(fills[i], 1.0, 0.0001, "pip %d is a charge" % i)
+		elif i == held:
+			assert_almost_eq(fills[i], 0.5, 0.01, "the next pip is half refilled")
+		else:
+			assert_almost_eq(fills[i], 0.0, 0.0001, "pip %d is spent" % i)
+
+
+func test_a_refilling_pip_grows_each_tick_and_fills_when_the_charge_lands() -> void:
+	_setup()
+	var recharge: float = FeelKnobs.load_defaults().get_f("dash_recharge_s")
+	var charges: DashCharges = DashCharges.create(int(FeelKnobs.load_defaults().get_f("dash_charges")))
+	charges.spend()
+	var last: float = -1.0
+	for i: int in 5:
+		charges.tick(recharge * 0.15, recharge)
+		_show_charges(charges)
+		var fills: Array[float] = _hud.get_dash_pip_fills()
+		assert_gt(fills[charges.count], last, "the spent pip is filling")
+		last = fills[charges.count]
+	charges.tick(recharge, recharge)
+	_show_charges(charges)
+	var after: Array[float] = _hud.get_dash_pip_fills()
+	assert_almost_eq(after[after.size() - 1], 1.0, 0.0001, "and it is full once the charge is back")
+
+
+func test_the_count_of_the_hud_matches_the_player_snapshot() -> void:
+	_setup()
+	var charges: DashCharges = DashCharges.create(4)
+	charges.spend()
+	_show_charges(charges)
+	var info: Dictionary = _hud.get_dash_charges()
+	assert_eq(int(info["count"]), 3)
+	assert_eq(int(info["max"]), 4)
+	assert_eq(_hud.get_dash_pip_fills().size(), 4, "the pip row follows the max, which follows the F12 knob")
+
+
+func test_a_refused_dash_flashes_the_pips_for_a_moment() -> void:
+	_setup()
+	_show_charges(DashCharges.create(5))
+	assert_false(_hud.is_dash_denied())
+	_sandbox.player.dash_refused.emit()
+	assert_true(_hud.is_dash_denied())
+	for i: int in 8:
+		_hud.tick(STEP)
+	assert_false(_hud.is_dash_denied(), "the flash is short")
+
+
+func test_no_pips_without_a_player_to_ask() -> void:
+	_setup()
+	_sandbox.player.dash_charges = {}
+	_hud.tick(STEP)
+	assert_eq(_hud.get_dash_pip_fills().size(), 0)

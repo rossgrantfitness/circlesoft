@@ -65,6 +65,10 @@ var _hp: int = 0
 var _hp_max: int = 1
 var _hp_chip: float = 0.0
 var _hp_chip_wait: float = 0.0
+## Red's dash charges (Ross 2026-10-09): {count, max, fraction} polled from the player each tick; empty = no pips.
+var _player: Object = null
+var _dash_info: Dictionary = {}
+var _dash_denied_left: float = 0.0
 var _noise_points: float = 0.0
 var _noise_fill: float = 0.0
 var _noise_shown: float = 0.0
@@ -243,8 +247,10 @@ func bind(target: Object) -> void:
 	var player: Object = _call(sandbox, &"get_player") as Object
 	if player != null and player.get(&"actor_id") != null and not str(player.get(&"actor_id")).is_empty():
 		_red_id = str(player.get(&"actor_id"))
+	_player = player
 	if player != null:
 		_link(player, &"hack_pressed", _on_hack_pressed)
+		_link(player, &"dash_refused", _on_dash_refused)
 	if _director != null:
 		_link(_director, &"actor_registered", _on_actor_registered)
 		_link(_director, &"actor_died", _on_actor_died)
@@ -290,6 +296,9 @@ func unbind() -> void:
 	_lock_on = null
 	_camera = null
 	_knobs = null
+	_player = null
+	_dash_info = {}
+	_dash_denied_left = 0.0
 	sandbox = null
 
 
@@ -351,6 +360,33 @@ func is_lights_on() -> bool:
 
 func is_flaring() -> bool:
 	return _flare_active
+
+
+## The dash charges the pips show: {count, max, fraction} (empty when there is no player to ask).
+func get_dash_charges() -> Dictionary:
+	return _dash_info.duplicate()
+
+
+## How full each dash pip is, left to right: 1.0 = a charge, the one refilling shows its progress, 0.0 = spent.
+func get_dash_pip_fills() -> Array[float]:
+	var out: Array[float] = []
+	if _dash_info.is_empty():
+		return out
+	var held: int = int(_dash_info.get("count", 0))
+	var total: int = int(_dash_info.get("max", 0))
+	for i: int in total:
+		if i < held:
+			out.append(1.0)
+		elif i == held:
+			out.append(clampf(float(_dash_info.get("fraction", 0.0)), 0.0, 0.999))
+		else:
+			out.append(0.0)
+	return out
+
+
+## True while the pips flash for a dash pressed with none left.
+func is_dash_denied() -> bool:
+	return _dash_denied_left > 0.0
 
 
 func get_lock_id() -> String:
@@ -511,6 +547,10 @@ func _on_hack_pressed(info: Dictionary) -> void:
 
 func _on_parry_judged(info: Dictionary) -> void:
 	_call_out(SandboxPopups.parry_text(str(info.get("rating", "miss"))))
+
+
+func _on_dash_refused() -> void:
+	_dash_denied_left = SandboxUiData.ui_float("hud.dash_pips.denied_s", 0.3)
 
 
 func _on_perfect_dodge(_info: Dictionary) -> void:
@@ -696,6 +736,7 @@ func tick(delta: float) -> void:
 			floater.tick(delta)
 	_tick_callouts(delta)
 	_tick_hp(delta)
+	_tick_dash_pips(delta)
 	_tick_noise(delta)
 	_tick_lights_and_flare(delta)
 	_tick_world(delta)
@@ -720,6 +761,14 @@ func _tick_hp(delta: float) -> void:
 		_hp_chip = maxf(float(_hp), _hp_chip - float(_hp_max) * SandboxUiData.ui_float("hud.hp_chip_per_s", 0.9) * delta)
 	else:
 		_hp_chip = float(_hp)
+
+
+func _tick_dash_pips(delta: float) -> void:
+	_dash_denied_left = maxf(0.0, _dash_denied_left - delta)
+	var info: Variant = null
+	if _player != null and is_instance_valid(_player):
+		info = _call(_player, &"get_dash_charges")
+	_dash_info = (info as Dictionary).duplicate() if info is Dictionary else {}
 
 
 func _tick_noise(delta: float) -> void:
@@ -775,6 +824,7 @@ func open_pause() -> void:
 
 func _draw_tl() -> void:
 	_draw_hp()
+	_draw_dash_pips()
 	if _show_lights_on:
 		_draw_lights()
 
@@ -833,6 +883,31 @@ func _draw_hp() -> void:
 	var tint: Color = SandboxStyle.color("warn") if low else SandboxStyle.color("text")
 	OffsetStat.draw(_meters, text_at, SandboxUiData.text("hud.hp"), str(_hp), str(_hp_max), tint)
 	SandboxStyle.thin_bar(_meters, bar, frac, top, bottom, _hp_chip / float(_hp_max))
+
+
+## The dash charges: a row of small pips right of Red's health bar. A spent pip is dark, the one refilling fills up
+## left to right as it recharges, and they all flash red for a moment when the dash button is pressed with none left.
+func _draw_dash_pips() -> void:
+	var fills: Array[float] = get_dash_pip_fills()
+	if fills.is_empty():
+		return
+	var cfg: Dictionary = SandboxUiData.ui("hud.dash_pips", {})
+	var origin: Vector2 = Vector2(float(cfg.get("x", 128)), float(cfg.get("y", 20)))
+	var pip: Vector2 = Vector2(float(cfg.get("w", 8)), float(cfg.get("h", 4)))
+	var gap: float = float(cfg.get("gap", 2))
+	var label_at: Array = cfg.get("label_pos", [128, 16])
+	SandboxStyle.label(_meters, Vector2(float(label_at[0]), float(label_at[1])), SandboxUiData.text("hud.dash"), SandboxStyle.color("label_dim"))
+	var denied: bool = _dash_denied_left > 0.0 and int(_dash_denied_left / 0.05) % 2 == 0
+	var top: Color = SandboxUiData.color("dash_pip")
+	var bottom: Color = SandboxUiData.color("dash_pip_low")
+	if denied:
+		top = SandboxUiData.color("dash_pip_denied")
+		bottom = top.darkened(0.4)
+	for i: int in fills.size():
+		var rect: Rect2 = Rect2(origin + Vector2(float(i) * (pip.x + gap), 0.0), pip)
+		SandboxStyle.thin_bar(_meters, rect, fills[i], top, bottom)
+		if denied:
+			_meters.draw_rect(rect.grow(1.0), top, false, 1.0)
 
 
 func _draw_lights() -> void:

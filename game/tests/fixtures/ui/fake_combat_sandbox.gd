@@ -11,6 +11,12 @@ class StubLockOn extends RefCounted:
 ## Red as the HUD sees her: a fighter that can announce the hack button (ActionPlayer.hack_pressed).
 class StubPlayer extends CombatActor:
 	signal hack_pressed(info: Dictionary)
+	signal dash_refused
+	## What ActionPlayer.get_dash_charges() answers (the HUD's dash pips): {count, max, fraction}.
+	var dash_charges: Dictionary = {"count": 5, "max": 5, "fraction": 0.0}
+
+	func get_dash_charges() -> Dictionary:
+		return dash_charges
 
 class StubCamera extends RefCounted:
 	signal mode_changed(mode: int)
