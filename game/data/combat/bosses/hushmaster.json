@@ -1,0 +1,219 @@
+{
+ "_about": "Sergeant Kasp's boss fight as data (VS-23, Combat Designer; numbers and names are Level 1). Phase 1 is Red on foot against the Hushmaster, a spider-legged jammer walker (the approved pitch, slice_pitch.md Boss A); then a scripted transition; then phase 2, the junk mech (junk_mech.json, Ross's option C). The Combat Programmer builds BossFight / BossBrain / BossPart from this. Times are ms of the boss's own combat clock (real time: nothing is slowed or sped by a scale), distances are metres, the arena's named nodes are in docs/maps/kasp_arena.md. Every attack here is one move in moves.json under the 'hushmaster' set, so telegraph time, hitboxes, parry and dodge flags use the existing machinery. The SCHEMA of this file is my proposal (the sketch in slice_tech_plan.md 6.4 grown by what the design needed); the Combat Programmer may rename keys, but not the numbers or the rules in docs/slice/boss_design.md. Moves.json fields beyond the old schema that the Programmer must add: hitbox shapes 'ring' and 'beam' (already in the plan), box key 'origin' (where a hitbox is anchored: leg_foot, dish, locked_target, target_N, mech_foot_l/r) and 'damage_mult' (a per-box multiplier on the move's hit), move keys 'ground_marker', 'floor_line', 'floor_decal', 'targets', 'opens', 'aim_pitch'.",
+ "version": 1,
+ "id": "hushmaster",
+ "name": "the Hushmaster",
+ "pilot": "Sergeant Kasp",
+ "name_key": "boss_hushmaster",
+
+ "rules": {
+  "_about": "Fairness rules this boss obeys. They are checked by a data test (every boss move that can hurt Red has a wind-up of at least boss_windup_floor_ms; the enemy floor is 500).",
+  "boss_windup_floor_ms": 1000,
+  "no_pattern_twice_in_a_row": true,
+  "min_impact_gap_ms": 700,
+  "hacks_work_in_this_phase": true,
+  "damage_to_red": {"leg_foot": 17, "shock_ring": 12, "beam": 14, "drone_dive": 7, "drone_shock": 5, "_about": "Red has 120 health; Reboot heals 60. Every hit is a single hit: nothing here chains into a second hit unless Red stays in the danger zone."},
+  "max_pattern_overlap": "only Quiet Hours (a status) may run while another pattern is in progress; two damaging patterns never overlap"
+ },
+
+ "phases": [
+  {
+   "id": "rig",
+   "name": "The rig",
+   "form": "red",
+   "boss": "hushmaster",
+   "bar": "boss",
+   "retry": "arena_gate",
+   "retry_note": "A knock-out here restarts at the arena gate (named node retry_phase1), Hushmaster whole, intro skipped, Red's health and battery as she walked in.",
+   "expected_s": 240,
+   "start": {"battery_floor": 60, "first_attack_delay_ms": 2500, "_about": "On a fresh start or a retry the battery is topped to at least 60, so the first relay can be zapped almost at once (3 Zaps = 60). Without it a retry with an empty battery would be a replay of the same wall."},
+
+   "body": {
+    "move_set": "hushmaster",
+    "height_m": 3.5, "leg_span_m": 5.0, "radius_m": 1.5,
+    "hp": 500,
+    "tags": ["boss", "signals"],
+    "hijackable": false,
+    "move_speed_mps": 2.4, "turn_rate_deg_per_s": 90,
+    "sword_damage_mult": {"upright": 0.3, "toppled": 1.0, "_about": "While any leg pair stands, sword hits do 30 percent damage (they still fill the battery as ordinary hits: that is what the sword is FOR in this fight). Once the rig is down, full damage."},
+    "blockout": {"shape": "box", "color": "#5b6b82", "face_color": "#ffb02e"},
+    "walk": {"toward_red_until_m": 6.0, "walk_when_farther_than_m": 8.0, "after_pattern_pause_ms": 400}
+   },
+
+   "parts": {
+    "relay_fl": {"pair": "fl", "kind": "relay", "hp": 72, "tags": ["relay"], "height_m": 1.2, "lock_target": true,
+                 "damaged_by": ["hack", "hijacked"], "sword": "clink", "hijacked_mult": 1.0, "on_break": {"drops_pair": "fl", "reaction": "leg_drop", "fx": "part_break"}},
+    "relay_fr": {"pair": "fr", "kind": "relay", "hp": 72, "tags": ["relay"], "height_m": 1.2, "lock_target": true,
+                 "damaged_by": ["hack", "hijacked"], "sword": "clink", "hijacked_mult": 1.0, "on_break": {"drops_pair": "fr", "reaction": "leg_drop", "fx": "part_break"}},
+    "relay_bl": {"pair": "bl", "kind": "relay", "hp": 72, "tags": ["relay"], "height_m": 1.2, "lock_target": true,
+                 "damaged_by": ["hack", "hijacked"], "sword": "clink", "hijacked_mult": 1.0, "on_break": {"drops_pair": "bl", "reaction": "leg_drop", "fx": "part_break"}},
+    "relay_br": {"pair": "br", "kind": "relay", "hp": 72, "tags": ["relay"], "height_m": 1.2, "lock_target": true,
+                 "damaged_by": ["hack", "hijacked"], "sword": "clink", "hijacked_mult": 1.0, "on_break": {"drops_pair": "br", "reaction": "leg_drop", "fx": "part_break"}},
+    "dish": {"kind": "dish", "hp": 120, "tags": ["dish"], "height_m": 3.4, "lowered_height_m": 2.2, "lock_target": true,
+             "damaged_by": ["sword", "hack", "hijacked"],
+             "on_break": {"disables_patterns": ["dish_sweep", "quiet_hours"], "reaction": "dish_stagger", "fx": "part_break", "_about": "A route, not a requirement: break the dish and the rig loses Dish Sweep and Quiet Hours for good. It takes about five openings with the sword, so it costs time, not hacks."},
+             "_about": "On the roof, 3.4 m up, out of reach of the sword; Zap Drone reaches it. It drops to 2.2 m (jump and sword) during the Dish Sweep recovery and during Quiet Hours."}
+   },
+
+   "legs": {
+    "pairs": {
+     "fl": {"legs": ["leg_fl_a", "leg_fl_b"], "relay": "relay_fl", "side": "front_left"},
+     "fr": {"legs": ["leg_fr_a", "leg_fr_b"], "relay": "relay_fr", "side": "front_right"},
+     "bl": {"legs": ["leg_bl_a", "leg_bl_b"], "relay": "relay_bl", "side": "back_left"},
+     "br": {"legs": ["leg_br_a", "leg_br_b"], "relay": "relay_br", "side": "back_right"}
+    },
+    "lean_toward_missing_deg": 6.0,
+    "_about": "Eight legs in four pairs, one relay box on each pair about 1.2 m up. Breaking a relay folds its pair (reaction leg_drop, 1.4 s, no attack can start) and the body leans 6 degrees toward that corner. Leg Stomp only uses standing legs."
+   },
+
+   "opening": {"patterns": ["leg_stomp", "dish_sweep", "leg_stomp"], "hint_after_s": {"first_relay": 40}, "_about": "The first three attacks are fixed so every player meets the ring (jump), then the line (stand outside it or dash), before the random mix begins. If no relay has broken after 40 s, Vela's radio hint fires once (bark vela_rig_zap_relays)."},
+
+   "patterns": [
+    {
+     "id": "leg_stomp", "name": "Leg Stomp", "weight": 3, "move": "leg_stomp",
+     "needs": {"pairs_standing_min": 1},
+     "when": {"dist_max_m": 8.0},
+     "leg": "nearest_standing",
+     "track_ms": 680,
+     "chain": {"pairs_lost_min": 2, "count": 2, "gap_ms": 900, "second_leg": "next_nearest_standing"},
+     "answer": "jump the ring",
+     "teach": "The leg glows amber and rises; a circle on the floor shows the landing; the ring is 0.6 m tall and slow (9 m/s): jump it, or dash through it.",
+     "reads": "leg lifts 1.1 s, foot circle locks 420 ms before impact, ring preview drawn out to 7 m"
+    },
+    {
+     "id": "dish_sweep", "name": "Dish Sweep", "weight": 2, "move": "dish_sweep",
+     "needs": {"part_alive": "dish"},
+     "when": {"dist_min_m": 5.0},
+     "arc_deg": 80,
+     "arc_deg_by_pairs_lost": {"2": 100},
+     "line_starts": "random_side_of_red",
+     "answer": "stand outside the fan, run with it, or dash through the beam",
+     "teach": "A red line crawls across the floor for 1.4 s and draws the whole fan before the beam follows exactly that line.",
+     "reads": "line crawl 1.4 s, full arc shown, beam 1.6 m wide at 55 degrees a second"
+    },
+    {
+     "id": "drone_drop", "name": "Drone Drop", "weight": 2, "move": "drone_drop",
+     "when": {"drones_alive_max": 0},
+     "hatch": "nearest_beyond_5m_from_red",
+     "spawn": {"enemy": "signals_drone", "count": 3, "count_by_pairs_lost": {"2": 4}, "at_ms": 1000, "entrance": "hatch"},
+     "answer": "EMP (or Zap and sword)",
+     "teach": "A floor hatch lid glows amber for 1 s, then three drones rise together, so one EMP (3 s stun) catches the lot. A drone dies to one Zap (24 vs 22 hp).",
+     "reads": "hatch lid lights 1 s before the drones rise; they hover for 0.8 s before their first dive (spawn_grace_ms 800)",
+     "spawn_grace_ms": 800
+    },
+    {
+     "id": "quiet_hours", "name": "Quiet Hours", "weight": 1, "move": "quiet_hours",
+     "needs": {"part_alive": "dish"},
+     "when": {"since_phase_start_s_min": 35, "cooldown_s": 25, "hacks_not_locked": true},
+     "lock_hacks_ms": 5000,
+     "lock_at_ms": 1400,
+     "cut_short": {"by": "dish", "hits": 3, "zap_counts_as": 3, "before_lock_cancels_it": true, "during_lock_ends_it_early": true},
+     "while_locked": {"blocked_patterns": ["drone_drop"], "_about": "Red can't EMP while locked, so the Hushmaster never drops drones then."},
+     "answer": "hit the dish",
+     "teach": "The dish lowers and hums; the screen edges fizz. Zap it (one Zap counts as three hits) in the 1.4 s before the lock lands and it never happens; or hit it three times with a jump and the sword during the lock to end it early.",
+     "reads": "dish glows and lowers, rising whine, screen-edge fizz 1.4 s before the lock; HUD fizz and a countdown during it"
+    }
+   ],
+
+   "stages": {
+    "_about": "How the fight tightens as leg pairs fall (pairs_lost 0 to 3). The wind-ups and the floor-line times never shorten (telegraphs stay readable); the gap between patterns does, and the stomp chains.",
+    "min_gap_ms_by_pairs_lost": [1900, 1700, 1500, 1300],
+    "stomp_chain_from_pairs_lost": 2,
+    "dish_arc_100_from_pairs_lost": 2,
+    "drone_count_4_from_pairs_lost": 2
+   },
+
+   "hijack_priority": {
+    "_about": "A hijacked turret (burst_ally) in this arena shoots, in order: a living relay it has a clear line to, a drone, the body. Overclock a turret and it does the relays' work for you. The three pylons are Kasp's own guns but powered down to save his electricity bill: hostile_fire is false, so they never shoot at Red. They only fire once Red Overclocks one, so they are an offer, not a threat.",
+    "order": ["relay_in_line", "drone", "body"],
+    "turrets": ["turret_k_nw", "turret_k_ne", "turret_k_e"],
+    "hostile_fire": false,
+    "range_m": 36.0
+   },
+
+   "arena": {
+    "plateau_radius_m": 20.0,
+    "hushmaster_start": "hushmaster_start",
+    "drone_hatches": ["drone_hatch_a", "drone_hatch_b", "drone_hatch_c"],
+    "turret_nodes": ["turret_k_nw", "turret_k_ne", "turret_k_e"],
+    "retry_node": "retry_phase1"
+   },
+
+   "topple": {
+    "when": "all_pairs_down",
+    "move": "topple",
+    "drones_power_off": true,
+    "sword_damage_mult": 1.0,
+    "prompt_after_ms": 2600,
+    "prompt": {"target": "jack_in", "button": "hack", "text_key": "boss_jack_in", "stays_until_used": true},
+    "_about": "The last pair folds; the rig crashes onto its belly at the centre (2.6 s). Any drones still alive switch off and fall. The sword now hurts at full strength (style points and battery, for show), but there is no timer and no second phase: the prompt waits until Red takes it. A bar of boss health still shows."
+   },
+
+   "jack_in": {
+    "kind": "scripted",
+    "damage_frac_of_max": 0.6,
+    "move": "jack_in_hit",
+    "ends_phase_when": "hp_zero_or_jack_in_done",
+    "shot": "shot_jack_in",
+    "_about": "Red plugs into the dish: a camera beat and a big hit (60 percent of the Hushmaster's health), and the phase ends at the end of it. If Red has already beaten the toppled body to zero, the phase ends at once with the same beat."
+   },
+
+   "events": {
+    "_about": "Bark ids for the Writer (Dialogue & writing is Level 0). No words here. Kasp's lines are memos; Vela's are the radio hints.",
+    "on_phase_start": "kasp_rig_intro",
+    "on_first_relay": "kasp_rig_relay_1",
+    "on_pairs_lost_2": "kasp_rig_pairs_2",
+    "on_pairs_lost_3": "kasp_rig_pairs_3",
+    "on_quiet_hours": "kasp_rig_quiet_hours",
+    "on_dish_broken": "kasp_rig_dish_broken",
+    "on_topple": "kasp_rig_topple",
+    "on_jack_in": "kasp_rig_jack_in",
+    "hints": {
+     "vela_rig_zap_relays": {"after_s": 40, "unless": "any_relay_broken", "once": true},
+     "vela_rig_turret": {"after_s": 70, "unless": "any_turret_hijacked", "once": true},
+     "vela_rig_emp_drones": {"on": "first_drone_drop_with_two_alive_after_6s", "once": true},
+     "vela_rig_hit_dish": {"on": "first_quiet_hours", "once": true}
+    }
+   }
+  },
+
+  {
+   "id": "transition",
+   "name": "Kasp escapes",
+   "form": "red",
+   "retry": "skip_to_next",
+   "invulnerable": true,
+   "expected_s": 40,
+   "_about": "Scripted, mostly watchable (kasp_arena.md, sequence step 5). Red can't be hurt. Enemies and drones are gone. If Red is knocked out anywhere in it (it can't be, but the retry rule is set), the fight resumes at the next step.",
+   "steps": [
+    {"id": "kasp_escape", "from_phase_end": true, "duration_s": 4.0, "story_step": "boss_phase", "control": false, "bark": "kasp_escape",
+     "note": "Kasp is thrown from the seat at (4, -3), scrambles to (0, -19); crane B's magnet drops a cage lift; he rides it up."},
+    {"id": "mech_assemble", "duration_s": 8.0, "control": true, "skippable": false, "bark": "vela_get_to_loader",
+     "note": "Cranes A, B and C swing their magnets over the three heaps; the junk mech rises at (0, -110) with a siren and shake. Crane B lifts the stockade E gate open. Red has control from the first second and can already run for the loader."},
+    {"id": "board_loader", "control": true, "duration_s": 7.0, "target": "loader_parked", "story_step": "form", "form_to": "small",
+     "note": "Red runs down the ramp to the loader at (8, 56): about 7 s. The existing boarding sequence. Hacks go off (the battery panel hides)."},
+    {"id": "dock_colossus", "duration_s": 13.5, "skippable_part_s": 9.0, "story_step": "form", "form_to": "huge", "control": false,
+     "note": "The colossus wakes in its cradle and steps to (84, 0). The loader runs the inside ring road to (68.2, 0): 9 s, skippable. Then the 4.5 s docking sequence; ScaleController eases the camera, fog and draw distance to the colossus numbers. Control returns in the colossus facing west."}
+   ]
+  },
+
+  {
+   "id": "mech",
+   "name": "The Heap",
+   "form": "huge",
+   "boss": "junk_mech",
+   "data": "junk_mech.json",
+   "bar": "boss",
+   "retry": "phase_start",
+   "retry_note": "A knock-out here restarts at retry_phase2: already docked, colossus at full health at (84, 0), the Heap whole at (0, -105). No boarding sequence replays.",
+   "expected_s": 200
+  }
+ ],
+
+ "ending": {
+  "after": "mech",
+  "scene": "kasp_wreck",
+  "sets_flag": "slice_done",
+  "note": "A short cutscene, not a fight (Kasp in the wreck). The Writer's."
+ }
+}

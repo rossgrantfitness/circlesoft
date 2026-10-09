@@ -463,7 +463,7 @@ def build_hushmaster(path):
         d.box(None, (sx * 0.255, 0.1, 0), (0.02, 0.34, 0.58), M["slate"])                # drawer-like front
         d.box(None, (sx * 0.265, 0.1, 0.18), (0.02, 0.04, 0.1), M["white"])             # a handle
         d.box(None, (sx * 0.262, -0.1, -0.15), (0.02, 0.2, 0.28), M["sticker"])         # warning sticker
-        d.box(None, (-sx * 0.18, -0.38, 0), (0.3, 0.16, 0.3), M["frame"])               # cable bundle down to the leg
+        d.box(None, (-sx * 0.2, -0.22, 0), (0.12, 0.16, 0.3), M["frame"])               # cable bundle into the hull side
         sc.node("relay_" + pair, root, t=(sx * 2.3, 3.95, sz * 0.78), builder=b)
         b = sc.builder()
         d = Draw(b)
