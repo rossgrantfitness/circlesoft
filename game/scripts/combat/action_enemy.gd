@@ -39,6 +39,8 @@ const MOVE_BLOCK_START: StringName = &"block_start"
 const MOVE_BLOCK_HOLD: StringName = &"block_hold"
 const MOVE_BLOCK_BREAK: StringName = &"block_break"
 const TELEGRAPH_HZ: float = 8.0
+const PATROL_LEG_M: float = 4.0
+const PATROL_SPEED_MULT: float = 0.4
 const DODGE_TELL_COLOR: Color = Color(0.3, 0.95, 1.0)
 
 static var _spawn_counts: Dictionary = {}
@@ -64,6 +66,10 @@ var hijacked_by: CombatActor = null
 var hijackable: Hijackable = null
 ## False = it never attacks Red (the Hushmaster arena's powered-down turrets). A hijacked unit fights anyway.
 var attacks_allowed: bool = true
+## What the encounter runner gave it (data/slice/encounters.json): `tune` numbers laid over its data, and a `state`
+## (idle, idle_at_barrel, patrol, ambush). See apply_tune() and apply_state().
+var tune: Dictionary = {}
+var behaviour_state: StringName = &""
 
 var _moves: MoveSet = null
 var _hit_feel: Dictionary = {}
@@ -109,6 +115,11 @@ var _face_red_ms: float = 0.0
 var _cornered: bool = false
 var _commanded_speed: float = 0.0
 var _clip_speed: float = 1.0
+var _brain_overrides: Dictionary = {}
+var _pending_tune: Dictionary = {}
+var _pending_state: StringName = &""
+var _patrol_to: Vector3 = Vector3.ZERO
+var _patrol_flip: bool = false
 var _hijack_color: Color = Color(0.2, 0.95, 1.0)
 var _hijack_end_stun_ms: float = 800.0
 var _hijack_damage_scale: float = 1.0
@@ -121,9 +132,15 @@ func _ready() -> void:
 	spawn_yaw = rotation.y
 	_build_body_shape()
 	_build_visual()
-	brain = _make_brain()
 	runner = MoveRunner.create(_moves, move_set_id)
 	_make_hijackable()
+	brain = _make_brain()
+	if not _pending_tune.is_empty():
+		apply_tune(_pending_tune)
+		_pending_tune = {}
+	if _pending_state != &"":
+		apply_state(_pending_state)
+		_pending_state = &""
 	set_physics_process(true)
 
 
@@ -320,6 +337,9 @@ func _tick_free(dt: float, now_ms: float, director: CombatDirector) -> void:
 	if target != null and bool(intent["face_player"]):
 		_turn_toward(dir_to, dt)
 	var wanted: Vector3 = _wanted_velocity(intent, dir_to)
+	if behaviour_state == &"patrol" and hijacked_by == null and brain.state() == EnemyBrain.IDLE:
+		wanted = _patrol_velocity()            # nobody has noticed Red yet: it walks its beat
+		intent["face_move"] = true
 	_commanded_speed = wanted.length()
 	if bool(intent.get("face_move", false)) and wanted.length() > 0.3:
 		_turn_toward(wanted.normalized(), dt)
@@ -395,6 +415,8 @@ func _handle_events(events: Array[Dictionary]) -> void:
 				attack["damage"] = int(roundf(float(attack.get("damage", 0)) * brain.damage_mult() * _hijack_damage_scale))
 				if hijacked_by != null:
 					attack["source"] = "hijacked"
+				else:
+					attack["damage"] = int(roundf(float(attack["damage"]) * _vs_form_damage_mult()))
 				get_hitbox().activate(event["box"], attack, runner.swing_id())
 			"hitbox_off":
 				get_hitbox().deactivate(int(event["index"]))
@@ -805,6 +827,69 @@ func _set_state(next: StringName) -> void:
 	_state_ms = 0.0
 
 
+# ---- what the encounter runner hands over (data/slice/encounters.json `tune` and `state`) ----
+
+## Lays numbers over this enemy's data: a key that is one of its brain numbers (attack_interval_ms, notice_range_m ...) changes
+## the brain; one that is a defence number (block_chance, dodge_chance ...) changes how it defends. Anything else is kept in `tune`
+## and warned about. Safe to call before the enemy is in the tree (it is applied when it is).
+func apply_tune(values: Dictionary) -> void:
+	if data.is_empty():
+		_pending_tune.merge(values, true)
+		return
+	var numbers: Dictionary = data.get("brain", {}) as Dictionary
+	var defend: Dictionary = (_beh.get("defend", {}) as Dictionary)
+	for key: Variant in values.keys():
+		var name_key: String = str(key)
+		if numbers.has(name_key):
+			_brain_overrides[name_key] = values[key]
+		elif defend.has(name_key):
+			defend[name_key] = values[key]
+		else:
+			push_warning("ActionEnemy %s: no tuning number called '%s'" % [actor_id, name_key])
+		tune[name_key] = values[key]
+	if brain != null:
+		brain = _make_brain()
+
+
+## The enemy's starting behaviour: idle and idle_at_barrel (stands until it notices Red: the default), patrol (walks a short beat
+## round its spawn point until it notices her) and ambush (notices only when she is close, then goes at once).
+func apply_state(state_name: StringName) -> void:
+	if data.is_empty():
+		_pending_state = state_name
+		return
+	behaviour_state = state_name
+	match state_name:
+		&"ambush":
+			var near: float = float((data.get("brain", {}) as Dictionary).get("notice_range_m", 14.0)) * 0.5
+			_brain_overrides["notice_range_m"] = near
+			_brain_overrides["notice_ms"] = 150
+		&"patrol":
+			_patrol_to = spawn_position + forward() * PATROL_LEG_M
+			_patrol_flip = false
+	if brain != null:
+		brain = _make_brain()
+
+
+func _patrol_velocity() -> Vector3:
+	var to: Vector3 = _patrol_to - global_position
+	to.y = 0.0
+	if to.length() < 0.5:
+		_patrol_flip = not _patrol_flip
+		_patrol_to = spawn_position + forward() * (PATROL_LEG_M if not _patrol_flip else -PATROL_LEG_M)
+		to = _patrol_to - global_position
+		to.y = 0.0
+	return to.normalized() * float(data.get("move_speed_mps", 2.8)) * PATROL_SPEED_MULT
+
+
+## The damage scale for hits on Red in her current body (encounters.json rules.vs_form): the loader chips rather than dies.
+func _vs_form_damage_mult() -> float:
+	var target: CombatActor = _target()
+	if target == null or not target.has_method(&"get_form_id"):
+		return 1.0
+	var table: Dictionary = (CombatData.read_json("res://data/slice/encounters.json").get("rules", {}) as Dictionary).get("vs_form", {}) as Dictionary
+	return float((table.get(str(target.call(&"get_form_id")), {}) as Dictionary).get("damage_mult", 1.0))
+
+
 # ---- Overclock: hijacked and stunned (slice tech plan 4.4) ----
 
 ## Does the data say Overclock can take this enemy? (enemies.json `hijackable`; bosses say no.)
@@ -1068,9 +1153,11 @@ func _load_data() -> void:
 
 func _make_brain(brain_override: Dictionary = {}) -> EnemyBrain:
 	var brain_data: Dictionary = data.duplicate(true)
-	if not brain_override.is_empty():
+	var combined: Dictionary = _brain_overrides.duplicate()
+	combined.merge(brain_override, true)
+	if not combined.is_empty():
 		var numbers: Dictionary = (brain_data.get("brain", {}) as Dictionary)
-		numbers.merge(brain_override, true)
+		numbers.merge(combined, true)
 		brain_data["brain"] = numbers
 	var gaits: Dictionary = {}
 	for gait: String in ["strafe", "retreat", "flee"]:
