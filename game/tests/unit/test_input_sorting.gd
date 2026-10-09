@@ -18,6 +18,7 @@ func _describe(list: Array[Dictionary]) -> String:
 
 
 func test_every_live_action_exists_in_the_input_map() -> void:
+	InputSorting.ensure_slice_actions()            # the hack picker's and the command deck's buttons are added at runtime
 	for context: String in InputSorting.context_names():
 		for action: String in InputSorting.live_actions(context):
 			assert_true(InputMap.has_action(action), "%s: '%s' is not an input action" % [context, action])
