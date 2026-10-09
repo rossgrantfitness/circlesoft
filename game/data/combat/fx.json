@@ -42,6 +42,30 @@
     "small": {"step_shake": "step_small", "land_shake": "land_small", "step_dust": "step_small", "land_dust": "land_small", "footfalls_s": {"walk": [0.333, 1.0], "run": [0.033, 0.367]}},
     "huge":  {"step_shake": "step_huge",  "land_shake": "land_huge",  "step_dust": "step_huge",  "land_dust": "land_huge",  "footfalls_s": {"walk": [0.333, 1.0], "run": [0.033, 0.367]}}
   },
+  "hit_flash": {
+    "_note": "Tuning v1.3 (Ross: chunky hits): the struck model turns flat opaque white for duration_s of REAL time as a hit lands (so you see it inside the hit-stop freeze), then snaps back. Read by scripts/combat/fx/hit_flash.gd through combat_fx.gd. `outcomes` is per hit outcome: on/off, `brightness` (1.0 = pure white, lower = a greyer flash) and `duration_mult`. `require_damage`: a hit that took nothing off (a sealed core, a sword clinking off a relay) does not flash. `player.enabled` is Red's own flash when she is hit (off; the F12 knob 'Flash Red when she is hit' turns it on). The F12 knob 'White impact flash' switches the whole thing off.",
+    "enabled": true,
+    "duration_s": 0.07,
+    "color": "#ffffff",
+    "require_damage": true,
+    "player": {"enabled": false},
+    "outcomes": {
+      "default": {"on": true},
+      "hit": {"on": true},
+      "stagger": {"on": true},
+      "guard_broken": {"on": true},
+      "armored": {"on": true, "brightness": 0.6, "duration_mult": 0.7},
+      "blocked": {"on": false},
+      "guarded": {"on": false},
+      "parried": {"on": false},
+      "perfect_parry": {"on": false}
+    }
+  },
+  "hit_sound": {
+    "_note": "Tuning v1.3: every landed hit plays its sound (the move's own sfx, else by weight: light, air, heavy, launch). pitch_var is the random spread of pitch around 1.0 for a landed hit (so it never sounds the same twice in a row); heavy_pitch_var is the same for the heavy and launch sounds (tighter, so the big ones stay deep). It goes through AudioManager.play_sfx(id, pitch_mult).",
+    "pitch_var": 0.08,
+    "heavy_pitch_var": 0.04
+  },
   "spark_by_outcome": {"armored": "guard", "guarded": "guard", "blocked": "guard", "guard_broken": "heavy", "parried": "parry", "perfect_parry": "perfect_parry"},
   "spark_aliases": {"slash": "slash", "slash_big": "heavy", "slash_up": "launch", "heavy": "heavy", "launch": "launch", "air": "air", "slam": "heavy"},
   "telegraph": {

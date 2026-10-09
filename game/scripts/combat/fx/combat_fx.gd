@@ -18,16 +18,22 @@ extends Node3D
 
 const DATA_ID: String = "combat/fx"
 const KNOB_TRAILS: String = "trails_on"
+const KNOB_FLASH: String = "hit_flash_on"
+const KNOB_RED_FLASH: String = "hit_flash_red_on"
 const NOT_OURS: PackedStringArray = ["combat_noise_rank_up", "combat_lock_on"]
 const PLAYED_LOG_MAX: int = 64
 const DRESSED_META: StringName = &"fx_dressed"
 
 signal sound_played(id: StringName)
+## A white impact flash started on a model (tests and the screenshot tool listen): the struck fighter and the flash's seconds.
+signal flash_started(target: Node, duration_s: float)
 
 var cfg: Dictionary = {}
 ## Where sounds go. The default asks the AudioManager autoload; tests replace it.
 var sound_sink: Callable = Callable()
 var played: Array[StringName] = []
+## The pitch multiplier the last sound went out with (1.0 = none). Landed hits vary a little (fx.json hit_sound).
+var last_pitch_mult: float = 1.0
 
 var _director: Node = null
 var _player: Node3D = null
@@ -40,6 +46,8 @@ var _swings: Dictionary = {}          # actor id -> {t_ms, start_ms, end_ms}
 var _cues: Array[Dictionary] = []     # {cue: TelegraphCue, actor: CombatActor}
 var _frame_plays: Dictionary = {}     # sound id -> frame it last played
 var _counter: int = 0
+var _flash: HitFlash = HitFlash.new()
+var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 
 
 func bind(sandbox: Node) -> void:
@@ -134,13 +142,14 @@ func _shipped() -> Dictionary:
 # ---- sound ----
 
 ## Plays a combat sound once per frame per id. Returns false if it was dropped (empty id, repeat, or not ours to play).
-func play(id: StringName) -> bool:
+func play(id: StringName, pitch_mult: float = 1.0) -> bool:
 	if id == &"" or NOT_OURS.has(String(id)):
 		return false
 	var frame: int = Engine.get_process_frames()
 	if _frame_plays.get(id, -1) == frame:
 		return false
 	_frame_plays[id] = frame
+	last_pitch_mult = pitch_mult
 	played.append(id)
 	if played.size() > PLAYED_LOG_MAX:
 		played.remove_at(0)
@@ -149,7 +158,10 @@ func play(id: StringName) -> bool:
 	else:
 		var audio: Node = get_node_or_null("/root/AudioManager")
 		if audio != null:
-			audio.call("play_sfx", id)
+			if is_equal_approx(pitch_mult, 1.0):
+				audio.call("play_sfx", id)
+			else:
+				audio.call("play_sfx", id, pitch_mult)
 	sound_played.emit(id)
 	return true
 
@@ -179,7 +191,69 @@ func _on_hit_landed(info: Dictionary) -> void:
 		var soft: bool = outcome == "armored" or outcome == "guarded"
 		shake(StringName(shake_id), 0.6 if soft else 1.0)
 	var own_sfx: String = str(info.get("sfx", ""))
-	play(StringName(own_sfx) if not own_sfx.is_empty() else hit_sound_key(info))
+	var hit_sound: StringName = StringName(own_sfx) if not own_sfx.is_empty() else hit_sound_key(info)
+	play(hit_sound, hit_pitch(hit_sound))
+	flash_for_hit(info)
+
+
+## A random pitch multiplier for a landed hit (fx.json hit_sound): 1.0 +- pitch_var, tighter for the heavy and launch sounds.
+func hit_pitch(sound_id: StringName) -> float:
+	var cfg_sound: Dictionary = _block("hit_sound")
+	var heavy: bool = sound_id == _sound("hit_heavy") or sound_id == _sound("launch")
+	var spread: float = float(cfg_sound.get("heavy_pitch_var" if heavy else "pitch_var", 0.0))
+	if spread <= 0.0:
+		return 1.0
+	return 1.0 + _rng.randf_range(-spread, spread)
+
+
+# ---- the white impact flash ----
+
+## Whether a hit with this info should flash its target, and how (pure, tests): {} for no flash, else {duration_s, color}.
+## `red_flash` is whether Red's own flash is on. `master_on` is the F12 switch.
+static func flash_plan(info: Dictionary, settings: Dictionary, target_is_player: bool, master_on: bool, red_flash: bool) -> Dictionary:
+	if not bool(settings.get("enabled", false)) or not master_on:
+		return {}
+	if target_is_player and not (red_flash or bool((settings.get("player", {}) as Dictionary).get("enabled", false))):
+		return {}
+	if bool(settings.get("require_damage", true)) and int(info.get("damage", 0)) <= 0:
+		return {}
+	var outcomes: Dictionary = settings.get("outcomes", {}) as Dictionary
+	var outcome: String = str(info.get("outcome", "hit"))
+	var rule: Dictionary = (outcomes.get(outcome, outcomes.get("default", {"on": true})) as Dictionary)
+	if not bool(rule.get("on", true)):
+		return {}
+	var duration: float = float(settings.get("duration_s", 0.07)) * float(rule.get("duration_mult", 1.0))
+	if duration <= 0.0:
+		return {}
+	var color: Color = Color.html(str(settings.get("color", "#ffffff")))
+	var brightness: float = clampf(float(rule.get("brightness", 1.0)), 0.0, 1.0)
+	return {"duration_s": duration, "color": Color(color.r * brightness, color.g * brightness, color.b * brightness)}
+
+
+## Flashes the model a landed hit struck (an enemy, a boss part, a robot; Red only if her flash is on). Returns whether it started.
+func flash_for_hit(info: Dictionary) -> bool:
+	var target: Node3D = _actor(StringName(str(info.get("target", ""))))
+	if target == null:
+		return false
+	var red_flash: bool = false
+	var feel: Variant = _director.get("feel") if _director != null else null
+	if feel != null and feel.has_method("has") and feel.call("has", KNOB_RED_FLASH):
+		red_flash = bool(feel.call("get_b", KNOB_RED_FLASH))
+	var plan: Dictionary = flash_plan(info, _block("hit_flash"), str(target.get("team")) == "player", _knob_on(KNOB_FLASH), red_flash)
+	if plan.is_empty():
+		return false
+	if not _flash.start(target, HitFlash.roots_for(target), float(plan["duration_s"]), plan["color"] as Color):
+		return false
+	flash_started.emit(target, float(plan["duration_s"]))
+	return true
+
+
+func get_hit_flash() -> HitFlash:
+	return _flash
+
+
+func _exit_tree() -> void:
+	_flash.clear()               # nothing is left white when the effects go away
 
 
 func _on_launched(_info: Dictionary) -> void:
@@ -392,6 +466,7 @@ func _process(delta: float) -> void:
 
 ## One frame of FX bookkeeping: each swing's clock runs on its fighter's combat time (frozen in hit-stop, slow in a flare).
 func step(delta: float) -> void:
+	_flash.step(delta)      # the white flash runs on the real clock, not a fighter's combat time, so it shows inside hit-stop
 	for actor_id: StringName in _swings.keys():
 		var swing: Dictionary = _swings[actor_id]
 		var local: float = _local_delta(actor_id, delta)
