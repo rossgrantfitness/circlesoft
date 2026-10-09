@@ -51,6 +51,11 @@
    "item": "juice_box",
    "count": 1
   },
+  "jk_j4_heal": {
+   "room": "junk_j4",
+   "item": "ration_bar",
+   "count": 1
+  },
   "jk_j3_heal": {
    "room": "junk_j3",
    "item": "can_of_chili",
@@ -195,7 +200,7 @@
    "style": "wood",
    "items": [
     {
-     "item": "juice_box",
+     "item": "ration_bar",
      "count": 1
     }
    ],

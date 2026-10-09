@@ -331,6 +331,7 @@ def j4():
     prop(r, "StandCarB", "car", 58.0, 46.0, yaw=20)
     prop(r, "StandContainer", "container", 18.0, 44.0, yaw=90)
     burn_barrel(r, "StandBarrel", 40.0, 40.0)
+    r.pickup("StandHealPickup", "jk_j4_heal", 42.0, 47.0)      # B13: one visible heal in the Stand (a Ration Bar)
     # the vestibule's quiet walk and the loader cradle: a platform, gantry posts, the cradle where the loader sleeps, the way east
     r.box("CradlePlatform", 76.0, 0.2, 30.0, 20.0, 0.4, 16.0, r.lit((0.38, 0.38, 0.4)), solid=False)
     r.box("CradleLegA", 68.0, 4.5, 24.0, 1.4, 9.0, 1.4, r.lit((0.65, 0.55, 0.2)), solid=True)

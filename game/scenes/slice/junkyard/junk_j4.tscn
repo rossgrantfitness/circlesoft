@@ -1,4 +1,4 @@
-[gd_scene load_steps=361 format=3]
+[gd_scene load_steps=362 format=3]
 
 [ext_resource type="Shader" path="res://shaders/ps2_lit_crisp.gdshader" id="1_r"]
 [ext_resource type="Texture2D" path="res://art/final/textures/city/tiles_seamless/floor_concrete_cracked_dark.png" id="2_r"]
@@ -9,8 +9,9 @@
 [ext_resource type="PackedScene" path="res://scenes/props/crate.tscn" id="7_r"]
 [ext_resource type="PackedScene" path="res://art/placeholder/robots/props/prop_car_block.glb" id="8_r"]
 [ext_resource type="PackedScene" path="res://art/placeholder/robots/props/prop_cargo_container.glb" id="9_r"]
-[ext_resource type="Script" path="res://scripts/slice/targets/hack_loader.gd" id="10_r"]
-[ext_resource type="PackedScene" path="res://scenes/props/door.tscn" id="11_r"]
+[ext_resource type="PackedScene" path="res://scenes/props/pickup.tscn" id="10_r"]
+[ext_resource type="Script" path="res://scripts/slice/targets/hack_loader.gd" id="11_r"]
+[ext_resource type="PackedScene" path="res://scenes/props/door.tscn" id="12_r"]
 
 [sub_resource type="Environment" id="Environment_1"]
 background_mode = 1
@@ -2955,6 +2956,10 @@ light_color = Color(1.0, 0.55, 0.2, 1)
 light_energy = 3.5200000000000005
 omni_range = 9.0
 
+[node name="StandHealPickup" parent="." instance=ExtResource("10_r")]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 42.0, 0.0, 47.0)
+placement_id = "jk_j4_heal"
+
 [node name="CradlePlatform" type="MeshInstance3D" parent="."]
 transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 76.0, 0.2, 30.0)
 mesh = SubResource("BoxMesh_338")
@@ -3008,7 +3013,7 @@ surface_material_override/0 = SubResource("ShaderMaterial_339")
 
 [node name="loader_j4" type="Node3D" parent="."]
 transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 72.0, 0.0, 30.0)
-script = ExtResource("10_r")
+script = ExtResource("11_r")
 target_id = &"loader_j4"
 
 [node name="CradleLamp" type="OmniLight3D" parent="."]
@@ -3031,11 +3036,11 @@ surface_material_override/0 = SubResource("ShaderMaterial_343")
 transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 0, 3.0, 0)
 shape = SubResource("BoxShape3D_345")
 
-[node name="DoorWest" parent="." instance=ExtResource("11_r")]
+[node name="DoorWest" parent="." instance=ExtResource("12_r")]
 transform = Transform3D(0.0000, 0, 1.0000, 0, 1, 0, -1.0000, 0, 0.0000, 0.0, 0, 30.0)
 placement_id = "jk_j4_to_j3"
 
-[node name="DoorEast" parent="." instance=ExtResource("11_r")]
+[node name="DoorEast" parent="." instance=ExtResource("12_r")]
 transform = Transform3D(0.0000, 0, -1.0000, 0, 1, 0, 1.0000, 0, 0.0000, 97.0, 0, 30.0)
 placement_id = "jk_j4_to_j5"
 

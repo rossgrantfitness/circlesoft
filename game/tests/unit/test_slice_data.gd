@@ -76,7 +76,7 @@ func test_every_staged_scene_without_a_trigger_is_started_by_something() -> void
 			continue
 		if not corpus.contains("\"%s\"" % str(id)):
 			orphans.append(str(id))
-	known_bug("B6", orphans.is_empty(), "scenes with no trigger that nothing names (never play): %s" % ", ".join(orphans))
+	assert_true(orphans.is_empty(), "B6: scenes with no trigger that nothing names (never play): %s" % ", ".join(orphans))
 	for id: String in ["charge_delivery", "appeal_market", "mox_deck", "gate_pass"]:
 		assert_false(orphans.has(id), "%s is started by a placement or a job" % id)
 
