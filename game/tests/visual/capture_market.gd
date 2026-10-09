@@ -11,6 +11,14 @@ const SETTLE_FRAMES: int = 80
 const STAND: Dictionary = {"market_square": Vector3(11.0, 0.1, 7.6), "market_wharf": Vector3(14.0, 0.1, 6.5), "market_gate": Vector3(7.5, 0.1, 5.0)}
 ## Wide shots: the room seen whole (distance in metres, the camera's fov stays).
 const WIDE: Dictionary = {"market_square": 34.0, "market_wharf": 36.0, "market_gate": 24.0}
+## Overviews of the free-camera rooms (junkyard, arena): a loose camera [position, look-at, fov] so the whole layout reads.
+const OVERVIEW: Dictionary = {
+	"junk_j1": [Vector3(32.0, 70.0, 66.0), Vector3(32.0, 0.0, 20.0), 50.0],
+	"junk_j2": [Vector3(75.0, 120.0, 85.0), Vector3(75.0, 0.0, 16.0), 50.0],
+	"junk_j3": [Vector3(50.0, 120.0, 100.0), Vector3(50.0, 0.0, 36.0), 50.0],
+	"junk_j4": [Vector3(45.0, 95.0, 85.0), Vector3(45.0, 0.0, 28.0), 50.0],
+	"kasp_arena": [Vector3(0.0, 120.0, 110.0), Vector3(0.0, 0.0, 10.0), 55.0],
+}
 
 var _out_dir: String = "res://../docs/screenshots"
 var _rooms: PackedStringArray = ["market_hideout", "market_square"]
@@ -45,6 +53,18 @@ func _initialize() -> void:
 			for i: int in 20:
 				await process_frame
 		_save(room_id + ".png")
+		if OVERVIEW.has(room_id) and room != null:
+			var cam: Camera3D = Camera3D.new()
+			room.add_child(cam)
+			var spec: Array = OVERVIEW[room_id]
+			cam.fov = float(spec[2])
+			cam.far = 2000.0
+			cam.look_at_from_position(spec[0], spec[1], Vector3.UP)
+			cam.current = true
+			for i: int in 10:
+				await process_frame
+			_save(room_id + "_overview.png")
+			cam.queue_free()
 		if WIDE.has(room_id) and room != null:
 			var rig: DioramaCamera = room.camera_rig
 			var old: float = rig.distance

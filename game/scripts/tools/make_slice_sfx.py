@@ -371,7 +371,8 @@ def make_hack_target_door(rng):
     ~1.5 s."""
     n = n_of(1.5)
     x = np.zeros(n)
-    x = place(x, 0.0, tick(rng, n_of(0.05), 3000, 16000, 0.004) + 0.8 * pops(rng, n_of(0.25), 30, 2500, 15000, 0.08, 3.0), 0.9)
+    x = place(x, 0.0, tick(rng, n_of(0.05), 3000, 16000, 0.004), 0.9)
+    x = place(x, 0.0, pops(rng, n_of(0.25), 30, 2500, 15000, 0.08, 3.0), 0.7)
     x = place(x, 0.12, thump(n_of(0.25), 160, 50, 0.07), 1.2)
     x = place(x, 0.12, clank(rng, n_of(0.3), 310.0, 0.08), 0.5)
     gn = n_of(1.05)
@@ -926,7 +927,9 @@ def make_robot_hatch(rng):
     n = n_of(0.6)
     x = burst(rng, n, 3000, 12000, 0.1, 0.004) * 0.7
     x = place(x, 0.0, tick(rng, n_of(0.03), 2500, 12000, 0.004), 0.5)
-    x = place(x, 0.12, osc(np.geomspace(300, 180, n_of(0.25)), n_of(0.25), ((1, 1.0), (2, 0.6), (3, 0.4))) * bump(n_of(0.25), 0.5) * lowpass(white(rng, n_of(0.25)), 3000) * 0.0 + 0.5 * lowpass(saw(np.geomspace(300, 180, n_of(0.25)), n_of(0.25), 10), 1500) * bump(n_of(0.25), 0.5), 0.5)
+    hinge_n = n_of(0.25)
+    hinge = lowpass(saw(np.geomspace(300, 180, hinge_n), hinge_n, 10), 1500) * bump(hinge_n, 0.5)
+    x = place(x, 0.12, hinge, 0.5)
     x = place(x, 0.34, thump(n_of(0.2), 170, 60, 0.05) + clank(rng, n_of(0.25), 330.0, 0.08), 0.9)
     x = place(x, 0.5, tick(rng, n_of(0.03), 1500, 9000, 0.005) + 0.6 * clank(rng, n_of(0.08), 1100.0, 0.02), 0.8)
     return finish(clip(x, 1.3), 0.9, 0.06)
@@ -1243,7 +1246,6 @@ def make_amb_market_patrol(rng):
             x = place(x, s + side * 0.0, thump(n_of(0.12), 150, 60, 0.03) + 0.7 * burst(rng, n_of(0.1), 400, 4000, 0.02, 0.0003) + 0.3 * clank(rng, n_of(0.08), 900.0, 0.02), 0.5 * near + 0.05)
     sq = n_of(0.5)
     squawk = bandpass(static_wash(rng, sq, False), 400, 3500) * env_adsr(sq, 0.003, 0.25, 0.1)
-    squawk += 0.4 * square(hz(88), n_of(0.08), 4).repeat(1)[:sq].tolist().__len__() * 0.0 if False else 0.0
     x = place(x, 3.9, squawk, 0.7)
     for i, f in enumerate((1568.0, 1320.0)):
         d = n_of(0.07)
@@ -1412,10 +1414,7 @@ MARKET_MELODY = [
     [(3, 2), (5, 2), (3, 2), (1, 2), (0, 4), (1, 2), (2, 2)],
     [(4, 2), (1, 2), (2, 2), (4, 2), (4, 6), (None, 2)],
 ]
-MARKET_BASS_ROOTS = [-7, -9, -11, -10, -7, -9, -11, -10]            # C Am F G as scale degrees below the root (octave down)
 MARKET_BASS_RHYTHM = [(0, 2), (None, 2), (4, 2), (None, 2), (0, 2), (None, 2), (4, 2), (2, 2)]
-MARKET_ARP = [[(0, 2), (2, 2), (4, 2), (2, 2)] * 2 for _ in range(8)]
-# chord arpeggio roots by bar (C, Am, F, G) as degrees: 0, 5, 3, 4 ; built below with offsets
 
 BATTLE_MELODY = [
     [(0, 3), (2, 1), (4, 2), (2, 2), (0, 2), (None, 2), (4, 2), (5, 2)],
@@ -1431,15 +1430,13 @@ BATTLE_MELODY = [
 TOUGH_MELODY = [
     [(0, 1), (1, 1), (0, 2), (None, 2), (3, 2), (1, 2), (0, 2), (None, 4)],
     [(4, 2), (3, 2), (1, 2), (0, 2), (1, 2), (3, 2), (4, 2), (None, 2)],
-    [(5, 1), (4, 1), (3, 2), (None, 2), (1, 2), (0, 2), (1, 2), (3, 2), (None, 2)][:9],
+    [(5, 1), (4, 1), (3, 2), (None, 2), (1, 2), (0, 2), (1, 2), (3, 2), (None, 2)],
     [(7, 4), (5, 2), (4, 2), (3, 4), (1, 2), (0, 2)],
     [(0, 1), (1, 1), (0, 2), (None, 2), (3, 2), (1, 2), (0, 2), (None, 4)],
     [(7, 2), (8, 2), (7, 2), (5, 2), (4, 2), (3, 2), (1, 2), (0, 2)],
     [(5, 2), (4, 2), (3, 2), (1, 2), (3, 4), (4, 2), (5, 2)],
     [(8, 4), (7, 4), (5, 4), (4, 4)],
 ]
-# bar 3 above sums to 16 only after the slice, fix explicitly:
-TOUGH_MELODY[2] = [(5, 1), (4, 1), (3, 2), (None, 2), (1, 2), (0, 2), (1, 2), (3, 2), (None, 2)]
 
 BOSS_MELODY = [
     [(0, 3), (0, 1), (2, 2), (4, 2), (7, 4), (None, 4)],
@@ -1682,8 +1679,8 @@ SOUNDS = {
 TRANSIENT_IDS = (
     "hack_zap_cast", "hack_zap_hit", "hack_emp", "hack_emp_hit", "hack_overclock_link", "hack_overclock_end",
     "hack_reboot", "hack_battery_full", "hack_denied", "hack_unlocked", "hack_target_door", "hack_target_terminal",
-    "boss_stomp_ring", "boss_quiet_hours_cut", "boss_relay_break", "boss_topple_hit_unused",
-    "mech_step", "mech_slam", "mech_core_hit", "mech_sting_lock", "mech_plate_break", "mech_swing_unused",
+    "boss_stomp_ring", "boss_quiet_hours_cut", "boss_relay_break",
+    "mech_step", "mech_slam", "mech_core_hit", "mech_sting_lock", "mech_plate_break",
     "robot_step_small", "robot_dock_clank", "robot_hit_huge", "robot_smash_scrap", "robot_smash_scrap_2",
     "robot_smash_scrap_3", "robot_hatch",
 )

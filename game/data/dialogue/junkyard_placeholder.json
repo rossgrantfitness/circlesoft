@@ -1,17 +1,34 @@
 {
- "_about": "PLACEHOLDER words for the junkyard's signs (VS-20). The Writer replaces them (data/dialogue/junkyard.json).",
+ "_about": "Yard 9 signs and Kasp's memo posters, Writer's placeholder pass (VS-31, 2026-10-09; final text at VS-37, Ross approves). jk_j1_screen and jk_j1_memo are the two examine spots the Level Designer placed in J1. The other jk_* ids are a poster library for spots the Level Designer can add in J2 to J4 and the arena (each id needs a spot node and a placement; none is wired yet): jk_j2_memo, jk_j3_memo, jk_j4_memo, jk_arena_memo, plus jk_j2_sign, jk_j3_sign and jk_j4_sign for yard signs. Kasp's voice: an office manager who means every word. He signs memos 'K.' or 'Sgt. Kasp'. Dungeon tone stays grim-funny (Ross has not loosened the dungeons).",
  "conversations": {
   "jk_j1_screen": [
-   {
-    "speaker": "narrator",
-    "text": "SIGNALS YARD 9: QUIET PLEASE. A weighbridge screen, looping a memo about noise tickets."
-   }
+   {"speaker": "sign", "text": "SIGNALS YARD 9: QUIET PLEASE."},
+   {"speaker": "narrator", "text": "A weighbridge screen, looping a memo about noise tickets. Under the loop, a counter: DAYS SINCE A COMPLAINT: 0."}
   ],
   "jk_j1_memo": [
-   {
-    "speaker": "narrator",
-    "text": "Kasp's memo on a clipboard-shaped sign: 'Noise is a choice. Choose less.' Someone has underlined 'less' twice."
-   }
+   {"speaker": "sign", "text": "MEMO. Noise is a choice. Choose less. - K."},
+   {"speaker": "narrator", "text": "Someone has underlined 'less' twice. Someone else has underlined 'choose'. The clipboard-shaped sign looks tired."}
+  ],
+  "jk_j2_memo": [
+   {"speaker": "sign", "text": "MEMO. Canyon turrets are fitted for your safety. Please do not take this personally. They do not. - K."}
+  ],
+  "jk_j3_memo": [
+   {"speaker": "sign", "text": "MEMO. The crane is for authorised lifting only. Authorised lifters: me. Authorisation: pending. - K."}
+  ],
+  "jk_j4_memo": [
+   {"speaker": "sign", "text": "MEMO. Wreck Row is a heritage site. Do not climb on the heritage. Do not climb in the heritage. - K."}
+  ],
+  "jk_arena_memo": [
+   {"speaker": "sign", "text": "MEMO. This is a staging area. Staging is a verb. Please stop standing in it. - Sgt. Kasp"}
+  ],
+  "jk_j2_sign": [
+   {"speaker": "sign", "text": "YARD 9: SHIFT BELL IS BANNED. SHIFT LIGHT IS PERMITTED. IT IS VERY BRIGHT. DO NOT LOOK AT IT."}
+  ],
+  "jk_j3_sign": [
+   {"speaker": "sign", "text": "COOLANT PIT. 9 METRES. NO LIFEGUARD. NO COMPLAINTS."}
+  ],
+  "jk_j4_sign": [
+   {"speaker": "sign", "text": "WRECK ROW. PLEASE ADMIRE QUIETLY."}
   ]
  }
 }
