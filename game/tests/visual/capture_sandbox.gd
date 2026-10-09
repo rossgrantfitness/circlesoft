@@ -48,6 +48,7 @@ var _no_glow: bool = false
 var _no_rim: bool = false
 var _no_shadow: bool = false
 var _no_fog: bool = false
+var _name: String = ""
 
 
 func _initialize() -> void:
@@ -66,6 +67,8 @@ func _initialize() -> void:
 			_no_glow = true
 		elif arg.begins_with("--profile="):
 			_profile_id = arg.trim_prefix("--profile=")
+		elif arg.begins_with("--name="):
+			_name = arg.trim_prefix("--name=")
 	await process_frame
 	_look = load(LOOK_PROFILES) as GDScript
 	_ps2 = load(PS2_LOOK) as GDScript
@@ -316,6 +319,8 @@ func _real_sandbox_shot(shot: String) -> void:
 	var director: Node = sandbox.call("get_director") as Node
 	var player: Node3D = sandbox.call("get_player") as Node3D
 	var out_name: String = "sandbox_arena_ps2" if shot == "arena" else "sandbox_fx"
+	if not _name.is_empty():
+		out_name = _name
 	if shot == "fx":
 		await _stage_fx(sandbox, director, player)
 	else:
@@ -403,4 +408,6 @@ func _save(shot: String) -> void:
 	var names: Dictionary = {"red": "sandbox_red_rigged", "swords": "sandbox_swords", "wolf": "sandbox_cyberwolf_rigged", "enemies": "sandbox_enemies_blockout"}
 	var image: Image = root.get_viewport().get_texture().get_image()
 	var path: String = "%s/%s%s.png" % [_out, names.get(shot, "sandbox_" + shot), "" if _profile_id == "grim_ps2" else "_" + _profile_id]
+	if not _name.is_empty():
+		path = "%s/%s.png" % [_out, _name]
 	print("saved ", path, " ", image.get_size(), " error ", image.save_png(path))

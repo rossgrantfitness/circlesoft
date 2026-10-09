@@ -12,8 +12,8 @@
     "run_speed_mps": 6.0,
     "jump_height_m": 1.6,
     "gravity_scale": 1.0,
-    "dash_distance_m": 4.0,
-    "dash_time_ms": 180,
+    "dash_distance_m": 5.25,
+    "dash_time_ms": 150,
     "dash_iframes_ms": 150,
     "air_dash_count": 1,
     "input_buffer_ms": 150
@@ -36,13 +36,14 @@
     "release_cut_mult": 0.45
   },
   "dash": {
-    "cooldown_ms": 220,
+    "cooldown_ms": 180,
     "decay": 0.45,
     "air_distance_mult": 0.85,
+    "end_speed_mult": 1.0,
     "no_stick": "facing",
-    "attack_cancel_ms": 110,
-    "jump_cancel_ms": 70,
-    "dash_cancel_ms": 220
+    "attack_cancel_ms": 90,
+    "jump_cancel_ms": 60,
+    "dash_cancel_ms": 180
   },
   "hurt": {
     "default_hitstun_ms": 320,
