@@ -120,6 +120,13 @@ Nineteen `combat_*` ids, built by `game/scripts/tools/make_action_sfx.py` (numpy
 | 68 | `combat_enemy_death` | A dummy or enemy is destroyed | Cold and electrical, not gory: a hard crack, a bit-crushed power-down sliding to the floor, a fizz of sparks and a last low thud | ~0.7 s | No | A DMC demon-shatter crossed with a Kingdom Hearts heartless pop, with the machinery grim | Placeholder built; final TBD |
 | 69 | `combat_brute_slam` | The Brute's overhead slam lands | The heaviest sound in the sandbox: ground-shaking boom, hard crack, a steel clang, a rumbling tail and a scatter of debris. Pairs with screen shake | ~1.0 s | No | A DMC boss ground-pound; a Bayonetta giant-fist smash | Placeholder built; final TBD |
 
+### Dash on charges (added 2026-10-09, Tuning v1.4, Ross's dash on charges)
+One new sound: the dash button pressed with no charge left. Today `fx.json` sounds `dash_empty` points at the existing `hack_denied` blip as a stand-in.
+
+| Id | Where it plays | Mood | Length | Loops? | Notes |
+|---|---|---|---|---|---|
+| `dash_empty` (file TBD; swap the id in `fx.json` sounds) | Dash pressed with 0 charges | A dull, short click or a dry "tk" with no pitch to it, like a trigger on an empty chamber. Says "not yet" without scolding; happens a lot when mashing, so quiet | <0.1 s | No | Optional second sound: a tiny bright tick when a charge comes back (not wired yet) |
+
 ### Chunky hits (added 2026-10-09, Tuning v1.3, Ross: "add a sound effect too")
 Ross asked for strikes that feel chunky and heavy: a short freeze on impact (about 0.10 s light up to 0.25 s heavy, tunable in F12 under "Hit feel"), the struck model flashing flat white for a split second, and a punchy sound. The placeholders `combat_hit_light` and `combat_hit_heavy` were regenerated punchier by `make_action_sfx.py` (same ids, harder click up front, a sub thump under the body, a little louder in `sfx.json`); the game also nudges the pitch of every landed hit a little (light and air hits +-8 percent, heavy and launch hits +-4 percent) so it never repeats exactly. Ross's final sounds replace the files; the ids stay.
 

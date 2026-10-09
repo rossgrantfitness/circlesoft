@@ -302,7 +302,7 @@ signal mode_changed(mode: Mode)
 
 | Group (owner) | Knobs |
 |---|---|
-| movement (Gameplay) | `run_speed_mps` 6.0, `jump_height_m` 1.6, `gravity_scale` 1.0, `dash_distance_m` 4.0, `dash_time_ms` 180, `dash_iframes_ms` 150, `air_dash_count` 1 |
+| movement (Gameplay) | `run_speed_mps` 6.0, `jump_height_m` 1.6, `gravity_scale` 1.0, `dash_distance_m` 4.0, `dash_time_ms` 180, `dash_iframes_ms` 150, `air_dash_count` 1, `dash_charges` 5, `dash_recharge_s` 2.0, `dash_chain_gap_s` 0.12 (Tuning v1.4, Ross's dash on charges) |
 | camera (Gameplay) | `cam_distance_m` 4.5, `cam_sensitivity` 1.0 |
 | hits (Technical Artist, Tuning v1.3) | `hit_freeze_s` 0.25 (the freeze of the heaviest hits; every move's `hit_stop_ms` in the data scales by knob / `hit_feel.hit_freeze.reference_s`), `hit_flash_on` true, `hit_flash_red_on` false. First tab in the panel. |
 | combat (Battle) | `hit_stop_scale` 1.0, `juggle_float` 1.0, `launch_height_scale` 1.0, `input_buffer_ms` 150, `parry_window_scale` 1.0 |
@@ -537,3 +537,12 @@ Red boards a 3.5 m loader robot, docks it into a 50 m colossus's chest and drive
 
 ### 2026-10-09, Technical Director: the slice continues this contract in docs/slice/slice_tech_plan.md
 For the vertical slice, docs/slice/slice_tech_plan.md extends this contract (hacks through `report_hack_hit`, the battery in the director, `ring` and `beam` hitbox shapes, `scale_form` on enemies, hijacked targeting, feature switches for Lights On and the Lamp Flare). Where the two disagree about the slice, the slice plan wins; the sandbox keeps this file. On the CS-22 contract notes: (1) `combo.json` keeping distances inside rules is fine; the selector reading the rule's own numbers is the intended reading, and `test_slice_data.gd` should check the rule numbers sit inside `params`; (2) re-checking `launcher_follow` until the target is airborne is accepted; (3) `is_guarding()` counting as guarded is accepted.
+
+### 2026-10-09, Combat Programmer: dash on charges (Ross's decision, Tuning v1.4)
+Red's dash now runs on charges (docs/decisions.md 2026-10-09 "Dash on charges"). Nothing in the contract signatures changed; these are additions.
+- **New:** `DashCharges` (`scripts/combat/model/dash_charges.gd`, pure: `spend()`, `tick(dt, recharge_s)`, `start_gap(s)`, `is_ready()`, `sync_max()`, `snapshot()`); feel knobs `dash_charges`, `dash_recharge_s`, `dash_chain_gap_s` (group movement); `ActionPlayer.get_dash_charges() -> {count, max, fraction, gap_left_s}`, `get_dash_charge_count()`, `get_dash_charge_model()`, `signal dash_refused` (the button was pressed with no charge); HUD pips in `SandboxHud` (`get_dash_charges()`, `get_dash_pip_fills()`, `is_dash_denied()`); `fx.json` sounds `dash_empty`.
+- **Retired, not deleted:** `dash.cooldown_ms` in `player_action.json` (nothing reads it; a note sits beside it) and the player's `_dash_cooldown_left_s`. `get_dash_cooldown_ms()` stays and now returns the chain gap left, so existing callers keep working.
+- **Behaviour changes to know about:** a dash pressed during a dash or its gap is now KEPT and fires when the gap ends (the buffer entry is refreshed while a dash or gap runs, as the launcher does for its attack press); before, the cooldown dropped it. `air_dash_count` still caps dashes per jump and charges are the shared budget on top. Scale profiles override the three knobs (`scale_profiles.json` small and huge); Red's form has no override so the F12 panel drives her.
+- **Enemies:** untouched. They never shared the dash path (`DashRun` and `_start_dash` are ActionPlayer's); they have no charges.
+- **Test edited:** `integration/test_action_player.gd` `test_dash_cooldown_blocks_an_instant_second_dash` became `test_the_chain_gap_holds_a_second_dash_back_then_lets_it_go` because the old flat cooldown it described was retired on purpose.
+

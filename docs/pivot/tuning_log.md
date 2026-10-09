@@ -2,6 +2,37 @@
 
 > **For Ross:** every number change the Combat Designer makes after the first build, newest first, one line of why each. All of it is data (`game/data/...`) and all of it can be re-tuned in the F12 panel. No button does anything different.
 
+## Tuning v1.4: dash on charges (Ross, 2026-10-09)
+
+Ross: "dashes are set on a charge / You can dash up to 5 times in a row / Each time you dash, it takes a couple seconds to recharge before you can use it again / Each dash dashes you in the direction you hold the controller, / You can dash mulsitple times successively, a small delay in between starting and stopping the next dash".
+
+**What Ross tunes: F12, "movement" tab, next to the other dash knobs.**
+| Knob (F12 label) | Id | Default | Range | What it does |
+|---|---|---|---|---|
+| Dash charges | `dash_charges` | **5** | 1 to 8 | How many dashes in a row. Each dash spends one. |
+| Dash recharge | `dash_recharge_s` | **2.0 s** | 0.5 to 4 s | Time for ONE spent charge to come back. They return one at a time on a single timer that runs while any charge is missing. Dashing again does NOT restart it. |
+| Dash chain gap | `dash_chain_gap_s` | **0.12 s** | 0 to 0.4 s | The pause between the end of one dash and the start of the next. A press during a dash or the gap is remembered and fires the moment the gap ends. |
+
+Unchanged: dash distance 5.25 m, dash time 150 ms, i-frames 150 ms, the perfect dodge, the dash streaks, the air-dash distance multiplier.
+
+### Rules as built
+| Question | Answer |
+|---|---|
+| Direction | The stick or WASD relative to the camera, read at the moment each dash STARTS (so a buffered press takes the stick you hold when it fires). No input: Red's facing. Chained dashes can each go a different way. |
+| No charge | The dash button does nothing: no dash, no buffering; the pips flash red for 0.3 s and a dull blip plays (placeholder `hack_denied`, id `dash_empty` in `fx.json`; a proper click is on the audio list). |
+| Air dashes | Charges apply in the air exactly as on the ground (each air dash spends one). `air_dash_count` still caps how many dashes one jump gets (default 1), and landing gives that back but not charges. So a jump never gives more dashes than before, and charges are the shared budget. |
+| Old cooldown | `dash.cooldown_ms` (180 ms, the flat recovery) is retired: nothing reads it; the data key stays with a note. The chain gap (default 0.12 s) takes its place, and `get_dash_cooldown_ms()` now reports the gap left. |
+| Refill clock | Red's own combat time, so hit-stop and slow-mo pause the refill like everything else of hers. |
+| Live knobs | Lowering `dash_charges` trims her count at once; raising it hands over the new slots full (a tuning change never looks like a spend). A reset refills everything. |
+| Enemies | Not affected. Enemies never used the dash code (it is ActionPlayer's), so they have no charges and their dodges are unchanged. |
+| Robots | Each scale profile has its own numbers in `scale_profiles.json` `knobs`: Loader robot **3 charges, 3.0 s recharge, 0.20 s gap**; Colossus **2 charges, 5.0 s recharge, 0.35 s gap**. Their dashes are 8 m and 40 m long, so a five-deep chain of those made no sense; fewer, slower charges keep the same "chain a few, then wait" rhythm at their size. Red's form has no override, so the F12 knobs drive her. Boarding a robot gives it full charges; stepping back out gives Red's own number, full. |
+
+### HUD
+Five small cyan pips with a "DASH" label right of Red's health bar (`hud.dash_pips` in `data/ui/sandbox_ui.json`, colours `dash_pip*`, word in `data/text/sandbox.json`). A full pip is bright; the charge being refilled fills left to right; spent pips are dark. The row follows the knob (3 charges, 3 pips). Screenshot: `docs/screenshots/dash_charges_hud.png`.
+
+### Tests
+`unit/test_dash_charges.gd` (the pure charge model and the data), `integration/test_dash_charges_player.gd` (the real player: N in a row then refused, refill one at a time, the timer not restarted, a buffered press after the gap, direction per dash, air rules, robots), six new HUD cases in `integration/test_sandbox_hud.gd`. The old `test_dash_cooldown_blocks_an_instant_second_dash` in `test_action_player.gd` described the retired flat cooldown (a press right after a dash was dropped); it is now `test_the_chain_gap_holds_a_second_dash_back_then_lets_it_go` (the press is kept and fires when the gap ends).
+
 ## Tuning v1: Kingdom Hearts direction (Ross, 2026-10-09)
 
 Ross: "keep the system more kingdom heartsy opposed to DmC Sekiro" and "parry may be omitted if its not working". So the target is forgiving, floaty, flashy and easy to pick up, not frame-strict. This **overrides the playtester's tightening** (docs/playtests/sandbox_feel_pass.md); what I took from the playtest and what I did not is listed at the bottom.
