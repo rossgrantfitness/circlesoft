@@ -29,7 +29,7 @@ extends Node3D
 
 const RESUME_BLOCK_FRAMES: int = 6
 
-var player: PlayerController = null
+var player: CharacterBody3D = null
 var camera_rig: DioramaCamera = null
 var prop_fader: PropFader = null
 var runner: DialogueRunner = null
@@ -55,11 +55,11 @@ func _ready() -> void:
 	if camera_rig == null or spawn == null or player_scene == null:
 		push_error("FieldRoom %s needs a player scene, a %s marker and a %s" % [name, spawn_name, camera_rig_name])
 		return
-	player = player_scene.instantiate() as PlayerController
+	player = player_scene.instantiate() as CharacterBody3D
 	add_child(player)
 	player.global_transform = Transform3D(Basis.from_euler(Vector3(0.0, spawn.global_rotation.y, 0.0)), spawn.global_position)
-	player.reset_ground_height()
-	player.set_camera(camera_rig.get_camera())
+	HeroLink.reset_ground_height(player)
+	HeroLink.set_camera(player, camera_rig.get_camera())
 
 	var bounds: CameraBounds = get_node_or_null(bounds_name) as CameraBounds
 	if bounds != null:
@@ -204,7 +204,7 @@ func resume() -> void:
 	if field_menu != null and is_instance_valid(field_menu):
 		field_menu.enabled = true
 	if player != null:
-		player.block_jump_for_frames(RESUME_BLOCK_FRAMES)
+		HeroLink.block_jump_for_frames(player, RESUME_BLOCK_FRAMES)
 	if interactor != null:
 		interactor.block_for_frames(RESUME_BLOCK_FRAMES)
 
@@ -218,7 +218,7 @@ func battle_finished(result: String, _report: Dictionary = {}) -> void:
 	if encounters != null:
 		encounters.battle_finished(result)
 	elif player != null:
-		player.start_blink()
+		HeroLink.start_blink(player)
 
 
 func _exit_tree() -> void:

@@ -68,7 +68,7 @@ func red_can_push_from(point: Vector3) -> bool:
 	return along > 0.2 and across <= float(cfg().get("align", 0.6))
 
 
-func use(player: PlayerController, interactor: PlayerInteractor) -> bool:
+func use(player: CharacterBody3D, interactor: PlayerInteractor) -> bool:
 	if _is_placed:
 		return false
 	if player != null and not red_can_push_from(player.global_position):

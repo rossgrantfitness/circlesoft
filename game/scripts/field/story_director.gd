@@ -69,8 +69,8 @@ func setup(p_room: FieldRoom) -> void:
 func _physics_process(_delta: float) -> void:
 	if _triggers.is_empty() or not triggers_enabled or _running or room == null or room.is_suspended():
 		return
-	var player: PlayerController = room.player
-	if player == null or player.frozen or player.scripted or not player.is_on_floor():
+	var player: CharacterBody3D = room.player
+	if player == null or HeroLink.is_frozen(player) or HeroLink.is_scripted(player) or not HeroLink.is_on_floor(player):
 		return
 	var route: Node = router if router != null else get_node_or_null("/root/SceneRouter")
 	if route != null and bool(route.call("is_busy")):
@@ -137,7 +137,7 @@ func _play(scene_id: String) -> void:
 		WorldProgress.set_flag(once, game_state)
 	var freeze: bool = bool(data.get("freeze", true))
 	if freeze and room.player != null:
-		room.player.frozen = true
+		HeroLink.set_frozen(room.player, true)
 		_held_player = true
 	if room.party != null:
 		room.party.active = false
@@ -150,7 +150,7 @@ func _play(scene_id: String) -> void:
 	if room.party != null:
 		room.party.active = true
 	if _held_player and room.player != null and is_instance_valid(room.player):
-		room.player.frozen = false
+		HeroLink.set_frozen(room.player, false)
 	_held_player = false
 	_running = false
 	current_scene = ""
@@ -333,7 +333,7 @@ func _walk(step: Dictionary) -> void:
 	var is_red: bool = node == room.player
 	_background += 1
 	if is_red:
-		room.player.set_scripted(true, &"walk")
+		HeroLink.set_scripted(room.player, true, &"walk")
 	while true:
 		var flat: Vector3 = Vector3(goal.x - node.global_position.x, 0.0, goal.z - node.global_position.z)
 		if flat.length() <= FLAT_REACH or instant:
@@ -349,7 +349,7 @@ func _walk(step: Dictionary) -> void:
 			node.call("face_direction", heading)
 		await get_tree().physics_frame
 	if is_red:
-		room.player.set_scripted(false)
+		HeroLink.set_scripted(room.player, false)
 	elif node.has_method("settle_facing"):
 		node.call("settle_facing")
 	_background -= 1

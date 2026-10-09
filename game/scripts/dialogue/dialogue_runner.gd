@@ -44,7 +44,7 @@ const RED_ID: String = "red"
 const STYLE_BOX: String = "box"
 
 ## The player to freeze while talking (also registered as speaker "red" unless already registered).
-var player: PlayerController = null:
+var player: CharacterBody3D = null:
 	set(value):
 		player = value
 		if player != null and not _speakers.has(RED_ID):
@@ -90,7 +90,7 @@ func _process(_delta: float) -> void:
 
 ## Makes a runner as a child of `host` (usually the room), wired to Red and the room camera.
 ## Then register the room's speakers and call start("conversation_id").
-static func create(host: Node, red: PlayerController = null, room_camera: Camera3D = null) -> DialogueRunner:
+static func create(host: Node, red: CharacterBody3D = null, room_camera: Camera3D = null) -> DialogueRunner:
 	var runner: DialogueRunner = DialogueRunner.new()
 	runner.name = "DialogueRunner"
 	runner.camera = room_camera
@@ -234,8 +234,8 @@ func start(conversation_id: String) -> bool:
 	_release_left = -1
 	add_to_group(UiStage.MODAL_GROUP)
 	if player != null and not _frozen_by_us:
-		_was_frozen = player.frozen
-		player.frozen = true
+		_was_frozen = HeroLink.is_frozen(player)
+		HeroLink.set_frozen(player, true)
 		_frozen_by_us = true
 	conversation_started.emit(conversation_id)
 	_play_line()
@@ -445,7 +445,7 @@ func _count_down_release() -> void:
 		return
 	remove_from_group(UiStage.MODAL_GROUP)
 	if _frozen_by_us and player != null and is_instance_valid(player):
-		player.frozen = _was_frozen
+		HeroLink.set_frozen(player, _was_frozen)
 	_frozen_by_us = false
 
 

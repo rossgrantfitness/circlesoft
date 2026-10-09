@@ -32,7 +32,7 @@ func rack() -> BellRack:
 	return _rack
 
 
-func use(_player: PlayerController, interactor: PlayerInteractor) -> bool:
+func use(_player: CharacterBody3D, interactor: PlayerInteractor) -> bool:
 	var bells: Dictionary = WorksData.section("bells")
 	var keeper: BellRack = rack()
 	if keeper == null:

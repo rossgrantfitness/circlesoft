@@ -203,17 +203,17 @@ func _host() -> Node:
 
 ## Red stands still while the screen fades (the old room's, then the new room's).
 func _hold_player(room: Node) -> void:
-	var red: PlayerController = room.get("player") as PlayerController if room != null else null
+	var red: CharacterBody3D = room.get("player") as CharacterBody3D if room != null else null
 	if red != null:
-		red.frozen = true
-		red.stick = Vector2.ZERO
+		HeroLink.set_frozen(red, true)
+		HeroLink.set_stick(red, Vector2.ZERO)
 
 
 func _release_player(room: Variant) -> void:
 	# The room can be gone by now (the game went back to the title during the fade).
-	var red: PlayerController = (room as Node).get("player") as PlayerController if is_instance_valid(room) else null
+	var red: CharacterBody3D = (room as Node).get("player") as CharacterBody3D if is_instance_valid(room) else null
 	if red != null:
-		red.frozen = false
+		HeroLink.set_frozen(red, false)
 
 
 # ---- the fade ----

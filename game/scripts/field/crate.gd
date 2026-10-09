@@ -60,7 +60,7 @@ func _set_solid(on: bool) -> void:
 
 
 ## Opens the crate and hands out what is inside. Returns true when Red did something.
-func use(_player: PlayerController, interactor: PlayerInteractor) -> bool:
+func use(_player: CharacterBody3D, interactor: PlayerInteractor) -> bool:
 	if _is_open:
 		return false
 	var contents: Dictionary = crate_data()

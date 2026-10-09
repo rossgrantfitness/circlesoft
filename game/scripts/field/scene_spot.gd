@@ -29,7 +29,7 @@ func refresh() -> void:
 	set_usable(Conditions.met(data.get("show_if", {}), game_state))
 
 
-func use(_player: PlayerController, interactor: PlayerInteractor) -> bool:
+func use(_player: CharacterBody3D, interactor: PlayerInteractor) -> bool:
 	var variant: Dictionary = current_variant()
 	if variant.is_empty():
 		return false

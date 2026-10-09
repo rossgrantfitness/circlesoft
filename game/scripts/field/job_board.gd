@@ -42,7 +42,7 @@ func job_ids() -> Array[String]:
 	return ids
 
 
-func use(_player: PlayerController, interactor: PlayerInteractor) -> bool:
+func use(_player: CharacterBody3D, interactor: PlayerInteractor) -> bool:
 	var runner: DialogueRunner = interactor.runner
 	if runner == null:
 		return false

@@ -44,7 +44,7 @@ const LIGHT_COMPENSATION: Color = Color(1.28, 1.1, 0.86)
 @export_file("*.glb", "*.tscn") var model_path: String = ""
 
 ## Red, set by the room. Without a target the enemy just stands.
-var target: PlayerController = null
+var target: CharacterBody3D = null
 ## False: it holds still (a room waiting in a battle, a cutscene).
 var active: bool = true
 ## Moves itself every physics frame. Tests turn this off and call step().
@@ -239,7 +239,7 @@ func step(delta: float) -> void:
 	_cooldown_left = maxf(_cooldown_left - delta, 0.0)
 	var moving: bool = false
 	_step_delta = delta
-	if active and target != null and is_instance_valid(target) and not target.frozen:
+	if active and target != null and is_instance_valid(target) and not HeroLink.is_frozen(target):
 		if scanner != null:
 			scanner.advance(delta)
 		moving = _think(delta)
@@ -253,7 +253,7 @@ func step(delta: float) -> void:
 func _think(delta: float) -> bool:
 	var offset: Vector3 = _flat(target.global_position - global_position)
 	var distance: float = offset.length()
-	var catchable: bool = target.is_catchable()
+	var catchable: bool = HeroLink.is_catchable(target)
 	if catchable:
 		_check_touch(distance, target.global_position.y - global_position.y)
 	match _state:

@@ -25,7 +25,7 @@ func is_thrown() -> bool:
 	return WorldProgress.has_flag(flag_id(), game_state)
 
 
-func use(_player: PlayerController, interactor: PlayerInteractor) -> bool:
+func use(_player: CharacterBody3D, interactor: PlayerInteractor) -> bool:
 	var lever: Dictionary = WorksData.section("lever")
 	if is_thrown():
 		var again: Array[String] = [str(lever.get("already", ""))]

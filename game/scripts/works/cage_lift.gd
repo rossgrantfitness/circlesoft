@@ -50,7 +50,7 @@ func destinations() -> Array[Dictionary]:
 	return found
 
 
-func use(_player: PlayerController, interactor: PlayerInteractor) -> bool:
+func use(_player: CharacterBody3D, interactor: PlayerInteractor) -> bool:
 	if prompt != null and is_instance_valid(prompt):
 		return false
 	if not is_powered():

@@ -50,7 +50,7 @@ func locked_message() -> String:
 
 
 ## Red uses it. Returns true when she did something.
-func use(_player: PlayerController, interactor: PlayerInteractor) -> bool:
+func use(_player: CharacterBody3D, interactor: PlayerInteractor) -> bool:
 	if _is_open:
 		return false
 	if WorksData.cards_held(game_state) < cards_needed():

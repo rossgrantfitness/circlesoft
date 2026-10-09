@@ -21,7 +21,7 @@ const CLIP_HOP: StringName = &"jump"
 ## Where Red ends up, relative to this node (so the node's rotation turns it).
 @export var end_offset: Vector3 = Vector3(0.0, 2.0, -1.2)
 
-var _player: PlayerController = null
+var _player: CharacterBody3D = null
 var _active: bool = false
 var _progress: float = 0.0
 var _from: Vector3 = Vector3.ZERO
@@ -55,7 +55,7 @@ func get_landing_point() -> Vector3:
 
 
 ## Starts the move. Returns true when Red set off.
-func begin(player: PlayerController, _interactor: PlayerInteractor = null) -> bool:
+func begin(player: CharacterBody3D, _interactor: PlayerInteractor = null) -> bool:
 	if _active or player == null:
 		return false
 	_player = player
@@ -65,7 +65,7 @@ func begin(player: PlayerController, _interactor: PlayerInteractor = null) -> bo
 	across.y = 0.0
 	if across.length() > PlayerMotion.MIN_FLAT_LENGTH:
 		player.rotation.y = PlayerMotion.yaw_for_direction(across.normalized())
-	player.set_scripted(true, CLIP_CLIMB if mode == Mode.CLIMB else CLIP_HOP)
+	HeroLink.set_scripted(player, true, CLIP_CLIMB if mode == Mode.CLIMB else CLIP_HOP)
 	_progress = 0.0
 	_active = true
 	set_usable(false)
@@ -85,7 +85,7 @@ func step(delta: float) -> void:
 	if _progress >= 1.0:
 		_active = false
 		_player.global_position = _to
-		_player.set_scripted(false)
+		HeroLink.set_scripted(_player, false)
 		set_usable(true)
 		finished.emit()
 

@@ -72,7 +72,7 @@ func is_taken() -> bool:
 
 
 ## Red takes it. Returns true when she did something (took it, or was told the bag is full).
-func use(_player: PlayerController, interactor: PlayerInteractor) -> bool:
+func use(_player: CharacterBody3D, interactor: PlayerInteractor) -> bool:
 	if _gone:
 		return false
 	var result: Dictionary = WorldProgress.grant(pickup_data(), game_state)

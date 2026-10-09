@@ -87,7 +87,7 @@ func current_variant() -> Dictionary:
 	return Conditions.pick(data.get("variants", []), game_state)
 
 
-func _use(_player: PlayerController, interactor: PlayerInteractor) -> bool:
+func _use(_player: CharacterBody3D, interactor: PlayerInteractor) -> bool:
 	var variant: Dictionary = current_variant()
 	if variant.is_empty():
 		return false

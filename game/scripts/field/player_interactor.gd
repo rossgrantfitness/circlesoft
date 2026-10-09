@@ -16,7 +16,7 @@ const MESSAGE_PREFIX: String = "__message_"
 signal target_changed(target: Interactable)
 signal interacted(target: Interactable, conversation_id: String)
 
-var player: PlayerController = null
+var player: CharacterBody3D = null
 var runner: DialogueRunner = null
 var prompt: InteractPrompt = null
 var tuning: InteractionTuning = InteractionTuning.new()
@@ -40,7 +40,7 @@ func _physics_process(_delta: float) -> void:
 	if _blocked_frames > 0:
 		_blocked_frames -= 1
 		return
-	if read_engine_input and player != null and player.read_engine_input \
+	if read_engine_input and player != null and HeroLink.reads_engine_input(player) \
 			and Input.is_action_just_pressed(ACTION_INTERACT):
 		try_interact()
 
@@ -57,7 +57,7 @@ func get_target() -> Interactable:
 
 ## True when Red may use something right now.
 func can_interact() -> bool:
-	if player == null or not is_instance_valid(player) or player.frozen or player.scripted or not player.is_on_floor():
+	if player == null or not is_instance_valid(player) or HeroLink.is_frozen(player) or HeroLink.is_scripted(player) or not HeroLink.is_on_floor(player):
 		return false
 	if runner != null and runner.is_running():
 		return false
@@ -72,7 +72,7 @@ func refresh() -> void:
 		for node: Node in get_tree().get_nodes_in_group(Interactable.GROUP):
 			if node is Interactable:
 				candidates.append(node as Interactable)
-		picked = Interactable.pick(candidates, player.global_position, player.get_facing(), tuning)
+		picked = Interactable.pick(candidates, player.global_position, HeroLink.get_facing(player), tuning)
 	if picked != _target:
 		_target = picked
 		target_changed.emit(_target)

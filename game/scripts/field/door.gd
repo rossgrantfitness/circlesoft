@@ -94,7 +94,7 @@ func locked_message() -> String:
 
 
 ## Red uses the door. Returns true when she did something (went through or read the lock).
-func use(_player: PlayerController, interactor: PlayerInteractor) -> bool:
+func use(_player: CharacterBody3D, interactor: PlayerInteractor) -> bool:
 	var route: Node = _router()
 	if route != null and bool(route.call("is_busy")):
 		return false
@@ -154,7 +154,7 @@ func half_width() -> float:
 
 
 func _check_walk_in() -> void:
-	var player: PlayerController = get_player()
+	var player: CharacterBody3D = get_player()
 	if player == null:
 		return
 	var local: Vector3 = to_local(player.global_position)
@@ -163,14 +163,14 @@ func _check_walk_in() -> void:
 	if not inside:
 		_armed = true
 		return
-	if not _armed or player.frozen or player.scripted:
+	if not _armed or HeroLink.is_frozen(player) or HeroLink.is_scripted(player):
 		return
 	var interactor: PlayerInteractor = get_interactor()
 	if interactor != null and not interactor.can_interact():
 		return
 	var into: Vector3 = -global_basis.z
 	into.y = 0.0
-	var push: float = player.get_move_direction().dot(into.normalized()) * player.stick.length()
+	var push: float = HeroLink.get_move_direction(player).dot(into.normalized()) * HeroLink.get_stick(player).length()
 	if push < tuning.door_min_push_speed:
 		return
 	_armed = false

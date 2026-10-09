@@ -50,7 +50,7 @@ const PAGE_AREA: Rect2 = Rect2(0, 0, 260, 154)
 const PAGE_INSET: int = 4
 
 ## Red, frozen while the menu is open (released two frames after it closes).
-var player: PlayerController = null
+var player: CharacterBody3D = null
 ## Off: the menu does not open (cutscenes, battles).
 var enabled: bool = true
 var manual_ticks: bool = false
@@ -250,7 +250,7 @@ func save_manager_node() -> Node:
 
 ## Builds the menu on the UI stage (making the stage if needed) and returns it. `player` is frozen
 ## while the menu is open. Call once when a room loads; remove it with queue_free() when it unloads.
-static func install(tree: SceneTree, player_to_freeze: PlayerController = null) -> FieldMenu:
+static func install(tree: SceneTree, player_to_freeze: CharacterBody3D = null) -> FieldMenu:
 	var stage: UiStage = UiStage.get_or_create(tree)
 	var menu: FieldMenu = (load(SCENE_PATH) as PackedScene).instantiate() as FieldMenu
 	menu.player = player_to_freeze
@@ -318,8 +318,8 @@ func open() -> bool:
 	add_to_group(UiStage.MODAL_GROUP)
 	_release_left = -1
 	if player != null and not _frozen_by_us:
-		_was_frozen = player.frozen
-		player.frozen = true
+		_was_frozen = HeroLink.is_frozen(player)
+		HeroLink.set_frozen(player, true)
 		_frozen_by_us = true
 	_page = PAGE_MAIN
 	_pending_save = false
@@ -432,7 +432,7 @@ func _release() -> void:
 		return
 	remove_from_group(UiStage.MODAL_GROUP)
 	if _frozen_by_us and player != null and is_instance_valid(player):
-		player.frozen = _was_frozen
+		HeroLink.set_frozen(player, _was_frozen)
 	_frozen_by_us = false
 	if _pending_save:
 		_pending_save = false

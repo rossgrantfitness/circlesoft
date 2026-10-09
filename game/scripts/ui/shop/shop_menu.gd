@@ -36,7 +36,7 @@ const DIM_STEP: int = 3
 const NO_ARROW_TEXT: String = "-"
 
 ## Red, frozen while the shop is open (released two frames after it closes).
-var player: PlayerController = null
+var player: CharacterBody3D = null
 ## Off: the shop does not open.
 var enabled: bool = true
 var manual_ticks: bool = false
@@ -188,7 +188,7 @@ func state_node() -> Node:
 
 
 ## Builds a shop screen on the UI stage (making the stage if needed) and returns it.
-static func install(tree: SceneTree, player_to_freeze: PlayerController = null) -> ShopMenu:
+static func install(tree: SceneTree, player_to_freeze: CharacterBody3D = null) -> ShopMenu:
 	var stage: UiStage = UiStage.get_or_create(tree)
 	var menu: ShopMenu = (load(SCENE_PATH) as PackedScene).instantiate() as ShopMenu
 	menu.player = player_to_freeze
@@ -214,8 +214,8 @@ func open_shop(shop_id: String) -> bool:
 	add_to_group(UiStage.MODAL_GROUP)
 	_release_left = -1
 	if player != null and not _frozen_by_us:
-		_was_frozen = player.frozen
-		player.frozen = true
+		_was_frozen = HeroLink.is_frozen(player)
+		HeroLink.set_frozen(player, true)
 		_frozen_by_us = true
 	_memory.clear()
 	_mode = Mode.BUY
@@ -339,7 +339,7 @@ func _release() -> void:
 		return
 	remove_from_group(UiStage.MODAL_GROUP)
 	if _frozen_by_us and player != null and is_instance_valid(player):
-		player.frozen = _was_frozen
+		HeroLink.set_frozen(player, _was_frozen)
 	_frozen_by_us = false
 
 

@@ -15,14 +15,14 @@ signal battle_requested(encounter_id: String, enemy_id: String, first_turn: Stri
 const RESULT_WIN: String = "win"
 
 var room: Node3D = null
-var player: PlayerController = null
+var player: CharacterBody3D = null
 ## The enemy whose fight is under way.
 var pending: MapEnemy = null
 ## GameState to use. Null means the autoload.
 var game_state: Node = null
 
 
-func setup(p_room: Node3D, p_player: PlayerController) -> void:
+func setup(p_room: Node3D, p_player: CharacterBody3D) -> void:
 	room = p_room
 	player = p_player
 	for enemy: MapEnemy in enemies():
@@ -64,11 +64,11 @@ func set_enemies_active(on: bool) -> void:
 func _on_touched(enemy: MapEnemy) -> void:
 	if pending != null or player == null or not is_instance_valid(player) \
 			or (room != null and room.has_method("is_suspended") and bool(room.call("is_suspended"))) \
-			or not player.is_catchable() or player.frozen:
+			or not HeroLink.is_catchable(player) or HeroLink.is_frozen(player):
 		enemy.reset_touch()
 		return
 	pending = enemy
-	var first_turn: String = EncounterRules.first_turn_from_data(player.global_position, player.get_facing(),
+	var first_turn: String = EncounterRules.first_turn_from_data(player.global_position, HeroLink.get_facing(player),
 			enemy.global_position, enemy.get_facing())
 	battle_requested.emit(enemy.encounter_id, enemy.placement_id, first_turn)
 
@@ -76,7 +76,7 @@ func _on_touched(enemy: MapEnemy) -> void:
 ## Main says how the fight ended.
 func battle_finished(result: String) -> void:
 	if player != null and is_instance_valid(player):
-		player.start_blink()
+		HeroLink.start_blink(player)
 	if pending == null:
 		return
 	var enemy: MapEnemy = pending

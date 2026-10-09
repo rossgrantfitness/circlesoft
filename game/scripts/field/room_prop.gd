@@ -40,7 +40,7 @@ func get_room() -> FieldRoom:
 	return _room_cache
 
 
-func get_player() -> PlayerController:
+func get_player() -> CharacterBody3D:
 	var room: FieldRoom = get_room()
 	return room.player if room != null else null
 

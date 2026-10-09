@@ -35,7 +35,7 @@ signal talk_finished
 
 ## GameState to read flags from. Null means the autoload.
 var game_state: Node = null
-## Set by props that act instead of talking: func(player: PlayerController, interactor: PlayerInteractor) -> bool.
+## Set by props that act instead of talking: func(player: CharacterBody3D, interactor: PlayerInteractor) -> bool.
 var handler: Callable = Callable()
 
 

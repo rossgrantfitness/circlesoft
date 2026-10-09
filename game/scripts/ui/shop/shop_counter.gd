@@ -64,8 +64,8 @@ func _menu(user: Node) -> ShopMenu:
 	if shop_menu != null and is_instance_valid(shop_menu):
 		return shop_menu
 	if _own_menu == null or not is_instance_valid(_own_menu):
-		_own_menu = ShopMenu.install(get_tree(), user as PlayerController)
-	_own_menu.player = user as PlayerController
+		_own_menu = ShopMenu.install(get_tree(), user as CharacterBody3D)
+	_own_menu.player = user as CharacterBody3D
 	return _own_menu
 
 
