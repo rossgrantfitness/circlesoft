@@ -16,6 +16,7 @@ config/features=PackedStringArray("4.5", "GL Compatibility")
 config/use_custom_user_dir=true
 config/custom_user_dir_name="LightsLeftOn"
 config/name.sandbox="Lights On Sandbox"
+config/name.slice="Circlesoft Slice"
 config/custom_user_dir_name.sandbox="LightsOnSandbox"
 
 [autoload]
