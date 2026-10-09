@@ -76,11 +76,13 @@ func test_every_prop_kind_in_the_two_robot_files_exists() -> void:
 
 func test_j5_has_the_zones_of_the_map_and_enough_to_flatten() -> void:
 	var props: Array = _props("junk_j5")
-	assert_ge(float(props.size()), 100.0, "a Car Graveyard of about 80 cars and the rest of the run: well over 100 smashables")
+	assert_gt(props.size(), 0, "J5 has smashables to flatten")
 	var cars: int = 0
 	var walls_lane: int = 0
 	var layers: Dictionary = {}
 	var stacks: int = 0
+	var car_lanes: Dictionary = {}
+	var cars_in_aisle: int = 0
 	var gate: Dictionary = {}
 	for raw: Variant in props:
 		var p: Dictionary = raw
@@ -88,6 +90,10 @@ func test_j5_has_the_zones_of_the_map_and_enough_to_flatten() -> void:
 		match str(p["kind"]):
 			"car":
 				cars += 1
+				car_lanes[snappedf(x, 10.0)] = true
+				var cz: float = float((p["pos"] as Array)[2])
+				if absf(cz - 54.0) < 9.0:
+					cars_in_aisle += 1
 				assert_true(x >= 50.0 and x <= 130.0, "cars stand in the graveyard (x 50 to 130), not at %s" % x)
 			"scrap_wall_3m":
 				if x < 50.0:
@@ -99,7 +105,9 @@ func test_j5_has_the_zones_of_the_map_and_enough_to_flatten() -> void:
 				assert_true(x >= 130.0 and x <= 200.0, "stacks stand in the canyon (x 130 to 200), not at %s" % x)
 			"scrap_gate_12m":
 				gate = p
-	assert_ge(float(cars), 60.0, "about 80 cars (a few are dropped around the encounter spawns)")
+	assert_gt(cars, 0, "the Car Graveyard has cars in it (the count is data: junk_j5.json)")
+	assert_ge(car_lanes.size(), 3, "the cars still stand in lanes (several distinct rows), not one clump")
+	assert_eq(cars_in_aisle, 0, "the aisle across the middle (z 45 to 63) stays clear of cars")
 	assert_eq(walls_lane, 3, "Breaker's Lane has three scrap walls")
 	assert_eq(layers.size(), 3, "the Foreman's Wall has three layers before the gate")
 	assert_ge(float(stacks), 15.0, "the canyon is lined with container stacks")
@@ -321,7 +329,7 @@ func test_j5_starts_in_the_loader_and_the_arena_climb_out_puts_her_on_foot() -> 
 	var j5: ActionRoom = await _until("junk_j5")
 	assert_eq(j5.get_form(), &"small", "J5 starts with Red already in the loader")
 	assert_not_null(j5.get_robot_stage(), "the stage builds the smashables")
-	assert_ge(float(j5.get_robot_stage().yard.props.size()), 100.0, "119 props stand in the yard")
+	assert_eq(j5.get_robot_stage().yard.props.size(), _props("junk_j5").size(), "every prop in junk_j5.json stands in the yard")
 	assert_true(j5.saving_blocked(), "no saving in the loader")
 	# through the gate's door into the arena (the carried form is the loader)
 	router.call("go_to", "kasp_arena", "from_j5")

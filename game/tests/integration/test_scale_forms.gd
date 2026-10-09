@@ -229,13 +229,15 @@ func test_robot_animation_speed_is_slower_and_heavier() -> void:
 	_player.set_move_input(Vector2(0, -1))
 	_step(90)
 	var small_speed: float = _player.get_animation_player().speed_scale
-	assert_almost_eq(small_speed, 9.0 / 13.9, 0.03, "ground speed over the run clip's stride: no foot slide")
+	var small_run: float = ScaleProfile.get_form(&"small").knob("run_speed_mps", 0.0)
+	var huge_run: float = ScaleProfile.get_form(&"huge").knob("run_speed_mps", 0.0)
+	assert_almost_eq(small_speed, small_run / 13.9, 0.03, "ground speed over the run clip's stride: no foot slide")
 	_form(&"huge")
 	_player.set_move_input(Vector2(0, -1))
 	_step(400)
 	assert_eq(_player.current_clip(), &"walk", "the colossus uses the walk clip for everything")
 	var huge_speed: float = _player.get_animation_player().speed_scale
-	assert_almost_eq(huge_speed, 22.0 / 31.5, 0.03, "the walk clip at 0.7")
+	assert_almost_eq(huge_speed, huge_run / 31.5, 0.03, "the walk clip at 0.7")
 	_player.set_move_input(Vector2.ZERO)
 	_step(240)
 	assert_almost_eq(_player.get_animation_player().speed_scale, 0.6, 0.01, "even its idle is slow")

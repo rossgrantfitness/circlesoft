@@ -126,7 +126,7 @@
     {"id": "w2", "start": {"after_wave": "w1", "alive_at_most": 1, "or_after_s": 12.0}, "warning": "bark_j4_stand", "spawn": [
      {"enemy": "brute", "count": 1, "at": [58.0, 30.0], "entrance": "east_shutter", "tune": {"block_chance": 0.3}}
     ]},
-    {"id": "w3", "start": {"after_wave": "w2", "alive_at_most": 0, "or_after_s": 45.0}, "spawn": [
+    {"id": "w3", "start": {"after_wave": "w2", "alive_at_most": 0, "or_after_s": 90.0}, "spawn": [
      {"enemy": "brute", "count": 1, "at": [58.0, 22.0], "entrance": "east_shutter", "tune": {"block_chance": 0.3}},
      {"enemy": "signals_drone", "count": 2, "at": [56.0, 42.0], "entrance": "wreck_hatch"}
     ]}

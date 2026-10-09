@@ -72,7 +72,7 @@
     {
      "id": "leg_stomp", "name": "Leg Stomp", "weight": 3, "move": "leg_stomp",
      "needs": {"pairs_standing_min": 1},
-     "when": {"dist_max_m": 8.0},
+     "when": {"dist_max_m": 12.0},
      "leg": "nearest_standing",
      "track_ms": 680,
      "chain": {"pairs_lost_min": 2, "count": 2, "gap_ms": 900, "second_leg": "next_nearest_standing"},

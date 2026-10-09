@@ -46,6 +46,7 @@ func test_the_camera_without_a_scale_view_is_exactly_as_before() -> void:
 func test_a_scale_view_pulls_the_camera_back_over_its_blend_not_in_one_frame() -> void:
 	var cam: OrbitCamera = _camera()
 	var start: float = _arm(cam)
+	var loader_distance: float = float(ScaleProfile.camera_block(&"small")["distance_m"])
 	cam.set_scale_view(_view(&"small"), 1.3)
 	assert_true(cam.is_scale_view_blending())
 	cam.tick(DT)
@@ -53,10 +54,10 @@ func test_a_scale_view_pulls_the_camera_back_over_its_blend_not_in_one_frame() -
 	_run(cam, 0.65)
 	var half: float = _arm(cam)
 	assert_gt(half, start + 2.0, "halfway: well on its way")
-	assert_lt(half, 14.0 - 2.0, "but not there yet")
+	assert_lt(half, loader_distance - 2.0, "but not there yet")
 	_run(cam, 0.8)
 	assert_false(cam.is_scale_view_blending())
-	assert_almost_eq(_arm(cam), 14.0, 0.2, "the loader's 14 m")
+	assert_almost_eq(_arm(cam), loader_distance, 0.2, "the loader's distance, from the data")
 	assert_almost_eq(cam.get_camera().fov, 60.0, 0.5)
 
 
@@ -79,7 +80,9 @@ func test_the_feel_panels_camera_distance_still_counts_in_a_robot() -> void:
 	knobs.set_value("cam_distance_m", 6.0)
 	cam.set_scale_view(_view(&"small"), 0.0)
 	_run(cam, 0.5)
-	assert_almost_eq(_arm(cam), 6.0 * 14.0 / 4.5, 0.2, "twice Red's panel distance, scaled by the form")
+	var loader_distance: float = float(ScaleProfile.camera_block(&"small")["distance_m"])
+	var red_distance: float = float(ScaleProfile.camera_block(&"red")["distance_m"])
+	assert_almost_eq(_arm(cam), 6.0 * loader_distance / red_distance, 0.2, "Red's panel distance, scaled by the form's ratio to Red")
 
 
 func test_the_scale_view_can_go_back_to_red_exactly() -> void:

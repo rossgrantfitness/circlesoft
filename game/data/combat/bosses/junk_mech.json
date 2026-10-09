@@ -10,7 +10,7 @@
  "authored": "world",
 
  "versus": {
-  "_about": "The colossus (scale_profiles.json 'huge'): 50 m, hp_max 6000, run 22 m/s, walk 14 m/s, turns 70 degrees a second, dash 40 m in 520 ms with 400 ms of i-frames, jump 12 m, attack damage x40, attacks at 0.45 speed. Hacks are OFF in robot forms. The Heap is deliberately the slow, heavy one: half the turn rate, half the speed, double the wind-up. The colossus is the fast, sharp one.",
+  "_about": "The colossus (scale_profiles.json 'huge'): 50 m, hp_max 6000, run 17 m/s (feel pass v1.5; was 22), walk 14 m/s, turns 70 degrees a second, dash 40 m in 800 ms (was 520) with 400 ms of i-frames, jump 12 m, attack damage x40, attacks at 0.45 speed. Hacks are OFF in robot forms. The Heap is deliberately the slow, heavy one: half the turn rate, half the speed, double the wind-up. The colossus is the fast, sharp one.",
   "colossus_hp": 6000,
   "colossus_light_damage": [320, 320, 480],
   "colossus_heavy_damage": 1280,
@@ -148,7 +148,7 @@
  "pickups": {
   "_about": "ON: Ross approved 'all recommended' (2026-10-09), repair cells are in the colossus round (built with the Heap, VS-28). Was: PROPOSED, waiting for Ross (decision 2 in boss_design.md). With hacks off, Reboot is gone, so the colossus has no healing. The arena doc already puts 8 clusters of smashable containers and cars on the bowl floor; this makes two containers per cluster hold a repair cell.",
   "enabled": true,
-  "repair_cell": {"heal_frac_of_colossus": 0.12, "heal_hp": 720, "per_cluster": 2, "clusters": 8, "glow": "#7dffb0", "marked": "green hazard stripe on the container"}
+  "repair_cell": {"heal_frac_of_colossus": 0.12, "heal_hp": 720, "per_cluster": 1, "clusters": 8, "glow": "#7dffb0", "marked": "green hazard stripe on the container"}
  },
 
  "retry": {

@@ -16,6 +16,15 @@ func _brain(rng_seed: int = 1) -> BossBrain:
 
 
 ## Red 6 m away, nothing lost, nothing special.
+## How far the opening leg stomp reaches, from the data.
+func _stomp_reach_m() -> float:
+	for raw: Variant in _rig()["patterns"] as Array:
+		var pattern: Dictionary = raw
+		if str(pattern["id"]) == "leg_stomp":
+			return float((pattern["when"] as Dictionary)["dist_max_m"])
+	return 0.0
+
+
 func _view(overrides: Dictionary = {}) -> Dictionary:
 	var base: Dictionary = {"dist_m": 6.0, "pairs_lost": 0, "pairs_standing": 4, "parts_alive": {"dish": true},
 			"drones_alive": 0, "since_start_s": 10.0, "hacks_locked": false}
@@ -50,14 +59,17 @@ func test_the_opening_is_the_ring_then_the_line_then_the_ring() -> void:
 
 func test_an_opening_attack_waits_for_the_boss_to_be_in_range() -> void:
 	var brain: BossBrain = _brain()
-	assert_true(brain.step(2600.0, _view({"dist_m": 12.0})).is_empty(), "the stomp needs Red within 8 m: the boss walks closer")
-	assert_eq(brain.step(3000.0, _view({"dist_m": 7.0}))["pattern"], &"leg_stomp")
+	var reach: float = _stomp_reach_m()
+	assert_gt(reach, 0.0, "the stomp has a reach in the data")
+	assert_true(brain.step(2600.0, _view({"dist_m": reach + 4.0})).is_empty(), "the stomp needs Red within its reach: the boss walks closer")
+	assert_eq(brain.step(3000.0, _view({"dist_m": reach - 1.0}))["pattern"], &"leg_stomp")
 
 
 func test_an_opening_attack_that_never_becomes_possible_is_dropped_after_patience() -> void:
 	var brain: BossBrain = _brain()
-	assert_true(brain.step(2600.0, _view({"dist_m": 12.0})).is_empty())
-	var pick: Dictionary = brain.step(2600.0 + BossBrain.OPENING_PATIENCE_MS + 1.0, _view({"dist_m": 12.0}))
+	var far: float = _stomp_reach_m() + 4.0
+	assert_true(brain.step(2600.0, _view({"dist_m": far})).is_empty())
+	var pick: Dictionary = brain.step(2600.0 + BossBrain.OPENING_PATIENCE_MS + 1.0, _view({"dist_m": far}))
 	assert_ne(pick.get("pattern", &""), &"leg_stomp", "it gave up on the stomp and moves on")
 
 

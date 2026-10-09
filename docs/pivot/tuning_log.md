@@ -2,6 +2,26 @@
 
 > **For Ross:** every number change the Combat Designer makes after the first build, newest first, one line of why each. All of it is data (`game/data/...`) and all of it can be re-tuned in the F12 panel. No button does anything different.
 
+## Tuning v1.5 (graybox feel pass)
+
+From the Playtester's report, docs/playtests/slice_graybox_feel_pass.md sections 4 to 6 (VS-34). Numbers only, all data; nothing about what a button does has changed. Retune in the F12 panel or the files below.
+
+| File | Key | Old | New | Why |
+|---|---|---|---|---|
+| `combat/bosses/hushmaster.json` | leg_stomp `when.dist_max_m` | 8.0 | **12.0** | Keeps the jump-the-ring lesson in play; players who stood off in the middle skipped it. |
+| `combat/bosses/junk_mech.json` | `pickups.repair_cell.per_cluster` | 2 | **1** | 16 repair cells (11,520 hp, 1.9x the colossus's health) made the Heap too forgiving; now 8 cells. |
+| `combat/scale_profiles.json` | `forms.huge.knobs.run_speed_mps` | 22 | **17** | Report asked 16, but the Heap's approach speed is 16 m/s, so 16 would only tie. 17 keeps the colossus faster than the Heap and still reads as heavy. |
+| `combat/scale_profiles.json` | `forms.huge.knobs.dash_time_ms` | 520 | **800** | A 40 m dash in 800 ms is 50 m/s (was 77 m/s): big, not teleporting. |
+| `combat/scale_profiles.json` | `forms.small.camera.distance_m` | 14 | **12** | Loader fills more of the screen so it frames as a giant, not a bigger Red. |
+| `combat/scale_profiles.json` | `forms.small.knobs.dash_time_ms` | 260 | **380** | 8 m dash now averages about 21 m/s (was 31), so the loader no longer out-dashes Red. |
+| `slice/encounters.json` | `enc_j4_stand` wave w3 `start.or_after_s` | 45 | **90** | The Stand was a spike: wave 3 arrived 45 s after wave 2 whether or not the Brute was dead. |
+| `slice/robot_rooms/junk_j5.json` | car count | 64 | **41** | J5 was too easy and long. Dropped every third slot of the lane grid (the aisle and the chalk-marked car at (110, 20) kept). |
+| `combat/scale_profiles.json` | `forms.huge.attack.hit_stop_mult` | 2.0 | **1.5** | Colossus hit freeze was too strong across the many hits of a long run. Still above the loader's 1.3. |
+
+Not done: taller J5 scrap walls (needs a model change; goes to the art list).
+
+Test change: `tests/integration/test_slice_smash_run.gd` pinned "at least 100 props" and "at least 60 cars". It now checks the cars exist, stand in several lanes and keep the aisle clear, with the count read from the data.
+
 ## Tuning v1.4: dash on charges (Ross, 2026-10-09)
 
 Ross: "dashes are set on a charge / You can dash up to 5 times in a row / Each time you dash, it takes a couple seconds to recharge before you can use it again / Each dash dashes you in the direction you hold the controller, / You can dash mulsitple times successively, a small delay in between starting and stopping the next dash".

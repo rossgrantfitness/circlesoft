@@ -1,5 +1,5 @@
 {
- "_about": "VS-22 (props written by scripts/tools/make_junkyard_rooms.py: edit the layout there, or hand-edit and stop re-running it). The robots and smashables of J5 Smash Run (docs/maps/junkyard.md): Red starts inside the loader (rooms.json form small). Breaker's Lane: three loader-only scrap walls (scrap_wall_3m); the Car Graveyard: cars in lanes with an aisle, a chalk-marked car at (110, 20) hiding the best prize; Container Canyon: stacks 7.9 m high along the S-bend; the Foreman's Wall: three layers of scrap walls and the 16 m gate (hp 400; smashing it sets j5_gate_smashed). Eleven chalk-marked containers and crates hide a pickup each (placements jk_j5_loot_NN, standing where the prop stands). Kinds are in combat/robot_yard.json. Positions are the map's metres in the level's coordinates.",
+ "_about": "VS-22 (props written by scripts/tools/make_junkyard_rooms.py: edit the layout there, or hand-edit and stop re-running it). The robots and smashables of J5 Smash Run (docs/maps/junkyard.md): Red starts inside the loader (rooms.json form small). Breaker's Lane: three loader-only scrap walls (scrap_wall_3m); the Car Graveyard: cars in lanes with an aisle (feel pass v1.5: thinned from 64 to 41 by dropping every third slot on the lane grid, so the lanes stay readable), a chalk-marked car at (110, 20) hiding the best prize; Container Canyon: stacks 7.9 m high along the S-bend; the Foreman's Wall: three layers of scrap walls and the 16 m gate (hp 400; smashing it sets j5_gate_smashed). Eleven chalk-marked containers and crates hide a pickup each (placements jk_j5_loot_NN, standing where the prop stands). Kinds are in combat/robot_yard.json. Positions are the map's metres in the level's coordinates.",
  "version": 1,
  "ground": false,
  "small_robot": {
@@ -104,15 +104,6 @@
   {
    "kind": "car",
    "pos": [
-    58.5,
-    0.0,
-    8.0
-   ],
-   "yaw_deg": 94.0
-  },
-  {
-   "kind": "car",
-   "pos": [
     59.1,
     0.0,
     18.0
@@ -131,15 +122,6 @@
   {
    "kind": "car",
    "pos": [
-    58.1,
-    0.0,
-    38.0
-   ],
-   "yaw_deg": 271.0
-  },
-  {
-   "kind": "car",
-   "pos": [
     57.7,
     0.0,
     68.0
@@ -154,15 +136,6 @@
     78.0
    ],
    "yaw_deg": 262.0
-  },
-  {
-   "kind": "car",
-   "pos": [
-    58.6,
-    0.0,
-    88.0
-   ],
-   "yaw_deg": 95.0
   },
   {
    "kind": "car",
@@ -194,29 +167,11 @@
   {
    "kind": "car",
    "pos": [
-    66.9,
-    0.0,
-    28.0
-   ],
-   "yaw_deg": 277.0
-  },
-  {
-   "kind": "car",
-   "pos": [
     65.1,
     0.0,
     68.0
    ],
    "yaw_deg": 263.0
-  },
-  {
-   "kind": "car",
-   "pos": [
-    64.6,
-    0.0,
-    78.0
-   ],
-   "yaw_deg": 79.0
   },
   {
    "kind": "car",
@@ -248,15 +203,6 @@
   {
    "kind": "car",
    "pos": [
-    74.4,
-    0.0,
-    18.0
-   ],
-   "yaw_deg": 273.0
-  },
-  {
-   "kind": "car",
-   "pos": [
     73.4,
     0.0,
     28.0
@@ -271,15 +217,6 @@
     38.0
    ],
    "yaw_deg": 269.0
-  },
-  {
-   "kind": "car",
-   "pos": [
-    74.8,
-    0.0,
-    68.0
-   ],
-   "yaw_deg": 96.0
   },
   {
    "kind": "car",
@@ -302,24 +239,6 @@
   {
    "kind": "car",
    "pos": [
-    72.6,
-    0.0,
-    98.0
-   ],
-   "yaw_deg": 259.0
-  },
-  {
-   "kind": "car",
-   "pos": [
-    81.7,
-    0.0,
-    8.0
-   ],
-   "yaw_deg": 267.0
-  },
-  {
-   "kind": "car",
-   "pos": [
     81.6,
     0.0,
     18.0
@@ -338,15 +257,6 @@
   {
    "kind": "car",
    "pos": [
-    81.4,
-    0.0,
-    38.0
-   ],
-   "yaw_deg": 85.0
-  },
-  {
-   "kind": "car",
-   "pos": [
     80.8,
     0.0,
     68.0
@@ -361,15 +271,6 @@
     78.0
    ],
    "yaw_deg": 93.0
-  },
-  {
-   "kind": "car",
-   "pos": [
-    80.7,
-    0.0,
-    88.0
-   ],
-   "yaw_deg": 260.0
   },
   {
    "kind": "car",
@@ -401,29 +302,11 @@
   {
    "kind": "car",
    "pos": [
-    91.2,
-    0.0,
-    28.0
-   ],
-   "yaw_deg": 100.0
-  },
-  {
-   "kind": "car",
-   "pos": [
     90.0,
     0.0,
     38.0
    ],
    "yaw_deg": 270.0
-  },
-  {
-   "kind": "car",
-   "pos": [
-    89.7,
-    0.0,
-    78.0
-   ],
-   "yaw_deg": 268.0
   },
   {
    "kind": "car",
@@ -446,29 +329,11 @@
   {
    "kind": "car",
    "pos": [
-    98.3,
-    0.0,
-    18.0
-   ],
-   "yaw_deg": 92.0
-  },
-  {
-   "kind": "car",
-   "pos": [
     97.9,
     0.0,
     38.0
    ],
    "yaw_deg": 89.0
-  },
-  {
-   "kind": "car",
-   "pos": [
-    98.2,
-    0.0,
-    68.0
-   ],
-   "yaw_deg": 272.0
   },
   {
    "kind": "car",
@@ -491,29 +356,11 @@
   {
    "kind": "car",
    "pos": [
-    105.0,
-    0.0,
-    8.0
-   ],
-   "yaw_deg": 82.0
-  },
-  {
-   "kind": "car",
-   "pos": [
     106.4,
     0.0,
     28.0
    ],
    "yaw_deg": 93.0
-  },
-  {
-   "kind": "car",
-   "pos": [
-    106.8,
-    0.0,
-    38.0
-   ],
-   "yaw_deg": 277.0
   },
   {
    "kind": "car",
@@ -536,15 +383,6 @@
   {
    "kind": "car",
    "pos": [
-    105.1,
-    0.0,
-    88.0
-   ],
-   "yaw_deg": 83.0
-  },
-  {
-   "kind": "car",
-   "pos": [
     104.6,
     0.0,
     98.0
@@ -563,29 +401,11 @@
   {
    "kind": "car",
    "pos": [
-    113.9,
-    0.0,
-    28.0
-   ],
-   "yaw_deg": 269.0
-  },
-  {
-   "kind": "car",
-   "pos": [
     113.4,
     0.0,
     68.0
    ],
    "yaw_deg": 265.0
-  },
-  {
-   "kind": "car",
-   "pos": [
-    114.3,
-    0.0,
-    78.0
-   ],
-   "yaw_deg": 92.0
   },
   {
    "kind": "car",
@@ -617,15 +437,6 @@
   {
    "kind": "car",
    "pos": [
-    122.1,
-    0.0,
-    18.0
-   ],
-   "yaw_deg": 270.0
-  },
-  {
-   "kind": "car",
-   "pos": [
     122.5,
     0.0,
     28.0
@@ -644,29 +455,11 @@
   {
    "kind": "car",
    "pos": [
-    123.3,
-    0.0,
-    68.0
-   ],
-   "yaw_deg": 100.0
-  },
-  {
-   "kind": "car",
-   "pos": [
     122.4,
     0.0,
     88.0
    ],
    "yaw_deg": 94.0
-  },
-  {
-   "kind": "car",
-   "pos": [
-    122.8,
-    0.0,
-    98.0
-   ],
-   "yaw_deg": 276.0
   },
   {
    "kind": "car",

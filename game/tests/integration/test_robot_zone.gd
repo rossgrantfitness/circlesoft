@@ -233,15 +233,18 @@ func test_boarding_events_come_in_order_and_the_camera_pulls_back_over_a_second_
 	assert_lt(index_of.call(&"board:begin:climb"), index_of.call(&"board:begin:hatch_close"))
 	assert_lt(index_of.call(&"board:begin:hatch_close"), index_of.call(&"board:swap"))
 	assert_lt(index_of.call(&"board:swap"), index_of.call(&"board:control"))
-	# the camera: starts well before the end, ends at 14 m, and gets there over more than a second
+	# the camera: starts at Red's distance, ends at the loader's, and gets there over more than a second (both read from the data)
+	var red_distance: float = float(ScaleProfile.camera_block(&"red")["distance_m"])
+	var loader_distance: float = float(ScaleProfile.camera_block(&"small")["distance_m"])
+	assert_gt(loader_distance, red_distance + 1.0, "the loader's view is farther back than Red's, or there is nothing to pull back")
 	var settle: int = -1
 	for i: int in distances.size():
-		if absf(distances[i] - 14.0) < 0.5:
+		if absf(distances[i] - loader_distance) < 0.5:
 			settle = i
 			break
 	var move_start: int = -1
 	for i: int in distances.size():
-		if absf(distances[i] - 4.5) > 0.3:
+		if absf(distances[i] - red_distance) > 0.3:
 			move_start = i
 			break
 	assert_gt(move_start, 0)

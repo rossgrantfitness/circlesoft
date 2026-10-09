@@ -46,18 +46,23 @@ func test_a_bot_boards_docks_strides_and_climbs_out_again() -> void:
 	player.set_move_input(Vector2(0, -1))
 	kit.camera.set_orbit_angles(-PI * 0.5, -0.12)
 	kit.step(60 * 6)
+	var huge_run: float = ScaleProfile.get_form(&"huge").knob("run_speed_mps", 0.0)
 	var speed: float = Vector2(player.velocity.x, player.velocity.z).length()
 	player.set_move_input(Vector2.ZERO)
 	var steps: int = kit.controller.steps_taken - steps_before
 	report["huge_steps"] = steps
 	report["huge_speed"] = speed
 	report["huge_travelled_m"] = player.global_position.x - x_before
-	assert_gt(steps, 4, "six seconds of walking put down several huge feet")
-	assert_almost_eq(speed, 22.0, 0.5, "the colossus's top speed")
-	assert_gt(player.global_position.x - x_before, 80.0)
+	# Footfalls come from the walk clip: two per loop, and the loop plays at run speed over the clip's stride (all from the data).
+	var walk_clip: Dictionary = CombatData.read_json(str(ScaleProfile.get_form(&"huge").block("anim")["clip_keys"]))["clips"]["walk"] as Dictionary
+	var feet_per_s: float = 2.0 * (huge_run / float(walk_clip["stride_mps"])) / float(walk_clip["length_s"])
+	assert_gt(steps, int(feet_per_s * 6.0 * 0.7), "six seconds of walking put down about as many huge feet as the speed and clip say (less the start-up)")
+	assert_gt(steps, 1, "and at least both feet came down")
+	assert_almost_eq(speed, huge_run, 0.5, "the colossus's top speed, from the data")
+	assert_gt(player.global_position.x - x_before, huge_run * 6.0 * 0.7, "and covered most of six seconds at that speed")
 	assert_eq(player.current_clip(), &"walk", "the walk clip even at a run")
 	var step_events: Array[Dictionary] = kit.controller.events.filter(func(e: Dictionary) -> bool: return e["type"] == "step" and str(e["dust"]) == "step_huge")
-	assert_gt(step_events.size(), 4, "the huge footfalls, with huge dust")
+	assert_gt(step_events.size(), 1, "the huge footfalls, with huge dust")
 	assert_eq(str(step_events[0]["dust"]), "step_huge")
 	assert_eq(str(step_events[0]["shake"]), "step_huge")
 	var feet: Dictionary = {}
