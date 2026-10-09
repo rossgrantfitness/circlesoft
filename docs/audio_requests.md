@@ -120,6 +120,15 @@ Nineteen `combat_*` ids, built by `game/scripts/tools/make_action_sfx.py` (numpy
 | 68 | `combat_enemy_death` | A dummy or enemy is destroyed | Cold and electrical, not gory: a hard crack, a bit-crushed power-down sliding to the floor, a fizz of sparks and a last low thud | ~0.7 s | No | A DMC demon-shatter crossed with a Kingdom Hearts heartless pop, with the machinery grim | Placeholder built; final TBD |
 | 69 | `combat_brute_slam` | The Brute's overhead slam lands | The heaviest sound in the sandbox: ground-shaking boom, hard crack, a steel clang, a rumbling tail and a scatter of debris. Pairs with screen shake | ~1.0 s | No | A DMC boss ground-pound; a Bayonetta giant-fist smash | Placeholder built; final TBD |
 
+### Chunky hits (added 2026-10-09, Tuning v1.3, Ross: "add a sound effect too")
+Ross asked for strikes that feel chunky and heavy: a short freeze on impact (about 0.10 s light up to 0.25 s heavy, tunable in F12 under "Hit feel"), the struck model flashing flat white for a split second, and a punchy sound. The placeholders `combat_hit_light` and `combat_hit_heavy` were regenerated punchier by `make_action_sfx.py` (same ids, harder click up front, a sub thump under the body, a little louder in `sfx.json`); the game also nudges the pitch of every landed hit a little (light and air hits +-8 percent, heavy and launch hits +-4 percent) so it never repeats exactly. Ross's final sounds replace the files; the ids stay.
+
+| Id | Where it plays | Mood | Length | Loops? | Notes |
+|---|---|---|---|---|---|
+| `combat_hit_light` | Every light, lunge and air-string hit that connects | A tight, meaty smack: a hard click in the first 5 ms, a low "thud" you feel in the chest, a bright crack on top. It lands exactly as the screen freezes | <0.2 s | No | Record or design 3 variants (a, b, c) if you can; the game can rotate them. Loud transient first, nothing soft |
+| `combat_hit_heavy` | Heavy, sweep, third light hit, air finisher, guard break | The big one: a deep sub boom, a thick body, a hard crack and a steel clank. Reads as "that hurt" even through a 0.25 s freeze | <0.25 s | No | Sits above every other quick sound in loudness |
+| `combat_hit_launch` | The launcher connects | Hard crack then a rising whoosh-crack | <0.25 s | No | Unchanged; the pitch variation is tighter so it stays deep |
+
 ### Robots (added 2026-10-09, giant-robot scale test CS-21)
 The robot test reuses six existing combat sounds as stand-ins (data/combat/scale_profiles.json `step_sound`, `land_sound` and the `audio` block) and pitches every sound effect down for the big bodies (loader x0.75; colossus x0.4 plus a low-pass at 4.5 kHz), so a real file made for Red already sounds big. These are the sounds worth making for real. Each one is a data edit (a new id in sfx.json and the name in scale_profiles.json).
 

@@ -87,6 +87,34 @@ What it means for tuning: the real dodge and block rates in play are well below 
 
 Also seen while building the combo (data for the Combat Designer, nothing changed): a Light 1 thrown at an enemy 2.5 to 4.5 m away whiffs (it moves 0.6 m and reaches about 2 m), because "far" starts at 4.5 m (`far_dist_m`); and a lunge from beyond about 6.5 m closes the gap but cannot connect (5 m of travel); and `near_radius_m` 3.0 is smaller than a Grunt's circling distance (2.2 to 4.5 m), so a crowd of three rarely counts as crowded unless they are on top of her.
 
+## Tuning v1.3 (Ross: chunky hits) (Technical Artist, 2026-10-09)
+
+Ross: "hits need to feel better, there needs to be a 0.25/sec freeze and the enemy player model turns completely opaque white for a split second at the moment of impact, making strikes feel chunky and heavy and fun add a sound effect too - may need to playtest this to see what feels good, may only need a 0,1/sec freeze depending on what is perceptable".
+
+**What Ross tunes: F12, first tab "Hit feel".** `Hit freeze length` (0.05 to 0.30 s, default 0.25) is how long the heaviest hits freeze; every other hit scales with it (light hits freeze 40 percent of it, about 0.10 s at the default). `White impact flash` (on) and `Flash Red when she is hit` (off) are the two switches.
+
+### Hit-stop (ms, at the default knob; moves.json and hacks.json). The knob multiplies all of these by knob / 0.25.
+| Move | Was | Now | Why |
+|---|---|---|---|
+| Red `light_1`, `light_2`, `lunge` | 50 | **100** | Ross's "about 0.1": the light hits must register. |
+| Red `air_1`, `air_2` | 45 | **90** | Air strings stay quick but show the freeze. |
+| Red `light_3` | 80 | **150** | The string's third hit is a medium punctuation. |
+| Red `heavy`, `launcher`, `sweep`, `air_3` | 90, 80, 70, 70 | **250** | Heavies, launchers and finishers: Ross's 0.25. |
+| Guard break (any hit that breaks a raised guard) | 25 to 55 | **250** (new `hit_freeze.guard_break_hit_stop_ms` in hit_feel.json) | A broken guard is a heavy moment whatever broke it. |
+| Parry / perfect parry (`hit_feel.parry`) | 90 / 140 | **120 / 200** | Same chunk on a good block. |
+| Grunt `swipe`, `swipe_flank` (hits Red) | 60 | **90** | Red feels it too, a little less than she dishes out. |
+| Brute `slam`, Hushmaster `leg_stomp` | 110, 90 | **200** | Big enemy hits freeze hard. |
+| Hushmaster `dish_sweep` | 80 | **160** | |
+| Signals Drone `dive`, `shock`; Wall turret bursts | 50, 40, 40 | **70, 60, 60** | Small chip hits get a short freeze. |
+| Hack: EMP pulse | 60 | **150** | A big, heavy hack. |
+| Hack: Zap Drone | 30 | **30** (kept) | A rapid piercing shot; a longer freeze made the boss bot test take about 25 percent longer. |
+| Junk mech (Heap) attacks | 100 to 180 | kept | The Combat Programmer's numbers are already heavy. |
+
+The older Combat-tab `Hit-stop length` knob is kept as an extra multiplier on top (leave it at 1).
+
+### The flash and the sound (data/combat/fx.json, not combat numbers)
+`hit_flash`: on, 0.07 s of real time (so it shows inside the freeze), pure white; blocked and guarded hits do not flash, armoured hits flash dimmer and shorter, a hit that took nothing off (a sealed core, a clink) does not flash. `hit_sound`: every landed hit plays its sound with a little pitch variation (+-8 percent light, +-4 percent heavy and launch). The two hit sounds were regenerated punchier, same ids.
+
 ## Tuning v1.1: combo distances (Combat Designer, 2026-10-09)
 
 Data only; no mechanic changed.

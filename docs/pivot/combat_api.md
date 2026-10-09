@@ -304,6 +304,7 @@ signal mode_changed(mode: Mode)
 |---|---|
 | movement (Gameplay) | `run_speed_mps` 6.0, `jump_height_m` 1.6, `gravity_scale` 1.0, `dash_distance_m` 4.0, `dash_time_ms` 180, `dash_iframes_ms` 150, `air_dash_count` 1 |
 | camera (Gameplay) | `cam_distance_m` 4.5, `cam_sensitivity` 1.0 |
+| hits (Technical Artist, Tuning v1.3) | `hit_freeze_s` 0.25 (the freeze of the heaviest hits; every move's `hit_stop_ms` in the data scales by knob / `hit_feel.hit_freeze.reference_s`), `hit_flash_on` true, `hit_flash_red_on` false. First tab in the panel. |
 | combat (Battle) | `hit_stop_scale` 1.0, `juggle_float` 1.0, `launch_height_scale` 1.0, `input_buffer_ms` 150, `parry_window_scale` 1.0 |
 | flare (Battle) | `flare_duration_s` 2.5, `flare_enemy_speed` 0.25, `perfect_dodge_window_ms` 120, `flare_glare_radius_m` 12 |
 | fx (TA) | `shake_scale` 1.0, `trails_on` true |
