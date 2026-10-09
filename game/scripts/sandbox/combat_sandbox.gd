@@ -47,6 +47,10 @@ var _mouse_captured: bool = false
 var mouse_mode_override: int = -1
 var _world_environment: WorldEnvironment = null
 var _enemy_serial: int = 0
+# The robot zone (CS-21): a yard through the east gate, the loader and the colossus, and what sizes Red up.
+var _robot_yard: RobotYard = null
+var _scale_controller: ScaleController = null
+var _robot_boarding: RobotBoarding = null
 
 
 func _ready() -> void:
@@ -61,6 +65,7 @@ func _ready() -> void:
 	_attach_parts(true)
 	_spawn_enemies()
 	_build_racks()
+	_build_robot_zone()
 	_make_relay()
 	_apply_look()
 	if bool(_data.get("capture_mouse", true)):
@@ -147,6 +152,28 @@ func get_racks() -> Array[SwordRack]:
 	return _racks
 
 
+func get_robot_yard() -> RobotYard:
+	return _robot_yard
+
+
+func get_scale_controller() -> ScaleController:
+	return _scale_controller
+
+
+func get_robot_boarding() -> RobotBoarding:
+	return _robot_boarding
+
+
+## The sharp UI layer (menus and prompts stay crisp over the low-res picture).
+func get_ui_parent() -> Node:
+	return _ui_parent()
+
+
+## A material for one of Ross's city tiles in the current look (the robot yard dresses its floor and walls with it).
+func tile_material(tile_id: String, uv_scale: Vector2 = Vector2.ONE) -> Material:
+	return _material_for(tile_id, uv_scale)
+
+
 func get_data() -> Dictionary:
 	return _data
 
@@ -182,6 +209,8 @@ func reset_arena() -> void:
 	_enemies.clear()
 	_enemy_serial = 0
 	_reset_director()
+	if _robot_boarding != null:
+		_robot_boarding.reset()          # Red's body, the loader and the colossus back where they started
 	if _player != null and _player.has_method("reset_to"):
 		_player.call("reset_to", get_player_spawn())
 	elif _player != null:
@@ -308,7 +337,7 @@ func _build_arena() -> void:
 	_add_box(level, "WallNorth", Vector3(0.0, wall_h * 0.5, -size.y * 0.5 - wall_t * 0.5), Vector3(size.x + wall_t * 2.0, wall_h, wall_t), Vector3.ZERO, str(arena.get("wall_tile", "")))
 	_add_box(level, "WallSouth", Vector3(0.0, wall_h * 0.5, size.y * 0.5 + wall_t * 0.5), Vector3(size.x + wall_t * 2.0, wall_h, wall_t), Vector3.ZERO, str(arena.get("wall_tile", "")))
 	_add_box(level, "WallWest", Vector3(-size.x * 0.5 - wall_t * 0.5, wall_h * 0.5, 0.0), Vector3(wall_t, wall_h, size.y), Vector3.ZERO, str(arena.get("wall_tile", "")))
-	_add_box(level, "WallEast", Vector3(size.x * 0.5 + wall_t * 0.5, wall_h * 0.5, 0.0), Vector3(wall_t, wall_h, size.y), Vector3.ZERO, str(arena.get("wall_tile", "")))
+	_build_east_wall(level, size, wall_h, wall_t, str(arena.get("wall_tile", "")))
 	var index: int = 0
 	for raw: Variant in arena.get("pillars", []) as Array:
 		var pillar: Dictionary = raw as Dictionary
@@ -327,6 +356,33 @@ func _build_arena() -> void:
 		_add_ramp(level, "Ramp%d" % index, raw as Dictionary, str(arena.get("ledge_tile", "")))
 		index += 1
 	_build_lighting()
+
+
+## The east wall: whole, or with the gate to the robot yard (a gap, data/combat/robot_yard.json "gate") when the robot zone is on.
+func _build_east_wall(level: Node3D, size: Vector2, wall_h: float, wall_t: float, tile: String) -> void:
+	var x: float = size.x * 0.5 + wall_t * 0.5
+	var gate: Dictionary = robot_gate()
+	if gate.is_empty():
+		_add_box(level, "WallEast", Vector3(x, wall_h * 0.5, 0.0), Vector3(wall_t, wall_h, size.y), Vector3.ZERO, tile)
+		return
+	var centre: float = float(gate.get("center_z", 0.0))
+	var half: float = float(gate.get("width_m", 8.0)) * 0.5
+	var top: float = -size.y * 0.5 - wall_t          # wall's far ends, matching the other walls' overhang
+	var bottom: float = size.y * 0.5 + wall_t
+	var north_len: float = (centre - half) - top
+	var south_len: float = bottom - (centre + half)
+	_add_box(level, "WallEastNorth", Vector3(x, wall_h * 0.5, top + north_len * 0.5), Vector3(wall_t, wall_h, north_len), Vector3.ZERO, tile)
+	_add_box(level, "WallEastSouth", Vector3(x, wall_h * 0.5, centre + half + south_len * 0.5), Vector3(wall_t, wall_h, south_len), Vector3.ZERO, tile)
+
+
+## The gate in the east wall ({center_z, width_m}), or empty when the robot zone is off.
+func robot_gate() -> Dictionary:
+	if not bool(_block("robot_zone").get("enabled", false)):
+		return {}
+	var db: Node = get_node_or_null("/root/DataDB")
+	if db == null:
+		return {}
+	return db.call("get_value", RobotYard.DATA_ID, "gate", {}) as Dictionary
 
 
 ## A solid wedge ramp: it starts flat on the floor at `pos`, runs `length_m` along `dir` (flat) and ends
@@ -641,7 +697,10 @@ func _place_player() -> void:
 
 func _spawn_enemies() -> void:
 	var scenes: Dictionary = _block("enemy_scenes")
-	for raw: Variant in _data.get("enemy_spawns", []) as Array:
+	var spawns: Array = (_data.get("enemy_spawns", []) as Array).duplicate()
+	if bool(_block("robot_zone").get("enabled", false)):
+		spawns.append_array(_block("robot_zone").get("enemy_spawns", []) as Array)
+	for raw: Variant in spawns:
 		var entry: Dictionary = raw as Dictionary
 		var kind: String = str(entry.get("enemy", ""))
 		var path: String = str(scenes.get(kind, ""))
@@ -681,6 +740,26 @@ func _build_racks() -> void:
 		rack.position = _vec3(stand.get("pos"))
 		holder.add_child(rack)
 		_racks.append(rack)
+
+
+## The robot zone (CS-21): the yard, the controller that sizes Red up, and the boarding that decides who is in control.
+func _build_robot_zone() -> void:
+	if not bool(_block("robot_zone").get("enabled", false)) or _player == null:
+		return
+	_robot_yard = RobotYard.new()
+	_robot_yard.name = "RobotYard"
+	add_child(_robot_yard)
+	_robot_yard.build(self)
+	for entry: String in _robot_yard.missing:
+		missing.append("robot yard: " + entry)
+	_scale_controller = ScaleController.new()
+	_scale_controller.name = "ScaleController"
+	add_child(_scale_controller)
+	_scale_controller.bind(self, _player as ActionPlayer, _camera, _lock, _robot_yard)
+	_robot_boarding = RobotBoarding.new()
+	_robot_boarding.name = "RobotBoarding"
+	add_child(_robot_boarding)
+	_robot_boarding.bind(self, _player as ActionPlayer, _camera, _scale_controller, _robot_yard)
 
 
 func _find_actor(actor_id: StringName) -> Node3D:

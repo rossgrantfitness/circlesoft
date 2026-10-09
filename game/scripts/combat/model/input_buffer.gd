@@ -54,6 +54,27 @@ func peek(now_usec: int, accept: Callable) -> StringName:
 	return &""
 
 
+## Keeps one waiting press of `token` alive: the newest one is stamped `now_usec` again and older copies are dropped.
+## For a press made during a move that has no cancel window yet (the launcher, air 3): it waits for the move to end
+## instead of timing out. Returns true if there was a press to keep.
+func hold_latest(token: StringName, now_usec: int) -> bool:
+	var found: int = -1
+	for i: int in range(_tokens.size()):
+		if _tokens[i]["token"] == token:
+			found = i
+	if found < 0:
+		return false
+	var kept: Array[Dictionary] = []
+	for i: int in range(_tokens.size()):
+		if _tokens[i]["token"] != token or i == found:
+			kept.append(_tokens[i])
+	_tokens = kept
+	for entry: Dictionary in _tokens:
+		if entry["token"] == token:
+			entry["t"] = now_usec
+	return true
+
+
 func has_token(token: StringName, now_usec: int) -> bool:
 	_drop_expired(now_usec)
 	for entry: Dictionary in _tokens:

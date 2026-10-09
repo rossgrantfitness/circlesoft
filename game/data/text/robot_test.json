@@ -1,0 +1,8 @@
+{
+  "_note": "On-screen words for the giant-robot scale test (CS-21). Plain, short, one line each.",
+  "board": "Walk into the glowing ring to climb into the loader robot",
+  "small": "Walk to the glowing ring in front of the colossus to dock.   Q / L3: climb out",
+  "huge": "Q / L3: undock and climb out of the colossus",
+  "docking": "",
+  "undocking": ""
+}

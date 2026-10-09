@@ -251,6 +251,34 @@ func test_a_press_inside_the_window_starts_at_the_press() -> void:
 	assert_almost_eq(runner.elapsed_ms(), 16.0, 0.001)
 
 
+func test_offer_move_names_the_next_move_itself_but_keeps_the_chain_window() -> void:
+	# The one-button combo picks the next move (ComboSelector) instead of using `links`; timing is unchanged.
+	var runner: MoveRunner = _runner()
+	runner.start(&"a", 0)
+	runner.step(100 * MS)
+	assert_eq(runner.offer_move(&"h", 129 * MS), &"", "window opens at 130")
+	assert_eq(runner.offer_move(&"h", 200 * MS), &"h", "any move can follow, linked or not")
+	assert_eq(runner.current_move(), &"h")
+
+
+func test_offer_move_an_early_press_starts_exactly_at_chain_from() -> void:
+	var runner: MoveRunner = _runner()
+	runner.start(&"a", 0)
+	runner.step(100 * MS)
+	assert_eq(runner.offer_move(&"l", 140 * MS, 100 * MS), &"l")
+	runner.step(140 * MS)
+	assert_almost_eq(runner.elapsed_ms(), 10.0, 0.001, "began at 130 ms, so 10 ms in at 140")
+
+
+func test_offer_move_refuses_a_move_without_a_chain_window_and_unknown_moves() -> void:
+	var runner: MoveRunner = _runner()
+	runner.start(&"b", 0)                     # b has no chain window
+	assert_eq(runner.offer_move(&"h", 60 * MS), &"")
+	runner.start(&"a", 0)
+	assert_eq(runner.offer_move(&"nope", 200 * MS), &"", "no such move")
+	assert_eq(runner.current_move(), &"a")
+
+
 func test_light_light_heavy_follows_the_links_in_the_real_data() -> void:
 	var runner: MoveRunner = MoveRunner.create(MoveSet.load_default(), &"red")
 	var set: MoveSet = MoveSet.load_default()

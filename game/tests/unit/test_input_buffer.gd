@@ -85,3 +85,22 @@ func test_peek_leaves_the_token_in_place() -> void:
 	buffer.push(&"dash", 0)
 	assert_eq(buffer.peek(MS, _any), &"dash")
 	assert_eq(buffer.size(), 1)
+
+
+func test_hold_latest_keeps_one_waiting_press_alive_past_the_buffer_time() -> void:
+	var buffer: InputBuffer = InputBuffer.new()
+	buffer.buffer_ms = 150.0
+	buffer.push(&"light", 0)
+	buffer.push(&"light", 40 * MS)
+	buffer.push(&"jump", 50 * MS)
+	assert_true(buffer.hold_latest(&"light", 100 * MS))
+	assert_eq(buffer.size(), 2, "the older light was dropped, the jump is untouched")
+	assert_true(buffer.has_token(&"light", 240 * MS), "re-stamped at 100 ms, so it lives until 250 ms")
+	assert_false(buffer.has_token(&"light", 260 * MS))
+
+
+func test_hold_latest_with_nothing_waiting_does_nothing() -> void:
+	var buffer: InputBuffer = InputBuffer.new()
+	buffer.push(&"jump", 0)
+	assert_false(buffer.hold_latest(&"light", 10 * MS))
+	assert_eq(buffer.size(), 1)

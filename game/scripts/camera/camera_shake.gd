@@ -17,6 +17,10 @@ const WAVE_Y: float = 0.9
 const WAVE_Y2: float = 2.3
 const ROLL_PER_M: float = 0.9          # radians of roll per metre of amplitude
 
+## The most one shake (and the sum of all running) may move the camera, metres. Red's camera is 4.5 m away, so 0.25 m is
+## plenty; the giant-robot scale test (CS-21) sets this per body size (about 3 m for a camera 75 m back) so a 50 m footstep still reads.
+var max_amplitude_m: float = MAX_AMPLITUDE_M
+
 var _layers: Array[Dictionary] = []    # {amp, total, left, hz, time, seed}
 var _count: int = 0
 
@@ -33,7 +37,7 @@ static func profile(id: StringName) -> Dictionary:
 
 ## Starts a shake. `mult` scales its amplitude (the shake_scale knob, a bigger hit...).
 func add(cfg: Dictionary, mult: float = 1.0) -> void:
-	var amp: float = clampf(float(cfg.get("amplitude_m", 0.0)) * mult, 0.0, MAX_AMPLITUDE_M)
+	var amp: float = clampf(float(cfg.get("amplitude_m", 0.0)) * mult, 0.0, max_amplitude_m)
 	var seconds: float = float(cfg.get("duration_s", 0.0))
 	if amp <= 0.0 or seconds <= 0.0:
 		return
@@ -52,7 +56,7 @@ func amplitude_now() -> float:
 	var total: float = 0.0
 	for layer: Dictionary in _layers:
 		total += _envelope(layer)
-	return minf(total, MAX_AMPLITUDE_M)
+	return minf(total, max_amplitude_m)
 
 
 ## Advances by `dt` REAL seconds and returns the camera offset (x right, y up, z 0).

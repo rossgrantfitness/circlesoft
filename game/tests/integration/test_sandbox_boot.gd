@@ -288,10 +288,14 @@ func test_the_sandbox_hud_is_not_covered_by_the_old_f1_hint() -> void:
 
 func test_reset_respawns_every_enemy_the_data_lists() -> void:
 	var arena: CombatSandbox = _arena()
-	var listed: int = (arena.get_data()["enemy_spawns"] as Array).size()
+	var spawns: Array = (arena.get_data()["enemy_spawns"] as Array).duplicate()
+	var zone: Dictionary = arena.get_data().get("robot_zone", {}) as Dictionary
+	if bool(zone.get("enabled", false)):
+		spawns.append_array(zone.get("enemy_spawns", []) as Array)       # the wolves in the robot yard (CS-21)
+	var listed: int = spawns.size()
 	var spawned: int = arena.get_enemies().size()
 	var expected: int = 0
-	for entry: Variant in arena.get_data()["enemy_spawns"] as Array:
+	for entry: Variant in spawns:
 		var kind: String = str((entry as Dictionary)["enemy"])
 		var path: String = str(((arena.get_data()["enemy_scenes"]) as Dictionary).get(kind, ""))
 		if ResourceLoader.exists(path):

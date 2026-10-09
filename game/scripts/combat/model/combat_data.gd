@@ -12,6 +12,7 @@ const FILE_HIT_FEEL: String = "hit_feel.json"
 const FILE_STYLE: String = "style.json"
 const FILE_ENEMIES: String = "enemies.json"
 const FILE_SANDBOX: String = "sandbox.json"
+const FILE_COMBO: String = "combo.json"
 
 static var _cache: Dictionary = {}
 
@@ -57,6 +58,11 @@ static func enemies() -> Dictionary:
 	return combat_file(FILE_ENEMIES)
 
 
+## The one-button combo rules (data/combat/combo.json).
+static func combo() -> Dictionary:
+	return combat_file(FILE_COMBO)
+
+
 static func timing_windows() -> Dictionary:
 	return read_json(TIMING_WINDOWS_PATH)
 
@@ -66,6 +72,17 @@ static func parry_window() -> Dictionary:
 	var parry: Dictionary = timing_windows().get("parry", {})
 	return {"nice_ms": float(parry.get("nice_ms", 220.0)), "rad_ms": float(parry.get("rad_ms", 130.0)),
 			"totally_rad_ms": float(parry.get("totally_rad_ms", 70.0))}
+
+
+## How much damage a guard soaks per rating: {nice, rad, totally_rad}, 0..1, from timing_windows.json
+## `parry.block_reduction`. Falls back to the shared top-level `block_reduction` table when the parry block has none.
+static func parry_block_reduction() -> Dictionary:
+	var windows: Dictionary = timing_windows()
+	var parry: Dictionary = windows.get("parry", {})
+	var own: Variant = parry.get("block_reduction", null)
+	if own is Dictionary and not (own as Dictionary).is_empty():
+		return own
+	return windows.get("block_reduction", {})
 
 
 ## How long before contact a parry press is still listened to (ms).

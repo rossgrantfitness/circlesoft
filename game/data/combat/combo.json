@@ -1,5 +1,5 @@
 {
- "_about": "The single-attack-button combo (docs/pivot/kh_combo_design.md). One press asks 'what is the next move?' and the rules below answer from the situation. Rules are checked top to bottom inside the matching 'from'; the first whose 'when' is true wins. Moves are the ones in moves.json (set 'red'). Numbers are starting guesses for Ross to tune. The Combat Programmer builds the selector; no code reads this file yet.",
+ "_about": "The single-attack-button combo (docs/pivot/kh_combo_design.md). One press asks 'what is the next move?' and the rules below answer from the situation. Rules are checked top to bottom inside the matching 'from'; the first whose 'when' is true wins. Moves are the ones in moves.json (set 'red'). Numbers are starting guesses for Ross to tune. ComboSelector (scripts/combat/model/combo_selector.gd) reads the rules and ActionPlayer asks it on every attack press; the hack button's call-out text is read from buttons.hack.",
  "version": 1,
  "buttons": {
   "attack": {"action": "light", "note": "the one attack button (J, left mouse, X or Square). Heavy-button presses no longer start Red's Heavy, Launcher or any attack."},

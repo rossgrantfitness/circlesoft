@@ -74,6 +74,21 @@ func offer(token: StringName, now_usec: int, press_usec: int = -1) -> StringName
 	return &""
 
 
+## The one-button combo (ComboSelector) names the next move itself instead of using the `links` table. Same timing
+## as offer(): it starts only while the playing move's chain window is open, and a press made early starts at the
+## moment the window opened. Returns the move id, or &"" if nothing started.
+func offer_move(next_id: StringName, now_usec: int, press_usec: int = -1) -> StringName:
+	if not chain_window_open(now_usec) or next_id == &"" or not _set.has_move(_owner_set, next_id):
+		return &""
+	var window_open_usec: int = _start_usec + int(float(_move["chain_from_ms"]) * 1000.0)
+	var press: int = now_usec if press_usec < 0 else mini(press_usec, now_usec)
+	var begin: int = mini(maxi(window_open_usec, press), now_usec)
+	if _begin(next_id, begin):
+		_last_usec = now_usec
+		return next_id
+	return &""
+
+
 ## True if `token` would start a linked move right now (the Callable for InputBuffer.take).
 func can_chain(token: StringName, now_usec: int) -> bool:
 	if not is_busy():

@@ -53,6 +53,15 @@
       {"pos": [0.0, 5.0, -15.0], "color": "#ff5fa8", "energy": 1.8, "range": 14.0}
     ]
   },
+  "robot_zone": {
+    "_note": "The giant-robot scale test (CS-21). The yard is through a gate in the east wall (layout in data/combat/robot_yard.json, body-size numbers in data/combat/scale_profiles.json). Set enabled to false to get the plain arena back.",
+    "enabled": true,
+    "enemy_spawns": [
+      {"enemy": "grunt", "pos": [84.0, 0.1, -20.0]},
+      {"enemy": "grunt", "pos": [112.0, 0.1, 18.0]},
+      {"enemy": "grunt", "pos": [236.0, 0.1, -8.0]}
+    ]
+  },
   "player_spawn": {"pos": [0.0, 0.1, 12.0], "yaw_deg": 180.0},
   "enemy_spawns": [
     {"enemy": "grunt", "pos": [-6.0, 0.1, 0.0]},

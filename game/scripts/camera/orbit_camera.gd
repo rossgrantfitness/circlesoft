@@ -71,6 +71,15 @@ var _shake_left_s: float = 0.0
 var _shake_hz: float = 24.0
 var _shake_time: float = 0.0
 
+# Scale view (CS-21, the giant-robot scale test): a body size's camera numbers, blended in over a second or so.
+# Distances are multiples of the numbers in camera.json / the feel panel, so Ross's own camera distance still counts.
+var _sv_on: bool = false
+var _sv_from: Dictionary = {}
+var _sv_to: Dictionary = {}
+var _sv_cur: Dictionary = {}
+var _sv_t: float = 1.0
+var _sv_len: float = 0.0
+
 
 func _ready() -> void:
 	top_level = true
@@ -160,10 +169,14 @@ func recenter() -> void:
 
 ## A decaying smooth shake. `profile` is an id in fx.json's shake block when the fx data is there,
 ## else in camera.json "shake_fallback". Several shakes in a row take the larger.
-func shake(profile: StringName, mult: float = 1.0) -> void:
+## `scaled`: the current scale view's shake_mult applies too (hits do; the robot footsteps pass false and bring their own
+## suggested_mult). The scale view's shake_cap_m caps the final amplitude: a far camera needs more than 0.25 m to feel a step.
+func shake(profile: StringName, mult: float = 1.0, scaled: bool = true) -> void:
 	var cfg: Dictionary = _shake_profile(profile)
 	var scale: float = mult * _knob("shake_scale", 1.0)
-	var amp: float = _f(cfg, "amplitude_m", 0.05) * scale
+	if scaled:
+		scale *= _view_f("shake_mult", 1.0)
+	var amp: float = minf(_f(cfg, "amplitude_m", 0.05) * scale, _view_f("shake_cap_m", INF))
 	var seconds: float = _f(cfg, "duration_s", 0.15)
 	if amp <= 0.0 or seconds <= 0.0:
 		return
@@ -173,6 +186,74 @@ func shake(profile: StringName, mult: float = 1.0) -> void:
 		_shake_total_s = seconds
 		_shake_left_s = seconds
 		_shake_hz = _f(cfg, "frequency_hz", 24.0)
+
+
+# ---- the scale view (CS-21) ----
+
+## Moves the camera to a body size's look: {distance_mult, pivot_mult, fov_mult, min_distance_m, pitch_offset_deg,
+## yaw_offset_deg, near_m, far_m, shake_mult, shake_cap_m} (ScaleProfile.camera_view builds it). `blend_s` > 0 eases there over that many seconds
+## (smooth in-out, from whatever is on screen now); 0 jumps.
+func set_scale_view(view: Dictionary, blend_s: float = 0.0) -> void:
+	var from_view: Dictionary = get_scale_view()
+	_sv_on = true
+	_sv_to = _filled_view(view)
+	if blend_s <= 0.0:
+		_sv_from = _sv_to
+		_sv_t = 1.0
+		_sv_len = 0.0
+	else:
+		_sv_from = from_view
+		_sv_t = 0.0
+		_sv_len = blend_s
+	_sv_cur = ScaleProfile.blend(_sv_from, _sv_to, ScaleProfile.smooth(_sv_t))
+
+
+## The view on screen right now (the neutral one, camera.json as is, when no scale view was ever set).
+func get_scale_view() -> Dictionary:
+	if not _sv_on:
+		return _neutral_view()
+	return _sv_cur.duplicate()
+
+
+func has_scale_view() -> bool:
+	return _sv_on
+
+
+## True while a scale view is still easing in.
+func is_scale_view_blending() -> bool:
+	return _sv_on and _sv_t < 1.0
+
+
+## 0 to 1: how far the scale view has eased (1 when still or never set).
+func scale_view_progress() -> float:
+	return _sv_t if _sv_on else 1.0
+
+
+func _neutral_view() -> Dictionary:
+	return {
+		"distance_mult": 1.0, "pivot_mult": 1.0, "fov_mult": 1.0,
+		"min_distance_m": _f(_orbit, "min_distance_m", 0.8), "pitch_offset_deg": 0.0, "yaw_offset_deg": 0.0,
+		"near_m": _f(_orbit, "near", 0.1), "far_m": _f(_orbit, "far", 120.0),
+		"shake_mult": 1.0, "shake_cap_m": 1.0e6,
+	}
+
+
+func _filled_view(view: Dictionary) -> Dictionary:
+	var out: Dictionary = _neutral_view()
+	for key: Variant in view.keys():
+		out[key] = float(view[key])
+	return out
+
+
+func _advance_scale_view(delta: float) -> void:
+	if not _sv_on or _sv_t >= 1.0:
+		return
+	_sv_t = 1.0 if _sv_len <= 0.0 else minf(_sv_t + delta / _sv_len, 1.0)
+	_sv_cur = ScaleProfile.blend(_sv_from, _sv_to, ScaleProfile.smooth(_sv_t))
+
+
+func _view_f(key: String, fallback: float) -> float:
+	return float(_sv_cur.get(key, fallback)) if _sv_on else fallback
 
 
 # ---- inputs from outside ----
@@ -230,6 +311,7 @@ func tick(delta: float) -> void:
 			toggle_mode()
 		_look_stick = Input.get_vector(ACTION_LEFT, ACTION_RIGHT, ACTION_UP, ACTION_DOWN)
 	_track_travel(delta)
+	_advance_scale_view(delta)
 	_blend_left_s = maxf(_blend_left_s - delta, 0.0)
 	_flick_cooldown_s = maxf(_flick_cooldown_s - delta, 0.0)
 	var locked: Node3D = _lock.get_target() if _lock != null else null
@@ -303,21 +385,21 @@ func _track_travel(delta: float) -> void:
 # ---- the view ----
 
 func _update_view(delta: float, locked: Node3D) -> void:
-	var want_yaw: float = _yaw
-	var want_pitch: float = _pitch
+	var want_yaw: float = _yaw + deg_to_rad(_view_f("yaw_offset_deg", 0.0))
+	var want_pitch: float = _pitch + deg_to_rad(_view_f("pitch_offset_deg", 0.0))
 	var want_distance: float = _orbit_distance()
-	var want_fov: float = _f(_orbit, "fov_deg", 62.0)
+	var want_fov: float = _f(_orbit, "fov_deg", 62.0) * _view_f("fov_mult", 1.0)
 	var feet: Vector3 = _target.global_position if _target != null else _focus
-	var height: float = _f(_orbit, "pivot_height_m", 1.1)
+	var height: float = _f(_orbit, "pivot_height_m", 1.1) * _view_f("pivot_mult", 1.0)
 	var want_focus: Vector3 = feet + Vector3.UP * height
 	var lag: float = _f(_orbit, "follow_lag_s", 0.07)
 	var rate: float = _f(_orbit, "look_rate", 45.0)
 	if _mode == Mode.DIORAMA:
 		want_yaw = deg_to_rad(_f(_dio, "yaw_deg", 0.0))
 		want_pitch = deg_to_rad(_f(_dio, "pitch_deg", -42.0))
-		want_distance = _f(_dio, "distance_m", 10.5)
-		want_fov = _f(_dio, "fov_deg", 32.0)
-		want_focus = feet + Vector3.UP * _f(_dio, "pivot_height_m", 0.5)
+		want_distance = _f(_dio, "distance_m", 10.5) * _view_f("distance_mult", 1.0)
+		want_fov = _f(_dio, "fov_deg", 32.0) * _view_f("fov_mult", 1.0)
+		want_focus = feet + Vector3.UP * _f(_dio, "pivot_height_m", 0.5) * _view_f("pivot_mult", 1.0)
 		lag = _f(_dio, "lag_s", 0.25)
 		rate = 1.0 / maxf(_f(_dio, "blend_s", 0.5), 0.05) * 3.0
 	elif locked != null:
@@ -325,7 +407,7 @@ func _update_view(delta: float, locked: Node3D) -> void:
 		var player_pos: Vector3 = feet
 		var offset: Vector3 = LockOnMath.flat_offset(player_pos, locked.global_position)
 		want_yaw = LockOnMath.camera_yaw_for(player_pos, locked.global_position)
-		want_pitch = deg_to_rad(_f(_lock_cfg, "pitch_deg", -16.0))
+		want_pitch = deg_to_rad(_f(_lock_cfg, "pitch_deg", -16.0) + _view_f("pitch_offset_deg", 0.0))
 		var extra: float = minf(offset.length() * _f(_lock_cfg, "extra_distance_per_m", 0.25),
 				_f(_lock_cfg, "max_extra_distance_m", 3.0))
 		want_distance += extra
@@ -357,9 +439,9 @@ func snap() -> void:
 		_yaw = atan2(-facing.x, -facing.z)
 	_view_yaw = _yaw if _mode == Mode.ORBIT else deg_to_rad(_f(_dio, "yaw_deg", 0.0))
 	_view_pitch = _pitch if _mode == Mode.ORBIT else deg_to_rad(_f(_dio, "pitch_deg", -42.0))
-	_view_distance = _orbit_distance() if _mode == Mode.ORBIT else _f(_dio, "distance_m", 10.5)
-	_view_fov = _f(_orbit, "fov_deg", 62.0) if _mode == Mode.ORBIT else _f(_dio, "fov_deg", 32.0)
-	var height: float = _f(_orbit, "pivot_height_m", 1.1) if _mode == Mode.ORBIT else _f(_dio, "pivot_height_m", 0.5)
+	_view_distance = _orbit_distance() if _mode == Mode.ORBIT else _f(_dio, "distance_m", 10.5) * _view_f("distance_mult", 1.0)
+	_view_fov = (_f(_orbit, "fov_deg", 62.0) if _mode == Mode.ORBIT else _f(_dio, "fov_deg", 32.0)) * _view_f("fov_mult", 1.0)
+	var height: float = (_f(_orbit, "pivot_height_m", 1.1) if _mode == Mode.ORBIT else _f(_dio, "pivot_height_m", 0.5)) * _view_f("pivot_mult", 1.0)
 	_focus = _target.global_position + Vector3.UP * height
 	_place_camera(0.0)
 
@@ -370,6 +452,9 @@ func _place_camera(delta: float) -> void:
 	var offset: Vector3 = _shake_step(delta)
 	_camera.position = Vector3(0.0, 0.0, _arm_length) + offset
 	_camera.fov = _view_fov
+	if _sv_on:
+		_camera.near = _view_f("near_m", _camera.near)
+		_camera.far = _view_f("far_m", _camera.far)
 
 
 ## The arm length that stops short of any wall between the pivot and the wanted camera spot.
@@ -391,7 +476,7 @@ func _clear_arm(wanted: float) -> float:
 	if hit.is_empty():
 		return wanted
 	var distance: float = from.distance_to(hit["position"] as Vector3) - margin
-	return clampf(distance, _f(_orbit, "min_distance_m", 0.8), wanted)
+	return clampf(distance, minf(_view_f("min_distance_m", _f(_orbit, "min_distance_m", 0.8)), wanted), wanted)
 
 
 # ---- shake ----
@@ -425,7 +510,7 @@ func _shake_step(delta: float) -> Vector3:
 # ---- numbers ----
 
 func _orbit_distance() -> float:
-	return _knob(KNOB_DISTANCE, _f(_orbit, "distance_m", 4.5))
+	return _knob(KNOB_DISTANCE, _f(_orbit, "distance_m", 4.5)) * _view_f("distance_mult", 1.0)
 
 
 func _knob(id: String, fallback: float) -> float:

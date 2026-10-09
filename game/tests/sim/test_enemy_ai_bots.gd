@@ -94,8 +94,9 @@ func test_a_grunt_dodges_some_heavies_but_not_all() -> void:
 	var next_swing_frame: int = 0
 	for frame: int in range(_frames(75.0)):
 		await tree.physics_frame
-		if grunt.dead:
-			grunt.hp = grunt.hp_max           # this run is about dodging, not about killing it
+		# This run is about dodging, not about killing it. A grunt that dies respawns in its "react" state, where it cannot
+		# defend at all (enemy_ai_design 2.1), which is what made the first version of this bot see so few dodges.
+		grunt.hp = grunt.hp_max
 		var dodging: bool = grunt.is_dodging()
 		if dodging and not was_dodging:
 			tally["dodges"] += 1
@@ -111,15 +112,14 @@ func test_a_grunt_dodges_some_heavies_but_not_all() -> void:
 		elif frame >= next_swing_frame:
 			_red.set_move_input(Vector2.ZERO)
 			_stick_toward(grunt.global_position)
-			_red.press(&"heavy")
-			next_swing_frame = frame + _frames(2.9)         # a dodge has a 2.5 s cooldown
+			_red.play_move(&"heavy")                        # a slow swing the grunt can read (the combo has no Heavy button)
+			next_swing_frame = frame + _frames(3.4)         # a dodge lasts ~0.6 s and then has a 2.5 s cooldown
 			await tree.physics_frame
-			_red.release(&"heavy")
 		else:
 			_red.set_move_input(Vector2.ZERO)
 	gdscript_print("heavies swung %d, threatened %d, dodged %d, connected %d" % [tally["swings"], tally["threatened"], tally["dodges"], tally["hits"]])
 	assert_ge(int(tally["threatened"]), 6, "Red threw enough Heavies at it")
-	assert_ge(int(tally["dodges"]), 1, "it dodged at least one")
+	assert_ge(int(tally["dodges"]), 2, "it dodged some (the roll is 60 percent here; the cooldown and fatigue take some off)")
 	assert_ge(int(tally["hits"]), 1, "and at least one Heavy connected: it does not dodge everything")
 	assert_lt(int(tally["dodges"]), int(tally["threatened"]), "never all of them")
 
@@ -143,6 +143,7 @@ func test_the_brutes_guard_breaks_on_a_heavy_and_not_on_a_light() -> void:
 	var broke_by_heavy: bool = false
 	var step: int = 0
 	var wait: int = 0
+	var heavy_in: int = 0
 	for frame: int in range(_frames(60.0)):
 		await tree.physics_frame
 		if brute.dead:
@@ -152,6 +153,11 @@ func test_the_brutes_guard_breaks_on_a_heavy_and_not_on_a_light() -> void:
 				broke_by_heavy = true
 		if broke_by_heavy:
 			break
+		if heavy_in > 0:
+			heavy_in -= 1
+			if heavy_in == 0:
+				_red.play_move(&"heavy")         # Light, Light, then the Heavy (the combo has no Heavy button)
+			continue
 		if _busy():
 			continue
 		if wait > 0:
@@ -161,20 +167,21 @@ func test_the_brutes_guard_breaks_on_a_heavy_and_not_on_a_light() -> void:
 		if _dist(_red, brute) > 1.6:
 			_stick_toward(brute.global_position)
 			continue
-		# Light, Light, Heavy: the route into a Brute
+		# Light, Light, then a Heavy thrown directly (the combo reaches its Heavy only as the sixth hit, long after a
+		# guard has dropped on its own; tests/sim/test_combo_bots.gd covers that route with the guard held up)
 		_red.set_move_input(Vector2.ZERO)
 		_stick_toward(brute.global_position)
-		match step % 3:
-			0, 1:
+		match step % 2:
+			0:
 				_red.press(&"light")
-				wait = 4
-			2:
-				_red.press(&"heavy")
-				wait = _frames(1.2)
+				wait = 8                         # after Light 1 ends (the string lives on for 500 ms)
+			1:
+				_red.press(&"light")
+				heavy_in = 10                    # 170 ms into Light 2, where the old chain window opened
+				wait = _frames(1.4)
 		step += 1
 		await tree.physics_frame
 		_red.release(&"light")
-		_red.release(&"heavy")
 	var blocked: int = 0
 	var broken_moves: Array[StringName] = []
 	for entry: Dictionary in outcomes:

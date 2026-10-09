@@ -15,7 +15,12 @@ extends Node
 
 const BASE_ENERGY_META: StringName = &"look_base_energy"
 
+## A scene that scales its haze with the player's size (the combat sandbox's giant robots, CS-21) sets the fog distances
+## here, (near, far) in metres; ZERO = use the profile's own. It survives a look-profile switch.
+var fog_override: Vector2 = Vector2.ZERO
+
 var _environment: Environment = null
+var _fog_tint: Color = Color(0.12, 0.145, 0.25)
 
 
 func _ready() -> void:
@@ -30,6 +35,20 @@ func apply() -> void:
 	# profile's apply_look() below is also what the overlay's switch calls, so both paths agree.
 	LookProfiles.enter_scene(scene_key())
 	apply_look(LookProfiles.active_id(), LookProfiles.active())
+
+
+## Sets the fog distances now (and keeps them through look changes). Same colour as the profile's.
+func set_fog_distances(near_m: float, far_m: float) -> void:
+	fog_override = Vector2(near_m, far_m)
+	PsxLook.set_fog(_fog_tint, near_m, far_m)
+
+
+## The distances in force right now: the override if there is one, else the profile's numbers.
+func fog_distances() -> Vector2:
+	if fog_override != Vector2.ZERO:
+		return fog_override
+	var fog: Dictionary = LookProfiles.active().get("fog", {}) as Dictionary
+	return Vector2(fog_near * float(fog.get("near_mul", 1.0)), fog_far * float(fog.get("far_mul", 1.0)))
 
 
 ## The key this room uses in data/world/look_profiles.json "scene_defaults": its room id.
@@ -52,7 +71,11 @@ func apply_look(_id: String, profile: Dictionary) -> void:
 	var wanted: String = str(fog.get("color", ""))
 	if not wanted.is_empty():
 		fog_tint = fog_color.lerp(Color.html(wanted), float(fog.get("mix", 1.0)))
-	PsxLook.set_fog(fog_tint, fog_near * float(fog.get("near_mul", 1.0)), fog_far * float(fog.get("far_mul", 1.0)))
+	_fog_tint = fog_tint
+	if fog_override != Vector2.ZERO:
+		PsxLook.set_fog(fog_tint, fog_override.x, fog_override.y)
+	else:
+		PsxLook.set_fog(fog_tint, fog_near * float(fog.get("near_mul", 1.0)), fog_far * float(fog.get("far_mul", 1.0)))
 	var host: Node = get_parent()
 	if host == null:
 		return

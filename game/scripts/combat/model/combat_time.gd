@@ -19,6 +19,7 @@ var _flare_left_s: float = 0.0
 var _flare_scale: float = 1.0
 var _flare_ids: Dictionary = {}         # id -> true
 var _flaring: bool = false
+var _base_scale: Dictionary = {}        # id -> a standing speed (CS-21: a giant robot's swings run slower); absent = 1.0
 
 
 ## Advance by one real step (seconds).
@@ -93,13 +94,27 @@ func is_slowed(id: StringName) -> bool:
 	return _flaring and _flare_ids.has(id)
 
 
-## The speed of a fighter right now: 0 in hit-stop, the flare speed if caught in the glare, else 1.
+## A standing speed for one fighter on top of everything else (hit-stop still freezes it, a flare still slows it). 1.0 = none.
+## The robot scale test uses it so a 50 m robot's swings take longer than Red's.
+func set_base_scale(actor_id: StringName, scale: float) -> void:
+	if is_equal_approx(scale, 1.0):
+		_base_scale.erase(actor_id)
+	else:
+		_base_scale[actor_id] = clampf(scale, 0.01, 4.0)
+
+
+func base_scale_of(actor_id: StringName) -> float:
+	return float(_base_scale.get(actor_id, 1.0))
+
+
+## The speed of a fighter right now: 0 in hit-stop, the flare speed if caught in the glare, else 1 (times its base scale).
 func scale_for(actor_id: StringName) -> float:
 	if _hit_stop_left.has(actor_id):
 		return 0.0
+	var base: float = float(_base_scale.get(actor_id, 1.0))
 	if _flaring and _flare_ids.has(actor_id):
-		return _flare_scale
-	return 1.0
+		return _flare_scale * base
+	return base
 
 
 ## How much of `real_delta` (seconds) this fighter actually lives through in the latest step. Counts the
@@ -107,7 +122,7 @@ func scale_for(actor_id: StringName) -> float:
 func delta_for(actor_id: StringName, real_delta: float) -> float:
 	var frac: float = float(_run_fraction.get(actor_id, 1.0))
 	var flare_scale: float = _flare_scale if (_flaring and _flare_ids.has(actor_id)) else 1.0
-	return real_delta * frac * flare_scale
+	return real_delta * frac * flare_scale * float(_base_scale.get(actor_id, 1.0))
 
 
 ## The scale to hand a CombatClock for this step (delta_for / real_delta, safe at zero).

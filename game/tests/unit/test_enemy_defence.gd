@@ -168,3 +168,13 @@ func test_back_rolls_only_happen_when_red_is_close() -> void:
 			back_far += 1
 	assert_eq(back_far, 0, "beyond 1.6 m it always side-steps")
 	assert_almost_eq(float(back_close) / 300.0, 0.30, 0.08, "30% back-rolls when Red is inside 1.6 m")
+
+
+func test_a_swing_2_9_s_after_a_dodge_began_is_still_inside_the_cooldown() -> void:
+	# Why a bot that swings every 2.9 s sees far fewer dodges than the roll says (tuning_log.md, "defence gate"): the
+	# cooldown (2.5 s) starts when the dodge ENDS (~0.6 s after it began), so the next free roll is ~3.1 s later.
+	var grunt: EnemyDefence = _defence("grunt")
+	grunt.end_defence(EnemyDefence.KIND_DODGE, 600.0)
+	assert_false(grunt.ready(EnemyDefence.KIND_DODGE, 2900.0 + 100.0), "the roll for the next swing comes ~100 ms after it began")
+	assert_eq(float(grunt.chances(&"heavy", 3000.0, 1.0, 1.0)["dodge"]), 0.0, "no dodge chance at all while the cooldown runs")
+	assert_true(grunt.ready(EnemyDefence.KIND_DODGE, 3101.0))

@@ -71,6 +71,22 @@ func _enemy(pos: Vector3) -> CombatActor:
 	return enemy
 
 
+## A bare dummy never touches the floor, so it would count as "in the air" (the one-button combo reads that from
+## is_on_floor). Call this after the physics frame that follows _enemy() to settle it on the floor.
+func _stand(enemy: CombatActor) -> void:
+	if enemy.get_node_or_null("BodyShape") == null:
+		var body: CollisionShape3D = CollisionShape3D.new()
+		body.name = "BodyShape"
+		var capsule: CapsuleShape3D = CapsuleShape3D.new()
+		capsule.radius = 0.3
+		capsule.height = 0.9
+		body.shape = capsule
+		body.position.y = 0.45
+		enemy.add_child(body)
+	enemy.velocity = Vector3(0, -2.0, 0)
+	enemy.move_and_slide()
+
+
 func test_it_stands_on_the_floor_and_idles() -> void:
 	await _arena()
 	assert_true(_player.is_on_floor())
@@ -422,6 +438,7 @@ func test_attacks_turn_toward_the_enemy_in_the_magnet_cone() -> void:
 	await _arena(true)
 	var enemy: CombatActor = _enemy(Vector3(2.5, 0, 0.0))
 	await tree.physics_frame
+	_stand(enemy)
 	var lock: LockOn = LockOn.new()
 	lock.read_engine_input = false
 	add_to_root(lock)
@@ -435,38 +452,38 @@ func test_attacks_turn_toward_the_enemy_in_the_magnet_cone() -> void:
 	assert_gt(_player.get_facing().dot(to_enemy), 0.99, "she snapped to the enemy")
 
 
-func test_a_launcher_hold_turns_heavy_into_the_launcher() -> void:
+func test_the_heavy_button_is_the_hack_button_and_starts_no_attack() -> void:
+	await _arena()
+	var started: Array[StringName] = []
+	var calls: Array[Dictionary] = []
+	_player.move_started.connect(func(id: StringName) -> void: started.append(id))
+	_player.hack_pressed.connect(func(info: Dictionary) -> void: calls.append(info))
+	_player.press(&"heavy")
+	_step(10)
+	assert_eq(started, [], "the second button starts no move")
+	assert_eq(calls.size(), 1, "it shows one call-out")
+	assert_eq(str(calls[0]["text"]), "Hack: coming later", "the words come from combo.json")
+	assert_eq(_player.get_state(), ActionPlayer.State.LOCOMOTION)
+
+
+func test_mashing_the_hack_button_does_not_stack_call_outs_inside_the_cooldown() -> void:
+	await _arena()
+	var calls: Array[Dictionary] = []
+	_player.hack_pressed.connect(func(info: Dictionary) -> void: calls.append(info))
+	_player.press(&"heavy", 1000000)
+	_player.press(&"heavy", 1300000)          # 300 ms later: inside the 800 ms cooldown
+	_player.press(&"heavy", 2000000)          # 1000 ms after the first: allowed again
+	_step(2)
+	assert_eq(calls.size(), 2)
+
+
+func test_play_move_starts_a_move_directly_for_bots() -> void:
 	await _arena()
 	var started: Array[StringName] = []
 	_player.move_started.connect(func(id: StringName) -> void: started.append(id))
-	_player.press(&"heavy")
+	assert_true(_player.play_move(&"heavy"))
 	_step(2)
 	assert_eq(started, [&"heavy"])
-	_step(14)                                                 # held about 250 ms: past launcher_hold_ms (170) but heavy is 200 ms startup
-	assert_true(started.has(&"launcher") or started == [&"heavy"])
-	# Held from the start and still held 150 ms in: it upgrades.
-	_player.release(&"heavy")
-	_step(80)
-	started.clear()
-	_player.press(&"heavy")
-	_step(8)
-	assert_eq(started, [&"launcher"] if started.has(&"launcher") else started)
-	assert_true(started.has(&"heavy") or started.has(&"launcher"))
-
-
-func test_launcher_modes_change_only_the_token() -> void:
-	await _arena()
-	_player.knobs.set_value("launcher_input", "back_heavy")
-	var cam: Camera3D = Camera3D.new()
-	add_to_root(cam)
-	_player.camera = cam
-	_player.rotation.y = PI                                   # faces -Z
-	_player.set_move_input(Vector2(0, 1))                     # pulling back (toward +Z)
-	var started: Array[StringName] = []
-	_player.move_started.connect(func(id: StringName) -> void: started.append(id))
-	_player.press(&"heavy")
-	_step(2)
-	assert_eq(started, [&"launcher"], "back_heavy: heavy with the stick pulled away is the launcher")
 
 
 func test_dash_cancels_a_move_only_after_its_cancel_time() -> void:
@@ -645,7 +662,7 @@ func test_missing_clips_never_stop_play() -> void:
 	await _arena()
 	_player.press(&"light")
 	_step(10)
-	_player.press(&"heavy")
+	_player.press(&"light")
 	_step(30)
 	_player.press(&"parry")
 	_step(40)
@@ -659,6 +676,7 @@ func test_a_light_connects_with_a_dummy_once_per_swing_and_both_sides_freeze() -
 	var enemy: CombatActor = _enemy(Vector3(0.0, 0.0, -1.3))
 	await tree.physics_frame
 	await tree.physics_frame
+	_stand(enemy)
 	_player.rotation.y = PI                                  # faces -Z, toward the dummy
 	var hits: Array[Dictionary] = []
 	_director.hit_landed.connect(func(info: Dictionary) -> void: hits.append(info))
@@ -674,6 +692,7 @@ func test_hit_stop_from_a_landed_hit_freezes_her_clock_for_a_moment() -> void:
 	var enemy: CombatActor = _enemy(Vector3(0.0, 0.0, -1.3))
 	await tree.physics_frame
 	await tree.physics_frame
+	_stand(enemy)
 	_player.rotation.y = PI
 	_player.press(&"light")
 	var froze: bool = false
@@ -759,3 +778,121 @@ func test_two_buffered_parries_each_keep_their_own_stamp() -> void:
 	_step(2)
 	assert_eq(_director._parry_presses.size(), 2)
 	assert_eq(int(_director._parry_presses[1]), second_press)
+
+
+# ---- the one-button combo (docs/pivot/kh_combo_design.md): the attack button asks ComboSelector ----
+
+func _moves_started() -> Array[StringName]:
+	var started: Array[StringName] = []
+	_player.move_started.connect(func(id: StringName) -> void: started.append(id))
+	return started
+
+
+func test_pressing_attack_in_the_air_starts_the_air_string() -> void:
+	await _arena()
+	_player.press(&"jump")
+	_step(8)
+	assert_true(_player.is_airborne())
+	_player.release(&"jump")
+	var started: Array[StringName] = _moves_started()
+	_player.press(&"light")
+	_step(3)
+	assert_eq(started, [&"air_1"])
+
+
+func test_pressing_attack_at_a_far_target_lunges_toward_it() -> void:
+	await _arena(true)
+	var enemy: CombatActor = _enemy(Vector3(0.0, 0.0, -8.0))
+	await tree.physics_frame
+	_stand(enemy)
+	_player.rotation.y = PI                                  # faces -Z, toward it
+	var started: Array[StringName] = _moves_started()
+	var z0: float = _player.global_position.z
+	_player.press(&"light")
+	_step(20)
+	assert_eq(started, [&"lunge"])
+	assert_lt(_player.global_position.z, z0 - 3.5, "the lunge covers a good part of its 5 m")
+
+
+func test_a_close_target_gets_light_1_not_a_lunge() -> void:
+	await _arena(true)
+	var enemy: CombatActor = _enemy(Vector3(0.0, 0.0, -2.0))
+	await tree.physics_frame
+	_stand(enemy)
+	_player.rotation.y = PI
+	var started: Array[StringName] = _moves_started()
+	_player.press(&"light")
+	_step(3)
+	assert_eq(started, [&"light_1"])
+
+
+func test_an_airborne_target_close_by_makes_her_jump_up_and_start_the_air_string() -> void:
+	await _arena(true)
+	var enemy: CombatActor = _enemy(Vector3(0.0, 0.0, -2.0))         # never settled on the floor, so it counts as airborne
+	await tree.physics_frame
+	_player.rotation.y = PI
+	var jumps: Array[bool] = []
+	_player.jumped.connect(func(follow: bool) -> void: jumps.append(follow))
+	var started: Array[StringName] = _moves_started()
+	_player.press(&"light")
+	_step(4)
+	assert_eq(jumps, [true], "the follow-jump (the higher one)")
+	assert_eq(started, [], "the air attack waits for the top of the jump")
+	assert_true(_player.is_airborne())
+	var height: float = _player.global_position.y
+	_step_until(func() -> bool: return not started.is_empty(), 60)
+	assert_eq(started, [&"air_1"])
+	assert_gt(_player.global_position.y, height, "she was still rising when it began")
+	assert_gt(_player.global_position.y, 1.0, "and up near the target, not hopping")
+
+
+func test_the_string_forgets_itself_500_ms_after_she_stops() -> void:
+	await _arena()
+	var started: Array[StringName] = _moves_started()
+	_player.press(&"light")
+	_step(80)                                                 # light_1 is long over (380 ms) and 500 ms has passed
+	assert_eq(_player.get_state(), ActionPlayer.State.LOCOMOTION)
+	_player.press(&"light")
+	_step(3)
+	assert_eq(started, [&"light_1", &"light_1"], "a late press starts a new string")
+
+
+func test_a_press_inside_500_ms_of_the_last_move_continues_the_string() -> void:
+	await _arena()
+	var started: Array[StringName] = _moves_started()
+	_player.press(&"light")
+	_step(30)                                                 # 500 ms: light_1 ended at 380 ms, so 120 ms ago
+	_player.press(&"light")
+	_step(6)
+	assert_eq(started, [&"light_1", &"light_2"])
+
+
+func test_a_dash_ends_the_string() -> void:
+	await _arena()
+	var started: Array[StringName] = _moves_started()
+	_player.press(&"light")
+	_step(30)
+	_dash_through()
+	_player.press(&"light")
+	_step(3)
+	assert_eq(started, [&"light_1", &"light_1"], "after a dash the string starts over")
+
+
+func test_a_press_during_the_launcher_waits_for_it_instead_of_being_lost() -> void:
+	await _arena()
+	var started: Array[StringName] = _moves_started()
+	assert_true(_player.play_move(&"launcher"))
+	_step(2)
+	_player.press(&"light")                                   # the launcher has no cancel window and takes 640 ms
+	_step(60)
+	assert_eq(started.slice(0, 2), [&"launcher", &"light_1"], "the press was held until the launcher ended, then a new string began")
+
+
+func test_the_hack_button_inside_a_move_does_not_cancel_it() -> void:
+	await _arena()
+	var started: Array[StringName] = _moves_started()
+	_player.press(&"light")
+	_step(4)
+	_player.press(&"heavy")
+	_step(30)
+	assert_eq(started, [&"light_1"], "the hack button starts nothing and chains nothing")

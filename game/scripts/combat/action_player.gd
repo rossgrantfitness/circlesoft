@@ -29,6 +29,15 @@ signal dashed(air: bool)
 signal move_started(move_id: StringName)
 signal swing_started(move_id: StringName, swing: Dictionary)
 signal state_changed(state: State)
+## The second attack button (K / right mouse / Y) was pressed. It is Red's hack button later; for now the HUD shows
+## `info.text` as a call-out ("Hack: coming later"). info = {text, callout_ms}.
+signal hack_pressed(info: Dictionary)
+## The body size changed (CS-21): red, small or huge. See set_scale_profile().
+signal form_changed(form_id: StringName)
+
+## NORMAL: she plays. SCRIPTED: a cutscene or boarding sequence moves her (visible, no physics, no input). GHOST: hidden and
+## untouchable (she is inside a robot being docked).
+enum ControlMode { NORMAL, SCRIPTED, GHOST }
 
 const DATA_ID: String = "combat/player_action"
 const SET_ID: StringName = &"red"
@@ -46,6 +55,7 @@ const TOKEN_LAUNCH: StringName = &"launch"
 const ATTACK_TOKENS: Array[StringName] = [&"light", &"heavy", &"launch"]
 const MOVE_PARRY: StringName = &"parry"
 const MOVE_HEAVY: StringName = &"heavy"
+const FOLLOW_JUMP: StringName = &"follow_jump"
 const NODE_VISUAL: NodePath = ^"Visual"
 const NODE_PLACEHOLDER: NodePath = ^"Visual/PlaceholderCapsule"
 const USEC: float = 1000000.0
@@ -112,6 +122,27 @@ var _warned_clips: Dictionary[StringName, bool] = {}
 var _missing_clips: Array[StringName] = []
 var _bob_time: float = 0.0
 var _gear: Node = null
+## The one-button combo (docs/pivot/kh_combo_design.md): the attack button asks the selector what to do next.
+var _combo: ComboSelector = null
+var _combo_string: ComboString = null
+var _combo_cfg: Dictionary = {}
+var _combo_pick_cache: Dictionary = {}
+var _next_restart: bool = true
+var _queued_move: StringName = &""
+var _queued_at_usec: int = 0
+var _queued_restart: bool = false
+## The combo's follow-jump is an automatic jump: nobody holds the jump button, so the release-cut must not shorten it.
+var _auto_jump_hold: bool = false
+var _last_hack_usec: int = -1000000000
+## CS-21, the giant-robot scale test: the body size she has now. Null = Red as always. All the numbers are in
+## data/combat/scale_profiles.json; the ScaleController and the robot boarding drive it.
+var scale_profile: ScaleProfile = null
+## While true she ignores the stick and the buttons (the power-up beat of a transformation).
+var input_locked: bool = false
+var _control_mode: ControlMode = ControlMode.NORMAL
+var _base_data: Dictionary = {}
+var _forms: Dictionary[StringName, Dictionary] = {}
+var _form_id: StringName = &"red"
 
 
 func _init() -> void:
@@ -139,6 +170,9 @@ func _ready() -> void:
 	_moves = MoveSet.load_default()
 	_runner = MoveRunner.create(_moves, SET_ID)
 	_buffer = InputBuffer.create(knobs)
+	_combo_cfg = CombatData.combo()
+	_combo = ComboSelector.from_data(_combo_cfg)
+	_combo_string = ComboString.create(_combo.param("string_timeout_ms", 500.0))
 	if find_director() == null:
 		clock.anchor_real(Time.get_ticks_usec())
 	_air_dashes_left = int(_knob("air_dash_count"))
@@ -204,6 +238,8 @@ func is_invulnerable() -> bool:
 
 ## Lights On gives super armor.
 func is_armored() -> bool:
+	if scale_profile != null and scale_profile.is_armored():
+		return true       # a giant robot does not flinch at a wolf
 	var director: CombatDirector = find_director()
 	if director == null or director.lights_on == null or not director.lights_on.is_active():
 		return false
@@ -274,7 +310,9 @@ func anchor(point: StringName) -> Vector3:
 ## Swap the sword in her hand (GearVisuals, when the Technical Artist's file is there).
 func equip_sword(sword_id: StringName) -> bool:
 	var gear: Node = _gear_visuals()
-	return gear != null and bool(gear.call("equip_sword", sword_id))
+	var equipped: bool = gear != null and bool(gear.call("equip_sword", sword_id))
+	_apply_sword_scale()
+	return equipped
 
 
 func current_sword() -> StringName:
@@ -295,6 +333,9 @@ func _on_hit_reaction(result: Dictionary) -> void:
 		return
 	_interrupt_move()
 	_end_dash_state()
+	_combo_string.reset()
+	_queued_move = &""
+	_auto_jump_hold = false
 	var launch: float = float(result.get("launch_mps", 0.0))
 	var knock: Vector3 = result.get("knockback", Vector3.ZERO) as Vector3
 	_knock_velocity = Vector3(knock.x, 0.0, knock.z)
@@ -330,6 +371,9 @@ func reset_to(where: Transform3D) -> void:
 	velocity = Vector3.ZERO
 	_vy = 0.0
 	_interrupt_move()
+	_combo_string.reset()
+	_queued_move = &""
+	_auto_jump_hold = false
 	_dash = null
 	_dash_cooldown_left_s = 0.0
 	_presses.clear()
@@ -358,15 +402,21 @@ func tick(delta: float) -> void:
 		return
 	var director: CombatDirector = find_director()
 	var scale: float = director.time.step_scale_for(actor_id, delta) if director != null else 1.0
+	scale *= _form_time_scale(director)
 	_last_scale = scale
 	if read_engine_input:
 		_read_engine_input()
+	if input_locked or _control_mode != ControlMode.NORMAL:
+		_drop_input()
 	if director == null:
 		# A bare run (no director): she steps her own clock. With one, it steps it before us (priority -100).
 		clock.step(int(delta * USEC), scale)
 	_combat_delta = delta * scale
 	# Presses always reach the buffer, even in hit-stop (the buffer runs on Red's clock).
 	_ingest_presses()
+	if _control_mode != ControlMode.NORMAL:
+		velocity = Vector3.ZERO
+		return
 	if _animation_player != null:
 		_animation_player.speed_scale = scale * _anim_speed_factor()
 	if _combat_delta <= 0.0:
@@ -405,6 +455,9 @@ func _read_engine_input() -> void:
 func _ingest_presses() -> void:
 	for entry: Dictionary in _presses:
 		var action: StringName = StringName(entry["action"])
+		if action == TOKEN_HEAVY:
+			_press_hack(int(entry["usec"]))        # the second button is the hack button: no attack
+			continue
 		var local: int = clock.local_at_real(int(entry["usec"]))
 		var token: StringName = _token_for(action, local)
 		if token == &"":
@@ -444,6 +497,16 @@ func _stick_is_back() -> bool:
 	return get_move_direction().dot(get_facing()) < -0.5
 
 
+## The hack button. Only a call-out for now ("Hack: coming later"); a short cooldown stops a mashed button from
+## stacking pop-ups. Text and times are data (combo.json buttons.hack).
+func _press_hack(usec: int) -> void:
+	var hack: Dictionary = (_combo_cfg.get("buttons", {}) as Dictionary).get("hack", {})
+	if usec - _last_hack_usec < int(float(hack.get("cooldown_ms", 800.0)) * 1000.0):
+		return
+	_last_hack_usec = usec
+	hack_pressed.emit({"text": str(hack.get("callout", "Hack: coming later")), "callout_ms": float(hack.get("callout_ms", 1200.0))})
+
+
 # ---- locomotion and air ----
 
 func _tick_free(dt: float, scale: float, now: int) -> void:
@@ -456,10 +519,22 @@ func _tick_free(dt: float, scale: float, now: int) -> void:
 		_coyote_left -= dt
 	_set_state(State.LOCOMOTION if on_floor else State.AIR)
 
+	# The air attack that follows a combo follow-jump starts once the jump has had its moment (or is dropped on landing).
+	if _queued_move != &"" and (on_floor or now >= _queued_at_usec):
+		var queued: StringName = _queued_move
+		_queued_move = &""
+		_auto_jump_hold = false
+		if not on_floor:
+			_next_restart = _queued_restart
+			if _begin_move(queued, now, direction):
+				_tick_move(dt, scale, now)
+				return
+
 	# Buffered presses first. Whatever starts a new state ends this step (a dash or move moves her itself).
 	var accept: Callable = func(token: StringName) -> bool: return _free_accepts(token, on_floor, now)
 	var token: StringName = _buffer.take(now, accept)
 	var jumping_now: bool = false
+	var follow_now: bool = false
 	var jump_height: float = _knob("jump_height_m")
 	while token != &"":
 		match token:
@@ -473,6 +548,18 @@ func _tick_free(dt: float, scale: float, now: int) -> void:
 					return
 			TOKEN_JUMP:
 				jumping_now = true
+				_combo_string.reset()
+			TOKEN_LIGHT:
+				var pick: Dictionary = _combo_pick_cache
+				if pick.get("prefix", &"") == FOLLOW_JUMP:
+					# Jump up after the airborne target, then attack from the air (the existing follow-jump height).
+					jumping_now = true
+					follow_now = true
+					jump_height = _follow_jump_height(jump_height)
+					_queue_air_move(pick, now)
+				elif _apply_combo_pick(pick, now, direction, false):
+					_tick_move(dt, scale, now)
+					return
 			_:
 				var entry: StringName = _moves.entry(SET_ID, &"ground" if on_floor else &"air", token)
 				if entry != &"" and _begin_move(entry, now, direction):
@@ -497,7 +584,7 @@ func _tick_free(dt: float, scale: float, now: int) -> void:
 		_vy = 0.0
 	else:
 		var step: Dictionary = ActionMotion.vertical_step(vy_before, gravity, _jump_cfg("fall_gravity_mult", 1.35),
-				_jump_cfg("max_fall_mps", 28.0), dt, is_held(TOKEN_JUMP), launch * _jump_cfg("release_cut_mult", 0.45))
+				_jump_cfg("max_fall_mps", 28.0), dt, is_held(TOKEN_JUMP) or _auto_jump_hold, launch * _jump_cfg("release_cut_mult", 0.45))
 		_vy = float(step["vy"])
 		velocity.y = float(step["avg"])
 
@@ -506,12 +593,12 @@ func _tick_free(dt: float, scale: float, now: int) -> void:
 	if is_on_ceiling() and _vy > 0.0:
 		_vy = 0.0
 	if jumping_now:
-		jumped.emit(false)
+		jumped.emit(follow_now)
 	_note_landing()
 
 
 ## Is this buffered token something she can do right now (as a free-moving Red)?
-func _free_accepts(token: StringName, on_floor: bool, _now: int) -> bool:
+func _free_accepts(token: StringName, on_floor: bool, now: int) -> bool:
 	match token:
 		TOKEN_JUMP:
 			return _coyote_left > 0.0
@@ -519,6 +606,11 @@ func _free_accepts(token: StringName, on_floor: bool, _now: int) -> bool:
 			return _dash_cooldown_left_s <= 0.0 and (on_floor or _air_dashes_left > 0)
 		TOKEN_PARRY:
 			return on_floor and _moves.has_move(SET_ID, MOVE_PARRY)
+		TOKEN_LIGHT:
+			if _queued_move != &"":
+				return false            # the follow-jump's air attack is already on its way
+			_combo_pick_cache = _combo_pick(now, not on_floor, false)
+			return _combo_pick_cache.get("move", &"") != &""
 		_:
 			return _moves.entry(SET_ID, &"ground" if on_floor else &"air", token) != &""
 
@@ -555,8 +647,11 @@ func _start_dash(stick_direction: Vector3, in_air: bool, _now: int) -> void:
 	if in_air:
 		_air_dashes_left -= 1
 		_vy = 0.0
+	_combo_string.reset()
+	_queued_move = &""
+	_auto_jump_hold = false
 	rotation.y = PlayerMotion.yaw_for_direction(direction)
-	collision_mask = CombatLayers.body_mask(team, true)
+	collision_mask = _body_mask(true)
 	_set_state(State.AIR_DASH if in_air else State.DASH)
 	_play_clip(&"air_dash" if in_air and _has_clip(&"air_dash") else &"dash")
 	var director: CombatDirector = find_director()
@@ -595,6 +690,12 @@ func _tick_dash(dt: float, scale: float, now: int) -> void:
 				_current_clip = &""
 				jumped.emit(false)
 				return
+			if token == TOKEN_LIGHT:
+				if _apply_combo_pick(_combo_pick(now, not on_floor, false), now, dash_dir, false):
+					_tick_move(dt, scale, now)
+					return
+				_set_state(State.LOCOMOTION if on_floor else State.AIR)
+				return
 			var entry: StringName = _moves.entry(SET_ID, &"ground" if on_floor else &"air", token)
 			if entry != &"" and _begin_move(entry, now, dash_dir):
 				_tick_move(dt, scale, now)
@@ -630,7 +731,7 @@ func _end_dash_state(start_cooldown: bool = false) -> void:
 
 
 func _restore_enemy_collision() -> void:
-	collision_mask = CombatLayers.body_mask(team, false)
+	collision_mask = _body_mask(false)
 
 
 # ---- attacks and the parry ----
@@ -656,13 +757,14 @@ func _on_move_began(move_id: StringName, stick_direction: Vector3, now: int) -> 
 	var dir: Vector3 = stick_direction if stick_direction.length() > 0.001 else Vector3.ZERO
 	var target: Node3D = null
 	if lock_on != null and not magnet.is_empty():
-		target = lock_on.magnet_target(dir, facing, float(magnet.get("range_m", 3.5)), float(magnet.get("cone_deg", 70.0)))
+		target = lock_on.magnet_target(dir, facing, float(magnet.get("range_m", 3.5)) * _form_attack("magnet_mult"), float(magnet.get("cone_deg", 70.0)))
 	if target != null:
 		var to_target: Vector3 = target.global_position - global_position
 		to_target.y = 0.0
 		if to_target.length() > 0.001:
 			dir = to_target.normalized()
-			_attack_lunge_cap = maxf(to_target.length() - float((_data.get("attack", {}) as Dictionary).get("stop_short_m", 0.8)), 0.0)
+			var stop_short: float = float((move.get("motion", {}) as Dictionary).get("stop_short_m", (_data.get("attack", {}) as Dictionary).get("stop_short_m", 0.8)))
+			_attack_lunge_cap = maxf(to_target.length() - stop_short, 0.0)
 	if dir.length() < 0.001:
 		dir = Vector3(facing.x, 0.0, facing.z).normalized()
 	_attack_dir = dir.normalized()
@@ -673,6 +775,11 @@ func _on_move_began(move_id: StringName, stick_direction: Vector3, now: int) -> 
 		if up > 0.0:
 			_vy = maxf(_vy, up)
 	_set_state(State.PARRY if move_id == MOVE_PARRY else State.ATTACK)
+	if move_id == MOVE_PARRY:
+		_combo_string.reset()
+	else:
+		_combo_string.begin(move_id, _next_restart)
+	_next_restart = true
 	if move_id == MOVE_PARRY:
 		var director: CombatDirector = find_director()
 		if director != null:
@@ -695,7 +802,7 @@ func _tick_move(dt: float, scale: float, now: int) -> void:
 	if _state != State.ATTACK and _state != State.PARRY:
 		return       # a cancel started a dash or a jump; it takes over next step
 	var cur_ms: float = _runner.elapsed_ms_at(now)
-	var fwd: float = minf(_runner.forward_between(_prev_move_ms, cur_ms), _attack_lunge_cap)
+	var fwd: float = minf(_runner.forward_between(_prev_move_ms, cur_ms) * _form_attack("lunge_mult"), _attack_lunge_cap)
 	if fwd > 0.0:
 		_attack_lunge_cap = maxf(_attack_lunge_cap - fwd, 0.0)
 	_prev_move_ms = cur_ms
@@ -760,7 +867,11 @@ func _handle_move_inputs(now: int, direction: Vector3, on_floor: bool) -> void:
 			TOKEN_PARRY:
 				_begin_move(MOVE_PARRY, now, direction)
 				return
+			TOKEN_LIGHT:
+				if _apply_combo_pick(_combo_pick_cache, now, direction, true):
+					return          # the string moved on, or she jumped up after the target
 			TOKEN_JUMP:
+				_combo_string.reset()
 				var follow: bool = _follow_jump_ready()
 				var jump_events: Array[Dictionary] = _runner.interrupt()
 				for event: Dictionary in jump_events:
@@ -772,6 +883,9 @@ func _handle_move_inputs(now: int, direction: Vector3, on_floor: bool) -> void:
 				if chained != &"":
 					_on_move_began(chained, direction, now)
 		token = _buffer.take(now, accept)
+	# A move with no cancel window (the launcher, air 3) holds one waiting attack press until it ends.
+	if _runner.is_busy() and float(_runner.data().get("chain_from_ms", -1.0)) < 0.0:
+		_buffer.hold_latest(TOKEN_LIGHT, now)
 
 
 func _move_accepts(token: StringName, now: int, on_floor: bool) -> bool:
@@ -782,8 +896,81 @@ func _move_accepts(token: StringName, now: int, on_floor: bool) -> bool:
 			return _runner.can_cancel(&"parry", now) and on_floor
 		TOKEN_JUMP:
 			return _runner.can_cancel(&"jump", now) and (on_floor or _follow_jump_ready())
+		TOKEN_LIGHT:
+			var pick: Dictionary = _combo_pick(now, not on_floor, true)
+			if pick.get("move", &"") == &"":
+				return false
+			_combo_pick_cache = pick
+			if pick.get("prefix", &"") == FOLLOW_JUMP:
+				return _runner.can_cancel(&"jump", now) and _hit_landed_in_move       # follow the launched target up
+			return _runner.chain_window_open(now)
 		_:
 			return _runner.can_chain(token, now)
+
+
+## What an attack press does now (ComboSelector over the live situation): {move, prefix, rule, restart}.
+## `in_move` = a move of hers is still playing (it is the string's current move); otherwise the string continues
+## from the last move if it ended less than string_timeout_ms ago, else it starts fresh.
+func _combo_pick(now: int, airborne: bool, in_move: bool) -> Dictionary:
+	var from: StringName = _combo_string.from_move(now, in_move and _runner.is_busy())
+	var aim: Vector3 = PlayerMotion.camera_relative_direction(_stick, _camera_basis())
+	var magnet: Dictionary = (_moves.get_move(SET_ID, &"lunge").get("magnet", {}) as Dictionary)
+	var enemies: Array = []
+	var director: CombatDirector = find_director()
+	if director != null:
+		enemies = director.living_enemies()
+	var params: Dictionary = _combo_cfg.get("params", {}) as Dictionary
+	var target: Node3D = ComboSituation.pick_target(self, enemies, lock_on, aim, get_facing(),
+			float(params.get("lunge_max_dist_m", 12.0)), float(magnet.get("cone_deg", 140.0)))
+	var situation: Dictionary = ComboSituation.describe(global_position, target, enemies, params)
+	situation["from"] = from
+	situation["player_airborne"] = airborne
+	situation["string_pos"] = _combo_string.pos() if from != ComboString.IDLE else 0
+	situation["last_hit_connected"] = _hit_landed_in_move and from != ComboString.IDLE
+	return _combo.select(situation)
+
+
+## Carries out a pick. True if a move started (or the follow-jump began). `in_move` = the chain path of a playing move.
+func _apply_combo_pick(pick: Dictionary, now: int, direction: Vector3, in_move: bool) -> bool:
+	var next_move: StringName = pick.get("move", &"")
+	if next_move == &"":
+		return false
+	if pick.get("prefix", &"") == FOLLOW_JUMP:
+		# Out of the launcher (or from the ground) up after the airborne target, then the air attack.
+		if in_move:
+			for event: Dictionary in _runner.interrupt():
+				_handle_runner_event(event)
+		_combo_string.end(now)
+		_start_jump_from_move(true)
+		_queue_air_move(pick, now)
+		return true
+	_next_restart = bool(pick.get("restart", false))
+	if in_move:
+		var chained: StringName = _runner.offer_move(next_move, now, int(_press_local.get(TOKEN_LIGHT, now)))
+		if chained == &"":
+			return false
+		_on_move_began(chained, direction, now)
+		return true
+	return _begin_move(next_move, now, direction)
+
+
+## The air move that follows a combo follow-jump starts `follow_jump.attack_after_ms` later (hit_feel.json), once she is up.
+func _queue_air_move(pick: Dictionary, now: int) -> void:
+	_queued_move = pick.get("move", &"")
+	_auto_jump_hold = true
+	_queued_at_usec = now + int(float((_hit_feel.get("follow_jump", {}) as Dictionary).get("attack_after_ms", 200.0)) * 1000.0)
+	_queued_restart = bool(pick.get("restart", false))
+
+
+func _follow_jump_height(fallback: float) -> float:
+	return float((_hit_feel.get("follow_jump", {}) as Dictionary).get("height_m", fallback))
+
+
+## Bots and tests: start a move directly, skipping the selector (a Heavy for an enemy-AI bot, say).
+func play_move(move_id: StringName) -> bool:
+	var now: int = clock.now_usec()
+	_next_restart = true
+	return _begin_move(move_id, now, PlayerMotion.camera_relative_direction(_stick, _camera_basis()))
 
 
 ## The launcher's follow-up: a jump pressed after a hit lands makes her follow the target up.
@@ -808,7 +995,12 @@ func _handle_runner_event(event: Dictionary) -> void:
 		"hitbox_on":
 			var box: Dictionary = (event["box"] as Dictionary).duplicate()
 			box["index"] = int(event["index"])
-			_hitbox.activate(box, _runner.attack_data(), _runner.swing_id())
+			var attack: Dictionary = _runner.attack_data()
+			if scale_profile != null:
+				# a robot's swing: the same move, scaled with the body (shapes, damage, knockback, hit-stop)
+				box = ScaleProfile.scale_box(box, scale_profile.hitbox_scale(), scale_profile.hitbox_lift_scale(), scale_profile.hitbox_reach_scale())
+				attack = scale_profile.scale_attack(attack)
+			_hitbox.activate(box, attack, _runner.swing_id())
 		"hitbox_off":
 			_hitbox.deactivate(int(event["index"]))
 		"swing":
@@ -824,6 +1016,7 @@ func _handle_runner_event(event: Dictionary) -> void:
 
 
 func _finish_move() -> void:
+	_combo_string.end(clock.now_usec())
 	_set_state(State.LOCOMOTION if is_on_floor() else State.AIR)
 	_current_clip = &""
 
@@ -835,6 +1028,7 @@ func _interrupt_move() -> void:
 	for event: Dictionary in _runner.interrupt():
 		_handle_runner_event(event)
 	_hitbox.clear()
+	_combo_string.end(clock.now_usec())
 
 
 # ---- being hit ----
@@ -894,6 +1088,9 @@ func _fall_step(dt: float, gravity_mult: float = 1.0) -> float:
 
 func _go_down(for_good: bool) -> void:
 	_interrupt_move()
+	_combo_string.reset()
+	_queued_move = &""
+	_auto_jump_hold = false
 	_end_dash_state()
 	_downed_for_good = for_good
 	_launched = false
@@ -930,6 +1127,8 @@ func _camera_basis() -> Basis:
 
 ## A feel-knob value: the panel's when the knob exists, else player_action.json "knob_defaults".
 func _knob(id: String) -> float:
+	if scale_profile != null and scale_profile.has_knob(id):
+		return scale_profile.knob(id, 0.0)      # a robot's own number (CS-21); Red's come from the panel
 	if knobs != null and knobs.has(id):
 		return knobs.get_f(id)
 	return float((_data.get("knob_defaults", {}) as Dictionary).get(id, 0.0))
@@ -1090,7 +1289,7 @@ func _anim_speed_factor() -> float:
 		var limits: Vector2 = Vector2(float(anim.get("playback_scale_min", LocomotionSpeed.DEFAULT_MIN)),
 				float(anim.get("playback_scale_max", LocomotionSpeed.DEFAULT_MAX)))
 		return LocomotionSpeed.playback_scale(Vector2(velocity.x, velocity.z).length(), _stride_of(_current_clip), limits)
-	return 1.0
+	return scale_profile.idle_speed() if scale_profile != null else 1.0
 
 
 ## A locomotion clip's natural ground speed from the model's clip-key file (player_action.json anim.clip_keys); 0.0 if unknown.
@@ -1173,3 +1372,216 @@ func _bone_position(skeleton: Skeleton3D, bone: String) -> Vector3:
 	if index < 0:
 		return Vector3.INF
 	return skeleton.to_global(skeleton.get_bone_global_pose(index).origin)
+
+
+# ---- scale forms (CS-21: the giant-robot scale test) ----
+# The same controller drives Red, the 3.5 m loader robot and the 50 m colossus. A form is a ScaleProfile (data/combat/
+# scale_profiles.json): its blocks are laid over player_action.json, a few knobs are replaced, the model is swapped, and the
+# hit shapes scale with the body. Nothing above is branched on the form's name; it only reads the profile's numbers.
+
+func get_form_id() -> StringName:
+	return _form_id
+
+
+func get_scale_profile() -> ScaleProfile:
+	return scale_profile
+
+
+## Becomes this body size: model, collision body, hurtbox, health, movement numbers, animation speeds, sword size. Her health
+## keeps its fraction. Safe to call again with the same profile.
+func set_scale_profile(profile: ScaleProfile) -> void:
+	if profile == null:
+		return
+	if _base_data.is_empty():
+		_base_data = _data.duplicate(true)
+		_forms[&"red"] = {"model": _model, "anim": _animation_player, "gear": _gear, "path": _model_path}
+	var sword: StringName = current_sword()
+	var health_fraction: float = float(hp) / maxf(float(hp_max), 1.0)
+	_interrupt_move()
+	_end_dash_state()
+	scale_profile = profile
+	_form_id = profile.id
+	_data = profile.merged_player_data(_base_data)
+	_strides_loaded = false
+	_strides = {}
+	_show_form_model(profile, sword)
+	_size_body_for_form()
+	hp_max = int(_data.get("hp_max", hp_max))
+	hp = clampi(int(roundf(health_fraction * float(hp_max))), 1 if not dead else 0, hp_max)
+	if _control_mode == ControlMode.NORMAL:
+		_restore_enemy_collision()
+	_current_clip = &""
+	_play_clip(&"idle")
+	if _animation_player != null:
+		_animation_player.speed_scale = 1.0
+	var director: CombatDirector = find_director()
+	if director != null:
+		director.hp_changed.emit(actor_id, hp, hp_max)
+	form_changed.emit(profile.id)
+
+
+func get_control_mode() -> ControlMode:
+	return _control_mode
+
+
+## NORMAL, SCRIPTED (visible, moved by a sequence) or GHOST (hidden, untouchable). A sequence calls this when it takes her
+## and again when it gives her back.
+func set_control_mode(mode: ControlMode) -> void:
+	if mode == _control_mode:
+		return
+	_control_mode = mode
+	var solid: bool = mode == ControlMode.NORMAL
+	_interrupt_move()
+	_end_dash_state()
+	collision_layer = CombatLayers.bit(CombatLayers.body_layer(team)) if solid else 0
+	collision_mask = _body_mask(false) if solid else 0
+	if _hurtbox != null:
+		_hurtbox.monitorable = solid
+	if _visual != null:
+		_visual.visible = mode != ControlMode.GHOST
+	velocity = Vector3.ZERO
+	_vy = 0.0
+	_knock_velocity = Vector3.ZERO
+	_hurt_left_s = 0.0
+	_launched = false
+	_presses.clear()
+	if _buffer != null:
+		_buffer.clear()
+	if solid:
+		_set_state(State.LOCOMOTION)
+		_current_clip = &""
+		_play_clip(&"idle")
+
+
+## A clip chosen by a sequence (the climb into a robot), at a playback speed. Only while she is SCRIPTED.
+func play_scripted_clip(clip: StringName, speed: float = 1.0) -> void:
+	if _animation_player == null or not _animation_player.has_animation(clip):
+		return
+	if clip != _current_clip:
+		_current_clip = clip
+		_animation_player.play(clip, float((_data.get("anim", {}) as Dictionary).get("blend_s", 0.08)))
+	_animation_player.speed_scale = speed
+
+
+## Where a bone of the current model is in the world (Vector3.INF if it has no such bone).
+func model_bone_position(bone: String) -> Vector3:
+	return _bone_position(_find_skeleton(), bone)
+
+
+## The animation player's place in the clip now and how long the clip is (for the footstep timing), or (-1, 0).
+func clip_progress() -> Vector2:
+	if _animation_player == null or _animation_player.current_animation == "":
+		return Vector2(-1.0, 0.0)
+	var length: float = _animation_player.current_animation_length
+	return Vector2(_animation_player.current_animation_position, length)
+
+
+func _drop_input() -> void:
+	_stick = Vector2.ZERO
+	_presses.clear()
+	for action: StringName in BUTTONS:
+		_held[action] = false
+	_heavy_down_local = -1
+
+
+## What the form does to her own clock: a giant robot's swings take longer. With a director this is its standing speed for
+## her (CombatTime.set_base_scale) and applies from the next step; without one it applies to this step directly.
+func _form_time_scale(director: CombatDirector) -> float:
+	var mult: float = 1.0
+	if scale_profile != null and (_state == State.ATTACK or _state == State.PARRY):
+		mult = scale_profile.attack_time_scale()
+	if director != null:
+		director.time.set_base_scale(actor_id, mult)
+		return 1.0
+	return mult
+
+
+func _form_attack(key: String) -> float:
+	return scale_profile.attack_value(key, 1.0) if scale_profile != null else 1.0
+
+
+func _body_mask(through_enemies: bool) -> int:
+	var mask: int = CombatLayers.body_mask(team, through_enemies)
+	if scale_profile != null and scale_profile.ignores_bodies():
+		mask &= ~CombatLayers.bit(CombatLayers.ENEMY_BODY)       # a 50 m robot steps over wolves and props
+	return mask
+
+
+func _size_body_for_form() -> void:
+	var body: Dictionary = _data.get("body", {}) as Dictionary
+	radius_m = float(body.get("radius_m", 0.3))
+	height_m = float(body.get("height_m", 0.9))
+	var shape_node: CollisionShape3D = get_node_or_null("CollisionShape3D") as CollisionShape3D
+	if shape_node != null:
+		var capsule: CapsuleShape3D = CapsuleShape3D.new()      # her own copy: the scene's shape is shared by every instance
+		capsule.radius = radius_m
+		capsule.height = maxf(height_m, radius_m * 2.0)
+		shape_node.shape = capsule
+		shape_node.position.y = capsule.height * 0.5
+	if _hurtbox != null:
+		_hurtbox.setup(self, radius_m, height_m)
+		if _control_mode != ControlMode.NORMAL:
+			_hurtbox.monitorable = false          # a ghost stays untouchable through a change of body
+
+
+## Shows the model of a form (building it the first time), hides the others, and puts the same sword in her hand.
+func _show_form_model(profile: ScaleProfile, sword: StringName) -> void:
+	var entry: Dictionary = _forms.get(profile.id, {}) as Dictionary
+	if entry.is_empty() and profile.model_path() == "":
+		entry = _forms.get(&"red", {}) as Dictionary
+	elif entry.is_empty():
+		entry = _build_form_entry(profile.model_path())
+		_forms[profile.id] = entry
+	if entry.is_empty():
+		return           # no model to show: keep the one she has
+	for key: StringName in _forms:
+		var other: Dictionary = _forms[key]
+		var other_model: Node3D = other.get("model") as Node3D
+		var active: bool = other == entry
+		if other_model != null and is_instance_valid(other_model):
+			other_model.visible = active
+		var other_anim: AnimationPlayer = other.get("anim") as AnimationPlayer
+		if other_anim != null and is_instance_valid(other_anim):
+			other_anim.active = active
+		var other_gear: Node = other.get("gear") as Node
+		if not active and other_gear != null and is_instance_valid(other_gear):
+			other_gear.name = "GearVisuals_%s" % key       # the trail looks for the one called GearVisuals
+	_model = entry.get("model") as Node3D
+	_animation_player = entry.get("anim") as AnimationPlayer
+	_gear = entry.get("gear") as Node
+	_model_path = str(entry.get("path", ""))
+	if _gear != null:
+		_gear.name = "GearVisuals"
+	if sword != &"" and _gear != null and current_sword() != sword:
+		_gear.call("equip_sword", sword)
+	_apply_sword_scale()
+
+
+func _build_form_entry(path: String) -> Dictionary:
+	if _visual == null or path.is_empty() or not ResourceLoader.exists(path):
+		return {}
+	var scene: PackedScene = load(path) as PackedScene
+	var model: Node3D = scene.instantiate() as Node3D if scene != null else null
+	if model == null:
+		return {}
+	model.name = "Model_%s" % path.get_file().get_basename()
+	_visual.add_child(model)
+	Ps2Look.upgrade_model(model, path, LookProfiles.active())
+	LookProfiles.dress_model(model, path, "player")
+	var gear: Node = _make_gear(model)
+	return {"model": model, "anim": _find_animation_player(model), "gear": gear, "path": path}
+
+
+## The sword grows with the body (the robots carry no sword mesh; she brings hers, 3.68 or 52.6 times bigger).
+func _apply_sword_scale() -> void:
+	var gear: Node = _gear_visuals()
+	if gear == null or not gear.has_method("get_sword"):
+		return
+	var sword: Node3D = gear.call("get_sword") as Node3D
+	if sword == null:
+		return
+	var base: float = 1.0
+	var entry: Dictionary = gear.call("sword_entry", gear.call("current_sword")) as Dictionary
+	base = float(entry.get("scale", 1.0))
+	var factor: float = scale_profile.f("sword_scale", 1.0) if scale_profile != null else 1.0
+	sword.scale = Vector3.ONE * base * factor

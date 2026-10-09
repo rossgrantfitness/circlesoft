@@ -30,6 +30,9 @@ var origin_node: Node3D = null
 ## The camera, for "which way is forward" and "which side is right". Null = the viewport camera.
 var camera_node: Node3D = null
 
+## Reach multiplier for every range below (CS-21: a 50 m robot sees a lot further than Red). 1.0 = camera.json as written.
+var range_scale: float = 1.0
+
 var _target: Node3D = null
 var _params: Dictionary = {}
 var _magnet: Dictionary = {}
@@ -61,7 +64,7 @@ func tick(delta: float) -> void:
 		return
 	var origin: Vector3 = _origin()
 	var distance: float = LockOnMath.flat_offset(origin, _target.global_position).length()
-	if distance > _f(_params, "break_range_m", 21.0):
+	if distance > _f(_params, "break_range_m", 21.0) * range_scale:
 		release()
 		return
 	if _can_see(_target):
@@ -111,11 +114,13 @@ func release() -> void:
 
 ## The best eligible target for a fresh lock (null if none).
 func best_target() -> Node3D:
-	var list: Array[Node3D] = _eligible(_f(_params, "max_range_m", 16.0), true)
+	var list: Array[Node3D] = _eligible(_f(_params, "max_range_m", 16.0) * range_scale, true)
 	if list.is_empty():
 		return null
 	var entries: Array[Dictionary] = _entries(list)
-	var index: int = LockOnMath.best(entries, _cam_forward(), _origin(), _params)
+	var params: Dictionary = _params.duplicate()
+	params["max_range_m"] = _f(_params, "max_range_m", 16.0) * range_scale
+	var index: int = LockOnMath.best(entries, _cam_forward(), _origin(), params)
 	return list[index] if index >= 0 else null
 
 
@@ -124,7 +129,7 @@ func best_target() -> Node3D:
 func switch(flick: Vector2) -> Node3D:
 	if not has_target():
 		return null
-	var list: Array[Node3D] = _eligible(_f(_params, "break_range_m", 21.0), true)
+	var list: Array[Node3D] = _eligible(_f(_params, "break_range_m", 21.0) * range_scale, true)
 	if not list.has(_target):
 		list.append(_target)
 	var entries: Array[Dictionary] = _entries(list)
@@ -154,7 +159,7 @@ func magnet_target(stick_dir: Vector3, facing: Vector3, range_m: float, cone_deg
 	var locked: Node3D = get_target()
 	if locked != null:
 		var distance: float = LockOnMath.flat_offset(_origin(), locked.global_position).length()
-		if distance <= _f(_magnet, "locked_target_max_range_m", 9.0):
+		if distance <= _f(_magnet, "locked_target_max_range_m", 9.0) * range_scale:
 			return locked
 	return soft_target(stick_dir, facing, range_m, cone_deg)
 

@@ -95,11 +95,34 @@ func test_row3_parry_does_no_damage_and_recoils_the_attacker() -> void:
 
 
 func test_row3_a_nice_guard_cuts_damage_by_the_block_reduction() -> void:
+	# The action game's table: parry.block_reduction in timing_windows.json (Nice 0.6), not the old shared 0.25.
+	var nice: float = float(CombatData.parry_block_reduction()["nice"])
+	assert_almost_eq(nice, 0.6, 0.0001, "the Kingdom Hearts guard soaks 60 percent")
 	var result: Dictionary = _resolve_on_red(_swipe({"damage": 20}), "nice")
 	assert_eq(result["outcome"], &"guarded")
-	assert_eq(result["damage"], 15, "20 x (1 - 0.25)")
+	assert_eq(result["damage"], 8, "20 x (1 - 0.6)")
 	assert_lt(float(result["hitstun_ms"]), 350.0, "a guard flinches less")
 	assert_eq(result["launch_mps"], 0.0)
+
+
+func test_row3_the_resolver_reads_the_action_tables_not_the_battle_games_shared_one() -> void:
+	var windows: Dictionary = CombatData.timing_windows()
+	assert_ne(float((windows.get("block_reduction", {}) as Dictionary).get("nice", 0.0)), 0.6, "the shared table is still the old one")
+	assert_eq(CombatData.parry_block_reduction(), (windows["parry"] as Dictionary)["block_reduction"])
+
+
+func test_row3_a_table_handed_in_by_the_caller_wins() -> void:
+	var ctx_extra: Dictionary = {"parry": {"rating": "nice", "block_reduction": {"nice": 0.9}}}
+	var result: Dictionary = _resolve_on_red(_swipe({"damage": 20}), "nice", {}, ctx_extra)
+	assert_eq(result["damage"], 2, "20 x (1 - 0.9)")
+
+
+func test_row3_rad_and_up_take_no_damage_at_all() -> void:
+	var table: Dictionary = CombatData.parry_block_reduction()
+	assert_almost_eq(float(table["rad"]), 1.0, 0.0001)
+	assert_almost_eq(float(table["totally_rad"]), 1.0, 0.0001)
+	assert_eq(_resolve_on_red(_swipe({"damage": 20}), "rad")["damage"], 0)
+	assert_eq(_resolve_on_red(_swipe({"damage": 20}), "totally_rad")["damage"], 0)
 
 
 func test_row3_only_applies_to_red_and_to_parryable_attacks() -> void:

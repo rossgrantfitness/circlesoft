@@ -8,6 +8,10 @@ extends RefCounted
 class StubLockOn extends RefCounted:
 	signal target_changed(target: Object)
 
+## Red as the HUD sees her: a fighter that can announce the hack button (ActionPlayer.hack_pressed).
+class StubPlayer extends CombatActor:
+	signal hack_pressed(info: Dictionary)
+
 class StubCamera extends RefCounted:
 	signal mode_changed(mode: int)
 	var mode: int = 0
@@ -18,7 +22,7 @@ class StubCamera extends RefCounted:
 var director: CombatDirector = CombatDirector.new()
 var lock_on: StubLockOn = StubLockOn.new()
 var camera: StubCamera = StubCamera.new()
-var player: CombatActor = null
+var player: StubPlayer = null
 var positions: Dictionary = {}
 var reset_calls: int = 0
 var _nodes: Array[Node] = []
@@ -27,7 +31,12 @@ var _nodes: Array[Node] = []
 func _init() -> void:
 	director.feel = FeelKnobs.load_defaults()
 	director.sync_to_wall_clock = false
-	player = _make_actor(&"red", &"player", 120)
+	player = StubPlayer.new()
+	player.actor_id = &"red"
+	player.team = &"player"
+	player.hp = 120
+	player.hp_max = 120
+	_nodes.append(player)
 	director.register(player)
 	_nodes.append(director)
 
@@ -72,7 +81,7 @@ func get_camera() -> StubCamera:
 	return camera
 
 
-func get_player() -> CombatActor:
+func get_player() -> StubPlayer:
 	return player
 
 

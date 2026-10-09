@@ -206,10 +206,13 @@ static func _damage(amount: float, at_least_one: bool) -> int:
 	return maxi(rounded, 0)
 
 
+## How much a guard of this rating soaks. The action game's own table is `parry.block_reduction` in
+## timing_windows.json (Nice 0.6, Rad and up 1.0); the older top-level table belongs to the turn-based game
+## and is only a fallback. A test or tool can hand its own table in `ctx.parry.block_reduction`.
 static func _block_reduction(ctx: Dictionary, rating: String) -> float:
 	var table: Dictionary = (ctx.get("parry", {}) as Dictionary).get("block_reduction", {})
 	if table.is_empty():
-		table = CombatData.timing_windows().get("block_reduction", {})
+		table = CombatData.parry_block_reduction()
 	return clampf(float(table.get(rating, 0.0)), 0.0, 1.0)
 
 

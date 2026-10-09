@@ -71,13 +71,13 @@
       },
       {
         "action": "light",
-        "label": "Light attack",
+        "label": "Attack",
         "key": "J / Left mouse",
         "pad": "X / Square"
       },
       {
         "action": "heavy",
-        "label": "Heavy attack",
+        "label": "Hack (coming later)",
         "key": "K / Right mouse",
         "pad": "Y / Triangle"
       },

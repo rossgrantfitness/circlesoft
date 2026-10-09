@@ -48,6 +48,10 @@ var last_voice_blip: GibberishVoice.Blip = null
 var voice_blips_played: int = 0
 var last_sfx_id: StringName = &""
 var sfx_played: int = 0
+## A multiplier on every sound effect's pitch (the combat sandbox's giant robots set it low so big bodies sound big, CS-21).
+## 1.0 = the file's own pitch. Set it with set_scale_feel().
+var sfx_pitch_mult: float = 1.0
+var _scale_lowpass_hz: float = 0.0
 
 
 func _ready() -> void:
@@ -102,6 +106,41 @@ func get_sfx_path(id: StringName) -> String:
 
 func get_voice_logic() -> GibberishVoice:
 	return _gibberish
+
+
+# ---- scale feel (robot scale test) ----
+
+const SCALE_LOWPASS_NAME: String = "scale_lowpass"
+
+
+## Makes every sound effect lower and duller (a big body) or normal again: `pitch` multiplies each sound's pitch (1.0 = as
+## recorded), `lowpass_hz` > 0 muffles the SFX bus above that frequency (0 = off).
+func set_scale_feel(pitch: float, lowpass_hz: float = 0.0) -> void:
+	sfx_pitch_mult = clampf(pitch, 0.1, 4.0)
+	_scale_lowpass_hz = maxf(lowpass_hz, 0.0)
+	var index: int = AudioServer.get_bus_index(BUS_SFX)
+	if index < 0:
+		return
+	var found: int = -1
+	for i: int in AudioServer.get_bus_effect_count(index):
+		var effect: AudioEffect = AudioServer.get_bus_effect(index, i)
+		if effect is AudioEffectLowPassFilter and effect.resource_name == SCALE_LOWPASS_NAME:
+			found = i
+	if _scale_lowpass_hz <= 0.0:
+		if found >= 0:
+			AudioServer.remove_bus_effect(index, found)
+		return
+	if found < 0:
+		var filter: AudioEffectLowPassFilter = AudioEffectLowPassFilter.new()
+		filter.resource_name = SCALE_LOWPASS_NAME
+		filter.cutoff_hz = _scale_lowpass_hz
+		AudioServer.add_bus_effect(index, filter)
+	else:
+		(AudioServer.get_bus_effect(index, found) as AudioEffectLowPassFilter).cutoff_hz = _scale_lowpass_hz
+
+
+func get_scale_lowpass_hz() -> float:
+	return _scale_lowpass_hz
 
 
 # ---- buses and volume ----
@@ -267,7 +306,7 @@ func play_sfx(id: StringName) -> bool:
 	player.stream = stream
 	player.bus = StringName(str(def.get("bus", BUS_SFX)))
 	player.volume_db = float(def.get("volume_db", 0.0))
-	player.pitch_scale = maxf(0.01, float(def.get("pitch_scale", 1.0)))
+	player.pitch_scale = maxf(0.01, float(def.get("pitch_scale", 1.0)) * sfx_pitch_mult)
 	if player.is_inside_tree():
 		player.play()
 	return true

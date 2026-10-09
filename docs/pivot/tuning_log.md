@@ -70,3 +70,19 @@ Ross: "keep the system more kingdom heartsy opposed to DmC Sekiro" and "parry ma
 - `integration/test_action_player.gd` (run clip speed): expects the clamp from `player_action.json` instead of a hard-coded 2.0; full speed is `min(clamp, speed / stride)`.
 - `sim/test_enemy_ai_bots.gd`: the Grunt-dodge and Brute-guard bots pin the design chance (0.30 and 0.45) on the brain, because with the tuned chance a 12-swing run depends on luck.
 - Observation for the Combat Programmer: the bots show the real dodge rate is far below the table (about 1 dodge in 12 Heavies at a 60% roll), so something besides the roll gates a defence (which brain states count as "can defend"). Worth a look; it is part of why the playtester saw the Brute block so rarely.
+
+## Defence gate, answered (Combat Programmer, 2026-10-09)
+
+Question: the bots saw about 1 dodge in 12 Heavies at a 60% roll. Is something besides the roll gating defences, and is it a bug?
+
+**Answer: not a bug. The roll is fine; the gates are the design, and the first bot made them look worse.** With the gates open (swings 7 s apart, grunt kept alive) a probe saw 11 dodges in 18 Heavies at a 0.6 roll. What sits between "dodge_chance" and an actual dodge, all of it in `enemy_ai_design.md` 2.1:
+1. `read_weight` of Red's move (Grunt: Light 0.6, Heavy 1.0, Launcher 0.8, Air 0.4), so the Grunt's real dodge chance on a Light is 0.15 x 0.6 = 9%.
+2. Fatigue: each defence adds 0.4 (Grunt) that fades over 4 s.
+3. The cooldown starts when a defence ENDS: a dodge lasts about 0.6 s, then 2.5 s of cooldown, so the next free roll is about 3.1 s after the swing that triggered it. The old bot swung every 2.9 s, which landed inside the cooldown after every dodge, so every dodge guaranteed a hit on the next swing.
+4. The brain can only defend while it is circling, approaching, repositioning or flanking: never in hit-stun, react (a hit plus 250 ms), mid-attack, or in a flare. A tight Light string locks an enemy in on purpose ("Light = safe pressure"); the way out is `combo_escape` (Grunt 25% after 3 hits).
+5. The roll comes once per Red swing, 80 to 150 ms after it starts (Brute 160 to 260), and only for an enemy inside the swing's zone and `threat_range_m`. A first Light (90 ms) always lands.
+6. Bot artefact: the Heavy kills a 48 hp Grunt in two hits, and a Grunt that respawns is in "react" for its first quarter second, where it cannot defend at all; the bot swung the moment it was free. `test_a_grunt_dodges_some_heavies_but_not_all` now keeps the grunt alive and swings every 3.4 s: 6 dodges in 12 Heavies at the 0.6 roll.
+
+What it means for tuning: the real dodge and block rates in play are well below the table, mostly because of 4 and 1. If Ross wants enemies that defend more, the cheapest knobs are `read_weight` for Light (0.6 for the Grunt, in `enemies.json`) and the `enemy_dodge_scale` / `enemy_block_scale` sliders; the cooldowns only matter against slow, spaced swings.
+
+Also seen while building the combo (data for the Combat Designer, nothing changed): a Light 1 thrown at an enemy 2.5 to 4.5 m away whiffs (it moves 0.6 m and reaches about 2 m), because "far" starts at 4.5 m (`far_dist_m`); and a lunge from beyond about 6.5 m closes the gap but cannot connect (5 m of travel); and `near_radius_m` 3.0 is smaller than a Grunt's circling distance (2.2 to 4.5 m), so a crowd of three rarely counts as crowded unless they are on top of her.

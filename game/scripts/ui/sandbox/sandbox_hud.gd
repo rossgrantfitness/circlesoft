@@ -232,6 +232,8 @@ func bind(target: Object) -> void:
 	var player: Object = _call(sandbox, &"get_player") as Object
 	if player != null and player.get(&"actor_id") != null and not str(player.get(&"actor_id")).is_empty():
 		_red_id = str(player.get(&"actor_id"))
+	if player != null:
+		_link(player, &"hack_pressed", _on_hack_pressed)
 	if _director != null:
 		_link(_director, &"actor_registered", _on_actor_registered)
 		_link(_director, &"actor_died", _on_actor_died)
@@ -485,6 +487,11 @@ func _floaters_on(target: String) -> int:
 		if floater.target == target:
 			count += 1
 	return count
+
+
+## The second attack button (the future hack button) was pressed: a call-out says it is coming later.
+func _on_hack_pressed(info: Dictionary) -> void:
+	_call_out(str(info.get("text", "")))
 
 
 func _on_parry_judged(info: Dictionary) -> void:

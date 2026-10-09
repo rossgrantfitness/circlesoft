@@ -339,7 +339,7 @@ func test_a_rad_parry_recoils_and_flares_but_a_nice_guard_does_not() -> void:
 	_parry_at(_nice_ms())
 	_swing(_foe, _swipe(), 2)
 	_foe.get_hitbox().tick(FRAME)
-	assert_eq(_red.hp, 100 - 8, "10 damage less the 25 percent guard")
+	assert_eq(_red.hp, 100 - 4, "10 damage less the 60 percent Nice guard (parry.block_reduction in timing_windows.json)")
 	assert_eq(flares.size(), 1, "Nice is a guard, not a flare")
 
 

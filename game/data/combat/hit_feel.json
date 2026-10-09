@@ -14,7 +14,7 @@
  },
  "launcher_hold_ms": 170,
  "string_end_move": "light_2",
- "follow_jump": {"height_m": 2.4},
+ "follow_jump": {"height_m": 2.4, "attack_after_ms": 200, "_attack_after_ms": "One-button combo: after the follow-jump starts, the air attack begins this many ms later (near the top of the jump)."},
  "threat_margin_m": 0.35,
  "guard": {"hitstun_scale": 0.4, "knockback_scale": 0.5},
  "armored": {"hit_stop_scale": 0.5},
