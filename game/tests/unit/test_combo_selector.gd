@@ -51,7 +51,7 @@ func test_rise_to_juggle_needs_the_target_within_3_5_m() -> void:
 func _lunge_band() -> Array:
 	for rule: Variant in CombatData.combo().get("rules", []):
 		if (rule as Dictionary).get("id", "") == "lunge_far":
-			return ((rule as Dictionary)["when"] as Dictionary)["target_dist_m"]
+			return (((rule as Dictionary)["when"] as Dictionary)["target_dist_m"] as Array)
 	return [0.0, 0.0]
 
 
@@ -307,7 +307,7 @@ func test_every_rule_in_the_data_has_a_test() -> void:
 	# The other tests fill _covered when they run; run them here too so this one passes on its own.
 	test_air_start_pressing_in_the_air_starts_the_air_string()
 	test_rise_to_juggle_an_airborne_target_close_by_makes_red_jump_up_after_it()
-	test_lunge_far_a_target_beyond_4_5_m_gets_a_lunge()
+	test_lunge_far_a_target_beyond_light_1_s_reach_gets_a_lunge()
 	test_ground_start_is_light_1()
 	test_l1_to_l2()
 	test_lunge_to_l2_a_lunge_counts_as_hit_1()

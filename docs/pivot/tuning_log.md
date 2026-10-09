@@ -98,3 +98,5 @@ Data only; no mechanic changed.
 | `lunge` travel | 5.0 m over 200 ms | **7.0 m over 260 ms** | So the lunge actually reaches 8 m (it stops 0.9 m short of the target). |
 | `lunge` timing | startup 150, active 90, recovery 240 | **150 / 150 / 220** (thrust live 160 to 300 ms, magnet 8.5 m) | The thrust has to still be live when Red arrives from far away. Total 520 ms. |
 | `near_radius_m` | 3.0 m | **5.0 m** | A Grunt circles at 2.2 to 4.5 m, so three wolves nearby now count as a crowd and the sweep can trigger. |
+
+Tests that pinned the old distances: `unit/test_combo_selector.gd` (default target 1.5 m, and the lunge band is now read from `combo.json`), `sim/test_combo_bots.gd` (grunt staged at 1.6 m, Brute at 1.8 m, so Light 1 is the opener) and `integration/test_action_player.gd` (close target at 1.6 m). From 2 m and out a press now lunges by design.
