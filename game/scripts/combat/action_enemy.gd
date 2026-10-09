@@ -87,6 +87,9 @@ var _windup_scale: float = 1.0
 var _chain_cut_ms: float = -1.0
 var _dead_real_s: float = 0.0
 var _respawn_s: float = DEFAULT_RESPAWN_S
+## Does this enemy come back `respawn_s` after it dies? True for the sandbox arena (as always). The slice's ActionRoom turns it
+## off for every enemy it spawns, so an encounter's dead stay dead and a fight can clear (bug B7).
+var respawns: bool = true
 var _anim: AnimationPlayer = null
 var _overlay: StandardMaterial3D = null
 var _overlay_meshes: Array[MeshInstance3D] = []
@@ -656,7 +659,7 @@ func _tick_dead(real_delta: float) -> void:
 	velocity.z = 0.0
 	slide_scaled(1.0)
 	_update_visual(real_delta)
-	if _dead_real_s >= _respawn_s:
+	if respawns and _dead_real_s >= _respawn_s:
 		respawn()
 
 

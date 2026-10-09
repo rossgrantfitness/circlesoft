@@ -453,6 +453,8 @@ func spawn_enemy(kind: String, pos: Vector3) -> Node3D:
 		enemy.set("actor_id", StringName("%s_%d" % [kind, _enemy_serial]))
 	if "spawn_position" in enemy:
 		enemy.set("spawn_position", pos)
+	if "respawns" in enemy:
+		enemy.set("respawns", false)     # B7: only the sandbox arena respawns; room and encounter enemies stay dead
 	enemy.position = pos
 	add_child(enemy)
 	_enemies.append(enemy)

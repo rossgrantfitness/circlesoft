@@ -386,6 +386,20 @@ func test_death_and_respawn() -> void:
 	assert_almost_eq(grunt.global_position.z, 6.0, 0.01, "back at its spawn")
 
 
+func test_an_enemy_with_respawns_off_stays_dead() -> void:
+	var grunt: ActionEnemy = await _setup(GRUNT_SCENE, Vector3(0, 0.1, 6))
+	_director.feel.set_value("enemies_attack", false)
+	assert_true(grunt.respawns, "respawning is on by default (the sandbox arena)")
+	grunt.respawns = false
+	await _step(grunt, 5)
+	grunt.apply_hit(_hit({"damage": 999}))
+	assert_true(grunt.dead)
+	grunt._respawn_s = 0.2
+	await _step(grunt, 60)
+	assert_true(grunt.dead, "well past respawn_s and still down")
+	assert_eq(grunt.body_state, ActionEnemy.ST_DEAD)
+
+
 func test_six_enemies_do_not_all_attack_at_once() -> void:
 	var first: ActionEnemy = await _setup(GRUNT_SCENE, Vector3(1.5, 0.1, 0))
 	var enemies: Array[ActionEnemy] = [first]
