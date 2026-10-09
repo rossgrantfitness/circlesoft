@@ -98,25 +98,31 @@ def make_swing_heavy(rng):
 # ---------------------------------------------------------------- hits
 
 def make_hit_light(rng):
-    """A snappy crunchy smack. Thump, mid body, bright crack, gritted with a bit-crush. ~0.15 s."""
+    """A snappy crunchy smack with weight. Tuning v1.3 (Ross: chunky hits): a harder click up front, a low body thump under the
+    old one so it lands in the chest and not just the ears, then the mid crack, gritted with a bit-crush. ~0.15 s."""
     n = n_of(0.15)
-    x = thump(n, 320, 95, 0.032) * 1.0
+    x = 1.1 * tick(rng, n, 2500, 16000, 0.004)
+    x += thump(n, 320, 95, 0.032) * 1.0
+    x += 1.0 * thump(n, 150, 58, 0.055)
     x += 0.9 * burst(rng, n, 600, 7000, 0.016)
     x += 0.7 * burst(rng, n, 5000, 16000, 0.006)
     x += 0.35 * clank(rng, n, 760.0, 0.03)
     x = 0.65 * x + 0.35 * crush(x, 3)
-    return finish(clip(x, 1.5), 0.9, 0.02)
+    return finish(clip(x, 1.7), 0.92, 0.02)
 
 
 def make_hit_heavy(rng):
-    """The big meaty one: deep thump, thick mid, hard crack, a steel clank. ~0.24 s."""
+    """The big meaty one. Tuning v1.3 (Ross: chunky hits): a harder crack and click at the very front, a deep sub boom under a
+    thick body, a steel clank. Still under a quarter second. ~0.24 s."""
     n = n_of(0.24)
-    x = thump(n, 210, 42, 0.1) * 1.5
+    x = 1.2 * tick(rng, n, 2000, 16000, 0.005)
+    x += thump(n, 210, 42, 0.1) * 1.5
+    x += 1.0 * thump(n, 90, 34, 0.12)
     x += 1.0 * burst(rng, n, 150, 5000, 0.06)
-    x += 0.8 * burst(rng, n, 3000, 15000, 0.014)
+    x += 0.9 * burst(rng, n, 3000, 15000, 0.014)
     x += 0.5 * clank(rng, n, 390.0, 0.07)
     x = 0.7 * x + 0.3 * crush(x, 3)
-    return finish(clip(x, 1.7), 0.98, 0.025)
+    return finish(clip(x, 1.9), 0.98, 0.025)
 
 
 def make_hit_launch(rng):
@@ -362,8 +368,8 @@ def make_brute_slam(rng):
 SOUNDS = {
     "combat_swing_light": (make_swing_light, -11.0, "Light sword swing: a fast thin air-slice with a snick at the front. Fires constantly, so it sits low."),
     "combat_swing_heavy": (make_swing_heavy, -8.0, "Heavy sword swing: a big low cleaving swoosh with weight under it."),
-    "combat_hit_light": (make_hit_light, -7.0, "Light hit: a snappy crunchy smack, thump plus crack."),
-    "combat_hit_heavy": (make_hit_heavy, -3.0, "Heavy hit: deep thump, thick body, hard crack and a steel clank. Must feel powerful."),
+    "combat_hit_light": (make_hit_light, -5.5, "Light hit: a snappy crunchy smack, thump plus crack."),
+    "combat_hit_heavy": (make_hit_heavy, -2.0, "Heavy hit: deep thump, thick body, hard crack and a steel clank. Must feel powerful."),
     "combat_hit_launch": (make_hit_launch, -3.0, "Launcher hit: a hard crack then a rising whoosh-crack that sends the enemy up."),
     "combat_hit_air": (make_hit_air, -6.0, "Hit on an airborne enemy: lighter and bouncier, a crisp pop with a bright ping."),
     "combat_parry": (make_parry, -4.0, "Parry: a bright metallic ring, blade on blade."),

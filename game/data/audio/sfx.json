@@ -257,7 +257,7 @@
     "combat_hit_light": {
       "file": "res://audio/sfx/placeholder/combat_hit_light.wav",
       "bus": "SFX",
-      "volume_db": -7.0,
+      "volume_db": -5.5,
       "pitch_scale": 1.0,
       "loop": false,
       "placeholder": true,
@@ -266,7 +266,7 @@
     "combat_hit_heavy": {
       "file": "res://audio/sfx/placeholder/combat_hit_heavy.wav",
       "bus": "SFX",
-      "volume_db": -3.0,
+      "volume_db": -2.0,
       "pitch_scale": 1.0,
       "loop": false,
       "placeholder": true,

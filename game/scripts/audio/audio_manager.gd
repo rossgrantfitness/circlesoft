@@ -297,7 +297,8 @@ func _warn_once(key: String, message: String) -> void:
 # ---- SFX ----
 
 ## Plays a sound effect by id (see data/audio/sfx.json). Returns false for an unknown id.
-func play_sfx(id: StringName) -> bool:
+## `pitch_mult` multiplies the sound's own pitch for this one play (landed hits vary a little so they never repeat exactly).
+func play_sfx(id: StringName, pitch_mult: float = 1.0) -> bool:
 	var def: Dictionary = _sfx_defs.get(str(id), {})
 	if def.is_empty():
 		_warn_once("sfx:%s" % id, "AudioManager: unknown sfx id '%s'" % id)
@@ -315,7 +316,7 @@ func play_sfx(id: StringName) -> bool:
 	player.stream = stream
 	player.bus = StringName(str(def.get("bus", BUS_SFX)))
 	player.volume_db = float(def.get("volume_db", 0.0))
-	player.pitch_scale = maxf(0.01, float(def.get("pitch_scale", 1.0)) * sfx_pitch_mult)
+	player.pitch_scale = maxf(0.01, float(def.get("pitch_scale", 1.0)) * sfx_pitch_mult * pitch_mult)
 	if player.is_inside_tree():
 		player.play()
 	return true
