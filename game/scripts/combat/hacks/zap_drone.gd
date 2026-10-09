@@ -115,6 +115,10 @@ func _hit_enemy(enemy: CombatActor, at: Vector3) -> void:
 		return
 	_last_hit[enemy.get_instance_id()] = _clock_ms
 	_hits_done += 1
+	# Bolted-on equipment (a boss's relays, its dish) and a boss itself are solid: the drone is spent on them, it does not
+	# zip through to the next one (so "Zap a relay twice" means that relay).
+	if enemy is BossPart or HackCaster.tags_of(enemy).has("boss"):
+		_hits_done = pierce
 
 
 func _wall_between(from: Vector3, to: Vector3) -> Vector3:

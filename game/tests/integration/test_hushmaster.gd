@@ -206,7 +206,7 @@ func test_a_jump_clears_the_ring() -> void:
 	_kit.place_red(Vector3(0, 0.02, 11.0))                      # 6 m from the foot: the ring takes 0.6 s to arrive
 	await _kit.until(func() -> bool: return _kit.boss.runner.elapsed_ms() >= 1400.0, 120)
 	_kit.red.press(&"jump")
-	await _kit.frames(1)
+	await _kit.frames(22)                 # held: a full jump, not a hop
 	_kit.red.release(&"jump")
 	await _kit.frames(100)
 	assert_eq(_kit.hits_on_red().size(), 0, "she was in the air when the ring went by")

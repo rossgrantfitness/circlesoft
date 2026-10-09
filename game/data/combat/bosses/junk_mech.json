@@ -146,8 +146,8 @@
  },
 
  "pickups": {
-  "_about": "PROPOSED, NOT BUILT, waiting for Ross (decision 2 in boss_design.md). With hacks off, Reboot is gone, so the colossus has no healing. The arena doc already puts 8 clusters of smashable containers and cars on the bowl floor; this makes two containers per cluster hold a repair cell.",
-  "enabled": false,
+  "_about": "ON: Ross approved 'all recommended' (2026-10-09), repair cells are in the colossus round (built with the Heap, VS-28). Was: PROPOSED, waiting for Ross (decision 2 in boss_design.md). With hacks off, Reboot is gone, so the colossus has no healing. The arena doc already puts 8 clusters of smashable containers and cars on the bowl floor; this makes two containers per cluster hold a repair cell.",
+  "enabled": true,
   "repair_cell": {"heal_frac_of_colossus": 0.12, "heal_hp": 720, "per_cluster": 2, "clusters": 8, "glow": "#7dffb0", "marked": "green hazard stripe on the container"}
  },
 

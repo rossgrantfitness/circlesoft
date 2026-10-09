@@ -52,8 +52,8 @@ def slab_transform(origin, yaw, tilt_deg):
 
 def build():
     r = Y("kasp_arena", "KaspArena", 2 * BOWL_R, 2 * BOWL_R, "arena")
-    r.shell([(-BOWL_R, -BOWL_R, BOWL_R, BOWL_R)], "floor_concrete_cracked_dark", (0.62, 0.6, 0.62), sun=(0.85, 0.8, 0.9), sun_energy=1.3,
-            sun_dir=(-0.5, -0.8, 0.3), fill_energy=1.1, ambient=(0.5, 0.52, 0.66))
+    r.shell([(-BOWL_R, -BOWL_R, BOWL_R, BOWL_R)], "floor_concrete_cracked_dark", (0.85, 0.82, 0.85), sun=(0.9, 0.85, 0.9), sun_energy=2.0,
+            sun_dir=(-0.5, -0.8, 0.3), fill_energy=1.6, ambient=(0.6, 0.62, 0.78))
     r.holder("Markers")
     r.holder("Props")
     rust = r.lit((0.36, 0.28, 0.24))
@@ -62,7 +62,7 @@ def build():
 
     # ---- the plateau (phase 1): a 40 m disc 3 m up, a bullseye of 4 m bands, four hazard spokes (8 rays), a 1.1 m rail, and an 8 m ramp from the south
     r.cyl("Plateau", 0.0, PLATEAU_H / 2.0, 0.0, PLATEAU_R, PLATEAU_H, r.tile("floor_plate_diamond_cross_b", (PLATEAU_R * 2 / 2.0, PLATEAU_R * 2 / 2.0), (0.85, 0.85, 0.9)), solid=True)
-    light, dark = r.lit((0.78, 0.75, 0.66), 0.7), r.lit((0.26, 0.28, 0.33), 0.7)
+    light, dark = r.lit((0.5, 0.48, 0.42), 0.8), r.lit((0.2, 0.22, 0.26), 0.8)
     for i, radius in enumerate((20.0, 16.0, 12.0, 8.0, 4.0)):
         r.cyl("Ring%d" % i, 0.0, PLATEAU_H + 0.012 + 0.006 * i, 0.0, radius - 0.05 * (i + 1), 0.02, light if i % 2 == 0 else dark)
     for k in range(4):
@@ -194,7 +194,6 @@ def build():
     for sz in (-34.0, 34.0):
         r.box("CradleTower%d" % int(sz), 112.0, 36.0, sz, 6.0, 72.0, 6.0, hazard, solid=True)
     r.box("CradleBeam", 112.0, 70.0, 0.0, 5.0, 5.0, 74.0, hazard)
-    r.box("CradleBrace", 118.0, 36.0, 0.0, 3.0, 70.0, 60.0, rust)
     r.marker("colossus_cradle", "Markers", 105.0, 0.0, 0.0, yaw=-90)
     r.marker("colossus_dock_pos", "Markers", 84.0, 0.0, 0.0, yaw=-90)
     r.marker("dock_approach", "Markers", 68.2, 0.0, 0.0, yaw=-90)
@@ -214,6 +213,7 @@ def build():
         r.omni("Flood%d" % i, 30.0 * math.cos(a), 16.0, 30.0 * math.sin(a), (1.0, 0.82, 0.6), 4.0, 55.0)
     r.omni("GateLamp", 0.0, 8.0, 60.0, (1.0, 0.75, 0.45), 2.5, 24.0)
     r.omni("ColossusEyeLamp", 90.0, 46.0, 0.0, (1.0, 0.4, 0.15), 3.0, 70.0)
+    r.omni("ColossusRim", 70.0, 30.0, 40.0, (0.6, 0.8, 1.0), 4.0, 90.0)
 
     r.spawn("from_j5", 0.0, 58.0, face=(0, -1))
     r.spawn("retry_phase1", 0.0, 54.0, face=(0, -1))

@@ -92,7 +92,7 @@ class Y(M):
         self.nodes.append('[node name="%s" type="Marker3D" parent="%s"]\ntransform = %s\n' % (name, parent, aim_transform(origin, d)))
 
     # ---- level shell
-    def shell(self, floor_rects, floor_tile, floor_tint, sun=(1.0, 0.78, 0.55), sun_energy=1.4, sun_dir=(0.5, -0.8, -0.35), fill_energy=1.2,
+    def shell(self, floor_rects, floor_tile, floor_tint, sun=(1.0, 0.78, 0.55), sun_energy=1.4, sun_dir=(0.22, -0.94, -0.2), fill_energy=1.4,
               ambient=(0.55, 0.58, 0.72)):
         env = self.sub("Environment", "background_mode = 1\nbackground_color = Color(0.09, 0.1, 0.13, 1)\nambient_light_source = 2\n"
                        "ambient_light_color = Color(%s, %s, %s, 1)\nambient_light_energy = 1.0" % ambient)
