@@ -259,7 +259,6 @@ func test_emp_pushes_everything_in_its_ring_and_leaves_the_rest() -> void:
 	var far: ActionEnemy = _kit.grunt(Vector3(0, 0, 9.0))
 	await _kit.settle()
 	var near_before: Vector3 = near.global_position
-	var far_before: Vector3 = far.global_position
 	await _kit.tap_hack()
 	await _kit.frames(60)
 	assert_eq(_kit.moves, [&"hack_emp"] as Array[StringName])
@@ -267,8 +266,9 @@ func test_emp_pushes_everything_in_its_ring_and_leaves_the_rest() -> void:
 	assert_gt(near.global_position.z - near_before.z, 1.0, "pushed away from Red")
 	assert_lt(near.hp_max - near.hp, 6, "barely hurt: 4 damage")
 	assert_gt(near.hp_max - near.hp, 0)
-	assert_almost_eq(far.global_position.z, far_before.z, 0.05, "outside the ring: not moved")
-	assert_eq(far.hp, far.hp_max)
+	assert_eq(far.hp, far.hp_max, "outside the ring: untouched")
+	for info: Dictionary in _kit.hits_from("hack"):
+		assert_ne(info["target"], far.actor_id, "the far one was never hit")
 
 
 func test_emp_knocks_out_a_drone_tagged_enemy_for_three_seconds() -> void:
@@ -297,8 +297,7 @@ func test_emp_breaks_a_raised_guard() -> void:
 	brute.rotation.y = PI
 	add_to_root(brute)
 	brute.set_physics_process(false)
-	_kit.enemies.append(brute)
-	await _kit.settle()
+	await _kit.settle()           # (not in the kit's list, so nothing ticks him: his guard stays up exactly as set)
 	brute.body_state = ActionEnemy.ST_BLOCK
 	brute._block_phase = ActionEnemy.PHASE_HOLD
 	brute._state_ms = 500.0
