@@ -1,0 +1,6 @@
+{
+ "_about": "Feature switches (docs/slice/slice_tech_plan.md section 7). One line per cut or undecided mechanic. true = on (as Ross played it), false = cleanly off everywhere (combat rules, FX, sounds, HUD element, feel-panel knobs). Nothing is removed: flip a value back and it all returns. Only Ross decides to flip one off.",
+ "lights_on": true,
+ "lamp_flare": true,
+ "noise_meter": true
+}

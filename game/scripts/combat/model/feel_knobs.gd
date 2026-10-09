@@ -58,8 +58,27 @@ func ids() -> Array[String]:
 	return out
 
 
-## Every knob with its current value (and "default"), in file order. Copies: changing them changes nothing.
+## The knobs to SHOW (the feel panel binds to this): every knob with its current value (and "default"), in file order,
+## except those tied to a feature switch that is off (`"feature": "lamp_flare"` in feel.json). Copies: changing them changes nothing.
+## Hidden knobs keep their values, still save and load, and come back when the switch does. `all_knobs()` has them all.
 func knobs() -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	for knob: Dictionary in all_knobs():
+		if not is_hidden(str(knob["id"])):
+			out.append(knob)
+	return out
+
+
+## True if the knob belongs to a feature switch that is off.
+func is_hidden(id: String) -> bool:
+	if not _index.has(id):
+		return false
+	var feature: String = str((_knobs[int(_index[id])] as Dictionary).get("feature", ""))
+	return not feature.is_empty() and not Features.is_on(StringName(feature))
+
+
+## Every knob, hidden or not.
+func all_knobs() -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	for knob: Dictionary in _knobs:
 		var copy: Dictionary = knob.duplicate(true)

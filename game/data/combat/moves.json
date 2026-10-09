@@ -1093,6 +1093,133 @@
       "fallback": "spin"
      },
      "note": "Crowd finisher for the single attack button: a full spin that hits every enemy around Red. Reuses the air_3 spin clip. Does not launch, so it keeps the group on the ground."
+    },
+    "hack_zap": {
+     "name": "Hack: Zap Drone",
+     "kind": "hack",
+     "hack": "zap_drone",
+     "state": "ground",
+     "startup_ms": 110,
+     "active_ms": 50,
+     "recovery_ms": 190,
+     "cancels": {
+      "chain": [
+       150,
+       420
+      ],
+      "dash": 150,
+      "jump": 170,
+      "parry": 150
+     },
+     "links": {
+      "light": "light_1",
+      "heavy": "heavy",
+      "launch": "launcher"
+     },
+     "launcher": false,
+     "hit": {},
+     "hitboxes": [],
+     "swing": {
+      "trail": false
+     },
+     "anim": {
+      "clip": "hack_zap",
+      "keys": [],
+      "fallback": "thrust"
+     },
+     "note": "Cast move for Zap Drone (hacks.json). The drone leaves Red's hand at the end of startup (impact_ms = startup, no hitbox of its own; the damage is in hacks.json). Fast and cancellable: a Light or Heavy can follow it, so Zap is a route filler, not a dead end. Cost is spent when the cast starts. Can be cast in the air."
+    },
+    "hack_emp": {
+     "name": "Hack: EMP",
+     "kind": "hack",
+     "hack": "emp",
+     "state": "ground",
+     "startup_ms": 160,
+     "active_ms": 60,
+     "recovery_ms": 300,
+     "cancels": {
+      "chain": [
+       240,
+       520
+      ],
+      "dash": 220,
+      "jump": 260,
+      "parry": 220
+     },
+     "links": {
+      "light": "light_1",
+      "heavy": "heavy"
+     },
+     "launcher": false,
+     "hit": {},
+     "hitboxes": [],
+     "swing": {
+      "trail": false
+     },
+     "anim": {
+      "clip": "hack_emp",
+      "keys": [],
+      "fallback": "brace"
+     },
+     "note": "Cast move for EMP. A 160 ms charge-up (the ring of static gathers round her), then the pulse. Dash-cancels early so it works as an escape, but it is not free: she is stuck for 220 ms before the cancel opens. Can be cast in the air."
+    },
+    "hack_overclock": {
+     "name": "Hack: Overclock",
+     "kind": "hack",
+     "hack": "overclock",
+     "state": "ground",
+     "startup_ms": 200,
+     "active_ms": 80,
+     "recovery_ms": 280,
+     "cancels": {
+      "chain": [
+       320,
+       600
+      ],
+      "dash": 300,
+      "parry": 300
+     },
+     "links": {
+      "light": "light_1",
+      "heavy": "heavy"
+     },
+     "launcher": false,
+     "hit": {},
+     "hitboxes": [],
+     "swing": {
+      "trail": false
+     },
+     "anim": {
+      "clip": "hack_overclock",
+      "keys": [],
+      "fallback": "thrust"
+     },
+     "note": "Cast move for Overclock. A 200 ms reach (the link line streaks to the target), then the take-over. Refused with no target, so this move never starts without one. Ground only. A short window to read the cast: if the target dies during startup the link fizzles and the battery is refunded (HackCaster rule)."
+    },
+    "hack_reboot": {
+     "name": "Hack: Reboot",
+     "kind": "hack",
+     "hack": "reboot",
+     "state": "ground",
+     "startup_ms": 260,
+     "active_ms": 100,
+     "recovery_ms": 380,
+     "cancels": {
+      "dash": 560
+     },
+     "links": {},
+     "launcher": false,
+     "hit": {},
+     "hitboxes": [],
+     "swing": {
+      "trail": false
+     },
+     "anim": {
+      "clip": "hack_reboot",
+      "keys": [],
+      "fallback": "stretch_up"
+     },
+     "note": "Cast move for Reboot. The longest cast on purpose: 260 ms of reboot-sequence, then 600 ms of invincibility from the active frame (iframes_ms in hacks.json), then a long recovery. Nothing cancels it but a late dash, so a Reboot in the middle of a pack is a choice, not a reflex. Ground only."
     }
    }
   },

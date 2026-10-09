@@ -12,6 +12,8 @@ var _repeat_floor: float = 0.2
 var _idle_ms: float = 2500.0
 var _drain_per_s: float = 6.0
 var _bonuses: Dictionary = {}
+## False while the `noise_meter` feature switch is off: nothing scores and a hit costs no rank.
+var enabled: bool = true
 var _points: float = 0.0
 var _last_gain_ms: float = 0.0
 var _last_step_ms: float = 0.0
@@ -63,6 +65,8 @@ func add_bonus(kind: StringName, now_ms: float) -> void:
 
 ## Taking a hit drops you a rank: to the start of the rank below (or empty from the first rank).
 func took_damage(now_ms: float) -> void:
+	if not enabled:
+		return
 	var index: int = rank_index()
 	_points = float(_ranks[index - 1]["at"]) if index >= 1 else 0.0
 	_last_gain_ms = now_ms
@@ -122,7 +126,7 @@ func reset() -> void:
 
 
 func _gain(amount: float, now_ms: float) -> void:
-	if amount <= 0.0:
+	if amount <= 0.0 or not enabled:
 		return
 	_points = minf(_points + amount, _max_points)
 	_last_gain_ms = now_ms

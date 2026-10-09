@@ -71,6 +71,7 @@ func bind_parts(director: Node, player: Node3D, camera: Node) -> void:
 		_connect(director, "flare_started", _on_flare_started)
 		_connect(director, "flare_ended", _on_flare_ended)
 		_connect(director, "lights_on_changed", _on_lights_on_changed)
+		_connect(director, "feature_changed", _on_feature_changed)
 		_connect(director, "actor_died", _on_actor_died)
 		_connect(director, "actor_registered", _on_actor_registered)
 	if player != null:
@@ -214,10 +215,14 @@ func _on_parry_judged(info: Dictionary) -> void:
 
 
 func _on_perfect_dodge(info: Dictionary) -> void:
+	if not Features.is_on(Features.LAMP_FLARE):
+		return
 	spawn_spark("dodge", info.get("position", Vector3.ZERO) as Vector3, Vector3.UP)
 
 
 func _on_flare_started(info: Dictionary) -> void:
+	if not Features.is_on(Features.LAMP_FLARE):
+		return
 	if _flare != null:
 		_flare.start_flare(float(info.get("duration_s", 1.5)))
 	play(_sound("flare"))
@@ -230,10 +235,22 @@ func _on_flare_ended() -> void:
 
 
 func _on_lights_on_changed(active: bool, _duration_s: float) -> void:
+	if active and not Features.is_on(Features.LIGHTS_ON):
+		return
 	if _flare != null:
 		_flare.set_lights_on(active)
 	if active:
 		play(_sound("lights_on"))
+
+
+## A feature switch flipped off mid-run: put its look away at once (the director has already ended the rule behind it).
+func _on_feature_changed(id: StringName, on: bool) -> void:
+	if on or _flare == null:
+		return
+	if id == Features.LAMP_FLARE:
+		_flare.stop_flare()
+	elif id == Features.LIGHTS_ON or id == Features.NOISE_METER:
+		_flare.set_lights_on(false)
 
 
 func _on_actor_died(actor_id: StringName) -> void:

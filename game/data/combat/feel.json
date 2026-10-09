@@ -180,6 +180,7 @@
   },
   {
    "id": "lights_on_trigger",
+   "feature": "lights_on",
    "group": "combat",
    "label": "Lights On starts",
    "type": "choice",
@@ -191,6 +192,7 @@
   },
   {
    "id": "flare_duration_s",
+   "feature": "lamp_flare",
    "group": "flare",
    "label": "Lamp Flare length",
    "type": "float",
@@ -202,6 +204,7 @@
   },
   {
    "id": "flare_enemy_speed",
+   "feature": "lamp_flare",
    "group": "flare",
    "label": "Enemy speed in a flare",
    "type": "float",
@@ -224,6 +227,7 @@
   },
   {
    "id": "flare_glare_radius_m",
+   "feature": "lamp_flare",
    "group": "flare",
    "label": "Flare reach",
    "type": "float",
@@ -235,6 +239,7 @@
   },
   {
    "id": "flare_cooldown_s",
+   "feature": "lamp_flare",
    "group": "flare",
    "label": "Flare cooldown",
    "type": "float",
@@ -246,6 +251,7 @@
   },
   {
    "id": "flare_on_parry",
+   "feature": "lamp_flare",
    "group": "flare",
    "label": "Parry starts a flare",
    "type": "choice",
@@ -374,6 +380,176 @@
    "type": "bool",
    "value": true,
    "hint": "The Brute flies into a rage at low health: faster, hits more often, guards less."
+  },
+  {
+   "id": "hack_pick_mode",
+   "group": "hacks",
+   "label": "How a hack is picked",
+   "type": "choice",
+   "value": "pick_then_fire",
+   "options": [
+    "pick_then_fire",
+    "automatic"
+   ],
+   "hint": "Pick then fire: choose a hack with d-pad left/right (keys 1 to 4), then fire it. Automatic: the hack button picks for you by what is around Red; hold it to Reboot."
+  },
+  {
+   "id": "hack_gain_scale",
+   "group": "hacks",
+   "label": "Battery from sword hits",
+   "type": "float",
+   "value": 1.0,
+   "min": 0.25,
+   "max": 3.0,
+   "step": 0.05,
+   "unit": "x",
+   "hint": "How fast sword hits fill the hack battery. Higher means more hacks per fight."
+  },
+  {
+   "id": "hack_cost_scale",
+   "group": "hacks",
+   "label": "Hack cost",
+   "type": "float",
+   "value": 1.0,
+   "min": 0.25,
+   "max": 2.0,
+   "step": 0.05,
+   "unit": "x",
+   "hint": "Multiplies what every hack costs from the battery (Reboot always takes the whole battery). Lower means more casts."
+  },
+  {
+   "id": "hack_cooldown_scale",
+   "group": "hacks",
+   "label": "Hack cooldown",
+   "type": "float",
+   "value": 1.0,
+   "min": 0.0,
+   "max": 3.0,
+   "step": 0.1,
+   "unit": "x",
+   "hint": "Multiplies the wait before the same hack can be cast again. 0 turns cooldowns off."
+  },
+  {
+   "id": "hack_damage_scale",
+   "group": "hacks",
+   "label": "Hack damage",
+   "type": "float",
+   "value": 1.0,
+   "min": 0.25,
+   "max": 3.0,
+   "step": 0.05,
+   "unit": "x",
+   "hint": "Multiplies the damage of Zap Drone and EMP (and any damage a hijacked enemy does)."
+  },
+  {
+   "id": "zap_pierce",
+   "group": "hacks",
+   "label": "Zap Drone pierce",
+   "type": "int",
+   "value": 3,
+   "min": 1,
+   "max": 6,
+   "step": 1,
+   "hint": "How many enemies one Zap Drone can pass through before it is spent."
+  },
+  {
+   "id": "emp_radius_m",
+   "group": "hacks",
+   "label": "EMP radius",
+   "type": "float",
+   "value": 4.5,
+   "min": 2.5,
+   "max": 8.0,
+   "step": 0.25,
+   "unit": "m",
+   "hint": "How far the EMP ring reaches around Red."
+  },
+  {
+   "id": "emp_knockback_m",
+   "group": "hacks",
+   "label": "EMP push",
+   "type": "float",
+   "value": 3.0,
+   "min": 0.0,
+   "max": 6.0,
+   "step": 0.25,
+   "unit": "m",
+   "hint": "How far the EMP pushes enemies away from Red. 0 only stuns and breaks guards."
+  },
+  {
+   "id": "emp_stun_scale",
+   "group": "hacks",
+   "label": "EMP stun time",
+   "type": "float",
+   "value": 1.0,
+   "min": 0.25,
+   "max": 3.0,
+   "step": 0.05,
+   "unit": "x",
+   "hint": "Multiplies how long EMP knocks drones, turrets and robots out for (2.5 to 4 seconds at 1)."
+  },
+  {
+   "id": "overclock_duration_s",
+   "group": "hacks",
+   "label": "Overclock length",
+   "type": "float",
+   "value": 10.0,
+   "min": 4.0,
+   "max": 20.0,
+   "step": 0.5,
+   "unit": "s",
+   "hint": "How many seconds a hijacked turret, drone or robot fights for Red."
+  },
+  {
+   "id": "reboot_heal_pct",
+   "group": "hacks",
+   "label": "Reboot heal",
+   "type": "int",
+   "value": 50,
+   "min": 10,
+   "max": 100,
+   "step": 5,
+   "unit": "%",
+   "hint": "How much of Red's health a full Reboot restores."
+  },
+  {
+   "id": "reboot_needs_full",
+   "group": "hacks",
+   "label": "Reboot needs a full battery",
+   "type": "bool",
+   "value": true,
+   "hint": "On: Reboot only works with a full battery. Off: it works from half a battery and heals less the less you have."
+  },
+  {
+   "id": "hack_auto_reboot_hold_ms",
+   "group": "hacks",
+   "label": "Automatic: hold to Reboot",
+   "type": "int",
+   "value": 450,
+   "min": 200,
+   "max": 1000,
+   "step": 25,
+   "unit": "ms",
+   "hint": "Only in Automatic. How long you hold the hack button before it Reboots instead of picking an attack."
+  },
+  {
+   "id": "hack_auto_crowd_count",
+   "group": "hacks",
+   "label": "Automatic: crowd size for EMP",
+   "type": "int",
+   "value": 3,
+   "min": 2,
+   "max": 6,
+   "step": 1,
+   "hint": "Only in Automatic. How many enemies close to Red make the hack button fire EMP instead of Zap Drone."
+  },
+  {
+   "id": "hack_free_cast",
+   "group": "hacks",
+   "label": "Free hacks (testing)",
+   "type": "bool",
+   "value": false,
+   "hint": "Hacks cost nothing and the battery stays full. For trying every hack without earning it."
   },
   {
    "id": "shake_scale",

@@ -131,3 +131,71 @@ The robot test reuses six existing combat sounds as stand-ins (data/combat/scale
 | 73 | `robot_bay_doors` | The colossus's two chest doors swinging open (and shut) in the docking | Huge servo groan with a metal-on-metal grind and a warning klaxon blip; slow, 0.6 s swing | ~0.9 s | No | A ship's bulkhead opening | Needed; stand-in `combat_hit_light` |
 | 74 | `robot_dock_clank` | The moment the loader snaps into the bay (with an 80 ms hit-stop and a spark burst), then the clamps lock | One hard clank, a half-second of ringing metal, then a low thunk of the clamps closing; two sounds 0.6 s apart | ~1.2 s | No | A shuttle docking in a sci-fi film | Needed; stand-ins `combat_hit_heavy` (clank) and `combat_brute_slam` (lock) |
 | 75 | `robot_power_up` | The robot powering on: after the climb in, and after the dock | A rising electric hum (pitch 0.3 to 0.4 of a normal hum), furnace roar underneath, three amber relay ticks left to right | ~1.5 s | No | A mech start-up sequence, grim not shiny | Needed; stand-in `combat_lights_on_activate` |
+
+### Vertical slice (added 2026-10-09, task VS-2)
+From the slice Ross approved on 2026-10-09 (docs/decisions.md; docs/slice/slice_pitch.md; docs/slice/slice_tech_plan.md): the four hacks, Kasp's Hushmaster on foot, the transition, Kasp's giant junk mech against the docked colossus, the junkyard and the night market. Ids use the tech plan's prefixes (`hack_*`, `boss_*`, `mech_*`); the Audio Designer appends them to `data/audio/sfx.json` with placeholders in VS-32. The action rules above still hold: a transient in the first 10 ms on anything that answers a button, the quick sounds under 0.25 s with 2 or 3 variants, **record robot and mech sounds at normal pitch** (the scale profile already pitches them down). **Tone: cute town, grim world, loud heroes.** Red's hacks are warm, bright and techy (her sounds); Signals machines are cold, dry and officious; the market is the warm pocket. **Builds on, doesn't repeat:** row 6 (the boss music), row 23 (Hushmaster stomp and servo, jam pulse, crash), row 24 (Kasp's `honk` voice), rows 70 to 75 (the robots; row 75 also covers the loader waking when Red hacks it in J4, row 72 the climb out at the arena gate). **Music** for the market, junkyard, loader run and both boss phases comes with the VS-45 music direction brief (Ross signs off music direction); rows 4, 5 and 6 are the nearest existing rows.
+
+**Hacks**
+
+| # | Id (suggested) | Where it plays | Mood | Length | Loops? | Reference feel | Priority | Status |
+|---|---|---|---|---|---|---|---|---|
+| 76 | `hack_zap_cast` | Zap Drone launches off Red | A quick whir-up and a bright chirp; light and eager | <0.4 s | No | Kingdom Hearts spell cast, as a tiny gadget | P1 | Requested |
+| 77 | `hack_zap_fly` | The Zap Drone in flight (positional) | A small electric buzz with a little wobble; Mox-built, not military | ~1 s | Yes, while it flies | A homemade quadcopter | P1 | Requested |
+| 78 | `hack_zap_hit` | Each of the drone's three zaps (relays and drones take bonus damage; code pitches it up a little) | Sharp crackle snap, clean transient | <0.25 s | No | A static shock from a car door, made punchy | P1 | Requested |
+| 79 | `hack_emp` | EMP cast and pulse around Red | A fast charge inhale (~0.15 s), then a deep round "whump" with crackle spreading out in a ring | ~0.8 s | No | Kingdom Hearts Thundaga's crowd hit, turned electronic | P1 | Requested |
+| 80 | `hack_emp_hit` | An enemy knocked back or stunned by the EMP; drones and turrets sputter | Short electric clunk plus a power-down fizz | ~0.3 s | No | A breaker tripping | P1 | Requested |
+| 81 | `hack_overclock_link` | Overclock takes a turret, drone or robot (its light turns cyan) | A data-burst chirp, a lock-in click, a rising tone; the most "hacker" sound Red has | ~0.7 s | No | A dial-up handshake cut to its best half-second | P1 | Requested |
+| 82 | `hack_overclock_loop` | Under a hijacked machine for its 10 s (positional) | A quiet cyan whine with a soft pulse, so you can hear what's yours | ~2 s | Yes | A server-room hum, sweetened | P1 | Requested |
+| 83 | `hack_overclock_end` | The link drops; the machine turns back (and is briefly stunned) | A descending blip and a fizz | ~0.5 s | No | Unplugging a controller | P1 | Requested |
+| 84 | `hack_reboot` | Reboot: Red restarts her suit to heal (spends the whole battery) | A power-down click, a hair of silence, then a warm rising boot-up chord with a chime | ~1.2 s | No | Kingdom Hearts Cure's shimmer crossed with a 90s PC startup chime (original notes) | P1 | Requested |
+| 85 | `hack_battery_full` | The battery fills up | A tiny, bright, satisfied chime; quiet, it happens a lot | <0.3 s | No | A phone reaching full charge | P1 | Requested |
+| 86 | `hack_denied` | Not enough charge, or "No signal" (no target for Overclock) | A dry double blip; tells you no without scolding | <0.3 s | No | A soft error beep | P1 | Requested |
+| 87 | `hack_locked`, `hack_unlocked` | Quiet Hours locks Red's hacks (HUD fizz), then releases them | Locked: static clamping down. Unlocked: a clean click-ping | ~0.6 s / ~0.3 s | No | A radio losing signal, then finding it | P1 | Requested |
+| 88 | `hack_target_door`, `hack_target_crane_loop`, `hack_target_line_off`, `hack_target_terminal` | World hack targets: the fuse-box gate zaps open; the hijacked crane moves; a drone line shuts down; a terminal is used | Door: spark, clunk, gate grinding open (~1.5 s). Crane: hydraulic groan and chain rattle (~2 s, loops while it moves). Line: power-down whine and a last rotor dying (~1.2 s). Terminal: a fussy Signals beep-chirp (<0.5 s) | 0.5 to 2 s | Crane loops | Junkyard machinery, cold and officious | P2 | Requested |
+
+**Phase 1: Kasp and the Hushmaster** (row 23 stays the brief for the stomp servo hum, the jam pulse and the crash; these add the action patterns)
+
+| # | Id (suggested) | Where it plays | Mood | Length | Loops? | Reference feel | Priority | Status |
+|---|---|---|---|---|---|---|---|---|
+| 89 | `boss_stomp_windup` | Leg Stomp: a leg glows and lifts (the telegraph: jump the ring) | A rising servo whine and an electric charge hum; unmistakable warning | ~0.8 s | No | A big hydraulic press drawing back | P1 | Requested |
+| 90 | `boss_stomp_ring` | The slam and the shock ring rolling out across the floor | A heavy clank, then a crackling ring that travels outward | ~1.2 s | No | A shockwave across sheet metal | P1 | Requested |
+| 91 | `boss_sweep_line` | Dish Sweep: the red line crawling across the floor before the beam (dash through) | A thin rising tone with a scanning tick-tick-tick | ~1.5 s | Yes, while the line crawls | A barcode scanner, slowed and ominous | P1 | Requested |
+| 92 | `boss_sweep_beam` | The beam following the line | A thick buzzing roar | ~1.5 s | Yes, while it sweeps | A welding arc at stadium size | P1 | Requested |
+| 93 | `boss_drone_drop` | Drone Drop: a hatch opens and three drones fall out (EMP clears them) | A clank, a pneumatic hiss, three rotor spin-ups | ~1.5 s | No | A vending machine dropping three cans, then they fly | P1 | Requested |
+| 94 | `boss_quiet_hours`, `boss_quiet_hours_cut` | Quiet Hours: the dish hums, the screen edges fizz, Red's hacks lock for 5 s; hitting the dish cuts it short | Hum: row 23's jam pulse (a rising whine into a static burst). Cut short: the whine collapsing downward with a pop | ~1.5 s / ~0.6 s | No | A tannoy feeding back, then unplugged | P1 | Requested |
+| 95 | `boss_relay_break` | A relay box bursts (then row 23's short crash as its leg pair drops) | A pop, a spark shower, a dying status beep | ~0.8 s | No | A fuse blowing in a filing cabinet | P1 | Requested |
+| 96 | `boss_jack_in` | After the topple, Red jacks into the dish for the big hit | A data-dive whoosh, a rising digital roar, then a huge hit; the payoff of phase 1 | ~2 s | No | Kingdom Hearts reaction command meets a cyberpunk "jack in" dive (original) | P1 | Requested |
+| 97 | `boss_kasp_whistle` | Kasp's whistle: phase starts, his barks, the end of phase 1 | A shrill referee whistle, a bit wet; comic and officious | <0.6 s | No | A gym teacher's whistle | P2 | Requested |
+
+**The transition and phase 2: the giant junk mech**
+
+| # | Id (suggested) | Where it plays | Mood | Length | Loops? | Reference feel | Priority | Status |
+|---|---|---|---|---|---|---|---|---|
+| 98 | `mech_assemble` | Kasp escapes and the yard's scrap rises and locks together around him (cutscene) | A deep magnetic hum building, scrap scraping and flying, dozens of impacts clamping into place, then a huge final clamp and the floodlight head switching on | ~6 to 8 s | No | A junkyard pulled together by a giant magnet | P1 | Requested |
+| 99 | `scale_switch` | The scene eases out from Red's scale to the colossus's as the loader docks | A deep air swell and a low boom underneath the docking sounds (rows 73, 74) | ~2 s | No | A camera pulling back from a skyscraper | P1 | Requested |
+| 100 | `mech_step` | Each junk mech footfall (40 m) | Like `robot_step_huge` (row 71) but loose: a boom plus a shower of rattling scrap | ~1.5 s | No | A dump truck tipping, as a footstep | P1 | Requested |
+| 101 | `mech_idle_loop` | Under the mech the whole round (positional) | Creaking, groaning metal, loose sheets flapping, a rough diesel engine | ~4 s | Yes | A scrapyard in a gale | P1 | Requested |
+| 102 | `mech_telegraph` | Every junk mech wind-up (readable from 75 m) | A long low horn blast with scrap rattle; same family as `combat_enemy_telegraph`, never the lock-on beep | ~1.2 s | No | A ship's horn in fog | P1 | Requested |
+| 103 | `mech_swing`, `mech_slam` | Its arm swings and its impacts (attack list from VS-23) | Swing: a low, slow whoosh with debris. Slam: the biggest impact in the slice, a ground-shaking boom and scrap avalanche | ~1 s / ~1.5 s | No | A wrecking ball; a building coming down | P1 | Requested |
+| 104 | `mech_plate_break` | An armour plate tears off and falls | A shrieking metal tear, then a long falling crash | ~2 s | No | A car door ripped off its hinges, at 40 m | P1 | Requested |
+| 105 | `mech_core_alarm` | The core is exposed (Kasp's cockpit alarms) | Fussy Signals alarm beeps, panicky, over a pulsing low tone | ~1.5 s | Yes, while exposed | An office fire alarm that won't stop | P1 | Requested |
+| 106 | `mech_defeat` | The mech collapses back into a junk pile; end of the fight | A long avalanche of scrap, a last clang, then one tin can rolling to a stop (the comic button) | ~5 to 6 s | No | A demolition, with a punchline | P1 | Requested |
+
+**Robots** (extends rows 70 to 75; same rules: record at normal pitch)
+
+| # | Id (suggested) | Where it plays | Mood | Length | Loops? | Reference feel | Priority | Status |
+|---|---|---|---|---|---|---|---|---|
+| 107 | `robot_servo_small_loop` | The loader idling and moving (J4, J5, the docking walk) | A chunky servo hum with a rattle; Red's ride, a bit warm | ~2 s | Yes | A forklift with attitude | P2 | Requested |
+| 108 | `robot_servo_huge_loop` | The colossus idling and moving in the robot round | A deep hydraulic groan and slow machine breathing | ~4 s | Yes | A ship's engine room | P2 | Requested |
+| 109 | `robot_swing_huge` | The colossus's arm swings and punches | A huge low whoosh pushing air | ~0.8 s | No | A crane boom swinging past | P1 | Requested |
+| 110 | `robot_hit_huge` | The colossus's fist landing on the junk mech | Metal crunching into scrap, a boom and falling debris | ~1.2 s | No | A car crusher closing | P1 | Requested |
+| 111 | `robot_smash_scrap` | The loader smashing scrap walls, props, cops and drones in J5 (the power fantasy) | A crunchy metal crash with bits scattering; satisfying, never heavy-sad | ~0.8 s, 2 or 3 variants | No | A shopping-cart pile-up, in a good way | P2 | Requested |
+
+**Ambience**
+
+| # | Id (suggested) | Where it plays | Mood | Length | Loops? | Reference feel | Priority | Status |
+|---|---|---|---|---|---|---|---|---|
+| 112 | `amb_market_night` | The night market streets (the bed under everything) | Warm and close, the cute pocket: a murmuring crowd, a wok sizzling somewhere, a cart bell, string lights humming, a radio playing; far off and quiet, the Signals tower's PA too distant to make out | ~60 s | Yes | A night market at the end of a shift; Mega Man Legends' town warmth with a cyberpunk skyline | P2 | Requested |
+| 113 | `amb_market_noodles`, `amb_market_arcade`, `amb_market_charger`, `amb_market_drones` | Positional spots: the noodle cart, the bootleg arcade (original bleeps), the grandma's charging stall, the kids' scrap drones whizzing past | Each small and specific; together they make the street feel lived in | 8 to 15 s each (drones are one-shots, ~2 s) | Yes (drones no) | Walking past stalls with your eyes closed | P2 | Requested |
+| 114 | `amb_market_patrol` | A Signals patrol passing through on the hour (the crowd bed ducks under it in code) | Boots in step, a radio squawk, one whistle; the market goes quiet, then comes back | ~8 to 10 s | No | The hush when the cops walk by | P2 | Requested |
+| 115 | `amb_junkyard` | The junkyard rooms J1 to J5 and the arena before the fight | Wind over metal, creaks and ticks, distant crane chains, a far-off crusher, scrap settling, a drone buzzing somewhere; grim, wide, a little lonely | ~45 s | Yes | A scrapyard at night, miles of it | P2 | Requested |

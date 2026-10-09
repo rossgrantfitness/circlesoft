@@ -438,3 +438,10 @@ Run: `godot --headless --path game -s res://tests/run_all.gd` (`-- --only=slice`
 
 ## Changes
 > Additions agreed while building. Newest at the bottom. Add yours here instead of editing the plan above silently.
+
+- **2026-10-09, Combat Programmer, VS-6 (feature switches).** `Features` (`scripts/combat/model/features.gd`, pure) reads `data/slice/features.json`; `Features.is_on(Features.LIGHTS_ON / LAMP_FLARE / NOISE_METER)`, `set_on()` for a runtime override, `version()` for watchers. Contract changes:
+  - `CombatDirector` gains `feature_changed(id, on)` (HUD and FX hide or show their part; flipping off mid-run also ends the running Lights On / flare and empties Noise) and `perfect_dodge_detected(info)`, which fires on every perfect dodge. `perfect_dodge` (the "Lamp Flare!" call-out and dodge spark) now fires only with `lamp_flare` on. The dodge still scores Noise either way.
+  - `StyleMeter.enabled` (false = nothing scores); `noise_meter: false` also means Lights On never starts (it needs a full meter).
+  - `FeelKnobs.knobs()` now lists only the knobs to show: a knob with `"feature": "<id>"` in feel.json is hidden while that switch is off (`all_knobs()` lists all, `is_hidden(id)`; values still save and load). Tagged: `lights_on_trigger` (lights_on); `flare_duration_s`, `flare_enemy_speed`, `flare_glare_radius_m`, `flare_cooldown_s`, `flare_on_parry` (lamp_flare). `perfect_dodge_window_ms` stays shown because detection stays.
+  - For the UI Programmer (action_hud and the sandbox HUD parts, not edited by me): the sandbox HUD already goes quiet through the signals (no `lights_on_changed`, `perfect_dodge`, `flare_*` or `noise_changed` with the switch off). Still to do on the UI side: hide the Lights On bulb (`_draw_lights`) when `Features.is_on(LIGHTS_ON)` is false and the Noise meter (`_draw_noise`) when `noise_meter` is false, listen to `feature_changed`, and re-bind the feel panel (`panel.bind(knobs)`) when it flips so hidden knobs leave the list.
+  - After adding a `class_name` file run `godot --headless --path game --import` once so the class cache knows `Features`.

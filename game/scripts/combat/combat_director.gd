@@ -16,7 +16,9 @@ signal hit_landed(info: Dictionary)            ## {attacker, target, move_id, ou
 signal launched(info: Dictionary)              ## {attacker, target, launch_mps}
 signal telegraphed(info: Dictionary)           ## {attacker, move_id, impact_in_ms, parryable, telegraph_kind}
 signal parry_judged(info: Dictionary)          ## {attacker, rating, outcome, delta_ms, position}
-signal perfect_dodge(info: Dictionary)         ## {attacker, move_id, position}
+signal perfect_dodge(info: Dictionary)         ## {attacker, move_id, position}; the Lamp Flare dodge call-out, so only with `lamp_flare` on
+signal perfect_dodge_detected(info: Dictionary)  ## the same info, always (detection stays when `lamp_flare` is off)
+signal feature_changed(id: StringName, on: bool)  ## a Features switch flipped (HUD and FX hide or show their part)
 signal flare_started(info: Dictionary)         ## {source, duration_s, enemy_scale}
 signal flare_ended()
 signal stagger(info: Dictionary)               ## {target, by: "parry" / "poise" / "guard"}
@@ -51,6 +53,8 @@ var _flared: Dictionary = {}               # attack key -> true
 var _flare_cooldown_s: float = 0.0
 var _fake_real_usec: int = 0
 var _last_noise_points: float = -1.0
+var _features_seen: Dictionary = {}         # id -> on, as last applied
+var _features_version: int = -1             # Features.version() last applied
 var _last_rank_index: int = 0
 var _lights_was_active: bool = false
 ## What enemies see of Red (enemy_ai_design 2.1): her current swing, how long her string of hits is, her dash.
@@ -181,6 +185,7 @@ func tick(delta: float) -> void:
 	tokens.step(delta)
 	if feel.has("enemy_max_attackers"):
 		tokens.max_attackers = maxi(int(roundf(feel.get_f("enemy_max_attackers"))), 0)
+	_sync_features()
 	var red: CombatActor = player()
 	if red != null:
 		var now_ms: float = red.clock.now_ms()
@@ -190,7 +195,7 @@ func tick(delta: float) -> void:
 		if lights_on.is_active():
 			if lights_on.step(now_ms):
 				lights_on_changed.emit(false, 0.0)
-		elif feel.get_s("lights_on_trigger") == "auto" and lights_on.can_start(style):
+		elif Features.is_on(Features.LIGHTS_ON) and feel.get_s("lights_on_trigger") == "auto" and lights_on.can_start(style):
 			_start_lights_on(now_ms)
 		_sync_noise()
 	_prune_threats()
@@ -199,8 +204,9 @@ func tick(delta: float) -> void:
 
 ## Chord mode (`lights_on_trigger` = chord): the player pressed light and heavy together.
 func request_lights_on() -> bool:
+	_sync_features()
 	var red: CombatActor = player()
-	if red == null or not lights_on.can_start(style):
+	if red == null or not Features.is_on(Features.LIGHTS_ON) or not lights_on.can_start(style):
 		return false
 	_start_lights_on(red.clock.now_ms())
 	_sync_noise()
@@ -363,6 +369,7 @@ func alert_allies(source: CombatActor, event: StringName) -> void:
 
 func report_contact(hitbox: Hitbox, hurtbox: Hurtbox) -> void:
 	_ensure_parts()
+	_sync_features()
 	var attacker: CombatActor = hitbox.owner_actor()
 	var target: CombatActor = hurtbox.owner_actor()
 	if attacker == null or target == null:
@@ -419,7 +426,10 @@ func _do_perfect_dodge(attacker: CombatActor, move_id: StringName, threat: Dicti
 	threat["flared"] = true
 	_flared[str(threat.get("key", ""))] = true
 	style.add_bonus(&"perfect_dodge", red.clock.now_ms())
-	perfect_dodge.emit({"attacker": attacker.actor_id, "move_id": move_id, "position": red.anchor(&"head")})
+	var info: Dictionary = {"attacker": attacker.actor_id, "move_id": move_id, "position": red.anchor(&"head")}
+	perfect_dodge_detected.emit(info)
+	if Features.is_on(Features.LAMP_FLARE):
+		perfect_dodge.emit(info)
 	_start_flare("dodge", red)
 
 
@@ -493,7 +503,7 @@ func _on_damage(attacker: CombatActor, target: CombatActor, attack: Dictionary, 
 # ---- the Lamp Flare ----
 
 func _start_flare(source: String, red: CombatActor) -> void:
-	if time.is_flaring() or _flare_cooldown_s > 0.0:
+	if not Features.is_on(Features.LAMP_FLARE) or time.is_flaring() or _flare_cooldown_s > 0.0:
 		return
 	var radius: float = feel.get_f("flare_glare_radius_m")
 	var ids: Array[StringName] = []
@@ -529,8 +539,50 @@ func _ensure_parts() -> void:
 
 
 func _lights_ctx() -> Dictionary:
+	if not Features.is_on(Features.LIGHTS_ON):
+		return {"active": false, "damage_mult": 1.0, "super_armor": false}
 	var buffs: Dictionary = lights_on.buffs()
 	return {"active": lights_on.is_active(), "damage_mult": buffs["damage_mult"], "super_armor": buffs["super_armor"]}
+
+
+## Applies any feature switch that flipped since the last look: ends what the switch controls, tells the listeners.
+## Cheap when nothing changed (one integer compare), so every entry point calls it.
+func _sync_features() -> void:
+	if _features_version == Features.version() and _features_seen.size() == Features.IDS.size():
+		return
+	_ensure_parts()
+	_features_version = Features.version()
+	var noise_on: bool = Features.is_on(Features.NOISE_METER)
+	style.enabled = noise_on
+	for id: StringName in Features.IDS:
+		var on: bool = Features.is_on(id)
+		var first_look: bool = not _features_seen.has(id)
+		var was: bool = bool(_features_seen.get(id, true))
+		_features_seen[id] = on
+		if on == was and not first_look:
+			continue
+		if not on:
+			_switch_off(id)
+		if not first_look:
+			feature_changed.emit(id, on)
+
+
+func _switch_off(id: StringName) -> void:
+	match id:
+		Features.LIGHTS_ON:
+			_end_lights_on()
+		Features.LAMP_FLARE:
+			time.end_flare()
+		Features.NOISE_METER:
+			_end_lights_on()            # Lights On is paid for with a full Noise meter
+			style.reset()
+			_sync_noise()
+
+
+func _end_lights_on() -> void:
+	if lights_on != null and lights_on.is_active():
+		lights_on.end()
+		lights_on_changed.emit(false, 0.0)
 
 
 func _red_now_ms() -> float:
