@@ -308,12 +308,67 @@ func _build_arena() -> void:
 		index += 1
 	index = 0
 	for raw: Variant in arena.get("ramps", []) as Array:
-		var ramp: Dictionary = raw as Dictionary
-		var base_pos: Vector3 = _vec3(ramp.get("pos"))
-		base_pos.y = float(ramp.get("y", 0.5))
-		_add_box(level, "Ramp%d" % index, base_pos, _vec3(ramp.get("size")), _vec3(ramp.get("rot_deg")), str(arena.get("ledge_tile", "")))
+		_add_ramp(level, "Ramp%d" % index, raw as Dictionary, str(arena.get("ledge_tile", "")))
 		index += 1
 	_build_lighting()
+
+
+## A solid wedge ramp: it starts flat on the floor at `pos`, runs `length_m` along `dir` (flat) and ends
+## `rise_m` high, `width_m` across. Solid down to the floor, so there is no lip at the foot and the top
+## meets the ledge it leads to. Collision is the same wedge as a convex shape.
+func _add_ramp(parent: Node3D, node_name: String, cfg: Dictionary, tile: String) -> void:
+	var dir: Vector3 = _vec3(cfg.get("dir", [0.0, 0.0, -1.0]))
+	dir.y = 0.0
+	dir = dir.normalized() if dir.length() > 0.001 else Vector3.FORWARD
+	var side: Vector3 = dir.cross(Vector3.UP).normalized()
+	var half_w: float = float(cfg.get("width_m", 4.0)) * 0.5
+	var length: float = float(cfg.get("length_m", 6.0))
+	var rise: float = float(cfg.get("rise_m", 1.2))
+	var toe: Vector3 = Vector3(_vec3(cfg.get("pos")).x, 0.0, _vec3(cfg.get("pos")).z)
+	var points: Array[Vector3] = [
+		-side * half_w, side * half_w,                                           # toe, on the floor
+		dir * length - side * half_w, dir * length + side * half_w,              # the far foot
+		dir * length - side * half_w + Vector3.UP * rise, dir * length + side * half_w + Vector3.UP * rise,   # the top edge
+	]
+	var body: StaticBody3D = StaticBody3D.new()
+	body.name = node_name
+	body.collision_layer = 1 << (LAYER_WORLD - 1)
+	body.collision_mask = 0
+	parent.add_child(body)
+	body.position = toe
+	var tile_m: float = maxf(float(_block("arena").get("tile_m", 2.0)), 0.1)
+	var tool: SurfaceTool = SurfaceTool.new()
+	tool.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var centre: Vector3 = Vector3.ZERO
+	for point: Vector3 in points:
+		centre += point / float(points.size())
+	# faces as point-index loops: slope, back, floor, two sides
+	for loop: Array in [[0, 1, 5, 4], [2, 3, 5, 4], [0, 1, 3, 2], [0, 2, 4], [1, 3, 5]]:
+		var ring: Array[Vector3] = []
+		for index: int in loop:
+			ring.append(points[index])
+		var normal: Vector3 = (ring[1] - ring[0]).cross(ring[2] - ring[0]).normalized()
+		var face_centre: Vector3 = Vector3.ZERO
+		for point: Vector3 in ring:
+			face_centre += point / float(ring.size())
+		if normal.dot(face_centre - centre) < 0.0:
+			ring.reverse()
+			normal = -normal
+		# ring is now counter-clockwise from outside; Godot's front faces are clockwise, so emit reversed
+		for tri: int in range(1, ring.size() - 1):
+			for corner: Vector3 in [ring[0], ring[tri + 1], ring[tri]]:
+				tool.set_normal(normal)
+				tool.set_uv(Vector2(corner.dot(side) + half_w, -(corner.dot(dir) + corner.y * 2.0)) / tile_m)
+				tool.add_vertex(corner)
+	var mesh_node: MeshInstance3D = MeshInstance3D.new()
+	mesh_node.mesh = tool.commit()
+	mesh_node.material_override = _material_for(tile)
+	body.add_child(mesh_node)
+	var shape_node: CollisionShape3D = CollisionShape3D.new()
+	var shape: ConvexPolygonShape3D = ConvexPolygonShape3D.new()
+	shape.points = PackedVector3Array(points)
+	shape_node.shape = shape
+	body.add_child(shape_node)
 
 
 func _add_box(parent: Node3D, node_name: String, pos: Vector3, size: Vector3, rot_deg: Vector3, tile: String) -> StaticBody3D:
@@ -603,6 +658,10 @@ func _build_racks() -> void:
 		rack.name = "Rack_%s" % str(stand.get("sword", ""))
 		rack.sword_id = StringName(str(stand.get("sword", "")))
 		rack.radius_m = float(racks.get("interact_radius_m", 0.9))
+		rack.ring_scale = float(racks.get("ring_scale", 0.6))
+		rack.label_show_m = float(racks.get("label_show_m", 3.0))
+		rack.label_fade_m = float(racks.get("label_fade_m", 1.0))
+		rack.watch = _player
 		rack.position = _vec3(stand.get("pos"))
 		holder.add_child(rack)
 		_racks.append(rack)

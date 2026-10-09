@@ -19,6 +19,13 @@ const FLOAT_HEIGHT_M: float = 1.15
 
 @export var sword_id: StringName = &""
 @export var radius_m: float = 0.9
+## The ring around the pedestal is this fraction of its old size (it loomed into the screen corners).
+@export var ring_scale: float = 0.6
+## The name label shows only when Red is this close (metres) and fades out over label_fade_m beyond it.
+@export var label_show_m: float = 3.0
+@export var label_fade_m: float = 1.0
+## Whose distance decides the label (Red). Null = the label always shows.
+var watch: Node3D = null
 
 var _display: Node3D = null
 var _time: float = 0.0
@@ -45,10 +52,29 @@ func tick(delta: float) -> void:
 	if _display != null:
 		_display.rotation.y += deg_to_rad(SPIN_DEG_PER_S) * delta
 		_display.position.y = FLOAT_HEIGHT_M + sin(_time * 2.0) * BOB_M
+	_update_label()
 	if _flash_left > 0.0:
 		_flash_left = maxf(_flash_left - delta, 0.0)
 		if _ring != null:
 			(_ring.material_override as StandardMaterial3D).emission_energy_multiplier = 1.0 + _flash_left * 6.0
+
+
+## 1 when Red is within label_show_m, fading to 0 over label_fade_m beyond it, else 0.
+func label_alpha() -> float:
+	if watch == null or not is_instance_valid(watch):
+		return 1.0
+	var flat: Vector3 = watch.global_position - global_position
+	flat.y = 0.0
+	return clampf((label_show_m + label_fade_m - flat.length()) / maxf(label_fade_m, 0.01), 0.0, 1.0)
+
+
+func _update_label() -> void:
+	if _label == null:
+		return
+	var alpha: float = label_alpha()
+	_label.visible = alpha > 0.0
+	_label.modulate.a = alpha
+	_label.outline_modulate.a = alpha
 
 
 ## The data entry for this stand's sword (empty when there is no swords.json yet).
@@ -107,8 +133,8 @@ func _build() -> void:
 
 	_ring = MeshInstance3D.new()
 	var ring_mesh: TorusMesh = TorusMesh.new()
-	ring_mesh.inner_radius = radius_m * 0.62
-	ring_mesh.outer_radius = radius_m * 0.72
+	ring_mesh.inner_radius = radius_m * 0.62 * ring_scale
+	ring_mesh.outer_radius = radius_m * 0.72 * ring_scale
 	_ring.mesh = ring_mesh
 	_ring.position.y = 0.37
 	var ring_material: StandardMaterial3D = StandardMaterial3D.new()
@@ -130,11 +156,11 @@ func _build() -> void:
 	_label = Label3D.new()
 	_label.text = display_name()
 	_label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	_label.pixel_size = 0.006
-	_label.font_size = 36
+	_label.pixel_size = 0.004
+	_label.font_size = 32
 	_label.outline_size = 10
 	_label.no_depth_test = true
-	_label.position.y = 1.85
+	_label.position.y = 1.65
 	_label.modulate = Color(1.0, 0.95, 0.8)
 	add_child(_label)
 

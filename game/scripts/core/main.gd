@@ -90,6 +90,8 @@ func _ready() -> void:
 		overlay = PsxDebugOverlay.new()
 		overlay.name = "PsxDebugOverlay"
 		screen.get_ui_layer().add_child(overlay)
+	if sandbox_boot_enabled and wants_sandbox():
+		apply_sandbox_identity()
 	if sandbox_boot_enabled and wants_sandbox() and start_sandbox() != null:
 		return
 	if show_title and ResourceLoader.exists(title_scene_path):
@@ -114,6 +116,19 @@ func get_state() -> State:
 ## presets) or `-- --sandbox` on the command line.
 static func wants_sandbox() -> bool:
 	return OS.has_feature(SANDBOX_FEATURE) or OS.get_cmdline_user_args().has(SANDBOX_ARG)
+
+
+## A `-- --sandbox` dev run has no `sandbox` feature tag, so the project's `.sandbox` overrides (the user
+## folder and the window name) don't apply on their own; this applies them by hand, so feel files and
+## config never land in the old game's folder (user:// follows the setting on every use). Does nothing
+## when the tag is already there.
+static func apply_sandbox_identity() -> void:
+	if OS.has_feature(SANDBOX_FEATURE):
+		return
+	for key: String in ["application/config/custom_user_dir_name", "application/config/name"]:
+		var override: String = key + "." + SANDBOX_FEATURE
+		if ProjectSettings.has_setting(override):
+			ProjectSettings.set_setting(key, ProjectSettings.get_setting(override))
 
 
 ## The sandbox arena while it is the thing playing, else null.

@@ -358,3 +358,144 @@ func test_the_seam_fixed_tile_copy_is_used_where_the_atlas_has_one() -> void:
 			assert_not_null(texture)
 			assert_true(texture.resource_path.contains("_seamless"), "seamless copy: " + texture.resource_path)
 	assert_true(true)
+
+
+## An arena with no enemies, the player under manual control, ready to be walked about by a bot.
+func _quiet_arena() -> CombatSandbox:
+	var arena: CombatSandbox = _arena()
+	for enemy: Node3D in arena.get_enemies():
+		enemy.get_parent().remove_child(enemy)
+		enemy.free()
+	var player: ActionPlayer = arena.get_player() as ActionPlayer
+	player.read_engine_input = false
+	player.set_physics_process(false)
+	(arena.get_director() as CombatDirector).set_physics_process(false)
+	for i: int in 3:
+		await tree.physics_frame
+	return arena
+
+
+func _bot_step(arena: CombatSandbox, frames: int) -> void:
+	var director: CombatDirector = arena.get_director() as CombatDirector
+	var player: ActionPlayer = arena.get_player() as ActionPlayer
+	for i: int in frames:
+		director.tick(1.0 / 60.0)
+		player.tick(1.0 / 60.0)
+
+
+func _bot_cam(player: ActionPlayer) -> void:
+	var cam: Camera3D = Camera3D.new()
+	add_to_root(cam)
+	cam.global_basis = Basis.IDENTITY               # looks along -Z: up on the stick is -Z
+	player.camera = cam
+
+
+func test_a_bot_runs_up_the_ramp_and_onto_the_back_ledge() -> void:
+	var arena: CombatSandbox = await _quiet_arena()
+	var player: ActionPlayer = arena.get_player() as ActionPlayer
+	_bot_cam(player)
+	var ramp: Dictionary = ((arena.get_data()["arena"] as Dictionary)["ramps"] as Array)[0]
+	var toe: Array = ramp["pos"]
+	var ledge_top: float = float(ramp["rise_m"])
+	player.reset_to(Transform3D(Basis.from_euler(Vector3(0, PI, 0)), Vector3(float(toe[0]), 0.05, float(toe[2]) + 3.0)))
+	_bot_step(arena, 5)
+	player.set_move_input(Vector2(0, -1))
+	var smooth: bool = true
+	var last_y: float = player.global_position.y
+	var frames: int = 0
+	while player.global_position.z > float(toe[2]) - 7.5 and frames < 240:
+		_bot_step(arena, 1)
+		smooth = smooth and player.global_position.y - last_y < 0.12     # no hop or snap on the way up
+		last_y = player.global_position.y
+		frames += 1
+	assert_lt(frames, 200, "she got there")
+	assert_almost_eq(player.global_position.y, ledge_top, 0.08, "Red stands on the 1.2 m ledge")
+	assert_true(player.is_on_floor())
+	assert_true(smooth, "up the slope in one smooth run")
+
+
+func test_the_ramp_has_no_lip_at_its_foot() -> void:
+	var arena: CombatSandbox = await _quiet_arena()
+	var player: ActionPlayer = arena.get_player() as ActionPlayer
+	_bot_cam(player)
+	var toe: Array = (((arena.get_data()["arena"] as Dictionary)["ramps"] as Array)[0] as Dictionary)["pos"]
+	player.reset_to(Transform3D(Basis.from_euler(Vector3(0, PI, 0)), Vector3(float(toe[0]), 0.05, float(toe[2]) + 2.0)))
+	_bot_step(arena, 5)
+	player.set_move_input(Vector2(0, -1))
+	var frames: int = 0
+	while player.global_position.z > float(toe[2]) - 1.0 and frames < 120:
+		_bot_step(arena, 1)
+		frames += 1
+	assert_lt(frames, 60, "she walked straight through the toe of the ramp without stopping")
+	assert_gt(player.global_position.y, 0.05, "and is already climbing")
+
+
+func test_a_bot_can_jump_up_onto_the_back_ledge_and_the_side_ledge() -> void:
+	var arena: CombatSandbox = await _quiet_arena()
+	var player: ActionPlayer = arena.get_player() as ActionPlayer
+	_bot_cam(player)
+	var ledges: Array = (arena.get_data()["arena"] as Dictionary)["ledges"]
+	# Back ledge: run at its front face (it faces +Z, Red runs toward -Z) and jump. Side ledge: run toward -X.
+	var back: Dictionary = ledges[0]
+	var back_pos: Array = back["pos"]
+	var back_size: Array = back["size"]
+	player.reset_to(Transform3D(Basis.from_euler(Vector3(0, PI, 0)), Vector3(5.0, 0.05, float(back_pos[2]) + float(back_size[2]) * 0.5 + 3.0)))
+	_bot_step(arena, 5)
+	player.set_move_input(Vector2(0, -1))
+	_bot_step(arena, 10)
+	player.press(&"jump")
+	assert_almost_eq(_best_standing_height(arena, 60), float(back_size[1]), 0.08, "jumped up onto the 1.2 m back ledge")
+	var side: Dictionary = ledges[1]
+	var side_pos: Array = side["pos"]
+	var side_size: Array = side["size"]
+	player.reset_to(Transform3D(Basis.from_euler(Vector3(0, -PI * 0.5, 0)), Vector3(float(side_pos[0]) + float(side_size[0]) * 0.5 + 3.0, 0.05, float(side_pos[2]))))
+	player.set_move_input(Vector2(-1, 0))
+	_bot_step(arena, 12)
+	player.press(&"jump")
+	assert_almost_eq(_best_standing_height(arena, 60), float(side_size[1]), 0.08, "and onto the 0.7 m side ledge")
+
+
+## Steps the bot and returns the highest ground Red stood on during that time.
+func _best_standing_height(arena: CombatSandbox, frames: int) -> float:
+	var player: ActionPlayer = arena.get_player() as ActionPlayer
+	var best: float = 0.0
+	for i: int in frames:
+		_bot_step(arena, 1)
+		if player.is_on_floor():
+			best = maxf(best, player.global_position.y)
+	return best
+
+
+func test_rack_labels_show_only_when_red_is_close_and_the_rings_are_small() -> void:
+	var arena: CombatSandbox = await _quiet_arena()
+	var rack: SwordRack = arena.get_racks()[2]
+	var player: ActionPlayer = arena.get_player() as ActionPlayer
+	player.global_position = rack.global_position + Vector3(0, 0, -10.0)
+	rack.tick(0.016)
+	assert_eq(rack.label_alpha(), 0.0, "far away: no label")
+	assert_false((rack.get_node_or_null("Label3D") as Label3D).visible if rack.get_node_or_null("Label3D") != null else false)
+	player.global_position = rack.global_position + Vector3(0, 0, -2.0)
+	rack.tick(0.016)
+	assert_eq(rack.label_alpha(), 1.0, "inside 3 m: full label")
+	player.global_position = rack.global_position + Vector3(0, 0, -3.5)
+	assert_gt(rack.label_alpha(), 0.0)
+	assert_lt(rack.label_alpha(), 1.0, "fading in between")
+	var found_ring: bool = false
+	for child: Node in rack.get_children():
+		var mesh_node: MeshInstance3D = child as MeshInstance3D
+		if mesh_node != null and mesh_node.mesh is TorusMesh:
+			found_ring = true
+			assert_lt((mesh_node.mesh as TorusMesh).outer_radius, 0.5, "the ring is small")
+	assert_true(found_ring)
+
+
+func test_a_dash_run_uses_the_sandbox_user_folder() -> void:
+	var name_key: String = "application/config/custom_user_dir_name"
+	var saved: Variant = ProjectSettings.get_setting(name_key)
+	var saved_name: Variant = ProjectSettings.get_setting("application/config/name")
+	Main.apply_sandbox_identity()
+	assert_true(OS.get_user_data_dir().ends_with("LightsOnSandbox"), "feel files go to the sandbox folder: " + OS.get_user_data_dir())
+	assert_eq(ProjectSettings.get_setting("application/config/name"), "Lights On Sandbox")
+	ProjectSettings.set_setting(name_key, saved)
+	ProjectSettings.set_setting("application/config/name", saved_name)
+	assert_true(OS.get_user_data_dir().ends_with("LightsLeftOn"), "and the old game's folder is back for the rest of the tests")
