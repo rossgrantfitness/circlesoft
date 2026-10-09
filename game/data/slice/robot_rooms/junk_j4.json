@@ -1,0 +1,7 @@
+{
+ "_about": "VS-21. The robots of J4 Wreck Row (docs/maps/junkyard.md): the loader asleep in its cradle at the end of the loader lane. RobotStage reads this for rooms.json `robots: junk_j4`. ground false: the level supplies the floor and walls. small_robot.wake_flag: the loader cannot be boarded (no ring, walking in does nothing) until this GameState flag is set; the loader_j4 wake button (placements hack_targets, HackLoader) sets it and starts the boarding. The flag is saved, so a retry finds it awake. Positions are the map's metres in the level's coordinates (origin at the room's NW floor corner, +x east, +z south); the loader faces east (yaw 90). The Level Designer moves it to the cradle in VS-20/22. Prop kinds come from combat/robot_yard.json.",
+ "version": 1,
+ "ground": false,
+ "small_robot": {"pos": [76.0, 0.0, 30.0], "yaw_deg": 90.0, "wake_flag": "loader_awake"},
+ "props": []
+}

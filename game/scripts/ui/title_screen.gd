@@ -59,6 +59,12 @@ const AUDIO_NODE_PATH: NodePath = ^"/root/AudioManager"
 const AUDIO_METHOD: StringName = &"play_sfx"
 const LIT_BRIGHT_LEVEL: int = 2
 
+## The strings file (a DataDB id). The slice uses "text/title_slice": no title word yet, four menu rows, no Battle Test.
+## Set before the screen enters the tree.
+var text_id: String = TEXT_ID
+## Off in the slice: Red is Red, so New Game skips the name window and goes straight in.
+var ask_hero_name: bool = true
+
 ## Replace to intercept Quit (tests do this); by default Quit calls get_tree().quit().
 var quit_handler: Callable = Callable()
 ## Where saves are asked about (has_any_save / newest_slot). Null means the SaveManager autoload.
@@ -280,8 +286,8 @@ func _load_data() -> void:
 		if fonts[key] is Dictionary:
 			_fonts[key] = UiFonts.get_font(key)
 			_font_sizes[key] = UiFonts.get_size(key)
-	var show_dev: bool = bool(DataDB.get_dict(TEXT_ID).get("dev_items", false))
-	for entry: Dictionary in DataDB.get_dict(TEXT_ID)["menu"]:
+	var show_dev: bool = bool(DataDB.get_dict(text_id).get("dev_items", false))
+	for entry: Dictionary in DataDB.get_dict(text_id)["menu"]:
 		if bool(entry.get("dev", false)) and not show_dev:
 			continue
 		_items.append(entry)
@@ -306,7 +312,7 @@ func _text_width(font_key: String, text: String) -> int:
 
 
 func _apply_fonts_and_text() -> void:
-	var text: Dictionary = DataDB.get_dict(TEXT_ID)
+	var text: Dictionary = DataDB.get_dict(text_id)
 	var margin: int = int(_layout["margin"])
 	var stage_w: int = int(_stage_size.x)
 	var stage_h: int = int(_stage_size.y)
@@ -676,7 +682,13 @@ func choose(index: int) -> void:
 	_play_sfx("confirm")
 	match id:
 		ITEM_NEW_GAME:
-			_open_name_entry()
+			if ask_hero_name:
+				_open_name_entry()
+			else:
+				_pending_kind = LEAVE_NEW_GAME
+				_pending_name = str(DataDB.get_value(TEXT_ID, "name_entry.default_name", "Red"))
+				_hide_menu()
+				_start_leaving()
 		ITEM_CONTINUE:
 			_pending_kind = LEAVE_CONTINUE
 			_pending_slot = get_continue_slot()
@@ -752,7 +764,11 @@ func _refresh_item_states() -> void:
 
 
 func _apply_hero_name() -> void:
-	var state: Node = game_state if game_state != null and is_instance_valid(game_state) else get_node_or_null(^"/root/GameState")
+	var state: Node = game_state if game_state != null and is_instance_valid(game_state) else null
+	if state == null:
+		# Main may already have taken this screen out of the tree (a room that loads at once), so ask the root, not self.
+		var loop: SceneTree = Engine.get_main_loop() as SceneTree
+		state = loop.root.get_node_or_null("GameState") if loop != null else null
 	if state != null and state.has_method("set_hero_name"):
 		state.call("set_hero_name", _pending_name)
 

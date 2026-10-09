@@ -1,0 +1,362 @@
+{
+ "_about": "Retarget of the free Quaternius Universal Animation Library (CC0) onto the placeholder townsfolk body (task VS-25, 1.0 m, Red's bone names scaled x1.052; built by scripts/tools/make_townsfolk.py). Read by scripts/tools/retarget_ual.py; edit and rerun `retarget_ual.py townsfolk`. Ross's market residents (VS-A4.4) follow the same bone contract: change `target` and `output` and the same clips bake onto them.",
+ "target": "art/placeholder/characters/townsfolk/townsfolk_blockout.glb",
+ "output": "art/placeholder/characters/townsfolk/townsfolk_blockout_ual.glb",
+ "clip_keys": "data/animation/townsfolk_clip_keys.json",
+ "clip_keys_about": "Key poses of the clips: where the strike lands (contact_s) and the poses the move data snaps to. 30 fps, baked by retarget_ual.py from the free Quaternius clips (CC0). Use these seconds as clip_s in moves.json anim.keys.",
+ "sources": {
+  "UAL1": "art/placeholder/animations/quaternius_ual/UAL1_Standard.glb",
+  "UAL2": "art/placeholder/animations/quaternius_ual/UAL2_Standard.glb"
+ },
+ "fps": 30,
+ "hips": {
+  "target": "hips",
+  "source": "pelvis",
+  "scale": 0.4311
+ },
+ "ground": {
+  "scale": 0.4311,
+  "target_points": [
+   {
+    "bone": "foot_l",
+    "offset": [
+     0.0,
+     -0.0536,
+     -0.0736
+    ]
+   },
+   {
+    "bone": "foot_l",
+    "offset": [
+     0.0,
+     -0.0536,
+     0.1367
+    ]
+   },
+   {
+    "bone": "foot_r",
+    "offset": [
+     0.0,
+     -0.0536,
+     -0.0736
+    ]
+   },
+   {
+    "bone": "foot_r",
+    "offset": [
+     0.0,
+     -0.0536,
+     0.1367
+    ]
+   },
+   {
+    "bone": "hips",
+    "offset": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "lift": 0.0526
+   },
+   {
+    "bone": "chest",
+    "offset": [
+     0.0,
+     0.021,
+     0.0
+    ],
+    "lift": 0.0736
+   },
+   {
+    "bone": "head",
+    "offset": [
+     0.0,
+     0.1052,
+     0.0
+    ],
+    "lift": 0.1262
+   },
+   {
+    "bone": "hand_l",
+    "offset": [
+     0.0,
+     -0.0315,
+     0.0
+    ],
+    "lift": 0.0421
+   },
+   {
+    "bone": "hand_r",
+    "offset": [
+     0.0,
+     -0.0315,
+     0.0
+    ],
+    "lift": 0.0421
+   }
+  ],
+  "source_points": [
+   {
+    "bone": "foot_l",
+    "offset": [
+     0,
+     -0.104,
+     -0.045
+    ]
+   },
+   {
+    "bone": "ball_l",
+    "offset": [
+     0,
+     -0.015,
+     0.0
+    ]
+   },
+   {
+    "bone": "ball_l",
+    "offset": [
+     0,
+     -0.015,
+     0.079
+    ]
+   },
+   {
+    "bone": "foot_r",
+    "offset": [
+     0,
+     -0.104,
+     -0.045
+    ]
+   },
+   {
+    "bone": "ball_r",
+    "offset": [
+     0,
+     -0.015,
+     0.0
+    ]
+   },
+   {
+    "bone": "ball_r",
+    "offset": [
+     0,
+     -0.015,
+     0.079
+    ]
+   },
+   {
+    "bone": "pelvis",
+    "offset": [
+     0,
+     0,
+     0
+    ],
+    "lift": 0.045
+   },
+   {
+    "bone": "spine_03",
+    "offset": [
+     0,
+     0.03,
+     0
+    ],
+    "lift": 0.07
+   },
+   {
+    "bone": "Head",
+    "offset": [
+     0,
+     0.08,
+     0
+    ],
+    "lift": 0.1
+   },
+   {
+    "bone": "hand_l",
+    "offset": [
+     0,
+     -0.04,
+     0
+    ],
+    "lift": 0.04
+   },
+   {
+    "bone": "hand_r",
+    "offset": [
+     0,
+     -0.04,
+     0
+    ],
+    "lift": 0.04
+   }
+  ],
+  "_about": "Contact points for the ground lock: [bone, offset in the rest world frame, lift]. Soles have lift 0, body points a radius. The source's ball bone is used for the toe so a sprint's toe-off does not sink through the floor."
+ },
+ "bones": [
+  {
+   "target": "hips",
+   "source": "pelvis"
+  },
+  {
+   "target": "spine",
+   "source": "spine_02"
+  },
+  {
+   "target": "chest",
+   "source": "spine_03"
+  },
+  {
+   "target": "neck",
+   "source": "neck_01"
+  },
+  {
+   "target": "head",
+   "source": "Head"
+  },
+  {
+   "target": "shoulder_{s}",
+   "source": "clavicle_{s}"
+  },
+  {
+   "target": "upper_arm_{s}",
+   "source": "upperarm_{s}",
+   "t_dir": "forearm_{s}",
+   "to": [
+    1,
+    0,
+    0
+   ]
+  },
+  {
+   "target": "forearm_{s}",
+   "source": "lowerarm_{s}",
+   "t_dir": "hand_{s}",
+   "to": [
+    1,
+    0,
+    0
+   ]
+  },
+  {
+   "target": "hand_l",
+   "source": "hand_l",
+   "t_dir": "parent",
+   "to": [
+    1,
+    0,
+    0
+   ]
+  },
+  {
+   "target": "hand_r",
+   "source": "hand_r",
+   "t_dir": "parent",
+   "to": [
+    -1,
+    0,
+    0
+   ],
+   "blade_socket": "weapon_socket",
+   "blade_dir_in_source_rest": [
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "target": "thigh_{s}",
+   "source": "thigh_{s}"
+  },
+  {
+   "target": "shin_{s}",
+   "source": "calf_{s}"
+  },
+  {
+   "target": "foot_{s}",
+   "source": "foot_{s}"
+  }
+ ],
+ "clips": [
+  {
+   "name": "idle",
+   "source": "UAL1:Idle_Loop",
+   "loop": true,
+   "note": "standing about"
+  },
+  {
+   "name": "talk",
+   "source": "UAL1:Idle_Talking_Loop",
+   "loop": true,
+   "note": "talking with small hand gestures (stands still; the speech bubble plays over it)"
+  },
+  {
+   "name": "walk",
+   "source": "UAL1:Walk_Loop",
+   "loop": true,
+   "note": "an easy stroll; play at ground speed / stride_mps (scripts/combat/locomotion_speed.gd)"
+  }
+ ],
+ "keep_standins": [],
+ "proxies": {
+  "_about": "Rough body shapes used only by --report to count frames where an arm goes through the head or the torso (the chibi proportions cause this). Head sphere, torso ellipsoid (x,z half sizes) between two bones, arm segments [from bone, to bone, start fraction].",
+  "head": {
+   "bone": "head",
+   "center_offset": [
+    0.0,
+    0.1052,
+    0.0
+   ],
+   "radius": 0.1472
+  },
+  "torso": {
+   "from": "hips",
+   "to": "neck",
+   "half_width": 0.1367,
+   "half_depth": 0.1052
+  },
+  "arm_radius": 0.0368,
+  "arm_segments": [
+   [
+    "upper_arm_l",
+    "forearm_l",
+    0.5
+   ],
+   [
+    "forearm_l",
+    "hand_l"
+   ],
+   [
+    "hand_l",
+    "prop_socket"
+   ],
+   [
+    "upper_arm_r",
+    "forearm_r",
+    0.5
+   ],
+   [
+    "forearm_r",
+    "hand_r"
+   ],
+   [
+    "hand_r",
+    "weapon_socket"
+   ]
+  ]
+ },
+ "importer_loops": [
+  "idle",
+  "walk",
+  "run",
+  "fall",
+  "battle_ready",
+  "climb",
+  "launched",
+  "stagger"
+ ],
+ "_importer_loops_about": "Clip names that scripts/tools/psx_post_import.gd (LOOPING_CLIPS) loops whatever the file says; the key data lists them as loops.",
+ "robot": {
+  "height_m": 1.0,
+  "unit": 1.0515
+ }
+}

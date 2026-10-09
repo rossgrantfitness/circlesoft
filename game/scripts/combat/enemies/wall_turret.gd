@@ -27,6 +27,14 @@ func tick(delta: float) -> void:
 	_update_laser()
 
 
+## A static gun has nowhere to walk to: the brain's "approach until circle range" would never end with the data's 0, so the
+## circle range is the whole range of the mount (it is "circling" the moment it notices Red).
+func _make_brain(brain_override: Dictionary = {}) -> EnemyBrain:
+	var numbers: Dictionary = brain_override.duplicate()
+	numbers["circle_range_m"] = float((data.get("mount", {}) as Dictionary).get("range_m", 30.0))
+	return super._make_brain(numbers)
+
+
 # ---- it never moves ----
 
 func _apply_gravity(_dt: float) -> void:

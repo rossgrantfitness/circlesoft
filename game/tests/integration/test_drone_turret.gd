@@ -252,9 +252,9 @@ func test_a_hijacked_turret_fires_for_red_about_every_second_and_a_half() -> voi
 	await _setup()
 	_kit.battery().reset_full()
 	_kit.caster().select_slot(2)
-	var turret: ActionEnemy = _turret_facing_red(5.0)
+	var turret: ActionEnemy = _turret_facing_red(9.0)
 	var victim: ActionEnemy = (load(HackKit.GRUNT_SCENE) as PackedScene).instantiate() as ActionEnemy
-	victim.position = Vector3(0, 0, 12.0)
+	victim.position = Vector3(2.0, 0, 3.0)         # in front of the turret, inside its arc
 	victim.hp = 400
 	victim.hp_max = 400
 	add_to_root(victim)

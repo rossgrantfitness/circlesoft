@@ -312,6 +312,18 @@ class Retargeter:
             offset += round(abs(b - a) / speed * self.fps) / self.fps
         raise ValueError("contact_part out of range")
 
+    def extra_contacts(self, spec):
+        """Output times of further strikes: spec['extra_contacts'] = [[source seconds, part index], ...]."""
+        out = []
+        for src_s, part in spec.get("extra_contacts", []):
+            offset = 0.0
+            for i, (sk, clip, a, b, speed) in enumerate(self._parts(spec)):
+                if i == int(part):
+                    out.append(offset + abs(float(src_s) - a) / speed)
+                    break
+                offset += round(abs(b - a) / speed * self.fps) / self.fps
+        return out
+
     # ------------------------------------------------------------ report
     def quality(self, res, spec):
         """Clipping numbers for a baked clip: how many frames an arm segment is inside the head sphere or the torso
@@ -440,6 +452,16 @@ def main():
         if contact is not None:
             entry["contact_s"] = round(contact, 4)
             entry["contact_frame"] = int(round(contact * rt.fps))
+        extra = rt.extra_contacts(spec)
+        if extra:
+            entry["extra_contacts_s"] = [round(c, 4) for c in extra]      # later strikes of a multi-hit clip (stomp, barrage)
+        if spec.get("strike"):
+            entry["strike"] = spec["strike"]                              # a wind-up clip names the clip that takes over (sync_move_keys.py)
+        if spec.get("mirror"):
+            entry["mirrored"] = True
+        speeds = sorted({round(p[4], 3) for p in rt._parts(spec) if abs(p[4] - 1.0) > 1e-6})
+        if speeds:
+            entry["baked_speeds"] = speeds                                # slowed or sped up when baked (config "speed")
         if spec.get("note"):
             entry["note"] = spec["note"]
         keys_doc[name] = entry

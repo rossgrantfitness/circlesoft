@@ -31,6 +31,9 @@ var sandbox: Node3D = null
 var read_engine_input: bool = true
 ## False in headless tests: no audio calls, no dust or label nodes.
 var effects_enabled: bool = true
+## False while the loader sleeps (the slice's J4 until it is woken): the ring is off and walking in does nothing. board_now()
+## ignores it, so a script can still start the boarding.
+var boarding_enabled: bool = true
 ## What happened, newest last: {mode, event}. Tests read it.
 var history: Array[StringName] = []
 
@@ -101,6 +104,51 @@ func prompt_text() -> String:
 	return _prompt_text
 
 
+## Starts the boarding sequence now, from wherever Red stands (a hack or a script woke the loader; the slice's RobotStage).
+## She steps to the boarding point and climbs in as usual. False if she is not free to (mid-swing, in the air, already in a robot).
+func board_now() -> bool:
+	if player == null or yard == null or yard.small_display == null or not yard.small_display.is_active():
+		return false
+	if _mode != Mode.RED or _seq != null or not _free_to_act():
+		return false
+	_start_board()
+	return _mode == Mode.BOARDING
+
+
+## Starts the docking now (the loader walks to the colossus, hops into the bay): the boss transition's call. Needs the loader
+## form and a colossus in this room.
+func dock_now() -> bool:
+	if player == null or yard == null or yard.huge_display == null or _mode != Mode.SMALL or _seq != null or not _free_to_act():
+		return false
+	_start_dock()
+	return _mode == Mode.DOCKING
+
+
+## Starts the room already inside a robot (`red`, `small` or `huge`), with no boarding sequence: the slice's J5 begins in the
+## loader. The robot's model is hidden (she is wearing it), her body, camera and haze are the form's at once.
+func place_in(form: StringName) -> bool:
+	if player == null or controller == null or yard == null or ScaleProfile.get_form(form) == null:
+		return false
+	_seq = null
+	_ctx.clear()
+	_lockout = false
+	_dock_lockout = false
+	_interact_queued = false
+	_disembark_queued = false
+	_disembark_wait_s = 0.0
+	player.input_locked = false
+	player.set_control_mode(ActionPlayer.ControlMode.NORMAL)
+	controller.set_form(form, 0.0)
+	if yard.small_display != null:
+		yard.small_display.set_active(form == &"red")
+		yard.small_display.set_hatch_open(0.0)
+	if yard.huge_display != null:
+		yard.huge_display.set_active(form != &"huge")
+		yard.huge_display.set_doors_open(0.0)
+	_set_mode(Mode.HUGE if form == &"huge" else (Mode.SMALL if form == &"small" else Mode.RED))
+	return true
+
+
 ## Back to Red standing by the parked loader (Reset arena).
 func reset() -> void:
 	_seq = null
@@ -123,7 +171,7 @@ func reset() -> void:
 # ---- per frame ----
 
 func tick(delta: float) -> void:
-	if player == null or yard == null or yard.small_display == null or yard.huge_display == null:
+	if player == null or yard == null or yard.small_display == null:
 		return
 	var disembark: bool = _take_disembark(delta)
 	var interact: bool = _take_interact()
@@ -173,6 +221,8 @@ func _free_to_act() -> bool:
 
 
 func _tick_red(interact: bool) -> void:
+	if not boarding_enabled:
+		return
 	var board_at: Vector3 = yard.small_display.boarding_point()
 	var gap: float = flat_distance(player.global_position, board_at)
 	var enter: float = float(_cfg.get("enter_radius_m", 1.15))
@@ -192,6 +242,8 @@ func _tick_small(disembark: bool) -> void:
 	var speed: float = Vector2(player.velocity.x, player.velocity.z).length()
 	if disembark and speed <= float(_cfg.get("disembark_max_speed_mps", 1.5)):
 		_start_disembark()
+		return
+	if yard.huge_display == null:
 		return
 	var to_ring: float = flat_distance(player.global_position, yard.huge_display.approach_point())
 	var trigger: float = float(_cfg.get("dock_trigger_m", 3.5))
@@ -668,13 +720,13 @@ func _update_rings(delta: float) -> void:
 	_pulse += delta
 	if _ring == null:
 		return
-	var show_board: bool = _mode == Mode.RED and yard.small_display.is_active()
+	var show_board: bool = _mode == Mode.RED and boarding_enabled and yard.small_display.is_active()
 	_ring.visible = show_board
 	if show_board:
 		_ring.global_position = _floor_of(yard.small_display.boarding_point()) + Vector3.UP * RING_Y
 		var k: float = 1.0 + 0.08 * sin(_pulse * 4.0)
 		_ring.scale = Vector3(k, 0.08, k)
-	var show_dock: bool = _mode == Mode.SMALL
+	var show_dock: bool = _mode == Mode.SMALL and yard.huge_display != null
 	_dock_ring.visible = show_dock
 	if show_dock:
 		_dock_ring.global_position = _floor_of(yard.huge_display.approach_point()) + Vector3.UP * RING_Y
@@ -709,7 +761,7 @@ func _make_prompt() -> void:
 func compute_prompt() -> String:
 	match _mode:
 		Mode.RED:
-			if yard != null and yard.small_display.is_active() \
+			if yard != null and boarding_enabled and yard.small_display != null and yard.small_display.is_active() \
 					and flat_distance(player.global_position, yard.small_display.boarding_point()) <= float(_cfg.get("prompt_range_m", 14.0)):
 				return str(_texts.get("board", ""))
 		Mode.SMALL:

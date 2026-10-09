@@ -1,0 +1,143 @@
+{
+ "_about": "Key poses of the clips: where the strike lands (contact_s) and the poses the move data snaps to. 30 fps, baked by retarget_ual.py from the free Quaternius clips (CC0). Use these seconds as clip_s in moves.json anim.keys.",
+ "fps": 30,
+ "clips": {
+  "idle": {
+   "length_s": 2.5,
+   "loop": true,
+   "source": "UAL1:Idle_Loop",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 75,
+     "clip_s": 2.5
+    }
+   ],
+   "note": "arms down, a little weight shift; the clipboard hangs in the left hand"
+  },
+  "run": {
+   "length_s": 0.9333,
+   "loop": true,
+   "source": "UAL1:Jog_Fwd_Loop",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 28,
+     "clip_s": 0.9333
+    }
+   ],
+   "note": "a clerk's jog, not Red's sprint",
+   "stride_mps": 2.66
+  },
+  "talk": {
+   "length_s": 2.9333,
+   "loop": true,
+   "source": "UAL1:Idle_Talking_Loop",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 88,
+     "clip_s": 2.9333
+    }
+   ],
+   "note": "talking with small hand gestures; cutscene dialogue"
+  },
+  "gesture": {
+   "length_s": 2.5,
+   "loop": false,
+   "source": "UAL2:Yes",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 75,
+     "clip_s": 2.5
+    }
+   ],
+   "note": "UAL2 Yes: the left arm (the clipboard arm) comes up and points, then drops; plays once. Reads as 'you are out of compliance'"
+  },
+  "stagger": {
+   "length_s": 2.5667,
+   "loop": true,
+   "source": "UAL1:Hit_Chest",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 77,
+     "clip_s": 2.5667
+    }
+   ],
+   "baked_speeds": [
+    0.6
+   ],
+   "note": "Hit_Chest slowed to 0.6x then the end pose held 2 s (the importer loops this name)"
+  },
+  "knockdown": {
+   "length_s": 1.8333,
+   "loop": false,
+   "source": "UAL2:Hit_Knockback",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 9,
+     "clip_s": 0.3
+    },
+    {
+     "frame": 55,
+     "clip_s": 1.8333
+    }
+   ],
+   "contact_s": 0.3,
+   "contact_frame": 9,
+   "note": "the fall onto the floor; ends lying down and holds the pose"
+  },
+  "getup": {
+   "length_s": 1.5333,
+   "loop": false,
+   "source": "UAL2:LayToIdle",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 46,
+     "clip_s": 1.5333
+    }
+   ]
+  },
+  "defeated": {
+   "length_s": 3.4,
+   "loop": false,
+   "source": "UAL1:Death01",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 102,
+     "clip_s": 3.4
+    }
+   ],
+   "note": "Death01; ends lying down and holds the pose (the end of the on-foot fight)"
+  }
+ }
+}

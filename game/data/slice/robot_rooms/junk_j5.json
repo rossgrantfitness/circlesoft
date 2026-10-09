@@ -1,0 +1,12 @@
+{
+ "_about": "VS-21. The robots of J5 Smash Run (docs/maps/junkyard.md): Red starts inside the loader (rooms.json form small), so the loader's display stays hidden until she climbs out at the arena gate. ground false: the level supplies the floor. props are graybox stand-ins so the loader has something to smash; the Level Designer fills the Car Graveyard, the container canyon and the Foreman's Wall in VS-22. Kinds (crate_small, crate_large, container, car, lamp_post, building_*) come from combat/robot_yard.json. Positions are the map's metres in the level's coordinates.",
+ "version": 1,
+ "ground": false,
+ "small_robot": {"pos": [2.0, 0.0, 55.0], "yaw_deg": 90.0},
+ "props": [
+  {"kind": "car", "pos": [30.0, 0.0, 50.0], "yaw_deg": 90.0},
+  {"kind": "car", "pos": [30.0, 0.0, 60.0], "yaw_deg": 80.0},
+  {"kind": "container", "pos": [44.0, 0.0, 55.0], "yaw_deg": 0.0},
+  {"kind": "crate_large", "pos": [20.0, 0.0, 55.0], "yaw_deg": 15.0}
+ ]
+}

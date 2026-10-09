@@ -427,7 +427,7 @@ func _fire_zap(hack: StringName) -> void:
 	var dir: Vector3 = (_cast["aim"] as Vector3)
 	var target: Node3D = _cast["target"] as Node3D
 	if target != null and is_instance_valid(target):
-		var aim_at: Vector3 = _aim_point(target)
+		var aim_at: Vector3 = _lead_point(origin, target, float(spec.get("speed_mps", 20.0)))
 		if aim_at.distance_to(origin) > 0.1:
 			dir = (aim_at - origin).normalized()
 	elif dir.length() < 0.01:
@@ -717,6 +717,20 @@ static func _outward(centre: Vector3, at: Vector3) -> Vector3:
 	var flat: Vector3 = at - centre
 	flat.y = 0.0
 	return flat.normalized() if flat.length() > 0.01 else Vector3.FORWARD
+
+
+## Where to throw so a straight drone meets a target that is walking or circling: its aim point pushed along its own
+## (flat) velocity by the flight time. Two passes are plenty at drone speeds.
+static func _lead_point(origin: Vector3, target: Node3D, speed_mps: float) -> Vector3:
+	var point: Vector3 = _aim_point(target)
+	var body: CharacterBody3D = target as CharacterBody3D
+	if body == null or speed_mps <= 0.1:
+		return point
+	var flat: Vector3 = Vector3(body.velocity.x, 0.0, body.velocity.z)
+	var lead: Vector3 = point
+	for pass_number: int in range(2):
+		lead = point + flat * (origin.distance_to(lead) / speed_mps)
+	return lead
 
 
 static func _aim_point(node: Node3D) -> Vector3:

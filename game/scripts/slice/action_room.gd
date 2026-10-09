@@ -30,6 +30,8 @@ signal knocked_out_rule(rule: String)
 signal continue_started(room: String, spawn: String)
 ## The form she starts the room in (red / small / huge). RobotStage (VS-21) acts on it.
 signal form_entered(form_id: StringName)
+## The HUD's Quit (pause menu or Continue screen) was chosen: Main goes back to the title.
+signal quit_to_title_requested
 
 const SLICE_DATA_ID: String = "slice/slice"
 const SANDBOX_DATA_ID: String = "combat/sandbox"
@@ -68,6 +70,8 @@ var director: CombatDirector = null
 var hero: ActionPlayer = null
 var orbit: OrbitCamera = null
 var lock: LockOn = null
+## The robots of a room whose entry names `robots` (VS-21); null in every other room.
+var robot_stage: RobotStage = null
 
 ## Ambient one-liners from townspeople as she walks past.
 var barks: AmbientBarks = null
@@ -121,6 +125,7 @@ func _ready() -> void:
 	_build_hero()
 	_build_camera()
 	_build_parts()
+	_build_robot_stage()
 	_setup_talking_action()
 	_setup_story()
 	_setup_barks()
@@ -161,6 +166,8 @@ func _exit_tree() -> void:
 		save_session()
 	_release_menu_hold()
 	_teardown_saving()
+	if _hud != null and is_instance_valid(_hud) and _hud.has_signal("quit_requested") and _hud.is_connected("quit_requested", _on_hud_quit):
+		_hud.disconnect("quit_requested", _on_hud_quit)
 	if _hud != null and is_instance_valid(_hud) and _hud.has_signal("field_menu_requested") \
 			and _hud.is_connected("field_menu_requested", open_field_menu):
 		_hud.disconnect("field_menu_requested", open_field_menu)
@@ -392,29 +399,52 @@ func _build_parts() -> void:
 			_fx = node
 
 
+## The robots of this room (VS-21): RobotStage reads data/slice/robot_rooms/<entry robots>.json. Only rooms that name robots get one.
+func _build_robot_stage() -> void:
+	var robots_id: String = str(entry.get("robots", ""))
+	if robots_id.is_empty() or hero == null:
+		return
+	robot_stage = RobotStage.new()
+	robot_stage.name = "RobotStage"
+	add_child(robot_stage)
+	if not robot_stage.bind(self):
+		push_warning("ActionRoom %s: no robot room data '%s'" % [room_id, robots_id])
+
+
+## The stage changed her body (she boarded, docked or climbed out): what the next room and the HUD hear as her form.
+func _on_stage_form(form_id: StringName) -> void:
+	_form = form_id
+	form_entered.emit(form_id)
+
+
 func _spawn_enemies() -> void:
 	if not is_combat():
 		return
-	var scenes: Dictionary = _sandbox_data.get("enemy_scenes", {}) as Dictionary
 	for raw: Variant in entry.get("enemies", []) as Array:
 		var spawn: Dictionary = raw as Dictionary
-		var kind: String = str(spawn.get("enemy", ""))
-		var path: String = str(scenes.get(kind, ""))
-		if path.is_empty() or not ResourceLoader.exists(path):
-			push_warning("ActionRoom %s: no enemy scene for '%s'" % [room_id, kind])
-			continue
-		var enemy: Node3D = (load(path) as PackedScene).instantiate() as Node3D
-		if enemy == null:
-			continue
-		_enemy_serial += 1
-		if "actor_id" in enemy:
-			enemy.set("actor_id", StringName("%s_%d" % [kind, _enemy_serial]))
-		var pos: Vector3 = _vec3(spawn.get("pos"))
-		if "spawn_position" in enemy:
-			enemy.set("spawn_position", pos)
-		enemy.position = pos
-		add_child(enemy)
-		_enemies.append(enemy)
+		spawn_enemy(str(spawn.get("enemy", "")), _vec3(spawn.get("pos")))
+
+
+## Puts one enemy of `kind` (a key of combat/sandbox "enemy_scenes") into the room at `pos`. Null if there is no such scene.
+## A drone line (VS-19) calls this for each drone it sends.
+func spawn_enemy(kind: String, pos: Vector3) -> Node3D:
+	var scenes: Dictionary = _sandbox_data.get("enemy_scenes", {}) as Dictionary
+	var path: String = str(scenes.get(kind, ""))
+	if path.is_empty() or not ResourceLoader.exists(path):
+		push_warning("ActionRoom %s: no enemy scene for '%s'" % [room_id, kind])
+		return null
+	var enemy: Node3D = (load(path) as PackedScene).instantiate() as Node3D
+	if enemy == null:
+		return null
+	_enemy_serial += 1
+	if "actor_id" in enemy:
+		enemy.set("actor_id", StringName("%s_%d" % [kind, _enemy_serial]))
+	if "spawn_position" in enemy:
+		enemy.set("spawn_position", pos)
+	enemy.position = pos
+	add_child(enemy)
+	_enemies.append(enemy)
+	return enemy
 
 
 static func _vec3(raw: Variant) -> Vector3:
@@ -475,6 +505,11 @@ func _load_session() -> void:
 func _apply_session() -> void:
 	if hero == null or _entry_session == null:
 		return
+	# a room that starts inside a robot (J5 in the loader) puts her in it first, so her health is read in that body's terms
+	if robot_stage != null:
+		robot_stage.place_in(_form)
+		if not robot_stage.form_changed.is_connected(_on_stage_form):
+			robot_stage.form_changed.connect(_on_stage_form)
 	hero.hp = _entry_session.health_for(hero.hp_max)
 	hero.dead = false
 	if director != null:
@@ -484,8 +519,8 @@ func _apply_session() -> void:
 	var battery: Object = _battery()
 	if battery != null and _entry_session.has_battery():
 		_set_battery(battery, _entry_session.battery_for(float(battery.call("capacity"))))
-	if _form != HeroSession.FORM_RED:
-		push_warning("ActionRoom %s: form '%s' asked for; RobotStage (VS-21) places her in it" % [room_id, _form])
+	if _form != HeroSession.FORM_RED and robot_stage == null:
+		push_warning("ActionRoom %s: form '%s' asked for, but the room's entry names no `robots`" % [room_id, _form])
 	form_entered.emit(_form)
 
 
@@ -738,12 +773,17 @@ func sticky_ids() -> Array:
 	for section_name: String in Placements.section_names():
 		var block: Dictionary = Placements.section(section_name)
 		for placement_id: String in block:
+			if not block[placement_id] is Dictionary:          # an "_about" note
+				continue
 			var info: Dictionary = block[placement_id] as Dictionary
 			if not bool(info.get("sticky", false)):
 				continue
 			for key: String in ["flag", "opened_id", "target_id"]:
 				if info.has(key):
 					ids.append(str(info[key]))
+			for raw_job: Variant in info.get("jobs", []) as Array:        # a crane's jobs each set their own flag
+				if raw_job is Dictionary and (raw_job as Dictionary).has("flag"):
+					ids.append(str((raw_job as Dictionary)["flag"]))
 			if section_name == Placements.SECTION_DOORS:
 				ids.append(Door.UNLOCK_PREFIX + placement_id)
 	return ids
@@ -754,6 +794,9 @@ func reset_arena() -> void:
 	if hero == null:
 		return
 	hero.reset_to(_spawn_xform)
+	if robot_stage != null:
+		robot_stage.reset()                    # tells us she is Red again, so read the entry form after it
+	_form = _entry_session.form_for_room(str(entry.get("form", "red"))) if _entry_session != null else _form
 	_apply_session()
 	if orbit != null:
 		orbit.recenter()
@@ -788,7 +831,7 @@ func get_feel() -> FeelKnobs:
 
 
 func get_robot_stage() -> Node:
-	return null
+	return robot_stage
 
 
 func get_enemies() -> Array[Node3D]:
@@ -877,9 +920,17 @@ func _attach_hud() -> void:
 	if _hud.has_method("bind"):
 		_hud.call("bind", self)
 		_hud.set_meta(META_HOST, self)
+	if "auto_quit" in _hud:
+		_hud.set("auto_quit", false)               # Quit goes back to the title (Main), not out of the program
+	if _hud.has_signal("quit_requested") and not _hud.is_connected("quit_requested", _on_hud_quit):
+		_hud.connect("quit_requested", _on_hud_quit)
 	# The pause menu's "Menu" row opens the field menu (the HUD only shows the row while somebody listens).
 	if _hud.has_signal("field_menu_requested") and field_menu != null and not _hud.is_connected("field_menu_requested", open_field_menu):
 		_hud.connect("field_menu_requested", open_field_menu)
+
+
+func _on_hud_quit() -> void:
+	quit_to_title_requested.emit()
 
 
 func get_hud() -> Node:

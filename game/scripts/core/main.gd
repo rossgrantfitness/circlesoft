@@ -42,6 +42,9 @@ const SANDBOX_FEATURE: String = "sandbox"
 const SANDBOX_ARG: String = "--sandbox"
 ## data/slice/slice.json "default_mode": the mode a run with no flag and no feature tag boots.
 const SLICE_DATA_ID: String = "slice/slice"
+const SLICE_TITLE_TEXT_ID: String = "text/title_slice"
+const QUIT_TO_TITLE_SIGNAL: StringName = &"quit_to_title_requested"
+const GROUP_SLICE_HUD: StringName = &"slice_hud"
 const KEY_DEFAULT_MODE: String = "default_mode"
 const SANDBOX_SCENE_PATH: String = "res://scenes/sandbox/combat_sandbox.tscn"
 
@@ -238,11 +241,17 @@ func go_to_title() -> void:
 	_room = null
 	_sandbox = null
 	_free_title()
+	if _mode == GameMode.Mode.SLICE:
+		_drop_slice_ui()
 	var scene: PackedScene = load(title_scene_path) as PackedScene if ResourceLoader.exists(title_scene_path) else null
 	if scene == null:
 		start_demo()
 		return
 	_title = scene.instantiate()
+	if _mode == GameMode.Mode.SLICE:
+		# The slice's front door: the same title screen with the slice's words, four rows, and no name window.
+		_title.set("text_id", SLICE_TITLE_TEXT_ID)
+		_title.set("ask_hero_name", false)
 	screen.get_ui_layer().add_child(_title)
 	if _title.has_signal(START_SIGNAL):
 		_title.connect(START_SIGNAL, start_new_game)
@@ -253,6 +262,14 @@ func go_to_title() -> void:
 	if _title.has_signal(CONTINUE_SIGNAL):
 		_title.connect(CONTINUE_SIGNAL, continue_game)
 	_set_state(State.TITLE)
+
+
+## Going back to the title from a slice room: the persistent HUD goes with the room, and any pause its menus hold is let go.
+func _drop_slice_ui() -> void:
+	SandboxPauseGate.clear(get_tree())
+	for node: Node in get_tree().get_nodes_in_group(GROUP_SLICE_HUD):
+		node.remove_from_group(GROUP_SLICE_HUD)
+		node.queue_free()
 
 
 ## New Game from the title: a fresh GameState, then the start room (rooms.json "start_room": the ore
@@ -361,6 +378,8 @@ func enter_room(scene: PackedScene, spawn_id: String = "") -> Node:
 func _connect_room(room: Node) -> void:
 	if room == null:
 		return
+	if room.has_signal(QUIT_TO_TITLE_SIGNAL):
+		room.connect(QUIT_TO_TITLE_SIGNAL, go_to_title, CONNECT_DEFERRED)
 	if room.has_signal(ROOM_BATTLE_SIGNAL):
 		room.connect(ROOM_BATTLE_SIGNAL, _on_room_battle_requested)
 	if room.has_signal(FIELD_BATTLE_SIGNAL):

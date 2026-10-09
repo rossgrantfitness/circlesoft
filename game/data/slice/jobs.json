@@ -18,15 +18,11 @@
     "Show the pass at Gate 4. Do not make a noise on the road."
    ],
    "take": {
-    "text": "Job taken. Courier Pass in hand. Gate 4 is through the arch.",
-    "give_items": [
-     {
-      "item": "courier_pass",
-      "count": 1
-     }
-    ],
+    "text": "Job taken. Courier Pass stamped onto your hand-me-down badge. Gate 4 is through the arch.",
+    "give_items": [],
     "set_flags": [
-     "job_main_taken"
+     "job_main_taken",
+     "courier_pass"
     ]
    },
    "taken_text": [

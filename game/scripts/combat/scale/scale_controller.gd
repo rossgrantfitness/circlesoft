@@ -63,6 +63,9 @@ func bind(sandbox: Node3D, for_player: ActionPlayer, for_camera: OrbitCamera, fo
 	var world_env: WorldEnvironment = sandbox.get_node_or_null("WorldEnvironment") as WorldEnvironment
 	_environment = world_env.environment if world_env != null else null
 	_key_light = sandbox.get_node_or_null("Lights/KeyLight") as DirectionalLight3D
+	if _key_light == null:         # a slice room: the level's own sun, wherever its scene put it
+		var suns: Array[Node] = sandbox.find_children("*", "DirectionalLight3D", true, false)
+		_key_light = suns[0] as DirectionalLight3D if not suns.is_empty() else null
 	if player != null and not player.landed.is_connected(_on_landed):
 		player.landed.connect(_on_landed)
 		player.dashed.connect(_on_dashed)

@@ -1,0 +1,28 @@
+{
+ "_about": "The slice's title strings (TitleScreen.text_id). No title word yet (the game is untitled), a GRAYBOX tag, and four menu rows: New Game (straight into Red's hideout, no name window), Continue (the newest slice save), Config, Quit. Same shape as text/title.json; the name window and Battle Test keep reading text/title.",
+ "title": "UNTITLED",
+ "title_lit_word": "",
+ "demo_tag": "GRAYBOX",
+ "press_start": "Press Start",
+ "credit": "a Circlesoft game",
+ "version": "slice graybox",
+ "menu": [
+  {
+   "id": "new_game",
+   "label": "New Game"
+  },
+  {
+   "id": "continue",
+   "label": "Continue"
+  },
+  {
+   "id": "config",
+   "label": "Config"
+  },
+  {
+   "id": "quit",
+   "label": "Quit"
+  }
+ ],
+ "dev_items": false
+}

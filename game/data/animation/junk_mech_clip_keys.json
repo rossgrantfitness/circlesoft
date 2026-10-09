@@ -1,0 +1,369 @@
+{
+ "_about": "Key poses of the clips: where the strike lands (contact_s) and the poses the move data snaps to. 30 fps, baked by retarget_ual.py from the free Quaternius clips (CC0). Use these seconds as clip_s in moves.json anim.keys.",
+ "fps": 30,
+ "clips": {
+  "idle": {
+   "length_s": 5.0,
+   "loop": true,
+   "source": "UAL1:Idle_Loop",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 150,
+     "clip_s": 5.0
+    }
+   ],
+   "baked_speeds": [
+    0.5
+   ],
+   "note": "Idle_Loop at half speed: a heavy breath"
+  },
+  "walk": {
+   "length_s": 3.3333,
+   "loop": true,
+   "source": "UAL1:Walk_Loop",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 100,
+     "clip_s": 3.3333
+    }
+   ],
+   "baked_speeds": [
+    0.4
+   ],
+   "note": "Walk_Loop slowed so the stride matches walk speed_mps (12 m/s); stride_mps is in the key data",
+   "stride_mps": 12.05
+  },
+  "swing_r_windup": {
+   "length_s": 1.9,
+   "loop": false,
+   "source": "UAL2:Sword_Regular_A",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 57,
+     "clip_s": 1.9
+    }
+   ],
+   "strike": "swing_r_strike",
+   "baked_speeds": [
+    0.1
+   ],
+   "note": "Scrap Swing wind-up: the first 0.19 s of Sword_Regular_A at 0.1x = 1.9 s (the arm hauls back)."
+  },
+  "swing_r_strike": {
+   "length_s": 4.6,
+   "loop": false,
+   "source": "UAL2:Sword_Regular_A + UAL2:Sword_Regular_A + UAL2:Sword_Regular_A + UAL2:Sword_Regular_A_Rec",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 3,
+     "clip_s": 0.1
+    },
+    {
+     "frame": 138,
+     "clip_s": 4.6
+    }
+   ],
+   "contact_s": 0.1,
+   "contact_frame": 3,
+   "baked_speeds": [
+    0.1,
+    0.12,
+    0.3
+   ],
+   "note": "Scrap Swing strike: Sword_Regular_A through the swing at 0.12x (the 0.9 s sweep of the hitboxes) and its recovery at 0.3x; contact = the start of the sweep."
+  },
+  "swing_l_windup": {
+   "length_s": 1.9,
+   "loop": false,
+   "source": "UAL2:Sword_Regular_A",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 57,
+     "clip_s": 1.9
+    }
+   ],
+   "strike": "swing_l_strike",
+   "mirrored": true,
+   "baked_speeds": [
+    0.1
+   ],
+   "note": "Scrap Swing wind-up: the first 0.19 s of Sword_Regular_A at 0.1x = 1.9 s (the arm hauls back). Mirrored: the left arm."
+  },
+  "swing_l_strike": {
+   "length_s": 4.6,
+   "loop": false,
+   "source": "UAL2:Sword_Regular_A + UAL2:Sword_Regular_A + UAL2:Sword_Regular_A + UAL2:Sword_Regular_A_Rec",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 3,
+     "clip_s": 0.1
+    },
+    {
+     "frame": 138,
+     "clip_s": 4.6
+    }
+   ],
+   "contact_s": 0.1,
+   "contact_frame": 3,
+   "mirrored": true,
+   "baked_speeds": [
+    0.1,
+    0.12,
+    0.3
+   ],
+   "note": "Scrap Swing strike: Sword_Regular_A through the swing at 0.12x (the 0.9 s sweep of the hitboxes) and its recovery at 0.3x; contact = the start of the sweep. Mirrored: the left arm."
+  },
+  "drop_windup": {
+   "length_s": 2.3,
+   "loop": false,
+   "source": "UAL2:Sword_Heavy_Combo",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 69,
+     "clip_s": 2.3
+    }
+   ],
+   "strike": "drop_strike",
+   "baked_speeds": [
+    0.217
+   ],
+   "note": "Wrecking Drop wind-up: Sword_Heavy_Combo 2.0 to 2.5 s (the overhead raise) at 0.22x = 2.3 s."
+  },
+  "drop_strike": {
+   "length_s": 3.9333,
+   "loop": false,
+   "source": "UAL2:Sword_Heavy_Combo + UAL2:Sword_Heavy_Combo + UAL2:Sword_Heavy_Combo",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 3,
+     "clip_s": 0.1
+    },
+    {
+     "frame": 118,
+     "clip_s": 3.9333
+    }
+   ],
+   "contact_s": 0.1,
+   "contact_frame": 3,
+   "baked_speeds": [
+    0.2,
+    0.75
+   ],
+   "note": "Wrecking Drop strike: the slam of Sword_Heavy_Combo (contact at 2.6 s of the source), then the slammed crouch drifts and holds (arms stuck in the ground)."
+  },
+  "stomp_windup": {
+   "length_s": 1.6,
+   "loop": false,
+   "source": "UAL1:Walk_Loop",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 48,
+     "clip_s": 1.6
+    }
+   ],
+   "strike": "stomp_strike",
+   "baked_speeds": [
+    0.138
+   ],
+   "note": "Stomp March wind-up: the right foot of Walk_Loop lifts (0.2 to 0.42 s) at 0.14x = 1.6 s."
+  },
+  "stomp_strike": {
+   "length_s": 4.0,
+   "loop": false,
+   "source": "UAL1:Walk_Loop + UAL1:Walk_Loop + UAL1:Walk_Loop",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 3,
+     "clip_s": 0.1
+    },
+    {
+     "frame": 120,
+     "clip_s": 4.0
+    }
+   ],
+   "contact_s": 0.1,
+   "contact_frame": 3,
+   "extra_contacts_s": [
+    1.1
+   ],
+   "baked_speeds": [
+    0.367,
+    2.5,
+    3.3
+   ],
+   "note": "Stomp March strike: the right foot drops (first stomp = contact), the left lifts and drops one second later (extra_contacts_s), then it stands still while it catches its balance."
+  },
+  "barrage_windup": {
+   "length_s": 1.8,
+   "loop": false,
+   "source": "UAL2:OverhandThrow",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 54,
+     "clip_s": 1.8
+    }
+   ],
+   "strike": "barrage_strike",
+   "baked_speeds": [
+    0.167
+   ],
+   "note": "Scrap Barrage wind-up: OverhandThrow 0 to 0.3 s (arm back and up) at 0.17x = 1.8 s."
+  },
+  "barrage_strike": {
+   "length_s": 3.5667,
+   "loop": false,
+   "source": "UAL2:OverhandThrow + UAL2:OverhandThrow + UAL2:OverhandThrow + UAL2:OverhandThrow + UAL2:OverhandThrow + UAL2:OverhandThrow + UAL2:OverhandThrow + UAL2:OverhandThrow",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 3,
+     "clip_s": 0.1
+    },
+    {
+     "frame": 107,
+     "clip_s": 3.5667
+    }
+   ],
+   "contact_s": 0.1,
+   "contact_frame": 3,
+   "extra_contacts_s": [
+    0.7,
+    1.3
+   ],
+   "baked_speeds": [
+    0.4,
+    0.5
+   ],
+   "note": "Scrap Barrage strike: three throws of OverhandThrow, 0.6 s apart (contact and extra_contacts_s are the releases); the arm is wound back between them by playing the follow-through in reverse."
+  },
+  "hurt": {
+   "length_s": 1.0,
+   "loop": false,
+   "source": "UAL1:Hit_Chest",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 9,
+     "clip_s": 0.303
+    },
+    {
+     "frame": 30,
+     "clip_s": 1.0
+    }
+   ],
+   "contact_s": 0.303,
+   "contact_frame": 9,
+   "baked_speeds": [
+    0.33
+   ],
+   "note": "plate-hit flinch: Hit_Chest at a third of its speed (about 1 s, the plate_break recoil)"
+  },
+  "stagger": {
+   "length_s": 3.6,
+   "loop": true,
+   "source": "UAL1:Hit_Chest",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 108,
+     "clip_s": 3.6
+    }
+   ],
+   "baked_speeds": [
+    0.3
+   ],
+   "note": "cab opens (core_reveal): Hit_Chest at 0.3x then the end pose held (the importer loops this name; it is 3.6 s, longer than the 2.6 s move)"
+  },
+  "roar": {
+   "length_s": 2.2333,
+   "loop": false,
+   "source": "UAL2:Zombie_Scratch",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 67,
+     "clip_s": 2.2333
+    }
+   ],
+   "baked_speeds": [
+    0.8
+   ],
+   "note": "last stand: arms thrashing (Zombie_Scratch at 0.8x = 2.25 s); the brute's enrage uses the same clip"
+  },
+  "knockdown": {
+   "length_s": 5.3,
+   "loop": false,
+   "source": "UAL1:Death01",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 159,
+     "clip_s": 5.3
+    }
+   ],
+   "baked_speeds": [
+    0.5
+   ],
+   "note": "defeat collapse: Death01 at half speed = 4.8 s, then holds the pose on the floor (the 5 s ending)"
+  }
+ }
+}

@@ -32,13 +32,22 @@ var _serial: int = 0
 func build(for_sandbox: Node3D, override_data: Dictionary = {}) -> void:
 	_sandbox = for_sandbox
 	data = override_data if not override_data.is_empty() else _load_data()
-	_build_ground()
+	if not data.has("kinds") and not override_data.is_empty():
+		# a slice robot room (data/slice/robot_rooms) lists what stands where; what each kind is comes from the test yard's file
+		data = data.duplicate()
+		data["kinds"] = (_load_default_data().get("kinds", {}) as Dictionary)
+	if bool(data.get("ground", true)):         # a slice level supplies its own floor and walls: "ground": false
+		_build_ground()
 	_build_robots()
 	_build_props()
 	_build_city()
 
 
 func _load_data() -> Dictionary:
+	return _load_default_data()
+
+
+func _load_default_data() -> Dictionary:
 	var tree: SceneTree = get_tree()
 	var db: Node = tree.root.get_node_or_null("DataDB") if tree != null else null
 	return (db.call("get_dict", DATA_ID) as Dictionary) if db != null else {}
@@ -186,27 +195,30 @@ func _material(tile: String) -> Material:
 
 # ---- the robots ----
 
+## Builds the robots the data lists (the test yard has both; a slice room may have only the loader, or only the colossus).
 func _build_robots() -> void:
 	var small_cfg: Dictionary = data.get("small_robot", {}) as Dictionary
 	var huge_cfg: Dictionary = data.get("huge_robot", {}) as Dictionary
-	small_display = RobotDisplay.new()
-	small_display.name = "ParkedLoader"
-	add_child(small_display)
-	if not small_display.setup(RobotDisplay.KIND_SMALL, SMALL_PATH):
-		missing.append(SMALL_PATH)
-	_small_home = _transform_of(small_cfg)
-	small_display.global_transform = _small_home
-	huge_display = RobotDisplay.new()
-	huge_display.name = "StandingColossus"
-	add_child(huge_display)
-	if not huge_display.setup(RobotDisplay.KIND_HUGE, HUGE_PATH):
-		missing.append(HUGE_PATH)
-	_huge_home = _transform_of(huge_cfg)
-	huge_display.global_transform = _huge_home
-	small_display.hatch_open_deg = ScaleProfile.sequence_value("hatch_open_deg", -100.0)
-	huge_display.door_open_deg = float(ScaleProfile.sequence(&"dock").get("door_open_deg", 100.0))
-	small_display.set_hatch_open(0.0)
-	huge_display.set_doors_open(0.0)
+	if data.has("small_robot"):
+		small_display = RobotDisplay.new()
+		small_display.name = "ParkedLoader"
+		add_child(small_display)
+		if not small_display.setup(RobotDisplay.KIND_SMALL, SMALL_PATH):
+			missing.append(SMALL_PATH)
+		_small_home = _transform_of(small_cfg)
+		small_display.global_transform = _small_home
+		small_display.hatch_open_deg = ScaleProfile.sequence_value("hatch_open_deg", -100.0)
+		small_display.set_hatch_open(0.0)
+	if data.has("huge_robot"):
+		huge_display = RobotDisplay.new()
+		huge_display.name = "StandingColossus"
+		add_child(huge_display)
+		if not huge_display.setup(RobotDisplay.KIND_HUGE, HUGE_PATH):
+			missing.append(HUGE_PATH)
+		_huge_home = _transform_of(huge_cfg)
+		huge_display.global_transform = _huge_home
+		huge_display.door_open_deg = float(ScaleProfile.sequence(&"dock").get("door_open_deg", 100.0))
+		huge_display.set_doors_open(0.0)
 
 
 func _transform_of(cfg: Dictionary) -> Transform3D:

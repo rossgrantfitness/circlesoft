@@ -299,7 +299,7 @@ func test_the_boom_barrier_is_locked_until_the_main_job_is_taken() -> void:
 			main_job = jobs[job_id]
 	assert_false(main_job.is_empty(), "a job sets job_main_taken")
 	assert_has((main_job["take"] as Dictionary)["set_flags"], "job_main_taken")
-	assert_eq(((main_job["take"] as Dictionary)["give_items"] as Array)[0]["item"], "courier_pass")
+	assert_has((main_job["take"] as Dictionary)["set_flags"], "courier_pass")      # the pass is a flag for now (no new key item)
 
 
 # ---- the walk check ----

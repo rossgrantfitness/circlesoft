@@ -1259,5 +1259,157 @@
    ],
    "reach": 1.5
   }
+ },
+ "hack_targets": {
+  "_about": "VS-19, World hack targets (Gameplay Programmer). One entry per node in a room scene that carries `target_id` (HackDoor, HackTerminal, HackCrane, DroneLine, HackLoader in scripts/slice/targets/). Common keys: room, kind, accepts (zap / emp / overclock / interact), lockable, sticky (true: the `flag` stays set after a retry, a reload and a save; ActionRoom.sticky_ids reads `flag` and each crane job's `flag`), flag (GameState flag set when done; a `Door` placement with requires.flag opens by it), aim_height_m, reach_m. Per kind: fuse door - slab {size, offset} or door_path, open_s, also_flags; terminal - message [lines], scene, also_flags, once; crane - jobs [{id, flag, path [[x,y,z]...] world metres, speed_mps, cargo {size} or cargo_path, smash {radius_m, group}}] done in order, each by one Overclock (10 s) or several; drone line - enemy, interval_s, first_after_s, max_alive, total_max, emp_stops_s, zaps_needed, node_pos, spawn_offset; loader - flag (same as the robot room's wake_flag). Coordinates are the map's metres (origin at the room's NW floor corner, +x east, +z south) and the Level Designer checks them against the scenes (VS-20). The crane's path points here are PLACEHOLDERS from docs/maps/junkyard.md.",
+  "hack_j1_door": {
+   "room": "junk_j1",
+   "kind": "fuse_door",
+   "accepts": [
+    "zap"
+   ],
+   "lockable": true,
+   "sticky": true,
+   "flag": "hack_j1_door_open",
+   "aim_height_m": 0.9
+  },
+  "term_j2_gate": {
+   "room": "junk_j2",
+   "kind": "terminal",
+   "accepts": [
+    "interact"
+   ],
+   "sticky": true,
+   "flag": "term_j2_gate_open",
+   "message": [
+    "The gate unlatches."
+   ],
+   "reach_m": 2.0
+  },
+  "crane_j3": {
+   "room": "junk_j3",
+   "kind": "crane",
+   "accepts": [
+    "overclock"
+   ],
+   "lockable": true,
+   "sticky": true,
+   "flag": "crane_j3_done",
+   "aim_height_m": 1.2,
+   "jobs": [
+    {
+     "id": "bridge",
+     "flag": "hack_j3_bridge_placed",
+     "speed_mps": 4.0,
+     "cargo": {
+      "size": [
+       12.0,
+       0.6,
+       3.0
+      ]
+     },
+     "path": [
+      [
+       36.0,
+       0.3,
+       40.0
+      ],
+      [
+       36.0,
+       8.0,
+       40.0
+      ],
+      [
+       56.0,
+       8.0,
+       40.0
+      ],
+      [
+       56.0,
+       0.3,
+       40.0
+      ]
+     ]
+    },
+    {
+     "id": "vault",
+     "flag": "hack_j3_vault_wall_hit",
+     "speed_mps": 5.0,
+     "cargo": {
+      "size": [
+       6.0,
+       2.6,
+       2.6
+      ]
+     },
+     "path": [
+      [
+       48.0,
+       0.3,
+       56.0
+      ],
+      [
+       48.0,
+       6.0,
+       56.0
+      ],
+      [
+       72.0,
+       6.0,
+       26.0
+      ],
+      [
+       72.0,
+       2.0,
+       22.0
+      ]
+     ],
+     "smash": {
+      "radius_m": 4.0,
+      "group": "crane_breakable"
+     }
+    }
+   ]
+  },
+  "dline_j3": {
+   "room": "junk_j3",
+   "kind": "drone_line",
+   "accepts": [
+    "emp"
+   ],
+   "sticky": true,
+   "flag": "dline_j3_dead",
+   "enemy": "signals_drone",
+   "interval_s": 6.0,
+   "first_after_s": 5.0,
+   "max_alive": 2,
+   "emp_stops_s": 8.0,
+   "zaps_needed": 2,
+   "node_pos": [
+    10.0,
+    5.0,
+    6.0
+   ],
+   "aim_height_m": 1.0
+  },
+  "hack_j3_vault": {
+   "room": "junk_j3",
+   "kind": "fuse_door",
+   "accepts": [
+    "zap"
+   ],
+   "sticky": true,
+   "flag": "hack_j3_vault_open"
+  },
+  "loader_j4": {
+   "room": "junk_j4",
+   "kind": "loader",
+   "accepts": [
+    "interact"
+   ],
+   "sticky": true,
+   "flag": "loader_awake",
+   "reach_m": 3.0
+  }
  }
 }
