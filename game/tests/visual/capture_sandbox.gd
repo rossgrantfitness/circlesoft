@@ -49,6 +49,7 @@ var _no_rim: bool = false
 var _no_shadow: bool = false
 var _no_fog: bool = false
 var _name: String = ""
+var _nearest_actors: bool = false
 
 
 func _initialize() -> void:
@@ -67,6 +68,8 @@ func _initialize() -> void:
 			_no_glow = true
 		elif arg.begins_with("--profile="):
 			_profile_id = arg.trim_prefix("--profile=")
+		elif arg == "--nearest-actors":
+			_nearest_actors = true
 		elif arg.begins_with("--name="):
 			_name = arg.trim_prefix("--name=")
 	await process_frame
@@ -148,6 +151,11 @@ func _build_stage() -> void:
 	_camera.current = true
 	_world.add_child(_camera)
 	_ps2_node()
+	if _nearest_actors:
+		# the other texture-filter choice for Red, the wolf and the swords (data stays untouched on disk)
+		var filters: Dictionary = (_look.call("profile", _profile_id) as Dictionary)["texture_filter"]
+		for group: String in ["characters", "enemies", "weapons"]:
+			filters[group] = "nearest"
 
 
 func _ps2_node() -> void:

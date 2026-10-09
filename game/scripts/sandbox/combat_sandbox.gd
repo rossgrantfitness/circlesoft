@@ -299,6 +299,9 @@ func _setup_screen() -> void:
 	var screen: Node = get_tree().get_first_node_in_group(GROUP_PSX_SCREEN)
 	if screen == null or not screen.has_method("set_resolution"):
 		return
+	# The look profile's own screen block (native by default) wins over this fallback size.
+	if Ps2Look.is_ps2_profile(LookProfiles.profile(str(_data.get("look_profile", "grim_ps2")))):
+		return
 	var wanted: String = str(_data.get("internal_resolution", "640x360"))
 	var parts: PackedStringArray = wanted.split("x")
 	if parts.size() == 2:

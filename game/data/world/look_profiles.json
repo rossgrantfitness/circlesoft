@@ -208,7 +208,7 @@
   "grim_ps2": {
    "name": "Grim PS2 (combat sandbox)",
    "grade": {
-    "_note": "Ross's 'B filter' (2026-10-08): a lighter grade than grim (desat 0.35 not 0.75, tint 0.3 not 0.6, gamma 1.0 not 1.1); grain, vignette, crush and accent_keep as in grim.",
+    "_note": "Ross's 'B filter' (2026-10-08): a lighter grade than grim (desat 0.35 not 0.75, tint 0.3 not 0.6, gamma 1.0 not 1.1); vignette, crush and accent_keep as in grim. NO GRAIN (Ross, 2026-10-09: 'no need to make them so grainy blurry'): grain is 0 in this profile.",
     "amount": 1.0,
     "desat": 0.35,
     "accent_keep": 0.8,
@@ -226,7 +226,7 @@
      0.66
     ],
     "tint_amount": 0.3,
-    "grain": 0.065,
+    "grain": 0.0,
     "grain_fps": 12.0,
     "vignette": 0.4
    },
@@ -339,11 +339,16 @@
     "height": 0.7,
     "forward": 0.25
    },
-   "_about": "The early-PS2 look for the combat sandbox (Ross, 2026-10-08: 'the psx look needs a upgrade to ps2'; docs/pivot/combat_api.md section 6). Grim's grade, fog and edge light kept; 640x360 smooth picture, retro wobble (vertex jitter, affine warp), dither and 15-bit colour off, a real-time key-light shadow, glow, gentle smooth fog. Applied by scripts/core/ps2_look.gd (a look-aware node the sandbox adds); a scene without that node only gets the grade and fog. texture_filter is per texture group: smooth (linear + mipmaps) or nearest (crisp pixels); Ross has not chosen for the city tiles yet, so they stay nearest.",
+   "_about": "The early-PS2 look for the combat sandbox (Ross, 2026-10-08: 'the psx look needs a upgrade to ps2'; docs/pivot/combat_api.md section 6). Early-game STYLE with modern CLARITY (Ross, 2026-10-09: 'no need to make them so grainy blurry'): the world is drawn at the full window resolution (screen.resolution 'native'), no grain, no dither, MSAA instead of any smearing filter, a tight light glow. Grim's grade, fog and edge light kept; retro wobble (vertex jitter, affine warp), dither and 15-bit colour off, a real-time key-light shadow, glow, gentle smooth fog. Applied by scripts/core/ps2_look.gd (a look-aware node the sandbox adds); a scene without that node only gets the grade and fog. texture_filter is per texture group: smooth (linear + mipmaps) or nearest (crisp pixels); Ross has not chosen for the city tiles yet, so they stay nearest.",
    "screen": {
-    "resolution": "640x360",
-    "smooth_scale": true,
-    "_note": "The internal picture size is a data setting (psx_look.json lists the sizes); Ross may revisit it."
+    "resolution": "native",
+    "smooth_scale": false,
+    "_note": "The internal picture size is a data setting. 'native' = the full window resolution, one picture pixel per screen pixel (Ross, 2026-10-09: no grainy, blurry picture). Or any id listed in data/world/psx_look.json (such as 640x360) to bring the low-res picture back; smooth_scale then picks the scale-up filter (true = linear, false = nearest). At native the filter does not matter: nothing is scaled, so smooth_scale stays false."
+   },
+   "antialiasing": {
+    "msaa_3d": "4x",
+    "debanding": false,
+    "_note": "MSAA smooths jagged edges without blurring textures (Compatibility renderer supports it). Screen-space AA, FXAA and TAA are always off: they smear. 'off', '2x', '4x' or '8x'."
    },
    "retro_wobble": {
     "jitter": 0.0,
@@ -371,18 +376,19 @@
    },
    "glow": {
     "enabled": true,
-    "intensity": 0.8,
+    "intensity": 0.6,
     "strength": 1.0,
-    "bloom": 0.05,
+    "bloom": 0.0,
     "hdr_threshold": 1.05,
     "hdr_scale": 2.0,
     "blend": "screen",
+    "_levels_note": "Tight glow, no haze (Ross, 2026-10-09: no blur). Glow level N blurs at 1/2^N of the picture, so only the two finest levels are on: a small halo on neon and the edge light, not a wide fog around them. It was levels 3 to 5 (1/8 to 1/32 resolution), which at full resolution spread the light across a hundred pixels.",
     "levels": [
+     1.0,
+     0.6,
      0.0,
      0.0,
-     1.0,
-     1.0,
-     0.7,
+     0.0,
      0.0,
      0.0
     ],

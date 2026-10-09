@@ -4,8 +4,9 @@ extends Node
 ##
 ## Put one of these in a scene that wants the PS2 look (the combat sandbox does). It is "look-aware": whenever
 ## LookProfiles applies a profile it calls apply_look(), and
-##   * for a profile with a `screen` block (grim_ps2) it sets the internal picture (640x360) and the smooth scale-up,
-##     turns the PSX retro effects off (vertex jitter, affine warp, dither, 15-bit colour), sets the smooth fog,
+##   * for a profile with a `screen` block (grim_ps2) it sets the internal picture ("native" = the full window
+##     resolution, no scaling and no blur; or a listed size such as 640x360 with a chosen scale-up filter), sets
+##     the anti-aliasing (MSAA on the world picture), turns the PSX retro effects off (vertex jitter, affine warp, dither, 15-bit colour), sets the smooth fog,
 ##     and dresses the scene's WorldEnvironment (glow) and key DirectionalLight3D (real-time shadow);
 ##   * for any other profile it puts everything back (so F11 can flip between grim and grim_ps2 and the old game's
 ##     look is exactly as it was).
@@ -30,6 +31,9 @@ const PSX_LIT_SHADER_PATH: String = "res://shaders/psx_lit.gdshader"
 ## Parameters copied from an old PSX material when it is upgraded to the PS2 shader.
 const COPIED_PARAMS: PackedStringArray = ["albedo_texture", "albedo_tint", "uv_scale", "uv_offset", "alpha_cutoff", "rim_color",
 		"rim_strength", "rim_power", "rim_top_bias", "rim_bands"]
+const NATIVE: String = "native"
+const MSAA_MODES: Dictionary[String, int] = {
+	"off": Viewport.MSAA_DISABLED, "2x": Viewport.MSAA_2X, "4x": Viewport.MSAA_4X, "8x": Viewport.MSAA_8X}
 const BLEND_MODES: Dictionary[String, int] = {
 	"additive": Environment.GLOW_BLEND_MODE_ADDITIVE, "screen": Environment.GLOW_BLEND_MODE_SCREEN,
 	"softlight": Environment.GLOW_BLEND_MODE_SOFTLIGHT, "replace": Environment.GLOW_BLEND_MODE_REPLACE,
@@ -197,20 +201,40 @@ static func shader_path_for(profile: Dictionary, group: String) -> String:
 
 static func apply_screen(screen: PsxScreen, profile: Dictionary) -> void:
 	var screen_block: Dictionary = block(profile, "screen")
-	var wanted: Vector2i = resolution_of(str(screen_block.get("resolution", "")))
-	if wanted != Vector2i.ZERO and screen.get_resolution() != wanted:
-		screen.set_resolution(wanted)
+	var id: String = str(screen_block.get("resolution", NATIVE))
+	if id == NATIVE:
+		screen.set_native(true)
+	else:
+		var wanted: Vector2i = resolution_of(id)
+		if wanted != Vector2i.ZERO and (screen.is_native() or screen.get_resolution() != wanted):
+			screen.set_resolution(wanted)
+	apply_antialiasing(screen.get_world_viewport(), profile)
 	var display: TextureRect = screen.get_display()
 	if display != null:
 		display.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR if bool(screen_block.get("smooth_scale", true)) else CanvasItem.TEXTURE_FILTER_NEAREST
+
+
+## Anti-aliasing for the world picture, from the profile's `antialiasing` block: msaa_3d ("off", "2x", "4x", "8x"; cheap
+## and crisp in Compatibility), and screen-space AA / TAA off (they smear the picture). An empty profile = all off.
+static func apply_antialiasing(viewport: SubViewport, profile: Dictionary) -> void:
+	if viewport == null:
+		return
+	var aa: Dictionary = block(profile, "antialiasing")
+	viewport.msaa_3d = int(MSAA_MODES.get(str(aa.get("msaa_3d", "off")), Viewport.MSAA_DISABLED)) as Viewport.MSAA
+	viewport.screen_space_aa = Viewport.SCREEN_SPACE_AA_DISABLED
+	viewport.use_taa = false
+	viewport.use_debanding = bool(aa.get("debanding", false))
 
 
 ## Back to the old game's picture: its default resolution and the sharp (nearest) scale-up.
 static func restore_screen(screen: PsxScreen) -> void:
 	var default_id: String = str(DataDB.get_value(LOOK_DATA_ID, "default_resolution", ""))
 	var wanted: Vector2i = resolution_of(default_id)
+	if screen.is_native():
+		screen.set_native(false)
 	if wanted != Vector2i.ZERO and screen.get_resolution() != wanted:
 		screen.set_resolution(wanted)
+	apply_antialiasing(screen.get_world_viewport(), {})
 	var display: TextureRect = screen.get_display()
 	if display != null:
 		display.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST

@@ -27,6 +27,9 @@ var _resolutions: Array[Vector2i] = []
 var _resolution: Vector2i = Vector2i.ZERO
 var _integer_scaling: bool = true
 var _min_fill: float = 1.0
+## Native: the world is drawn at the full window resolution (one picture pixel per screen pixel), so nothing is
+## scaled and nothing is blurred. Switched by the look profile (Ps2Look); set_resolution() turns it off again.
+var _native: bool = false
 
 @onready var _viewport: SubViewport = $WorldViewport
 @onready var _world: Node3D = $WorldViewport/World
@@ -103,17 +106,42 @@ func get_resolution() -> Vector2i:
 	return _resolution
 
 
-## Switches the internal resolution. Only sizes in the list are accepted.
+## Switches the internal resolution. Only sizes in the list are accepted. Leaves native mode.
 func set_resolution(size: Vector2i) -> bool:
 	if not _resolutions.has(size):
 		push_warning("PsxScreen: %s is not an allowed internal resolution" % size)
 		return false
+	_native = false
 	_resolution = size
 	_viewport.size = size
 	PsxLook.set_internal_resolution(size)
 	_apply_layout()
 	resolution_changed.emit(size)
 	return true
+
+
+## Native mode: the world viewport is exactly the window's size in screen pixels and fills the whole window, and
+## follows the window when it is resized. Returns the size in use.
+func set_native(enabled: bool) -> Vector2i:
+	if enabled == _native:
+		return _resolution
+	_native = enabled
+	if _native:
+		_apply_layout()
+		resolution_changed.emit(_resolution)
+	else:
+		set_resolution(_default_resolution())
+	return _resolution
+
+
+func is_native() -> bool:
+	return _native
+
+
+## The window's size in screen pixels, which is what native mode renders at (at least 2x2).
+func native_size() -> Vector2i:
+	var device_scale: float = _device_scale()
+	return Vector2i(maxi(2, roundi(size.x * device_scale)), maxi(2, roundi(size.y * device_scale)))
 
 
 ## Moves to the next resolution in the list (wraps around) and returns it.
@@ -168,6 +196,17 @@ func _apply_layout() -> void:
 		return
 	var device_scale: float = _device_scale()
 	var available: Vector2 = size * device_scale
+	if _native:
+		var wanted: Vector2i = native_size()
+		if wanted != _resolution:
+			_resolution = wanted
+			_viewport.size = wanted
+			PsxLook.set_internal_resolution(wanted)
+			resolution_changed.emit(wanted)
+		_display.position = Vector2.ZERO
+		_display.size = Vector2(wanted) / device_scale
+		layout_changed.emit(get_display_rect())
+		return
 	var rect: Rect2 = compute_display_rect(available, _resolution, _integer_scaling, _min_fill)
 	_display.position = rect.position / device_scale
 	_display.size = rect.size / device_scale
