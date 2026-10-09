@@ -4,6 +4,7 @@
 
 ## 2026-10-09
 
+- **Combat sandbox build 1 sent to Ross (Windows, 5 parts; Mac on request).** All 2,267 automated checks green. In it: Kingdom Hearts tuning v1 (floaty air combos, generous guard and dodge, strong targeting, softer enemies, stronger heavy), enemy behaviours (dodge, block and guard break, reposition, flee/flank, Brute enrage), ramp and ledges, toned-down sword stands, parry timing fix, foot-slide fix, sharp slanted HUD. Placeholder giant robots built (3.5 m loader, 50 m colossus with docking bay). Next, in parallel: the one-button combo (Combat Programmer) and robot boarding, docking and scale feel (Gameplay Programmer).
 - **Robot scale test blockouts done (Technical Artist, CS-21), placeholders only.** A 3.5 m squat loader robot (hatch and ladder in its back) and a 50 m furnace colossus with a two-door chest bay the small robot docks into (Ross: "use robots docking into each other"), both on Red's bone names so the same clips drive them (Quaternius clips baked by the retarget tool). Eight scale props (crates, container, car, lamp post, 10/20/30 m buildings), footstep and landing shakes and dust per scale in fx.json, and a handoff with suggested camera, speed, turn, playback and pitch numbers in docs/pivot/robot_scale_test.md. Pictures: docs/screenshots/robots_scale_lineup.png, robots_dock_bay.png, robots_small_poses.png, robots_huge_poses.png. One finding: the arena haze hides the huge robot from a huge-scale camera, so fog distances need to scale too.
 
 ## 2026-10-08
