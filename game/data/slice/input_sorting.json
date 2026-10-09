@@ -1,0 +1,20 @@
+{
+ "_about": "Input sorting for the slice (docs/slice/slice_tech_plan.md 3, Decision 3). The old game and the sandbox share one InputMap (project.godot), so the slice does not rewrite it: at slice boot InputSorting applies the small changes below, and a test proves that no two actions that are live in the same kind of room share a button by accident. contexts: which actions the player can use at once in a town room, a dungeon or arena room, and a menu. room_kinds: rooms.json kind -> context. allowed_overlaps: pairs that share a button on purpose (never live at the same moment). interact_changes: what Decision 3 does to the interact button, per slice.json interact.mode. Pad button numbers are Godot's (0 A, 1 B, 2 X, 3 Y, 6 Start, 9 left shoulder, 10 right shoulder); axis 5 is the right trigger.",
+ "contexts": {
+  "town": ["move_up", "move_down", "move_left", "move_right", "jump", "light", "dash", "interact", "start"],
+  "dungeon": ["move_up", "move_down", "move_left", "move_right", "jump", "light", "heavy", "dash", "parry", "lock_on", "interact", "camera_left", "camera_right", "camera_up", "camera_down", "camera_toggle", "disembark", "feel_panel", "start"],
+  "menu": ["move_up", "move_down", "move_left", "move_right", "confirm", "cancel", "start"]
+ },
+ "room_kinds": {"town": "town", "dungeon": "dungeon", "arena": "dungeon"},
+ "allowed_overlaps": [
+  {"actions": ["confirm", "start"], "why": "Enter confirms inside a menu and Start closes the pause menu; the same press never means both because the pause menu eats it (old game's setup)."}
+ ],
+ "interact_changes": {
+  "attack_button": [
+   {"action": "interact", "remove_pad_buttons": [1], "why": "Pad B is the dash. The attack button (pad X) talks and uses things; E stays on the keyboard."}
+  ],
+  "own_button": [
+   {"action": "interact", "remove_pad_buttons": [1], "add_pad_axes": [{"axis": 5, "value": 1.0}], "why": "Pad B is the dash. Option B: the right trigger is the talk button; E stays on the keyboard."}
+  ]
+ }
+}

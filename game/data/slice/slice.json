@@ -1,7 +1,7 @@
 {
- "_about": "Slice settings (docs/slice/slice_tech_plan.md 2.1, 2.4). default_mode: what a run with no --classic/--sandbox/--slice word and no feature tag boots (classic, slice or sandbox). It stays classic until the slice has rooms to boot; VS-35 flips it. new_game: where a slice New Game starts when slice/rooms.json has no start_room (the Level Designer's room ids replace these). retry: Decision 2 (knock-out), recommended A. interact: Decision 3 (talk button), recommended A.",
+ "_about": "Slice settings (docs/slice/slice_tech_plan.md 2.1, 2.4, Decision 3). default_mode: what a run with no --classic, --sandbox or --slice word and no feature tag boots (classic, slice or sandbox); it stays classic until the slice has rooms to boot, VS-35 flips it. new_game: where a slice New Game starts when slice/rooms.json has no start_room (the Level Designer's room ids replace these). retry: Decision 2 (knock-out), recommended A. interact: Decision 3 (the talk button), recommended A: mode attack_button = the attack button talks when a prompt shows and no living enemy is within clear_m metres (in town it only talks); mode own_button = option B, a separate interact button and the attack button never talks.",
  "default_mode": "classic",
  "new_game": {"room": "market_hideout", "spawn": "default"},
  "retry": {"from": "room", "credit_cost": 0},
- "interact": {"mode": "attack_button"}
+ "interact": {"mode": "attack_button", "clear_m": 5.0, "attack_action": "light"}
 }

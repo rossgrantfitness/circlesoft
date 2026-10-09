@@ -57,6 +57,13 @@
     "move": "parry",
     "stick_scale": 0.25
   },
+  "town": {
+    "_note": "Town mode (the night market, no fighting; docs/slice/slice_tech_plan.md 3). The buttons listed do nothing there. The clip map turns the field clip names the town code uses (HeroLink.play_clip) into this model's clips.",
+    "blocked_buttons": ["light", "heavy", "parry"],
+    "clip_map": {"idle": "idle", "walk": "walk", "run": "run", "jump": "jump_up", "fall": "fall", "land": "idle"},
+    "blink_s": 1.5,
+    "blink_flash_s": 0.08
+  },
   "anim": {
     "blend_s": 0.08,
     "clip_keys": "res://data/combat/red_clip_keys.json",

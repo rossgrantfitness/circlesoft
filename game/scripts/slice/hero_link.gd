@@ -20,7 +20,7 @@ const PROPERTIES: PackedStringArray = ["frozen", "scripted", "stick", "read_engi
 
 
 ## The names from METHODS and PROPERTIES that `hero` lacks (empty = a complete hero).
-static func missing_members(hero: Object) -> PackedStringArray:
+static func missing_members(hero: Variant) -> PackedStringArray:
 	var out: PackedStringArray = []
 	if hero == null:
 		out.append_array(METHODS)
@@ -38,94 +38,94 @@ static func missing_members(hero: Object) -> PackedStringArray:
 	return out
 
 
-static func is_hero(hero: Object) -> bool:
+static func is_hero(hero: Variant) -> bool:
 	return hero != null and is_instance_valid(hero) and missing_members(hero).is_empty()
 
 
 # ---- properties ----
 
 ## Frozen (dialogue, shops, menus): no walking, no attacking, idle pose.
-static func is_frozen(hero: Object) -> bool:
+static func is_frozen(hero: Variant) -> bool:
 	return _ok(hero) and bool(hero.get("frozen"))
 
 
-static func set_frozen(hero: Object, on: bool) -> void:
+static func set_frozen(hero: Variant, on: bool) -> void:
 	if _ok(hero):
 		hero.set("frozen", on)
 
 
 ## A climb, hop or cutscene is moving her directly.
-static func is_scripted(hero: Object) -> bool:
+static func is_scripted(hero: Variant) -> bool:
 	return _ok(hero) and bool(hero.get("scripted"))
 
 
 ## The stick (x right, y down).
-static func get_stick(hero: Object) -> Vector2:
+static func get_stick(hero: Variant) -> Vector2:
 	return hero.get("stick") as Vector2 if _ok(hero) else Vector2.ZERO
 
 
-static func set_stick(hero: Object, stick: Vector2) -> void:
+static func set_stick(hero: Variant, stick: Vector2) -> void:
 	if _ok(hero):
 		hero.set("stick", stick)
 
 
 ## True when the hero reads the keyboard and pad itself (false in bot and cutscene runs).
-static func reads_engine_input(hero: Object) -> bool:
+static func reads_engine_input(hero: Variant) -> bool:
 	return _ok(hero) and bool(hero.get("read_engine_input"))
 
 
 # ---- methods ----
 
-static func set_scripted(hero: Object, on: bool, clip: StringName = &"") -> void:
+static func set_scripted(hero: Variant, on: bool, clip: StringName = &"") -> void:
 	if _ok(hero):
 		hero.call("set_scripted", on, clip)
 
 
-static func play_clip(hero: Object, clip: StringName) -> void:
+static func play_clip(hero: Variant, clip: StringName) -> void:
 	if _ok(hero):
 		hero.call("play_clip", clip)
 
 
-static func get_facing(hero: Object) -> Vector3:
+static func get_facing(hero: Variant) -> Vector3:
 	return hero.call("get_facing") as Vector3 if _ok(hero) else Vector3.BACK
 
 
-static func get_move_direction(hero: Object) -> Vector3:
+static func get_move_direction(hero: Variant) -> Vector3:
 	return hero.call("get_move_direction") as Vector3 if _ok(hero) else Vector3.ZERO
 
 
-static func set_camera(hero: Object, cam: Camera3D) -> void:
+static func set_camera(hero: Variant, cam: Camera3D) -> void:
 	if _ok(hero):
 		hero.call("set_camera", cam)
 
 
-static func reset_ground_height(hero: Object) -> void:
+static func reset_ground_height(hero: Variant) -> void:
 	if _ok(hero):
 		hero.call("reset_ground_height")
 
 
-static func block_jump_for_frames(hero: Object, frames: int) -> void:
+static func block_jump_for_frames(hero: Variant, frames: int) -> void:
 	if _ok(hero):
 		hero.call("block_jump_for_frames", frames)
 
 
-static func start_blink(hero: Object, seconds: float = -1.0) -> void:
+static func start_blink(hero: Variant, seconds: float = -1.0) -> void:
 	if _ok(hero):
 		hero.call("start_blink", seconds)
 
 
 ## True when an enemy touching her can start a fight: not blinking and not being moved by a script.
-static func is_catchable(hero: Object) -> bool:
+static func is_catchable(hero: Variant) -> bool:
 	return _ok(hero) and bool(hero.call("is_catchable"))
 
 
-static func has_animation(hero: Object, clip: StringName) -> bool:
+static func has_animation(hero: Variant, clip: StringName) -> bool:
 	return _ok(hero) and bool(hero.call("has_animation", clip))
 
 
-static func is_on_floor(hero: Object) -> bool:
+static func is_on_floor(hero: Variant) -> bool:
 	return _ok(hero) and bool(hero.call("is_on_floor"))
 
 
-static func _ok(hero: Object) -> bool:
+static func _ok(hero: Variant) -> bool:
 	return hero != null and is_instance_valid(hero)

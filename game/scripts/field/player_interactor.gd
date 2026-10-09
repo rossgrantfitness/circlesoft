@@ -20,6 +20,13 @@ var player: CharacterBody3D = null
 var runner: DialogueRunner = null
 var prompt: InteractPrompt = null
 var tuning: InteractionTuning = InteractionTuning.new()
+## Decision 3 (InteractRules): null = only the `interact` button uses things (the old game and its tests).
+var rules: InteractRules = null
+## False in town rooms, where nothing fights: the attack button then only talks.
+var combat_room: bool = false
+## Optional: func() -> float, the distance to the nearest living enemy (tests and rooms that know better). Empty = looked up
+## from the combat actors in the tree.
+var enemy_distance: Callable = Callable()
 ## Off in tests that drive the interactor by hand.
 var read_engine_input: bool = true
 
@@ -53,6 +60,43 @@ func block_for_frames(frames: int) -> void:
 
 func get_target() -> Interactable:
 	return _target
+
+
+## Hooks the attack button of an action hero (ActionPlayer.press_filter) to this interactor, per `rules`.
+## Returns false when the hero has no such hook or there are no rules.
+func install_press_filter() -> bool:
+	if rules == null or player == null or not is_instance_valid(player) or not "press_filter" in player:
+		return false
+	player.set("press_filter", consume_attack_press)
+	return true
+
+
+## Called with every button press of the action hero before it attacks. True = this press talked to or used the thing
+## in front of her, so it must not also swing. Only the attack button, and only per InteractRules.
+func consume_attack_press(action: StringName) -> bool:
+	if rules == null or action != rules.attack_action or not can_interact():
+		return false
+	refresh()
+	if not rules.attack_press_interacts(_target != null, nearest_enemy_m(), combat_room):
+		return false
+	return try_interact()
+
+
+## Distance (flat, metres) from Red to the nearest living enemy; INF when there is none.
+func nearest_enemy_m() -> float:
+	if enemy_distance.is_valid():
+		return float(enemy_distance.call())
+	if player == null or not is_instance_valid(player) or not is_inside_tree():
+		return INF
+	var best: float = INF
+	for node: Node in get_tree().get_nodes_in_group(CombatActor.GROUP):
+		var actor: CombatActor = node as CombatActor
+		if actor == null or actor.dead or actor.team == &"player" or not actor.is_inside_tree():
+			continue
+		var flat: Vector3 = actor.global_position - player.global_position
+		flat.y = 0.0
+		best = minf(best, flat.length())
+	return best
 
 
 ## True when Red may use something right now.

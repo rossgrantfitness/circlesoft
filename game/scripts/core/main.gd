@@ -98,7 +98,8 @@ func _ready() -> void:
 		screen.get_ui_layer().add_child(overlay)
 	if sandbox_boot_enabled:
 		_mode = current_mode()
-		apply_mode(_mode)
+		if _mode != GameMode.Mode.CLASSIC:
+			apply_mode(_mode)       # classic leaves the autoloads exactly as they are (tests point them at temp folders)
 	if sandbox_boot_enabled and _mode == GameMode.Mode.SANDBOX and start_sandbox() != null:
 		return
 	if show_title and ResourceLoader.exists(title_scene_path):
@@ -146,6 +147,10 @@ func apply_mode(mode: GameMode.Mode) -> void:
 		apply_sandbox_identity()
 		return
 	var rooms: String = GameMode.rooms_id(mode)
+	if mode == GameMode.Mode.SLICE:
+		InputSorting.install(_config())       # Decision 3 and the pad B conflict (data/slice/input_sorting.json)
+	else:
+		InputSorting.revert()
 	var router: Node = get_node_or_null(PATH_ROUTER)
 	if router != null and "rooms_id" in router:
 		router.set("rooms_id", rooms)

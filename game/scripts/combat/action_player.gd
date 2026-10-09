@@ -140,6 +140,32 @@ var scale_profile: ScaleProfile = null
 ## While true she ignores the stick and the buttons (the power-up beat of a transformation).
 var input_locked: bool = false
 var _control_mode: ControlMode = ControlMode.NORMAL
+## The hero contract (HeroLink, plan 2.6). Town code freezes her to talk or shop: no walking, no buttons, idle pose.
+var frozen: bool = false:
+	set(value):
+		frozen = value
+		if value:
+			_drop_input()
+## The stick, as the town code reads and clears it (x right, y down). Same as set_move_input().
+var stick: Vector2:
+	get:
+		return _stick
+	set(value):
+		set_move_input(value)
+## True while a sequence moves her directly (a climb, a cutscene walk, a robot boarding).
+var scripted: bool:
+	get:
+		return _control_mode != ControlMode.NORMAL
+## Town mode (data/combat/player_action.json "town"): the buttons listed in "blocked_buttons" do nothing (no attacks, no
+## hacks), so the market is safe. Interact stays on. Set by the room (ActionRoom) from its `combat` flag.
+var town_mode: bool = false
+## Asked about every press before it reaches the buffer: func(action: StringName) -> bool. True = the press was
+## used (the interact button, Decision 3 option A) and must not also attack. PlayerInteractor installs it.
+var press_filter: Callable = Callable()
+var _blink_left_s: float = 0.0
+var _jump_blocked_frames: int = 0
+var _ground_y: float = 0.0
+var _has_ground_y: bool = false
 var _base_data: Dictionary = {}
 var _forms: Dictionary[StringName, Dictionary] = {}
 var _form_id: StringName = &"red"
@@ -406,8 +432,9 @@ func tick(delta: float) -> void:
 	_last_scale = scale
 	if read_engine_input:
 		_read_engine_input()
-	if input_locked or _control_mode != ControlMode.NORMAL:
+	if input_locked or frozen or _control_mode != ControlMode.NORMAL:
 		_drop_input()
+	_tick_contract(delta)
 	if director == null:
 		# A bare run (no director): she steps her own clock. With one, it steps it before us (priority -100).
 		clock.step(int(delta * USEC), scale)
@@ -455,6 +482,12 @@ func _read_engine_input() -> void:
 func _ingest_presses() -> void:
 	for entry: Dictionary in _presses:
 		var action: StringName = StringName(entry["action"])
+		if press_filter.is_valid() and bool(press_filter.call(action)):
+			continue            # the press was used to talk or use something
+		if town_mode and _town_blocks(action):
+			continue
+		if action == TOKEN_JUMP and _jump_blocked_frames > 0:
+			continue            # the press that closed a menu must not also jump
 		if action == TOKEN_HEAVY:
 			_press_hack(int(entry["usec"]))        # the second button is the hack button: no attack
 			continue
@@ -1451,6 +1484,119 @@ func set_control_mode(mode: ControlMode) -> void:
 		_set_state(State.LOCOMOTION)
 		_current_clip = &""
 		_play_clip(&"idle")
+
+
+# ---- the hero contract (HeroLink: scripts/slice/hero_link.gd) ----
+
+## While scripted, the caller moves her (global_position) and she plays `clip` (a PlayerMotion clip name: walk, jump...).
+func set_scripted(on: bool, clip: StringName = &"") -> void:
+	set_control_mode(ControlMode.SCRIPTED if on else ControlMode.NORMAL)
+	if on and clip != &"":
+		play_clip(clip)
+	elif not on:
+		reset_ground_height()
+
+
+## Plays one of the model's clips by the field names (idle, walk, run, jump, fall, land); town.clip_map turns those
+## into this model's clip names. Ignored when the model has no such clip.
+func play_clip(clip: StringName) -> void:
+	var mapped: StringName = _town_clip(clip)
+	if not _has_clip(mapped):
+		return
+	if scripted:
+		play_scripted_clip(mapped)
+	else:
+		_play_clip(mapped)
+
+
+func has_animation(clip: StringName) -> bool:
+	return _has_clip(_town_clip(clip))
+
+
+func set_camera(cam: Camera3D) -> void:
+	camera = cam
+
+
+## The height of the ground she last stood on, so the town camera does not bob with a jump (DioramaCamera asks).
+func get_ground_height() -> float:
+	if not _has_ground_y:
+		return global_position.y
+	return minf(_ground_y, global_position.y)
+
+
+func reset_ground_height() -> void:
+	_has_ground_y = false
+
+
+## Ignores the jump button for a few physics frames (the press that closed a menu).
+func block_jump_for_frames(frames: int) -> void:
+	_jump_blocked_frames = maxi(_jump_blocked_frames, frames)
+
+
+## A short flicker after a scare (town.blink_s); nothing can catch her meanwhile.
+func start_blink(seconds: float = -1.0) -> void:
+	_blink_left_s = seconds if seconds >= 0.0 else float(_town_cfg().get("blink_s", 1.5))
+	_apply_blink_look()
+
+
+func is_blinking() -> bool:
+	return _blink_left_s > 0.0
+
+
+func get_blink_left() -> float:
+	return _blink_left_s
+
+
+## True when something touching her may act on her: not blinking, not being moved by a sequence, not down for good.
+func is_catchable() -> bool:
+	return not is_blinking() and not scripted and not dead
+
+
+## Town mode on or off. On, the "blocked_buttons" of the town block do nothing.
+func set_town_mode(on: bool) -> void:
+	town_mode = on
+	if on:
+		for action: StringName in BUTTONS:
+			if _town_blocks(action):
+				_held[action] = false
+
+
+func _town_cfg() -> Dictionary:
+	return _data.get("town", {}) as Dictionary
+
+
+func _town_blocks(action: StringName) -> bool:
+	return (_town_cfg().get("blocked_buttons", []) as Array).has(String(action))
+
+
+func _town_clip(clip: StringName) -> StringName:
+	var map: Dictionary = _town_cfg().get("clip_map", {}) as Dictionary
+	return StringName(str(map.get(String(clip), String(clip))))
+
+
+## Per-frame upkeep of the contract: the jump block, the blink, the remembered ground height, town-mode button state.
+func _tick_contract(delta: float) -> void:
+	_jump_blocked_frames = maxi(_jump_blocked_frames - 1, 0)
+	if _blink_left_s > 0.0:
+		_blink_left_s = maxf(_blink_left_s - delta, 0.0)
+		_apply_blink_look()
+	if is_on_floor():
+		_ground_y = global_position.y
+		_has_ground_y = true
+	if town_mode:
+		for action: StringName in BUTTONS:
+			if _town_blocks(action):
+				_held[action] = false
+
+
+func _apply_blink_look() -> void:
+	if _visual == null or _control_mode == ControlMode.GHOST:
+		return
+	if _blink_left_s <= 0.0:
+		_visual.visible = true
+		return
+	var flash: float = maxf(float(_town_cfg().get("blink_flash_s", 0.08)), 0.01)
+	_visual.visible = int(_blink_left_s / flash) % 2 == 0
 
 
 ## A clip chosen by a sequence (the climb into a robot), at a playback speed. Only while she is SCRIPTED.
