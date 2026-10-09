@@ -171,6 +171,11 @@ func play_clip(clip: StringName) -> void:
 	_play_animation(clip)
 
 
+## True when the model has a clip of that name (the hero contract, HeroLink).
+func has_animation(clip: StringName) -> bool:
+	return _animation_player != null and _animation_player.has_animation(clip)
+
+
 ## Starts the after-fight blink (default length from field_tuning.json): she flickers and nothing can catch her.
 func start_blink(seconds: float = -1.0) -> void:
 	_blink_left = _tuning.blink_time_s if seconds < 0.0 else seconds
