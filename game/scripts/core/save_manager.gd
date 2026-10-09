@@ -45,6 +45,8 @@ const PROMPT_SCRIPT: String = "res://scripts/save/save_prompt.gd"
 
 ## Where the files go. Tests point this at a temp folder.
 var save_dir: String = SAVE_DIR
+## The rooms file used to name places on the save screen. Main sets it from the game mode.
+var rooms_data_id: String = ROOMS_DATA_ID
 ## GameState to save from / load into. Null means the autoload.
 var game_state: Node = null
 ## Unix time source (seconds). Tests replace it to control "newest".
@@ -308,7 +310,7 @@ func _summary_of(game: Dictionary) -> Dictionary:
 func place_name(room_id: String) -> String:
 	if room_id.is_empty():
 		return str(DataDB.get_value(TEXT_ID, "unknown_place", "Somewhere"))
-	var room_name: String = str(DataDB.get_value(ROOMS_DATA_ID, "rooms.%s.name" % room_id, ""))
+	var room_name: String = str(DataDB.get_value(rooms_data_id, "rooms.%s.name" % room_id, ""))
 	if not room_name.is_empty():
 		return room_name
 	var named: String = str(DataDB.get_value(TEXT_ID, "places.%s" % room_id, ""))

@@ -28,6 +28,7 @@ const INT_MEMBER_KEYS: Array[String] = ["level", "xp", "hp", "hp_max", "juice", 
 const EQUIPMENT_SLOTS: Array[String] = ["weapon", "armor", "charm"]
 const SAVE_DATA_ID: String = "world/save"
 const ROOMS_DATA_ID: String = "world/rooms"
+const SLICE_DATA_ID: String = "slice/slice"
 const KEY_NEW_GAME: String = "new_game"
 ## party.json "new_game": {party: [ids], level: n, items: {id: count}} (see start_new_game).
 const KEY_PARTY_NEW_GAME: String = "new_game"
@@ -42,6 +43,8 @@ var _default_party_ids: Array[String] = []
 var _members: Dictionary[String, Dictionary] = {}
 var _starting_items: Dictionary[String, int] = {}
 var _new_game_party: Dictionary = {}
+## The rooms file a New Game reads its start room from. Main sets it from the game mode (GameMode.rooms_id).
+var rooms_data_id: String = ROOMS_DATA_ID
 var _base_members: Dictionary[String, Dictionary] = {}
 var _credits: int = 0
 var _play_time_s: float = 0.0
@@ -158,10 +161,15 @@ func _apply_new_game_place() -> void:
 func _new_game_data() -> Dictionary:
 	var doc: Dictionary = DataDB.get_dict(SAVE_DATA_ID)
 	var start: Dictionary = (doc.get(KEY_NEW_GAME, {}) as Dictionary).duplicate()
-	var start_room: String = str(DataDB.get_value(ROOMS_DATA_ID, "start_room", ""))
+	var start_room: String = str(DataDB.get_value(rooms_data_id, "start_room", ""))
 	if not start_room.is_empty():
 		start["room"] = start_room
-		start["spawn"] = str(DataDB.get_value(ROOMS_DATA_ID, "rooms.%s.default_spawn" % start_room, start.get("spawn", "")))
+		start["spawn"] = str(DataDB.get_value(rooms_data_id, "rooms.%s.default_spawn" % start_room, start.get("spawn", "")))
+	elif rooms_data_id != ROOMS_DATA_ID:
+		# A mode with its own rooms file but no start_room yet: data/slice/slice.json "new_game".
+		var own: Dictionary = DataDB.get_value(SLICE_DATA_ID, "new_game", {}) as Dictionary
+		for key: String in own:
+			start[key] = own[key]
 	return start
 
 

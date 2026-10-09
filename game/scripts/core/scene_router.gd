@@ -35,6 +35,9 @@ var game_state: Node = null
 ## Skip the fade timing (tests, a skip option later).
 var instant: bool = false
 var current_room_id: String = ""
+## The DataDB id of the rooms file. Main sets it from the game mode (GameMode.rooms_id): the slice
+## reads slice/rooms, the shelved game world/rooms. Tests keep the default.
+var rooms_id: String = ROOMS_ID
 var current_spawn_id: String = ""
 
 var _busy: bool = false
@@ -49,7 +52,7 @@ var _generation: int = 0
 # ---- rooms.json ----
 
 func data() -> Dictionary:
-	return DataDB.get_dict(ROOMS_ID)
+	return DataDB.get_dict(rooms_id)
 
 
 func room_ids() -> Array[String]:
@@ -175,7 +178,7 @@ func _change_room(room_id: String, spawn_id: String, fade_out: bool) -> bool:
 
 func _can_enter(room_id: String, spawn_id: String) -> bool:
 	if not has_room(room_id):
-		push_error("SceneRouter: no room '%s' in %s.json" % [room_id, ROOMS_ID])
+		push_error("SceneRouter: no room '%s' in %s.json" % [room_id, rooms_id])
 		return false
 	if not spawn_id.is_empty() and not has_spawn(room_id, spawn_id):
 		push_error("SceneRouter: room '%s' has no spawn '%s'" % [room_id, spawn_id])

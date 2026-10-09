@@ -40,6 +40,9 @@ const CHOICE_RETRY: String = "retry"
 const GROUP: StringName = &"main_flow"
 const SANDBOX_FEATURE: String = "sandbox"
 const SANDBOX_ARG: String = "--sandbox"
+## data/slice/slice.json "default_mode": the mode a run with no flag and no feature tag boots.
+const SLICE_DATA_ID: String = "slice/slice"
+const KEY_DEFAULT_MODE: String = "default_mode"
 const SANDBOX_SCENE_PATH: String = "res://scenes/sandbox/combat_sandbox.tscn"
 
 ## A battle is over and the game is back where it came from (the room or the title). `report` is the
@@ -53,8 +56,10 @@ signal battle_finished(result: String, report: Dictionary)
 ## Turn off to go straight into the room (visual capture scripts do this).
 @export var show_title: bool = true
 @export var debug_overlay_enabled: bool = true
-## Boot the combat sandbox when the `sandbox` feature tag or the `--sandbox` argument is present.
-## Tests that build a Main turn this off so a sandbox launch of the test runner can't change them.
+## Boot by game mode (GameMode): the `sandbox` feature tag or `--sandbox` boots the combat sandbox,
+## the `slice` tag or `--slice` boots the slice, `--classic` the shelved turn-based game, and data/slice/slice.json
+## "default_mode" decides when none is given. Tests that build a Main turn this off so a launch flag of the
+## test runner can't change them; a Main with it off behaves as the classic game and leaves the autoloads alone.
 @export var sandbox_boot_enabled: bool = true
 ## Where the sandbox arena scene lives.
 @export var sandbox_scene_path: String = SANDBOX_SCENE_PATH
@@ -74,6 +79,7 @@ var _title: Node = null
 var _state_frame: int = -1
 var _room: Node = null
 var _sandbox: Node = null
+var _mode: GameMode.Mode = GameMode.Mode.CLASSIC
 var _kept_world: Array[Node] = []
 var _battle: Node = null
 var _battle_snapshot: Dictionary = {}
@@ -90,9 +96,10 @@ func _ready() -> void:
 		overlay = PsxDebugOverlay.new()
 		overlay.name = "PsxDebugOverlay"
 		screen.get_ui_layer().add_child(overlay)
-	if sandbox_boot_enabled and wants_sandbox():
-		apply_sandbox_identity()
-	if sandbox_boot_enabled and wants_sandbox() and start_sandbox() != null:
+	if sandbox_boot_enabled:
+		_mode = current_mode()
+		apply_mode(_mode)
+	if sandbox_boot_enabled and _mode == GameMode.Mode.SANDBOX and start_sandbox() != null:
 		return
 	if show_title and ResourceLoader.exists(title_scene_path):
 		go_to_title()
@@ -112,10 +119,45 @@ func get_state() -> State:
 	return _state
 
 
+## The game mode this run boots (see GameMode): command line words, then feature tags, then the
+## data default (data/slice/slice.json "default_mode", classic until the slice has rooms to boot).
+static func current_mode() -> GameMode.Mode:
+	var fallback: GameMode.Mode = GameMode.from_name(str(DataDB.get_value(SLICE_DATA_ID, KEY_DEFAULT_MODE, GameMode.NAME_CLASSIC)))
+	return GameMode.resolve_current(fallback)
+
+
 ## True when this run should boot the combat sandbox: the `sandbox` feature tag (the sandbox export
-## presets) or `-- --sandbox` on the command line.
+## presets) or `-- --sandbox` on the command line, and not `-- --classic` / the data default overriding it.
 static func wants_sandbox() -> bool:
-	return OS.has_feature(SANDBOX_FEATURE) or OS.get_cmdline_user_args().has(SANDBOX_ARG)
+	return current_mode() == GameMode.Mode.SANDBOX
+
+
+## The mode this Main booted in (classic when mode boot is off).
+func get_mode() -> GameMode.Mode:
+	return _mode
+
+
+## Points the shared systems at a mode's data and folders: the router's rooms file, the save manager's
+## folder and rooms file, GameState's new-game rooms file (GameMode has the table). The sandbox has
+## no rooms or saves of its own; it only takes its user-folder identity. Classic leaves every default as it is.
+func apply_mode(mode: GameMode.Mode) -> void:
+	_mode = mode
+	if mode == GameMode.Mode.SANDBOX:
+		apply_sandbox_identity()
+		return
+	var rooms: String = GameMode.rooms_id(mode)
+	var router: Node = get_node_or_null(PATH_ROUTER)
+	if router != null and "rooms_id" in router:
+		router.set("rooms_id", rooms)
+	var manager: Node = _save_manager()
+	if manager != null:
+		if "save_dir" in manager:
+			manager.set("save_dir", GameMode.save_dir(mode))
+		if "rooms_data_id" in manager:
+			manager.set("rooms_data_id", rooms)
+	var state: Node = _game_state()
+	if state != null and "rooms_data_id" in state:
+		state.set("rooms_data_id", rooms)
 
 
 ## A `-- --sandbox` dev run has no `sandbox` feature tag, so the project's `.sandbox` overrides (the user
