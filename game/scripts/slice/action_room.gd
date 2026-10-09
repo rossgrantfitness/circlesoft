@@ -78,6 +78,10 @@ var phase_checkpoint: Dictionary = {}
 
 ## Ambient one-liners from townspeople as she walks past.
 var barks: AmbientBarks = null
+## The junkyard's fights (encounters.json + the scene's Encounters/ markers), Vela's radio barks (Barks/ markers) and the room's sound.
+var encounter_runner: EncounterRunner = null
+var radio_barks: RadioBarks = null
+var slice_audio: SliceAudio = null
 
 var _slice: Dictionary = {}
 var _entry_snapshot: RoomSnapshot = null
@@ -133,7 +137,11 @@ func _ready() -> void:
 	_setup_story()
 	_setup_barks()
 	_setup_field_menu()
+	_prepare_breakables()
 	_spawn_enemies()
+	_setup_encounters()
+	_setup_radio_barks()
+	_setup_audio()
 	_apply_session()
 	_setup_saving()
 	_connect_router()
@@ -417,6 +425,7 @@ func _build_robot_stage() -> void:
 ## The stage changed her body (she boarded, docked or climbed out): what the next room and the HUD hear as her form.
 func _on_stage_form(form_id: StringName) -> void:
 	_form = form_id
+	_refresh_saving()
 	form_entered.emit(form_id)
 
 
@@ -605,6 +614,52 @@ func _on_transition_started(_next_room: String) -> void:
 
 
 
+# ---- walls, fights, radio and sound (VS-20 to VS-32 wiring) ----
+
+## Every `Breakables/*` wall (groups crane_breakable and loader_smash) gets the BreakableWall script, so smash() exists.
+func _prepare_breakables() -> void:
+	for group: StringName in [BreakableWall.GROUP_CRANE, BreakableWall.GROUP_LOADER]:
+		for node: Node in get_tree().get_nodes_in_group(group):
+			if not is_ancestor_of(node) or not node is StaticBody3D or node.has_method("smash"):
+				continue
+			node.set_script(BreakableWall)
+			node.call("setup", self)
+
+
+## The fights of this room, if encounters.json has any (combat rooms only).
+func _setup_encounters() -> void:
+	if not is_combat():
+		return
+	var runner_node: EncounterRunner = EncounterRunner.new()
+	runner_node.name = "EncounterRunner"
+	add_child(runner_node)
+	if runner_node.setup(self) == 0:
+		runner_node.queue_free()
+		return
+	encounter_runner = runner_node
+
+
+func _setup_radio_barks() -> void:
+	radio_barks = RadioBarks.new()
+	radio_barks.name = "RadioBarks"
+	add_child(radio_barks)
+	radio_barks.setup(self)
+	if encounter_runner != null and not encounter_runner.wave_warning.is_connected(_on_wave_warning):
+		encounter_runner.wave_warning.connect(_on_wave_warning)
+
+
+func _on_wave_warning(_encounter: String, bark_id: String) -> void:
+	if radio_barks != null:
+		radio_barks.say(bark_id)
+
+
+func _setup_audio() -> void:
+	slice_audio = SliceAudio.new()
+	slice_audio.name = "SliceAudio"
+	add_child(slice_audio)
+	slice_audio.setup(entry, director)
+
+
 # ---- barks, the field menu, saving (VS-15, VS-16) ----
 
 func _setup_barks() -> void:
@@ -651,11 +706,12 @@ func _release_menu_hold() -> void:
 	_menu_holds_game = false
 
 
-## True when saving is off in this room: a robot room (the entry names robots) or any room she walks into in a robot form.
+## True when saving is off right now: Red is in a robot form (saving needs her on foot). A room that merely HAS robots, like
+## the junkyard's loader bay or the arena gate, still saves while she is on foot, so its terminal works.
 func saving_blocked() -> bool:
 	if not bool(_cfg("saving").get("blocked_in_robot_rooms", true)):
 		return false
-	return not str(entry.get("robots", "")).is_empty() or _form != HeroSession.FORM_RED
+	return _form != HeroSession.FORM_RED
 
 
 func _setup_saving() -> void:
@@ -664,13 +720,24 @@ func _setup_saving() -> void:
 		state.set("live_flush", _flush_to_state)
 		if not state.is_connected("party_rested", _on_party_rested):
 			state.connect("party_rested", _on_party_rested)
+	_refresh_saving()
+
+
+## Turns saving off or on to match her form, and the room's terminals with it. Called when the room starts and whenever
+## the robot stage changes her body.
+func _refresh_saving() -> void:
 	var manager: Node = get_node_or_null("/root/SaveManager")
-	if manager != null and saving_blocked():
-		manager.set("saving_allowed", false)
-		_saving_blocked_by_us = true
-		for lamp: Node in get_tree().get_nodes_in_group(SaveLamp.GROUP_LAMP):
-			if is_ancestor_of(lamp) and lamp is Interactable:
-				(lamp as Interactable).enabled = false
+	var blocked: bool = saving_blocked()
+	if manager != null:
+		if blocked:
+			manager.set("saving_allowed", false)
+			_saving_blocked_by_us = true
+		elif _saving_blocked_by_us:
+			manager.set("saving_allowed", true)
+			_saving_blocked_by_us = false
+	for lamp: Node in get_tree().get_nodes_in_group(SaveLamp.GROUP_LAMP):
+		if is_ancestor_of(lamp) and lamp is Interactable:
+			(lamp as Interactable).enabled = not blocked
 
 
 func _teardown_saving() -> void:
@@ -825,6 +892,7 @@ func reset_arena() -> void:
 	if robot_stage != null:
 		robot_stage.reset()                    # tells us she is Red again, so read the entry form after it
 	_form = _entry_session.form_for_room(str(entry.get("form", "red"))) if _entry_session != null else _form
+	_refresh_saving()
 	_apply_session()
 	if orbit != null:
 		orbit.recenter()

@@ -232,7 +232,9 @@ func _build_props() -> void:
 	var kinds: Dictionary = data.get("kinds", {}) as Dictionary
 	for raw: Variant in data.get("props", []) as Array:
 		var entry: Dictionary = raw as Dictionary
-		_add_prop(StringName(str(entry.get("kind", ""))), vec3(entry.get("pos")), float(entry.get("yaw_deg", 0.0)), kinds)
+		var made: SmashProp = _add_prop(StringName(str(entry.get("kind", ""))), vec3(entry.get("pos")), float(entry.get("yaw_deg", 0.0)), kinds)
+		if made != null and entry.has("on_smash_flag"):
+			made.on_smash_flag = str(entry["on_smash_flag"])           # VS-22: the Foreman's gate sets j5_gate_smashed
 	_build_lamps()
 
 

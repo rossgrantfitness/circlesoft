@@ -22,6 +22,10 @@ var dust_id: StringName = &"step_small"
 var model: Node3D = null
 ## How far from its middle a stomping robot has to be to flatten it (the half-width of its footprint).
 var stomp_radius_m: float = 0.5
+## A hit that does less than this only clinks off (VS-22: a loader-only scrap wall; 0 = anything breaks it). A stomp always breaks it.
+var min_hit_damage: int = 0
+## A GameState flag set when it is smashed (the Foreman's gate: j5_gate_smashed), from the kind's or the placement's `on_smash_flag`.
+var on_smash_flag: String = ""
 
 var _home_y: float = 0.0
 var _home_basis: Basis = Basis.IDENTITY
@@ -48,6 +52,8 @@ func setup(prop_id: StringName, prop_kind: StringName, cfg: Dictionary, model_no
 	hp_max = int(cfg.get("hp", 20))
 	hp = hp_max
 	dust_id = StringName(str(cfg.get("dust", "step_small")))
+	min_hit_damage = int(cfg.get("min_hit_damage", 0))
+	on_smash_flag = str(cfg.get("on_smash_flag", ""))
 	radius_m = maxf(maxf(box_size.x, box_size.z) * 0.5, 0.3)
 	height_m = maxf(box_size.y, radius_m * 2.0)
 	stomp_radius_m = minf(box_size.x, box_size.z) * 0.5
@@ -90,7 +96,16 @@ func is_gone() -> bool:
 func stomp() -> void:
 	if dead:
 		return
-	apply_hit({"damage": hp, "outcome": &"hit"})
+	apply_hit({"damage": hp, "outcome": &"hit", "stomp": true})
+
+
+## Too light a hit (Red on foot against a loader-only wall) does nothing but wobble it.
+func apply_hit(result: Dictionary) -> void:
+	if min_hit_damage > 0 and not dead and not bool(result.get("stomp", false)) and int(result.get("damage", 0)) < min_hit_damage:
+		_wobble_left = WOBBLE_S * 0.5
+		set_process(true)
+		return
+	super.apply_hit(result)
 
 
 func _on_hit_reaction(result: Dictionary) -> void:
@@ -109,6 +124,8 @@ func _on_death(_result: Dictionary) -> void:
 	if _shape_node != null:
 		_shape_node.set_deferred("disabled", true)
 	_spawn_dust()
+	if not on_smash_flag.is_empty():
+		WorldProgress.set_flag(on_smash_flag)
 	smashed.emit(self)
 
 

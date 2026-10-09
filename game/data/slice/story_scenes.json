@@ -1,5 +1,5 @@
 {
- "_about": "Staged scenes for the night market (VS-14), same shape as world/story_scenes.json; Placements.scenes_doc() lays this file over it in slice mode. The words are the Writer's placeholders (data/dialogue/market_placeholder.json and slice_scenes.json; final text at VS-37). Writer's scenes added in VS-31 (2026-10-09). Played on purpose, not by a trigger, so New Game and the tests are never interrupted: hideout_wake (Vela in Red's ear when the game starts; the Gameplay Programmer can run it as a radio bark or from the start spawn; the flag hideout_wake_seen is set at its end), mox_deck (the first talk with Mox, a variant on mk_rp_mox), gate_pass (the first talk with the Gate 4 grunt once the main job is taken, a variant on mk_gt_grunt_a), kasp_wreck (the boss ending cutscene in the arena; the boss data runs it by id), ending_gate / ending_square / ending_home (the walk home after slice_done: grunts, the square party with the Odds Man's payout and the fifty-troopers tale, then the hideout). charge_delivery: side job 1, the battery brick to Grandma Ume's window (from the ledge spot mk_sq_window_ledge). appeal_market: side job 2, Pell's form in the APPEALS slot at Gate 4 (spot mk_gt_appeals_slot).",
+ "_about": "Staged scenes for the night market (VS-14), same shape as world/story_scenes.json; Placements.scenes_doc() lays this file over it in slice mode. The words are the Writer's placeholders (data/dialogue/market_placeholder.json and slice_scenes.json; final text at VS-37). Writer's scenes added in VS-31 (2026-10-09). Played on purpose, not by a trigger, so New Game and the tests are never interrupted: hideout_wake (Vela in Red's ear when the game starts; the Gameplay Programmer can run it as a radio bark or from the start spawn; the flag hideout_wake_seen is set at its end), mox_deck (the first talk with Mox, a variant on mk_rp_mox), gate_pass (the first talk with the Gate 4 grunt once the main job is taken, a variant on mk_gt_grunt_a), kasp_wreck (the boss ending cutscene in the arena; the boss data runs it by id), ending_gate / ending_square / ending_home (the walk home after slice_done: grunts, the square party with the Odds Man's payout and the fifty-troopers tale, then the hideout). charge_delivery: side job 1, the battery brick to Grandma Ume's window (from the ledge spot mk_sq_window_ledge). appeal_market: side job 2, Pell's form in the APPEALS slot at Gate 4 (spot mk_gt_appeals_slot). arena_climb_out (VS-22): runs when she arrives at kasp_arena:from_j5 still in the loader (form small): the new `form` step (docs/slice/slice_tech_plan.md, new steps) calls RobotStage.disembark() so she climbs out at the gate and the loader stays parked there; until the step exists the director only warns.",
  "scenes": {
   "charge_delivery": {
    "room": "market_square",
@@ -183,6 +183,28 @@
     {
      "do": "say",
      "conversation": "mk_end_home"
+    }
+   ]
+  },
+  "arena_climb_out": {
+   "room": "kasp_arena",
+   "trigger": {
+    "on": "enter",
+    "spawn": [
+     "from_j5"
+    ]
+   },
+   "once": false,
+   "freeze": false,
+   "steps": [
+    {
+     "do": "form",
+     "action": "disembark",
+     "at": "from_j5"
+    },
+    {
+     "do": "set_flag",
+     "flag": "arena_arrived"
     }
    ]
   }

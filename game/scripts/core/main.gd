@@ -267,6 +267,9 @@ func go_to_title() -> void:
 ## Going back to the title from a slice room: the persistent HUD goes with the room, and any pause its menus hold is let go.
 func _drop_slice_ui() -> void:
 	SandboxPauseGate.clear(get_tree())
+	var audio: Node = get_node_or_null("/root/AudioManager")
+	if audio != null:
+		audio.call("stop_music")
 	for node: Node in get_tree().get_nodes_in_group(GROUP_SLICE_HUD):
 		node.remove_from_group(GROUP_SLICE_HUD)
 		node.queue_free()

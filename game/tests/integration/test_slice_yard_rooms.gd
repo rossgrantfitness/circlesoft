@@ -8,14 +8,14 @@ const WalkGrid = preload("res://tests/integration/walk_grid_kit.gd")
 const ROOMS_ID: String = "slice/rooms"
 const PLACEMENTS_ID: String = "slice/placements"
 const ENCOUNTERS_ID: String = "slice/encounters"
-const YARD: Array[String] = ["junk_j1", "junk_j2", "junk_j3", "junk_j4"]
+const YARD: Array[String] = ["junk_j1", "junk_j2", "junk_j3", "junk_j4", "junk_j5"]
 const SECTIONS: Array[String] = ["doors", "pickups", "crates", "npcs", "spots"]
 const REACH_M: float = 1.8
 ## Where each room's main fight happens (centre) and how wide the open disc must be (radius).
-const FIGHT_SPACE: Dictionary = {"junk_j1": Vector2(36.0, 22.0), "junk_j2": Vector2(66.0, 22.0), "junk_j3": Vector2(22.0, 40.0), "junk_j4": Vector2(40.0, 30.0)}
+const FIGHT_SPACE: Dictionary = {"junk_j1": Vector2(36.0, 22.0), "junk_j2": Vector2(66.0, 22.0), "junk_j3": Vector2(22.0, 40.0), "junk_j4": Vector2(40.0, 30.0), "junk_j5": Vector2(90.0, 55.0)}
 const FIGHT_RADIUS_M: float = 12.0
 ## Nodes whose own spot is not walkable (turret mounts on ledges and pedestals): the fixtures.
-const SIZES: Dictionary = {"junk_j1": Vector2(64, 44), "junk_j2": Vector2(150, 40), "junk_j3": Vector2(100, 80), "junk_j4": Vector2(90, 60)}
+const SIZES: Dictionary = {"junk_j1": Vector2(64, 44), "junk_j2": Vector2(150, 40), "junk_j3": Vector2(100, 80), "junk_j4": Vector2(90, 60), "junk_j5": Vector2(280, 110)}
 
 var _main: Main = null
 var _router: Node = null
@@ -123,7 +123,7 @@ func _grid(room_id: String, level: Node3D, with_extra: bool = true) -> Object:
 
 # ---- the rooms file and the scenes ----
 
-func test_the_four_yard_rooms_are_dungeon_rooms_with_scenes_and_spawns() -> void:
+func test_the_five_yard_rooms_are_dungeon_rooms_with_scenes_and_spawns() -> void:
 	for id: String in YARD:
 		assert_true(_rooms().has(id), "%s is in slice/rooms.json" % id)
 		var entry: Dictionary = _rooms()[id]
@@ -131,10 +131,11 @@ func test_the_four_yard_rooms_are_dungeon_rooms_with_scenes_and_spawns() -> void
 		assert_eq(entry.get("camera"), "orbit", "%s uses the free orbit camera" % id)
 		assert_true(bool(entry.get("combat", false)), "%s is a fighting room" % id)
 		assert_true(bool(entry.get("checkpoint", false)), "%s is a checkpoint (a death restarts at its entrance)" % id)
-		assert_eq(entry.get("form"), "red")
+		assert_eq(entry.get("form"), "small" if id == "junk_j5" else "red", "%s: the form she walks in as" % id)
 		assert_true(ResourceLoader.exists(str(entry["scene"])), "%s scene exists" % id)
 		assert_has(entry["spawns"], entry["default_spawn"])
 	assert_eq(_rooms()["junk_j4"].get("robots"), "junk_j4", "J4 builds its loader from the robot data")
+	assert_eq(_rooms()["junk_j5"].get("robots"), "junk_j5", "J5 builds its smashables from the robot data")
 	assert_true(bool(_rooms()["junk_j1"].get("autosave", false)), "J1 auto-saves on entry")
 
 
@@ -248,7 +249,7 @@ func test_every_encounter_has_its_markers_where_encounters_json_says() -> void:
 					assert_almost_eq(f.position.x, float((fx["at"] as Array)[0]), 0.01)
 					assert_almost_eq(f.position.z, float((fx["at"] as Array)[1]), 0.01)
 					assert_almost_eq(f.position.y, float(fx.get("up_m", 0.0)), 0.01, "%s sits %s m up" % [fx["id"], fx.get("up_m", 0.0)])
-	assert_ge(float(checked), 5.0, "the five foot encounters (J1 pair, J2 chute and pit stop, J3 yard, J4 stand) are all checked")
+	assert_ge(float(checked), 9.0, "the nine encounters (J1 pair, J2 chute and pit stop, J3 yard, J4 stand, J5 lane, graveyard, canyon, wall) are all checked")
 
 
 func test_the_fight_spaces_are_open_floor() -> void:
@@ -286,7 +287,7 @@ func test_doors_lead_somewhere_and_come_back() -> void:
 			if _rooms().has(to_room):
 				assert_has(_rooms()[to_room]["spawns"], door["to_spawn"], "%s lands on a spawn that exists" % item["id"])
 			edges.append({"id": item["id"], "from": id, "to": to_room})
-	assert_eq(edges.size(), 7, "seven doors in J1 to J4")
+	assert_eq(edges.size(), 9, "nine doors in J1 to J5")
 	var gate_back: Dictionary = _section("doors")["mk_gt_to_junk"]
 	assert_eq(gate_back["to_room"], "junk_j1", "Gate 4's barrier leads into J1 (and J1 is built now)")
 	for edge: Dictionary in edges:
@@ -296,6 +297,8 @@ func test_doors_lead_somewhere_and_come_back() -> void:
 				back = true
 		if edge["to"] == "market_gate":
 			back = true          # the market's barrier door (mk_gt_to_junk) is the other half, checked above
+		if ["jk_j4_to_j5", "jk_j5_to_arena"].has(edge["id"]):
+			back = true          # one way from the loader onward (Ross, 2026-10-09, A): no door back from J5, and the arena has its own gate
 		assert_true(back, "%s has a door back from %s" % [edge["id"], edge["to"]])
 
 
@@ -318,6 +321,9 @@ func test_every_spawn_door_prop_and_target_is_reachable_on_foot() -> void:
 		for item: Dictionary in _placed(level):
 			var node: Node3D = item["node"]
 			var w: Vector3 = _world(node, level)
+			if item["id"] == "jk_j4_to_j5":
+				assert_false(grid.reaches(reached, w.x, w.z, w.y, REACH_M), "the door to J5 is beyond the loader-only smash wall: not on foot")
+				continue
 			assert_true(grid.reaches(reached, w.x, w.z, w.y, REACH_M), "%s: %s can be reached on foot" % [id, item["id"]])
 			if not node is Door and not node is JobBoard:
 				var cell: Vector2i = grid.cell_of(w.x, w.z)
@@ -335,6 +341,8 @@ func test_every_spawn_door_prop_and_target_is_reachable_on_foot() -> void:
 		var encs: Dictionary = _markers(level, "Encounters")
 		for eid: String in encs:
 			for child: Node in (encs[eid] as Node).get_children():
+				if str(child.get_meta("entrance", "")) == "air":
+					continue          # flyers come in over the cliffs
 				var w: Vector3 = _world(child as Node3D, level)
 				assert_true(grid.reaches(reached, w.x, w.z, 0.0, 1.5), "%s: the %s spawn %s stands on open ground" % [id, eid, child.name])
 
@@ -374,7 +382,7 @@ func test_the_stand_shutters_are_open_and_the_loader_lane_reaches_the_wall() -> 
 	var grid: Object = _grid("junk_j4", level)
 	var reached: Dictionary = grid.reach_from(2.0, 30.0)
 	var wall: Node3D = level.get_node("Breakables/SmashWall")
-	assert_true(grid.reaches(reached, wall.position.x - 3.0, wall.position.z, 0.0, 1.0), "Red can walk the whole way to the smash wall (86 m)")
+	assert_true(grid.reaches(reached, wall.position.x - 3.0, wall.position.z, 0.0, 1.0), "Red can walk the whole way to the loader-only smash wall (x 90)")
 	var loader: Node3D = level.get_node("loader_j4")
 	assert_true(grid.reaches(reached, loader.position.x, loader.position.z, 0.0, 3.0), "and to the loader's cradle")
 	var robots: Dictionary = DataDB.get_dict("slice/robot_rooms/junk_j4")

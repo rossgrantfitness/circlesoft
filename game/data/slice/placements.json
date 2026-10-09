@@ -55,6 +55,68 @@
    "room": "junk_j3",
    "item": "can_of_chili",
    "count": 1
+  },
+  "jk_j5_loot_01": {
+   "room": "junk_j5",
+   "credits": 40
+  },
+  "jk_j5_loot_02": {
+   "room": "junk_j5",
+   "credits": 60,
+   "item": "ration_bar",
+   "count": 1
+  },
+  "jk_j5_loot_03": {
+   "room": "junk_j5",
+   "credits": 80
+  },
+  "jk_j5_loot_04": {
+   "room": "junk_j5",
+   "credits": 50,
+   "item": "juice_box",
+   "count": 1
+  },
+  "jk_j5_loot_05": {
+   "room": "junk_j5",
+   "credits": 70
+  },
+  "jk_j5_loot_06": {
+   "room": "junk_j5",
+   "credits": 90,
+   "item": "can_of_chili",
+   "count": 1
+  },
+  "jk_j5_loot_07": {
+   "room": "junk_j5",
+   "credits": 100
+  },
+  "jk_j5_loot_08": {
+   "room": "junk_j5",
+   "credits": 60,
+   "item": "canned_coffee",
+   "count": 1
+  },
+  "jk_j5_loot_09": {
+   "room": "junk_j5",
+   "credits": 120
+  },
+  "jk_j5_loot_10": {
+   "room": "junk_j5",
+   "credits": 80,
+   "item": "ration_bar",
+   "count": 1
+  },
+  "jk_j5_loot_11": {
+   "room": "junk_j5",
+   "credits": 150,
+   "item": "camp_stove",
+   "count": 1
+  },
+  "jk_j5_prize": {
+   "room": "junk_j5",
+   "credits": 300,
+   "item": "juice_box",
+   "count": 2
   }
  },
  "crates": {
@@ -311,6 +373,22 @@
    "to_room": "junk_j3",
    "to_spawn": "from_j4",
    "width": 6.0,
+   "style": "arch",
+   "not_flag": "loader_awake",
+   "locked_message": "The way back is blocked by a rockfall of scrap. Only forward now."
+  },
+  "jk_j4_to_j5": {
+   "room": "junk_j4",
+   "to_room": "junk_j5",
+   "to_spawn": "from_j4",
+   "width": 8.0,
+   "style": "arch"
+  },
+  "jk_j5_to_arena": {
+   "room": "junk_j5",
+   "to_room": "kasp_arena",
+   "to_spawn": "from_j5",
+   "width": 16.0,
    "style": "arch"
   }
  },

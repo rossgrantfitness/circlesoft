@@ -186,33 +186,37 @@ func test_the_auto_save_carries_red_s_live_health() -> void:
 
 # ---- no saving in a robot room ----
 
-func test_a_room_with_robots_turns_saving_off_and_leaving_turns_it_back_on() -> void:
+func test_a_room_with_robots_still_saves_on_foot_and_not_in_a_robot() -> void:
 	_vault_robots_before = (DataDB.get_dict(ROOMS_ID)["rooms"]["gb_vault"] as Dictionary).get("robots", "")
 	(DataDB.get_dict(ROOMS_ID)["rooms"]["gb_vault"] as Dictionary)["robots"] = "junk_j4"
 	await _start()
-	assert_true(_manager.call("can_save"), "the hub is a normal room")
-	assert_true(_manager.call("save_slot", 1))
 	_router.call("go_to", "gb_yard", "from_hub")
 	await _until_room("gb_yard")
 	_router.call("go_to", "gb_vault", "from_yard")
 	var vault: ActionRoom = await _until_room("gb_vault")
+	assert_false(vault.saving_blocked(), "a loader bay's terminal works while she is on foot")
+	assert_true(_manager.call("can_save"))
+	assert_true(_manager.call("save_slot", 2))
+	vault._on_stage_form(&"small")                  # she climbs into the loader
 	assert_true(vault.saving_blocked())
 	assert_false(_manager.call("can_save"))
-	assert_false(_manager.call("save_slot", 2), "no manual save")
-	assert_false(_manager.call("auto_save"), "no auto-save")
-	assert_false(FileAccess.file_exists(_dir + "/slot_2.json"))
+	assert_false(_manager.call("save_slot", 3), "no manual save in the loader")
+	assert_false(_manager.call("auto_save"), "no auto-save either")
 	var lamp: SaveLamp = SaveLamp.new()
 	lamp.build_placeholder = false
 	lamp.save_manager = _manager
 	add_to_root(lamp)
-	assert_false(lamp.start_check(), "a terminal does not start its check in a robot room")
+	assert_false(lamp.start_check(), "a terminal does not start its check while she is in a robot")
+	vault._on_stage_form(&"red")                    # and out again
+	assert_true(_manager.call("can_save"), "back on foot: saving is back")
 	_router.call("go_to", "gb_yard", "from_vault")
 	await _until_room("gb_yard")
-	assert_true(_manager.call("can_save"), "back on foot, saving is back")
+	assert_true(_manager.call("can_save"))
 
 
 func test_a_robot_form_blocks_saving_too() -> void:
 	var hub: ActionRoom = await _start()
 	assert_false(hub.saving_blocked())
-	hub._form = &"small"
+	hub._on_stage_form(&"small")
 	assert_true(hub.saving_blocked(), "walking into a room in the loader")
+	assert_false(_manager.call("can_save"))

@@ -1,12 +1,1087 @@
 {
- "_about": "VS-21. The robots of J5 Smash Run (docs/maps/junkyard.md): Red starts inside the loader (rooms.json form small), so the loader's display stays hidden until she climbs out at the arena gate. ground false: the level supplies the floor. props are graybox stand-ins so the loader has something to smash; the Level Designer fills the Car Graveyard, the container canyon and the Foreman's Wall in VS-22. Kinds (crate_small, crate_large, container, car, lamp_post, building_*) come from combat/robot_yard.json. Positions are the map's metres in the level's coordinates.",
+ "_about": "VS-22 (props written by scripts/tools/make_junkyard_rooms.py: edit the layout there, or hand-edit and stop re-running it). The robots and smashables of J5 Smash Run (docs/maps/junkyard.md): Red starts inside the loader (rooms.json form small). Breaker's Lane: three loader-only scrap walls (scrap_wall_3m); the Car Graveyard: cars in lanes with an aisle, a chalk-marked car at (110, 20) hiding the best prize; Container Canyon: stacks 7.9 m high along the S-bend; the Foreman's Wall: three layers of scrap walls and the 16 m gate (hp 400; smashing it sets j5_gate_smashed). Eleven chalk-marked containers and crates hide a pickup each (placements jk_j5_loot_NN, standing where the prop stands). Kinds are in combat/robot_yard.json. Positions are the map's metres in the level's coordinates.",
  "version": 1,
  "ground": false,
- "small_robot": {"pos": [2.0, 0.0, 55.0], "yaw_deg": 90.0},
+ "small_robot": {
+  "pos": [
+   2.0,
+   0.0,
+   54.0
+  ],
+  "yaw_deg": 90.0
+ },
  "props": [
-  {"kind": "car", "pos": [30.0, 0.0, 50.0], "yaw_deg": 90.0},
-  {"kind": "car", "pos": [30.0, 0.0, 60.0], "yaw_deg": 80.0},
-  {"kind": "container", "pos": [44.0, 0.0, 55.0], "yaw_deg": 0.0},
-  {"kind": "crate_large", "pos": [20.0, 0.0, 55.0], "yaw_deg": 15.0}
+  {
+   "kind": "scrap_wall_3m",
+   "pos": [
+    14.0,
+    0.0,
+    54.0
+   ],
+   "yaw_deg": 90.0
+  },
+  {
+   "kind": "scrap_wall_3m",
+   "pos": [
+    28.0,
+    0.0,
+    54.0
+   ],
+   "yaw_deg": 90.0
+  },
+  {
+   "kind": "scrap_wall_3m",
+   "pos": [
+    42.0,
+    0.0,
+    54.0
+   ],
+   "yaw_deg": 90.0
+  },
+  {
+   "kind": "lamp_post",
+   "pos": [
+    6.0,
+    0.0,
+    49.5
+   ],
+   "yaw_deg": 0.0
+  },
+  {
+   "kind": "lamp_post",
+   "pos": [
+    22.0,
+    0.0,
+    49.5
+   ],
+   "yaw_deg": 0.0
+  },
+  {
+   "kind": "lamp_post",
+   "pos": [
+    36.0,
+    0.0,
+    49.5
+   ],
+   "yaw_deg": 0.0
+  },
+  {
+   "kind": "crate_small",
+   "pos": [
+    10.0,
+    0.0,
+    50.5
+   ],
+   "yaw_deg": 0.0
+  },
+  {
+   "kind": "crate_small",
+   "pos": [
+    20.0,
+    0.0,
+    57.5
+   ],
+   "yaw_deg": 30.0
+  },
+  {
+   "kind": "crate_small",
+   "pos": [
+    33.0,
+    0.0,
+    50.5
+   ],
+   "yaw_deg": 60.0
+  },
+  {
+   "kind": "crate_small",
+   "pos": [
+    46.0,
+    0.0,
+    57.5
+   ],
+   "yaw_deg": 90.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    58.5,
+    0.0,
+    8.0
+   ],
+   "yaw_deg": 94.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    59.1,
+    0.0,
+    18.0
+   ],
+   "yaw_deg": 279.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    56.8,
+    0.0,
+    28.0
+   ],
+   "yaw_deg": 80.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    58.1,
+    0.0,
+    38.0
+   ],
+   "yaw_deg": 271.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    57.7,
+    0.0,
+    68.0
+   ],
+   "yaw_deg": 88.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    57.0,
+    0.0,
+    78.0
+   ],
+   "yaw_deg": 262.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    58.6,
+    0.0,
+    88.0
+   ],
+   "yaw_deg": 95.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    59.0,
+    0.0,
+    98.0
+   ],
+   "yaw_deg": 278.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    64.7,
+    0.0,
+    8.0
+   ],
+   "yaw_deg": 259.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    65.1,
+    0.0,
+    18.0
+   ],
+   "yaw_deg": 82.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    66.9,
+    0.0,
+    28.0
+   ],
+   "yaw_deg": 277.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    65.1,
+    0.0,
+    68.0
+   ],
+   "yaw_deg": 263.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    64.6,
+    0.0,
+    78.0
+   ],
+   "yaw_deg": 79.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    65.7,
+    0.0,
+    88.0
+   ],
+   "yaw_deg": 267.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    66.3,
+    0.0,
+    98.0
+   ],
+   "yaw_deg": 93.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    74.9,
+    0.0,
+    8.0
+   ],
+   "yaw_deg": 97.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    74.4,
+    0.0,
+    18.0
+   ],
+   "yaw_deg": 273.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    73.4,
+    0.0,
+    28.0
+   ],
+   "yaw_deg": 86.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    73.9,
+    0.0,
+    38.0
+   ],
+   "yaw_deg": 269.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    74.8,
+    0.0,
+    68.0
+   ],
+   "yaw_deg": 96.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    72.9,
+    0.0,
+    78.0
+   ],
+   "yaw_deg": 261.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    75.2,
+    0.0,
+    88.0
+   ],
+   "yaw_deg": 100.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    72.6,
+    0.0,
+    98.0
+   ],
+   "yaw_deg": 259.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    81.7,
+    0.0,
+    8.0
+   ],
+   "yaw_deg": 267.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    81.6,
+    0.0,
+    18.0
+   ],
+   "yaw_deg": 87.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    81.5,
+    0.0,
+    28.0
+   ],
+   "yaw_deg": 266.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    81.4,
+    0.0,
+    38.0
+   ],
+   "yaw_deg": 85.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    80.8,
+    0.0,
+    68.0
+   ],
+   "yaw_deg": 260.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    82.3,
+    0.0,
+    78.0
+   ],
+   "yaw_deg": 93.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    80.7,
+    0.0,
+    88.0
+   ],
+   "yaw_deg": 260.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    83.2,
+    0.0,
+    98.0
+   ],
+   "yaw_deg": 100.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    91.2,
+    0.0,
+    8.0
+   ],
+   "yaw_deg": 100.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    90.2,
+    0.0,
+    18.0
+   ],
+   "yaw_deg": 272.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    91.2,
+    0.0,
+    28.0
+   ],
+   "yaw_deg": 100.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    90.0,
+    0.0,
+    38.0
+   ],
+   "yaw_deg": 270.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    89.7,
+    0.0,
+    78.0
+   ],
+   "yaw_deg": 268.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    90.2,
+    0.0,
+    88.0
+   ],
+   "yaw_deg": 92.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    91.4,
+    0.0,
+    98.0
+   ],
+   "yaw_deg": 281.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    98.3,
+    0.0,
+    18.0
+   ],
+   "yaw_deg": 92.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    97.9,
+    0.0,
+    38.0
+   ],
+   "yaw_deg": 89.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    98.2,
+    0.0,
+    68.0
+   ],
+   "yaw_deg": 272.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    99.3,
+    0.0,
+    78.0
+   ],
+   "yaw_deg": 100.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    98.5,
+    0.0,
+    88.0
+   ],
+   "yaw_deg": 274.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    105.0,
+    0.0,
+    8.0
+   ],
+   "yaw_deg": 82.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    106.4,
+    0.0,
+    28.0
+   ],
+   "yaw_deg": 93.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    106.8,
+    0.0,
+    38.0
+   ],
+   "yaw_deg": 277.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    105.0,
+    0.0,
+    68.0
+   ],
+   "yaw_deg": 82.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    107.5,
+    0.0,
+    78.0
+   ],
+   "yaw_deg": 282.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    105.1,
+    0.0,
+    88.0
+   ],
+   "yaw_deg": 83.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    104.6,
+    0.0,
+    98.0
+   ],
+   "yaw_deg": 258.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    112.9,
+    0.0,
+    8.0
+   ],
+   "yaw_deg": 261.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    113.9,
+    0.0,
+    28.0
+   ],
+   "yaw_deg": 269.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    113.4,
+    0.0,
+    68.0
+   ],
+   "yaw_deg": 265.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    114.3,
+    0.0,
+    78.0
+   ],
+   "yaw_deg": 92.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    113.9,
+    0.0,
+    88.0
+   ],
+   "yaw_deg": 269.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    114.7,
+    0.0,
+    98.0
+   ],
+   "yaw_deg": 96.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    121.2,
+    0.0,
+    8.0
+   ],
+   "yaw_deg": 84.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    122.1,
+    0.0,
+    18.0
+   ],
+   "yaw_deg": 270.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    122.5,
+    0.0,
+    28.0
+   ],
+   "yaw_deg": 94.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    121.5,
+    0.0,
+    38.0
+   ],
+   "yaw_deg": 266.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    123.3,
+    0.0,
+    68.0
+   ],
+   "yaw_deg": 100.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    122.4,
+    0.0,
+    88.0
+   ],
+   "yaw_deg": 94.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    122.8,
+    0.0,
+    98.0
+   ],
+   "yaw_deg": 276.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    110.0,
+    0.0,
+    20.0
+   ],
+   "yaw_deg": 90.0
+  },
+  {
+   "kind": "container",
+   "pos": [
+    66.0,
+    0.0,
+    54.0
+   ],
+   "yaw_deg": 0.0
+  },
+  {
+   "kind": "container",
+   "pos": [
+    98.0,
+    0.0,
+    54.0
+   ],
+   "yaw_deg": 90.0
+  },
+  {
+   "kind": "crate_large",
+   "pos": [
+    122.0,
+    0.0,
+    54.0
+   ],
+   "yaw_deg": 0.0
+  },
+  {
+   "kind": "crate_large",
+   "pos": [
+    78.0,
+    0.0,
+    30.0
+   ],
+   "yaw_deg": 90.0
+  },
+  {
+   "kind": "container",
+   "pos": [
+    90.0,
+    0.0,
+    96.0
+   ],
+   "yaw_deg": 0.0
+  },
+  {
+   "kind": "crate_large",
+   "pos": [
+    136.0,
+    0.0,
+    50.0
+   ],
+   "yaw_deg": 90.0
+  },
+  {
+   "kind": "container",
+   "pos": [
+    156.0,
+    0.0,
+    52.0
+   ],
+   "yaw_deg": 0.0
+  },
+  {
+   "kind": "crate_large",
+   "pos": [
+    180.0,
+    0.0,
+    22.0
+   ],
+   "yaw_deg": 90.0
+  },
+  {
+   "kind": "container",
+   "pos": [
+    196.0,
+    0.0,
+    76.0
+   ],
+   "yaw_deg": 0.0
+  },
+  {
+   "kind": "crate_large",
+   "pos": [
+    228.0,
+    0.0,
+    44.0
+   ],
+   "yaw_deg": 90.0
+  },
+  {
+   "kind": "container",
+   "pos": [
+    252.0,
+    0.0,
+    54.0
+   ],
+   "yaw_deg": 0.0
+  },
+  {
+   "kind": "container_stack",
+   "pos": [
+    134.0,
+    0.0,
+    44.5
+   ],
+   "yaw_deg": 90.0
+  },
+  {
+   "kind": "container_stack",
+   "pos": [
+    134.0,
+    0.0,
+    65.5
+   ],
+   "yaw_deg": 90.0
+  },
+  {
+   "kind": "container_stack",
+   "pos": [
+    148.0,
+    0.0,
+    44.5
+   ],
+   "yaw_deg": 90.0
+  },
+  {
+   "kind": "container_stack",
+   "pos": [
+    148.0,
+    0.0,
+    65.5
+   ],
+   "yaw_deg": 90.0
+  },
+  {
+   "kind": "container_stack",
+   "pos": [
+    162.0,
+    0.0,
+    44.5
+   ],
+   "yaw_deg": 90.0
+  },
+  {
+   "kind": "container_stack",
+   "pos": [
+    162.0,
+    0.0,
+    65.5
+   ],
+   "yaw_deg": 90.0
+  },
+  {
+   "kind": "container_stack",
+   "pos": [
+    152.0,
+    0.0,
+    62.0
+   ],
+   "yaw_deg": 0.0
+  },
+  {
+   "kind": "container_stack",
+   "pos": [
+    152.0,
+    0.0,
+    50.0
+   ],
+   "yaw_deg": 0.0
+  },
+  {
+   "kind": "container_stack",
+   "pos": [
+    158.0,
+    0.0,
+    22.5
+   ],
+   "yaw_deg": 90.0
+  },
+  {
+   "kind": "container_stack",
+   "pos": [
+    158.0,
+    0.0,
+    43.5
+   ],
+   "yaw_deg": 90.0
+  },
+  {
+   "kind": "container_stack",
+   "pos": [
+    172.0,
+    0.0,
+    22.5
+   ],
+   "yaw_deg": 90.0
+  },
+  {
+   "kind": "container_stack",
+   "pos": [
+    172.0,
+    0.0,
+    43.5
+   ],
+   "yaw_deg": 90.0
+  },
+  {
+   "kind": "container_stack",
+   "pos": [
+    186.0,
+    0.0,
+    22.5
+   ],
+   "yaw_deg": 90.0
+  },
+  {
+   "kind": "container_stack",
+   "pos": [
+    186.0,
+    0.0,
+    43.5
+   ],
+   "yaw_deg": 90.0
+  },
+  {
+   "kind": "container_stack",
+   "pos": [
+    176.5,
+    0.0,
+    30.0
+   ],
+   "yaw_deg": 0.0
+  },
+  {
+   "kind": "container_stack",
+   "pos": [
+    197.0,
+    0.0,
+    30.0
+   ],
+   "yaw_deg": 0.0
+  },
+  {
+   "kind": "container_stack",
+   "pos": [
+    176.5,
+    0.0,
+    44.0
+   ],
+   "yaw_deg": 0.0
+  },
+  {
+   "kind": "container_stack",
+   "pos": [
+    197.0,
+    0.0,
+    44.0
+   ],
+   "yaw_deg": 0.0
+  },
+  {
+   "kind": "container_stack",
+   "pos": [
+    176.5,
+    0.0,
+    58.0
+   ],
+   "yaw_deg": 0.0
+  },
+  {
+   "kind": "container_stack",
+   "pos": [
+    197.0,
+    0.0,
+    58.0
+   ],
+   "yaw_deg": 0.0
+  },
+  {
+   "kind": "container_stack",
+   "pos": [
+    176.5,
+    0.0,
+    72.0
+   ],
+   "yaw_deg": 0.0
+  },
+  {
+   "kind": "container_stack",
+   "pos": [
+    197.0,
+    0.0,
+    72.0
+   ],
+   "yaw_deg": 0.0
+  },
+  {
+   "kind": "container_stack",
+   "pos": [
+    176.5,
+    0.0,
+    86.0
+   ],
+   "yaw_deg": 0.0
+  },
+  {
+   "kind": "container_stack",
+   "pos": [
+    197.0,
+    0.0,
+    86.0
+   ],
+   "yaw_deg": 0.0
+  },
+  {
+   "kind": "scrap_wall_3m",
+   "pos": [
+    208.0,
+    0.0,
+    46.0
+   ],
+   "yaw_deg": 90.0
+  },
+  {
+   "kind": "scrap_wall_3m",
+   "pos": [
+    208.0,
+    0.0,
+    55.0
+   ],
+   "yaw_deg": 90.0
+  },
+  {
+   "kind": "scrap_wall_3m",
+   "pos": [
+    208.0,
+    0.0,
+    64.0
+   ],
+   "yaw_deg": 90.0
+  },
+  {
+   "kind": "scrap_wall_3m",
+   "pos": [
+    220.0,
+    0.0,
+    46.0
+   ],
+   "yaw_deg": 90.0
+  },
+  {
+   "kind": "scrap_wall_3m",
+   "pos": [
+    220.0,
+    0.0,
+    55.0
+   ],
+   "yaw_deg": 90.0
+  },
+  {
+   "kind": "scrap_wall_3m",
+   "pos": [
+    220.0,
+    0.0,
+    64.0
+   ],
+   "yaw_deg": 90.0
+  },
+  {
+   "kind": "scrap_wall_3m",
+   "pos": [
+    232.0,
+    0.0,
+    46.0
+   ],
+   "yaw_deg": 90.0
+  },
+  {
+   "kind": "scrap_wall_3m",
+   "pos": [
+    232.0,
+    0.0,
+    55.0
+   ],
+   "yaw_deg": 90.0
+  },
+  {
+   "kind": "scrap_wall_3m",
+   "pos": [
+    232.0,
+    0.0,
+    64.0
+   ],
+   "yaw_deg": 90.0
+  },
+  {
+   "kind": "scrap_gate_12m",
+   "pos": [
+    272.0,
+    0.0,
+    54.0
+   ],
+   "yaw_deg": 90.0,
+   "on_smash_flag": "j5_gate_smashed"
+  }
  ]
 }

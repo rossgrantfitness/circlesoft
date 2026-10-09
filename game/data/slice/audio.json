@@ -1,0 +1,19 @@
+{
+ "_about": "Sound wiring for the slice's rooms (VS-32 sounds, wired by the Gameplay Programmer). A room's rooms.json `music` is a track name for AudioManager.play_music; `music_aliases` renames a rooms.json name to the track that exists (a name with no track is silence, one warning). `ambience_by_music` lists the ambience loops (sfx.json ids with loop true) that run under a room, picked by its `music` name; a room may carry its own `ambience` list in rooms.json, which wins. The loops start when the room is entered and stop when it is left. `hack_sounds` maps the director's hack signals to sfx ids. Boss sounds are wired by the Combat Programmer. TODO for the Audio Designer: a `music_junkyard` track (the junkyard rooms are silent apart from the ambience until it exists).",
+ "music_aliases": {"kasp_phase1": "hushmaster", "kasp_phase2": "junk_mech"},
+ "ambience_by_music": {
+  "market": ["amb_market_night"],
+  "junkyard": ["amb_junkyard"],
+  "kasp_phase1": ["amb_junkyard"],
+  "kasp_phase2": ["amb_junkyard"]
+ },
+ "hack_sounds": {
+  "cast": {"zap_drone": "hack_zap_cast", "emp": "hack_emp", "overclock": "hack_overclock_link", "reboot": "hack_reboot"},
+  "refused": "hack_denied",
+  "locked": "hack_locked",
+  "unlocked": "hack_unlocked",
+  "battery_full": "hack_battery_full",
+  "hijack_loop": "hack_overclock_loop",
+  "hijack_end": "hack_overclock_end"
+ }
+}

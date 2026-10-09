@@ -13,7 +13,7 @@ Named nodes for the boss code (the Combat Programmer's BossFight, VS-26 and VS-2
   hushmaster_start (0, 3, 0); turret_k_nw (-13, 5.5, -14), turret_k_ne (13, 5.5, -14), turret_k_e (18, 5.5, 8) (y = the turret's mount on its pylon);
   drone_hatch_a (-10, 3, -6), drone_hatch_b (10, 3, -6), drone_hatch_c (0, 3, 11); kasp_escape_target (0, 3, -19); mech_start (0, 0, -110);
   loader_parked (8, 0, 56); term_save_arena (the SaveLamp node, -9, 0, 57); colossus_cradle (105, 0, 0), colossus_dock_pos (84, 0, 0), dock_approach (68.2, 0, 0);
-  stockade_e_gate (62, 0, 0) and the closed barricade node `stockade_e_barricade` (a StaticBody3D the transition slides away); crane_a, crane_b, crane_c (Node3D, each with
+  `ring_road` (Node3D; its children ring_road_1.. are the loader's drive waypoints, BossTransition); stockade_e_gate (62, 0, 0) and the closed barricade node `stockade_e_barricade` (a StaticBody3D the transition slides away); crane_a, crane_b, crane_c (Node3D, each with
   a `magnet` child Marker3D); camera shots `shot_wide`, `shot_ramp`, `shot_reveal`, `shot_title`, `shot_jack_in`, `shot_core_reveal` (a Marker3D looks along its -Z, like a camera).
   Spawns (under `Spawns`): from_j5 (0, 0, 58) facing north, retry_phase1 (0, 0, 54), retry_phase2 (84, 0, 0) facing west.
 
@@ -194,6 +194,13 @@ def build():
     for sz in (-34.0, 34.0):
         r.box("CradleTower%d" % int(sz), 112.0, 36.0, sz, 6.0, 72.0, 6.0, hazard, solid=True)
     r.box("CradleBeam", 112.0, 70.0, 0.0, 5.0, 5.0, 74.0, hazard)
+    # the loader's drive to the dock (BossTransition `ring_road`: a Node3D whose Node3D children, in order, are the waypoints): along the inside of the stockade
+    # from the parked loader to the east gate, then out to dock_approach
+    r.holder("ring_road")
+    for i, deg in enumerate((78.0, 62.0, 46.0, 30.0, 15.0)):
+        a = math.radians(deg)
+        r.holder("ring_road_%d" % (i + 1), parent="ring_road", x=54.0 * math.cos(a), z=54.0 * math.sin(a))
+    r.holder("ring_road_6", parent="ring_road", x=58.0, z=0.0)
     r.marker("colossus_cradle", "Markers", 105.0, 0.0, 0.0, yaw=-90)
     r.marker("colossus_dock_pos", "Markers", 84.0, 0.0, 0.0, yaw=-90)
     r.marker("dock_approach", "Markers", 68.2, 0.0, 0.0, yaw=-90)

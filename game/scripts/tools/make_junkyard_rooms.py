@@ -29,7 +29,8 @@ from junk_kit import Y, GAME, PROPS, yaw_to  # noqa: E402
 SUB = "junkyard"
 ENC = json.load(open(os.path.join(GAME, "data", "slice", "encounters.json")))["encounters"]
 # what each fixture (turret / drone line) looks at, as a point in the room
-FACE = {"turret_j2_a": (30.0, 17.0), "turret_j2_b": (66.0, 22.0), "turret_j4_a": (40.0, 30.0), "turret_j4_b": (40.0, 30.0)}
+FACE = {"turret_j2_a": (30.0, 17.0), "turret_j2_b": (66.0, 22.0), "turret_j4_a": (40.0, 30.0), "turret_j4_b": (40.0, 30.0),
+        "turret_j5_a": (100.0, 55.0), "turret_j5_b": (100.0, 55.0), "turret_j5_c": (165.0, 55.0), "turret_j5_d": (180.0, 55.0), "turret_j5_e": (176.0, 40.0)}
 PROP_SIZE = {"container": (2.58, 2.62, 6.13), "car": (2.0, 1.4, 4.5), "crate_large": (2.05, 2.05, 2.07), "crate_small": (0.82, 0.82, 0.83), "lamp_post": (0.66, 6.76, 0.66)}
 PROP_GLB = {"container": "prop_cargo_container.glb", "car": "prop_car_block.glb", "crate_large": "prop_crate_large.glb", "crate_small": "prop_crate_small.glb", "lamp_post": "prop_lamp_post.glb"}
 
@@ -300,7 +301,7 @@ def j4():
     stand = (14, 8, 64, 52)
     gap_e = (64, 26, 66, 34)
     cradle = (66, 22, 86, 38)
-    lane = (86, 26, 92, 34)
+    lane = (86, 26, 98, 34)
     walk_rects = [vest, gap_w, stand, gap_e, cradle, lane, (-6, 26, 0, 34)]
     r.shell(walk_rects, "floor_concrete_cracked_dark", (0.72, 0.7, 0.72))
     r.holder("Cliffs")
@@ -340,12 +341,15 @@ def j4():
     r.box("CradleBeam2", 76.0, 9.2, 36.0, 17.0, 0.8, 1.0, r.lit((0.65, 0.55, 0.2)))
     hack_node(r, "loader_j4", "hack_loader", "loader_j4", 72.0, 0.0, 30.0)
     r.omni("CradleLamp", 76.0, 8.0, 30.0, (1.0, 0.7, 0.35), 2.4, 18.0)
+    # the loader-only smash wall (4 m thick, 6 m high): a scene-level BreakableWall in group loader_smash (ActionRoom gives it the script; it falls
+    # when Red walks into it in a robot form), with the lane to J5 and its door beyond
     r.holder("Breakables")
     r.node("SmashWall", "StaticBody3D", "Breakables", (90.0, 0, 30.0))
     r.nodes[-1] = r.nodes[-1].replace('type="StaticBody3D" parent="Breakables"]', 'type="StaticBody3D" parent="Breakables" groups=["loader_smash"]]')
     r.box("SmashWallMesh", 0.0, 3.0, 0.0, 4.0, 6.0, 9.0, r.lit((0.42, 0.34, 0.28)), parent="Breakables/SmashWall")
     r.node("SmashWallShape", "CollisionShape3D", "Breakables/SmashWall", (0, 3.0, 0), extra="shape = %s" % r.box_shape((4.0, 6.0, 9.0)))
     door(r, "DoorWest", "jk_j4_to_j3", 0.0, 30.0, 90)
+    door(r, "DoorEast", "jk_j4_to_j5", 97.0, 30.0, -90)      # beyond the loader-only smash wall (Breakables/SmashWall at (90, 30))
     r.omni("StandLampN", 30.0, 9.0, 12.0, (1.0, 0.8, 0.5), 3.0, 24.0)
     r.omni("StandLampS", 48.0, 9.0, 48.0, (1.0, 0.8, 0.5), 3.0, 24.0)
     r.omni("VestibuleLamp", 6.0, 6.0, 30.0, (0.7, 0.85, 1.0), 1.6, 12.0)
@@ -357,6 +361,126 @@ def j4():
     r.write("junk_j4.tscn")
 
 
+# ====================================================================================== J5 Smash Run (280 x 110, in the loader)
+J5_KINDS_ROWS = 9
+J5_CARS_X = [58.0 + 8.0 * k for k in range(9)]
+J5_CARS_Z = [8.0 + 10.0 * j for j in range(10)]
+
+
+def j5_layout():
+    """The smashables of the Smash Run as (kind, x, z, yaw, extra) tuples, from fixed rules (no randomness except hashes): used by the scene (platform
+    positions) and by robot_rooms/junk_j5.json."""
+    props = []
+    # Breaker's Lane (x 0 to 50): three loader-only scrap walls across the 12 m lane, lamp posts, a few crates to show the scale
+    for x in (14.0, 28.0, 42.0):
+        props.append(("scrap_wall_3m", x, 54.0, 90.0, {}))
+    for x in (6.0, 22.0, 36.0):
+        props.append(("lamp_post", x, 49.5, 0.0, {}))
+    for i, (x, z) in enumerate(((10.0, 50.5), (20.0, 57.5), (33.0, 50.5), (46.0, 57.5))):
+        props.append(("crate_small", x, z, 30.0 * i, {}))
+    # the Car Graveyard (x 50 to 130): cars in lanes, an aisle across the middle, a hidden chalk-marked car at (110, 20)
+    spawns = []
+    for enc in ENC.values():
+        if enc["room"] == "junk_j5":
+            for wave in enc.get("waves", []):
+                for sp in wave["spawn"]:
+                    spawns.append((float(sp["at"][0]), float(sp["at"][1])))
+            for fx in enc.get("fixtures", []):
+                spawns.append((float(fx["at"][0]), float(fx["at"][1])))
+    for xi, x in enumerate(J5_CARS_X):
+        for zj, z in enumerate(J5_CARS_Z):
+            if abs(z - 54.0) < 9.0:
+                continue                                  # the aisle
+            if math.hypot(x - 110.0, z - 20.0) < 7.0:
+                continue                                  # the hidden car's spot
+            if any(math.hypot(x - sx, z - sz) < 6.0 for sx, sz in spawns):
+                continue
+            jitter = (jk.unit_hash("car", xi, zj) - 0.5) * 3.0
+            props.append(("car", x + jitter, z, (90.0 if (xi + zj) % 2 == 0 else 270.0) + jitter * 8.0, {}))
+    props.append(("car", 110.0, 20.0, 90.0, {"loot": "jk_j5_prize"}))
+    # loot containers (chalk-marked): 11 more, each hides a pickup (placements jk_j5_loot_NN)
+    loot_spots = [(66.0, 54.0, "container"), (98.0, 54.0, "container"), (122.0, 54.0, "crate_large"), (78.0, 30.0, "crate_large"), (90.0, 96.0, "container"),
+                  (136.0, 50.0, "crate_large"), (156.0, 52.0, "container"), (180.0, 22.0, "crate_large"), (196.0, 76.0, "container"), (228.0, 44.0, "crate_large"),
+                  (252.0, 54.0, "container")]
+    for i, (x, z, kind) in enumerate(loot_spots):
+        props.append((kind, x, z, 90.0 * (i % 2), {"loot": "jk_j5_loot_%02d" % (i + 1)}))
+    # Container Canyon: stacks 7.9 m high along the walls of each leg (they fall when hit at the base)
+    for x in range(134, 170, 14):
+        props.append(("container_stack", float(x), 44.5, 90.0, {}))
+        props.append(("container_stack", float(x), 65.5, 90.0, {}))
+    for z in (62, 50):
+        props.append(("container_stack", 152.0, float(z), 0.0, {}))
+    for x in (158, 172, 186):
+        props.append(("container_stack", float(x), 22.5, 90.0, {}))
+        props.append(("container_stack", float(x), 43.5, 90.0, {}))
+    for z in (30, 44, 58, 72, 86):
+        props.append(("container_stack", 176.5, float(z), 0.0, {}))
+        props.append(("container_stack", 197.0, float(z), 0.0, {}))
+    # the Foreman's Wall: three layers of scrap walls across the 30 m corridor, then the big gate
+    for x in (208.0, 220.0, 232.0):
+        for z in (46.0, 55.0, 64.0):
+            props.append(("scrap_wall_3m", x, z, 90.0, {}))
+    props.append(("scrap_gate_12m", 272.0, 54.0, 90.0, {"on_smash_flag": "j5_gate_smashed"}))
+    return props
+
+
+def j5():
+    r = Y("junk_j5", "JunkJ5", 280, 110, SUB)
+    lane = (-6, 48, 50, 60)
+    field = (50, 0, 130, 110)
+    canyon = [(130, 42, 170, 68), (150, 20, 176, 68), (150, 20, 200, 46), (174, 20, 200, 90)]
+    niches = [(147, 27, 153, 43), (169, 68, 175, 82)]          # turrets c and d sit in niches cut into the canyon walls
+    wall_a = (200, 40, 240, 70)
+    wall_b = (240, 46, 296, 62)                                  # the last 16 m: the gate is 16 wide
+    walk = [lane, field] + canyon + niches + [wall_a, wall_b]
+    r.shell(walk, "floor_rust_plate_quad", (0.7, 0.66, 0.64), sun_energy=1.5)
+    r.holder("Cliffs")
+    r.cliffs(walk, (-44, -44, 340, 156), cell=2.0, band=6, seed="j5", hmin=30, hmax=40)
+    # turret platforms (3 m up; "up_m" in encounters.json): a, b at the graveyard's edges, c and d in niches, e a tower in the canyon's bend
+    for tid, (x, z) in (("a", (100.0, 8.0)), ("b", (100.0, 102.0)), ("c", (150.0, 30.0)), ("d", (172.0, 76.0)), ("e", (190.0, 40.0))):
+        r.box("Platform_" + tid, x, 1.5, z, 4.0, 3.0, 4.0, r.lit((0.32, 0.34, 0.38)), solid=True)
+    for i, (x, z) in enumerate(((60.0, 6.0), (84.0, 104.0), (118.0, 100.0))):
+        r.omni("FieldLamp%d" % i, x, 14.0, z, (1.0, 0.8, 0.5), 3.0, 40.0)
+    r.omni("LaneLamp", 25.0, 10.0, 55.0, (1.0, 0.8, 0.5), 3.0, 40.0)
+    r.omni("CanyonLamp", 165.0, 14.0, 45.0, (1.0, 0.7, 0.4), 3.0, 40.0)
+    r.omni("GateLamp", 262.0, 14.0, 55.0, (1.0, 0.65, 0.35), 3.5, 40.0)
+    # chalk marks on the loot containers and the hidden car
+    for kind, x, z, yaw, extra in j5_layout():
+        if "loot" in extra:
+            r.box("Chalk_" + extra["loot"], x, 3.2 if kind == "container" else 2.3, z, 0.6, 0.06, 0.6, r.glow((0.95, 0.95, 0.85), 0.7))
+    # the pickups the loot hides (placements jk_j5_loot_NN, jk_j5_prize): on the floor where the prop stands, free once it is smashed
+    for kind, x, z, yaw, extra in j5_layout():
+        if "loot" in extra:
+            r.pickup("Loot_" + extra["loot"], extra["loot"], x, z)
+    door(r, "DoorArena", "jk_j5_to_arena", 292.0, 54.0, -90)
+    skyline(r, [(60, -70, 40, 70, 10), (200, -80, 50, 80, 10), (100, 180, 60, 70, 10), (260, 170, 50, 60, 10)])
+    encounters(r, "junk_j5")
+    barks(r, [("bark_j5_start", 6.0, 54.0, 8.0), ("bark_j5_smash", 20.0, 54.0, 10.0), ("bark_j5_gate", 250.0, 54.0, 12.0)])
+    r.spawn("from_j4", 2.0, 54.0, face=(1, 0))
+    r.write("junk_j5.tscn")
+
+
+def robot_data():
+    """data/slice/robot_rooms/junk_j4.json (the loader-only smash wall) and junk_j5.json (the whole smash run): the loader's start and the props."""
+    path5 = os.path.join(GAME, "data", "slice", "robot_rooms", "junk_j5.json")
+    d5 = json.load(open(path5))
+    props = []
+    for kind, x, z, yaw, extra in j5_layout():
+        entry = {"kind": kind, "pos": [round(x, 1), 0.0, round(z, 1)], "yaw_deg": round(yaw, 0)}
+        if "on_smash_flag" in extra:
+            entry["on_smash_flag"] = extra["on_smash_flag"]
+        props.append(entry)
+    d5["props"] = props
+    d5["small_robot"] = {"pos": [2.0, 0.0, 54.0], "yaw_deg": 90.0}
+    d5["_about"] = ("VS-22 (props written by scripts/tools/make_junkyard_rooms.py: edit the layout there, or hand-edit and stop re-running it). The robots and smashables of J5 Smash Run (docs/maps/junkyard.md): "
+                    "Red starts inside the loader (rooms.json form small). Breaker's Lane: three loader-only scrap walls (scrap_wall_3m); the Car Graveyard: cars in lanes with an aisle, a chalk-marked car at (110, 20) hiding the best prize; "
+                    "Container Canyon: stacks 7.9 m high along the S-bend; the Foreman's Wall: three layers of scrap walls and the 16 m gate (hp 400; smashing it sets j5_gate_smashed). Eleven chalk-marked containers and crates hide a pickup each "
+                    "(placements jk_j5_loot_NN, standing where the prop stands). Kinds are in combat/robot_yard.json. Positions are the map's metres in the level's coordinates.")
+    json.dump(d5, open(path5, "w"), indent=1)
+    return len(props)
+
+
 if __name__ == "__main__":
-    j1(); j2(); j3(); j4()
-    print("wrote the junkyard rooms J1 to J4 to", os.path.join(GAME, "scenes", "slice", SUB))
+    j1(); j2(); j3(); j4(); j5()
+    count = robot_data()
+    print("wrote the junkyard rooms J1 to J5 (%d smashables in J5) to" % count, os.path.join(GAME, "scenes", "slice", SUB))

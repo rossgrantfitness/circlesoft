@@ -17,6 +17,8 @@ const OVERVIEW: Dictionary = {
 	"junk_j2": [[Vector3(75.0, 120.0, 85.0), Vector3(75.0, 0.0, 16.0), 50.0, "overview"]],
 	"junk_j3": [[Vector3(50.0, 120.0, 100.0), Vector3(50.0, 0.0, 36.0), 50.0, "overview"]],
 	"junk_j4": [[Vector3(45.0, 95.0, 85.0), Vector3(45.0, 0.0, 28.0), 50.0, "overview"]],
+	"junk_j5": [[Vector3(140.0, 250.0, 230.0), Vector3(140.0, 0.0, 55.0), 50.0, "overview"], [Vector3(90.0, 70.0, 120.0), Vector3(95.0, 0.0, 50.0), 55.0, "graveyard"],
+		[Vector3(190.0, 55.0, 110.0), Vector3(175.0, 0.0, 40.0), 55.0, "canyon"], [Vector3(235.0, 40.0, 100.0), Vector3(250.0, 0.0, 54.0), 55.0, "gate"]],
 	"kasp_arena": [[Vector3(0.0, 120.0, 110.0), Vector3(0.0, 0.0, 10.0), 55.0, "overview"],
 		[Vector3(-40.0, 14.0, 62.0), Vector3(70.0, 26.0, 0.0), 62.0, "colossus"]],
 }

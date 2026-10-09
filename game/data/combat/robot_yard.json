@@ -92,6 +92,30 @@
    "aabb_size": [20.6, 33.6, 16.72],
    "hp": 520,
    "dust": "step_huge"
+  },
+  "scrap_wall_3m": {
+   "model": "prop_scrap_wall_3m",
+   "aabb_pos": [-6.0, 0.0, -0.8],
+   "aabb_size": [12.0, 3.0, 1.6],
+   "hp": 60,
+   "min_hit_damage": 25,
+   "dust": "land_small",
+   "note": "VS-22: a LOADER-ONLY scrap wall. min_hit_damage: hits weaker than this (Red's sword, about 8 to 12) only clink; the loader's swing (x4) and a stomp break it."
+  },
+  "scrap_gate_12m": {
+   "model": "prop_scrap_gate_12m",
+   "aabb_pos": [-8.0, 0.0, -2.0],
+   "aabb_size": [16.0, 12.0, 4.0],
+   "hp": 400,
+   "min_hit_damage": 25,
+   "dust": "step_huge"
+  },
+  "container_stack": {
+   "model": "prop_container_stack",
+   "aabb_pos": [-1.29, 0.0, -3.05],
+   "aabb_size": [2.58, 7.86, 6.13],
+   "hp": 90,
+   "dust": "land_small"
   }
  },
  "props": [

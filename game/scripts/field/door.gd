@@ -6,6 +6,8 @@ extends RoomProp
 ##   to_room, to_spawn      the target room and spawn marker (rooms.json)
 ##   requires {item, count, consume, flag}   a key item (how many: `count`, default 1; Kasp's cards are counted, not
 ##                          used up) and/or a story flag; consume takes the item once
+##   not_flag               a story flag (or a list of them) that SHUTS the door once any is set: a one-way door (J4's way
+##                          back to J3 closes when the loader wakes). It wins over `requires` and over a door opened before.
 ##   locked_message         what Red reads when it will not open (so a locked door says what it wants);
 ##                          {have} and {need} are filled in with the item count held and wanted
 ##   unlocked_message       shown the first time the key works
@@ -67,7 +69,27 @@ func requirements() -> Dictionary:
 
 
 func is_locked_by_data() -> bool:
-	return not requirements().is_empty()
+	return not requirements().is_empty() or not shut_flags().is_empty()
+
+
+## The flags that shut this door (the data's `not_flag`, one name or a list).
+func shut_flags() -> Array[String]:
+	var raw: Variant = door_data().get("not_flag", [])
+	var out: Array[String] = []
+	if raw is Array:
+		for flag: Variant in raw as Array:
+			out.append(str(flag))
+	elif not str(raw).is_empty():
+		out.append(str(raw))
+	return out
+
+
+## True when one of the `not_flag` flags is set: the door has shut for good (until the flag is cleared).
+func is_shut() -> bool:
+	for flag: String in shut_flags():
+		if WorldProgress.has_flag(flag, game_state):
+			return true
+	return false
 
 
 func unlock_id() -> String:
@@ -76,6 +98,8 @@ func unlock_id() -> String:
 
 ## True when Red can go through right now: nothing required, already unlocked, or she has the key.
 func is_unlocked() -> bool:
+	if is_shut():
+		return false
 	var needs: Dictionary = requirements()
 	if needs.is_empty() or WorldProgress.is_opened(unlock_id(), game_state):
 		return true

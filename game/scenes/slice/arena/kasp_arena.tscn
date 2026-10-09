@@ -1596,6 +1596,26 @@ transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 112.0, 7
 mesh = SubResource("BoxMesh_92")
 surface_material_override/0 = SubResource("ShaderMaterial_7")
 
+[node name="ring_road" type="Node3D" parent="."]
+
+[node name="ring_road_1" type="Node3D" parent="ring_road"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 11.22723130415901, 0.0, 52.8199704396255)
+
+[node name="ring_road_2" type="Node3D" parent="ring_road"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 25.351464390438107, 0.0, 47.67917001438205)
+
+[node name="ring_road_3" type="Node3D" parent="ring_road"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 37.511552004785855, 0.0, 38.84434921828716)
+
+[node name="ring_road_4" type="Node3D" parent="ring_road"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 46.76537180435969, 0.0, 26.999999999999996)
+
+[node name="ring_road_5" type="Node3D" parent="ring_road"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 52.15999461960969, 0.0, 13.97622843553612)
+
+[node name="ring_road_6" type="Node3D" parent="ring_road"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 58.0, 0.0, 0.0)
+
 [node name="colossus_cradle" type="Marker3D" parent="Markers"]
 transform = Transform3D(0.0000, 0, -1.0000, 0, 1, 0, 1.0000, 0, 0.0000, 105.0, 0.0, 0.0)
 
