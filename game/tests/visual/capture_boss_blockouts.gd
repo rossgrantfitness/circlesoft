@@ -25,6 +25,7 @@ var _camera: Camera3D = null
 var _look: GDScript = null
 var _ps2: GDScript = null
 var _labels: Array[Label] = []
+var _mech_node: Node3D = null
 
 
 func _initialize() -> void:
@@ -58,7 +59,7 @@ func _initialize() -> void:
 			_save(await _grab(), "boss_mech")
 		"mech_back":
 			_place_mech()
-			(_world.get_child(_world.get_child_count() - 2) as Node3D).rotation_degrees.y = 150.0
+			_mech_node.rotation_degrees.y = 150.0
 			_cam(Vector3(30.0, 24.0, 85.0), Vector3(0.0, 19.0, 0.0), 40.0)
 			_save(await _grab(), "boss_mech_back")
 		"mech_close":
@@ -78,59 +79,66 @@ func _initialize() -> void:
 
 # ---- the sheet ----
 
+const MECH_AT: Vector3 = Vector3(28.0, 0.0, 0.0)
+const HUSH_AT: Vector3 = Vector3(-46.0, 0.0, 52.0)
+const HUSH_PEOPLE: Vector3 = Vector3(-47.0, 0.0, 71.0)
+const MECH_PEOPLE: Vector3 = Vector3(21.0, 0.0, 22.0)
+const ARENA_AT: Vector3 = Vector3(-30.0, 0.0, 250.0)
+
+
 func _sheet() -> void:
-	_place_wide()
+	_mech(MECH_AT)
+	_hush(HUSH_AT)
+	_people(HUSH_PEOPLE, &"a")
+	_people(MECH_PEOPLE, &"b")
+	_arena_row(ARENA_AT)
 	_fog(300.0, 1500.0)
-	_cam(Vector3(14.0, 21.0, 172.0), Vector3(0.0, 19.0, -20.0), 40.0)
-	_label("junk mech  40 m", Vector3(0.0, 41.5, -60.0), &"main")
-	_label("Hushmaster  12 m wide", Vector3(-34.0, 9.5, 20.0), &"main")
+	_label("junk mech  40 m", MECH_AT + Vector3(0.0, 42.5, 0.0), &"main")
+	_label("Hushmaster  12 m wide", HUSH_AT + Vector3(0.0, 10.0, 0.0), &"main")
 	_show_labels(&"main")
+	_cam(Vector3(2.0, 21.0, 158.0), Vector3(-4.0, 19.0, 0.0), 40.0)
 	var main_image: Image = await _grab()
-	# inset 1: Red, Kasp and the Hushmaster
-	_show_labels(&"hush")
-	_cam(Vector3(-20.0, 3.4, 40.0), Vector3(-34.0, 3.6, 20.0), 42.0)
+	_show_labels(&"a")
+	_cam(Vector3(-41.0, 2.4, 80.0), Vector3(-45.0, 3.4, 58.0), 52.0)
 	await _settle(SETTLE_FRAMES)
 	var inset_a: Image = await _grab()
-	# inset 2: Red and Kasp next to the junk mech's foot
-	_show_labels(&"feet")
-	_cam(Vector3(10.0, 2.0, -35.0), Vector3(1.5, 2.0, -62.0), 50.0)
+	_show_labels(&"b")
+	_cam(Vector3(30.0, 2.2, 32.0), Vector3(25.0, 8.0, 3.0), 62.0)
 	await _settle(SETTLE_FRAMES)
 	var inset_b: Image = await _grab()
-	# inset 3: the arena pieces
 	_show_labels(&"none")
-	_cam(Vector3(-60.0, 6.0, 128.0), Vector3(-72.0, 3.5, 108.0), 55.0)
+	_cam(Vector3(-10.0, 8.0, 296.0), Vector3(-12.0, 5.0, 250.0), 58.0)
 	await _settle(SETTLE_FRAMES)
 	var inset_c: Image = await _grab()
-	var scale_w: int = main_image.get_width() * 3 / 10
-	var scale_h: int = main_image.get_height() * 3 / 10
-	var frame: int = 4
-	var pad: int = 12
-	var x: int = pad + frame
+	var gap: int = 8
+	var tile_w: int = (main_image.get_width() - gap * 2) / 3
+	var tile_h: int = tile_w * main_image.get_height() / main_image.get_width()
+	var sheet: Image = Image.create(main_image.get_width(), main_image.get_height() + gap + tile_h, false, Image.FORMAT_RGBA8)
+	sheet.fill(Color("#ffb347"))
+	sheet.blit_rect(main_image, Rect2i(Vector2i.ZERO, main_image.get_size()), Vector2i.ZERO)
+	var x: int = 0
 	for inset: Image in [inset_a, inset_b, inset_c]:
-		inset.resize(scale_w, scale_h, Image.INTERPOLATE_LANCZOS)
-		main_image.fill_rect(Rect2i(x - frame, pad, scale_w + frame * 2, scale_h + frame * 2), Color("#ffb347"))
-		main_image.blit_rect(inset, Rect2i(Vector2i.ZERO, inset.get_size()), Vector2i(x, pad + frame))
-		x += scale_w + frame * 2 + pad
-	_save(main_image, "boss_blockouts")
+		inset.resize(tile_w, tile_h, Image.INTERPOLATE_LANCZOS)
+		sheet.blit_rect(inset, Rect2i(Vector2i.ZERO, inset.get_size()), Vector2i(x, main_image.get_height() + gap))
+		x += tile_w + gap
+	_save(sheet, "boss_blockouts")
 
 
 func _place_wide() -> void:
 	_mech(Vector3(0.0, 0.0, -60.0))
 	_hush(Vector3(-34.0, 0.0, 20.0))
-	_people(Vector3(-34.0, 0.0, 33.0))
-	_people(Vector3(1.5, 0.0, -48.0))
 	_arena_row(Vector3(-72.0, 0.0, 108.0))
 
 
 func _place_hush() -> void:
 	_hush(Vector3.ZERO)
-	_people(Vector3(0.0, 0.0, 9.0))
+	_people(Vector3(0.0, 0.0, 9.0), &"hush")
 
 
 func _place_mech() -> void:
 	_fog(300.0, 1500.0)
 	_mech(Vector3.ZERO)
-	_people(Vector3(1.5, 0.0, 14.0))
+	_people(Vector3(1.5, 0.0, 14.0), &"hush")
 
 
 func _place_kasp() -> void:
@@ -146,24 +154,20 @@ func _place_arena() -> void:
 # ---- building blocks ----
 
 func _mech(at: Vector3) -> void:
-	var mech: Node3D = _model(DIR + "junk_mech.glb", at, "enemy")
-	var skeleton: Skeleton3D = mech.find_children("*", "Skeleton3D", true, false)[0] as Skeleton3D
-	print("mech bones ", skeleton.get_bone_count())
+	_mech_node = _model(DIR + "junk_mech.glb", at, "enemy")
 
 
 func _hush(at: Vector3) -> void:
 	_model(DIR + "hushmaster.glb", at, "enemy")
 
 
-func _people(at: Vector3) -> void:
+func _people(at: Vector3, group: StringName) -> void:
 	var red: Node3D = _model(RED, at + Vector3(-0.8, 0.0, 0.0), "party")
 	_gear(red)
 	var kasp: Node3D = _model(DIR + "kasp.glb", at + Vector3(0.8, 0.0, 0.0), "enemy")
 	kasp.rotation_degrees.y = -15.0
-	_label("Red 0.95 m", at + Vector3(-0.8, 1.35, 0.0), &"hush")
-	_label("Kasp 1.05 m", at + Vector3(0.8, 1.45, 0.0), &"hush")
-	_label("Red", at + Vector3(-0.8, 1.35, 0.0), &"feet")
-	_label("Kasp", at + Vector3(0.8, 1.45, 0.0), &"feet")
+	_label("Red 0.95 m", at + Vector3(-0.8, 1.3, 0.0), group)
+	_label("Kasp 1.05 m", at + Vector3(0.8, 1.4, 0.0), group)
 
 
 func _arena_row(at: Vector3) -> void:

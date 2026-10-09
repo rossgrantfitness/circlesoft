@@ -262,6 +262,7 @@ def palette(b):
         "slate": flat(b, "signals_slate", "#4B5667"),
         "signals": flat(b, "signals_blue_gray", "#6A7A90"),
         "white": flat(b, "stencil_white", "#D9DEE4"),
+        "dish_face": flat(b, "dish_face_off_white", "#B4B9BF", 0.7),
         "frame": flat(b, "frame_dark", "#2E3140"),
         "glass": flat(b, "glass_dark", "#161C28", 0.2),
         "lamp": flat(b, "lamp_pink_red", "#E8456A", 0.3, emissive=(0.9, 0.18, 0.3)),
@@ -422,7 +423,7 @@ def build_hushmaster(path):
     d = Draw(b)
     d.push(rot_x(-20))
     d.prism(None, (0, 0, -0.5), (0, 0, 0.1), 0.25, 1.5, M["slate"], n=12)
-    d.prism(None, (0, 0, 0.1), (0, 0, 0.14), 1.5, 1.5, M["white"], n=12)
+    d.prism(None, (0, 0, 0.1), (0, 0, 0.14), 1.5, 1.5, M["dish_face"], n=12)
     d.prism(None, (0, 0, 0.14), (0, 0, 0.5), 0.12, 0.2, M["lamp"], n=8)
     for k in range(3):
         a = k * 120.0 + 90.0
@@ -699,7 +700,7 @@ def build_mech(path):
     d.prism("head_gear", (-1.0, 34.0, -0.6), (-1.0, 37.4, -0.6), 0.3, 0.22, M["slate"], n=8)
     d.push(rot_x(-30.0), (-1.0, 37.9, -0.2))
     d.prism("head_gear", (0, 0, -0.7), (0, 0, 0.1), 0.3, 1.9, M["slate"], n=12)
-    d.prism("head_gear", (0, 0, 0.1), (0, 0, 0.14), 1.9, 1.9, M["white"], n=12)
+    d.prism("head_gear", (0, 0, 0.1), (0, 0, 0.14), 1.9, 1.9, M["dish_face"], n=12)
     d.prism("head_gear", (0, 0, 0.14), (0, 0, 0.7), 0.16, 0.26, M["lamp"], n=8)
     d.pop()
 
@@ -715,9 +716,10 @@ def build_mech(path):
         pd.push(rot, c)
         if name == "plate_chest_front":
             pd.box(name, (0, 0, dd / 2 + 0.03), (w - 0.8, h - 0.8, 0.05), M["slate"])
-            pd.box(name, (0, 1.0, dd / 2 + 0.07), (w - 2.0, 0.8, 0.05), M["white"])
-            pd.box(name, (-1.8, -0.6, dd / 2 + 0.07), (3.4, 1.3, 0.05), M["white"])
-            pd.box(name, (2.6, -0.6, dd / 2 + 0.07), (1.2, 1.3, 0.05), M["lamp"])
+            pd.box(name, (0, h / 2 - 0.9, dd / 2 + 0.07), (w - 1.4, 0.5, 0.05), M["white"])           # a stencil strip along the top
+            pd.box(name, (-1.2, -0.3, dd / 2 + 0.07), (0.9, 4.0, 0.05), M["lamp"], rot=rot_z(28))      # the Signals mark: a slash
+            for k in range(3):
+                pd.box(name, (1.8, 0.8 - k * 0.9, dd / 2 + 0.07), (2.6 - 0.5 * k, 0.28, 0.05), M["white"])   # lines of small print
             for sx in (-1, 1):
                 pd.prism(name, (sx * (w / 2 - 0.5), h / 2, 0.0), (sx * (w / 2 - 0.5), h / 2 + 2.0, -0.6), 0.1, 0.1, M["frame"], n=6)   # chains
         elif name in ("plate_flank_l", "plate_flank_r"):

@@ -1,0 +1,232 @@
+{
+ "_about": "The junkyard's fights, as data (VS-17, Combat Designer; Level 1: numbers and names). Rooms and coordinates come from docs/maps/junkyard.md: metres, origin at the room's north-west floor corner, +x east, +z south. 'at' is [x, z] on the floor. Enemy ids are in data/combat/enemies.json: grunt = the Signals cop (Ross's Cyberwolf), brute = the Signals heavy, signals_drone, wall_turret. A turret entry sits in 'fixtures' (it never moves, never counts as a wave member, and is a hack target too); everything else is in 'waves'. The Level Designer's placements.json owns the hack targets (fuse boxes, crane, drone line, terminals) and the exact spawn nodes: this file says WHO shows up, HOW MANY, WHEN and WITH WHAT TUNING; the Level Designer checks the 'at' points against walls and the camera ring. Every number is a starting guess that Ross tunes by playing.",
+ "version": 1,
+
+ "rules": {
+  "_about": "Kingdom Hearts-style accessibility, as numbers. Fights are small, readable and forgiving: a wave never starts while the last one is still biting, new arrivals take a beat to notice, at most two enemies attack at once (enemies.json token rules), and the mix always offers a hack that makes the fight easier.",
+  "max_attackers_default": 2,
+  "max_alive_non_fixture": 7,
+  "wave_gap_ms": 2500,
+  "wave_warning_ms": 900,
+  "reinforcement_notice_ms_add": 400,
+  "spawn_min_distance_from_red_m": 10.0,
+  "spawn_never_in_rear_arc": true,
+  "default_notice_range_m": 10.0,
+  "respawn": "A 'regular' encounter respawns when Red re-enters the room (junkyard.md). A 'sticky' one sets its clear flag for good.",
+  "battery": {
+   "_about": "Design rule: every hack lesson comes AFTER cops have filled the battery. 'gain_est' is the battery a player would gain from the cops of the first wave at about 8 damage a Light hit and 7 battery a hit; the showcase hack costs are in hacks.json (Zap 20, EMP 40, Overclock 50). Nothing here gives battery for free.",
+   "sword_hit_gain": 7,
+   "light_hit_damage": 8
+  },
+  "vs_form": {
+   "_about": "When Red is in the loader (J5, hacks off) enemy hits are scaled so the loader chips rather than dies: a cop swipe (10) lands as 6, a drone dive (7) as 4, a turret bolt (7) as 4. The loader has 480 hp (scale_profiles.json). Expected: about 35 hits over the run, so it ends the room at roughly half health.",
+   "small": {"damage_mult": 0.55}
+  }
+ },
+
+ "encounters": {
+
+  "enc_j1_pair": {
+   "room": "junk_j1",
+   "name": "The Pound",
+   "kind": "regular",
+   "trigger": {"type": "notice", "centre": [36.0, 22.0], "range_m": 8.0},
+   "max_attackers": 1,
+   "hp_mult": 0.8,
+   "waves": [
+    {"id": "w1", "start": "on_trigger", "spawn": [
+     {"enemy": "grunt", "count": 1, "at": [34.0, 20.0], "state": "idle_at_barrel"},
+     {"enemy": "grunt", "count": 1, "at": [38.0, 24.0], "state": "idle_at_barrel"}
+    ]}
+   ],
+   "teaches": ["lock-on", "dash", "battery from sword hits"],
+   "hack_showcase": {"hack": "zap", "target": "hack_j1_door", "after_fight": true},
+   "gain_est": 70,
+   "notes": "The first fight in the game after the town. Two cops, ONE attacks at a time, 20 percent less health than the sandbox cop (38 hp: five Light hits). Both idle at the burn barrel and notice at 8 m, so Red can walk up and start the fight herself. The battery ends the fight around 100, enough for the fuse box (Zap 20) twice over."
+  },
+
+  "enc_j2_chute": {
+   "room": "junk_j2",
+   "name": "The Chute",
+   "kind": "regular",
+   "trigger": {"type": "room_enter", "bay": 1},
+   "fixtures": [
+    {"enemy": "wall_turret", "id": "turret_j2_a", "at": [30.0, 3.0], "up_m": 4.0, "faces": "down_lane", "tune": {"attack_interval_ms": [3200, 4600]}, "online": "on_trigger"}
+   ],
+   "waves": [],
+   "teaches": ["telegraph lines", "side-step", "Zap stun / EMP off / Overclock gag"],
+   "hack_showcase": {"hack": "overclock", "target": "turret_j2_a", "gag": "Overclocked with nothing to shoot, it fires at the empty chute and the bark makes a joke of it"},
+   "notes": "One slow turret and a 14 m lane. It fires one burst every 3 to 5 s (slower than the roster default), and the laser shows a full second before the first bolt. Three answers, all fair: strafe off the line, Zap it twice (stun 2.5 s) or EMP it (off 4 s) and walk past, or Overclock it. No enemies, so the battery is whatever Red walked in with (50 at least on a new game, plus carried)."
+  },
+
+  "enc_j2_pitstop": {
+   "room": "junk_j2",
+   "name": "The Pit Stop",
+   "kind": "regular",
+   "trigger": {"type": "notice", "centre": [66.0, 22.0], "range_m": 10.0},
+   "hp_mult": 1.0,
+   "fixtures": [
+    {"enemy": "wall_turret", "id": "turret_j2_b", "at": [62.0, 2.0], "up_m": 4.0, "faces": "yard", "online": "on_trigger", "tune": {"attack_interval_ms": [3000, 4400]}}
+   ],
+   "waves": [
+    {"id": "w1", "start": "on_trigger", "spawn": [
+     {"enemy": "grunt", "count": 3, "at": [66.0, 24.0], "spread_m": 5.0, "state": "patrol"}
+    ]},
+    {"id": "w2", "start": {"after_wave": "w1", "alive_at_most": 1, "or_after_s": 14.0}, "warning": "bark_j2_overclock", "spawn": [
+     {"enemy": "brute", "count": 1, "at": [92.0, 22.0], "entrance": "east_shutter", "tune": {"block_chance": 0.38}}
+    ]}
+   ],
+   "teaches": ["Overclock", "EMP breaks a guard", "the turret on the ledge is yours"],
+   "hack_showcase": {"hack": "overclock", "target": "turret_j2_b", "against": "brute", "also": ["emp"]},
+   "gain_est": 100,
+   "notes": "Three cops first (144 hp of sword hits fills the battery to 100). The Brute walks in about when the last cop falls, with a 900 ms warning. This Brute raises its guard 38 percent of the time (22 in the sandbox) so the player SEES the guard and the bark's EMP answer: EMP breaks it and opens it for 1.3 s. Or Overclock the ledge turret: hijacked it fires about every 1.4 s for 10 s, about 100 damage into the Brute's 220. The turret's own bursts at Red are slow and telegraphed, so a fight against all four is still readable."
+  },
+
+  "enc_j3_yard": {
+   "room": "junk_j3",
+   "name": "The Crane Yard",
+   "kind": "regular",
+   "trigger": {"type": "notice", "centre": [22.0, 40.0], "range_m": 10.0},
+   "max_attackers": 2,
+   "fixtures": [
+    {"enemy": "signals_drone", "id": "dline_j3", "kind": "drone_line", "at": [8.0, 8.0], "node_at": [10.0, 6.0],
+     "line": {"interval_s": 6.0, "first_after_s": 5.0, "max_alive": 2, "emp_stops_s": 8.0, "zap_node_stops": "for_good", "drone_hp_mult": 1.0}}
+   ],
+   "waves": [
+    {"id": "w1", "start": "on_trigger", "spawn": [
+     {"enemy": "grunt", "count": 2, "at": [22.0, 44.0], "spread_m": 6.0, "state": "patrol"}
+    ]},
+    {"id": "w2", "start": {"after_wave": "w1", "alive_at_most": 1, "or_after_s": 16.0}, "spawn": [
+     {"enemy": "grunt", "count": 1, "at": [30.0, 62.0], "state": "patrol"},
+     {"enemy": "brute", "count": 1, "at": [38.0, 20.0], "entrance": "container_gap", "tune": {"block_chance": 0.3}}
+    ]}
+   ],
+   "teaches": ["EMP clears drones and the guard", "Zap the power node", "the drone line is a clock"],
+   "hack_showcase": {"hack": "emp", "against": ["signals_drone", "brute"], "also": ["zap", "overclock"]},
+   "gain_est": 90,
+   "notes": "The toughest fight so far, built in two beats and with a clock. Two cops, then a cop and a Brute, with the drone line trickling one drone every 6 s (never more than two alive). The EMP answer is meant to be found here: two drones plus two cops inside 4.5 m is one EMP. The line never stops by itself, so the battery can always be topped up here (no softlock). Zap its power node (two Zaps, 5 m up, lock-on target) to end it for good; EMP only pauses it for 8 s."
+  },
+
+  "enc_j4_stand": {
+   "room": "junk_j4",
+   "name": "The Stand",
+   "kind": "sticky",
+   "start_flag": "j4_stand_started",
+   "clear_flag": "j4_stand_cleared",
+   "trigger": {"type": "enter_zone", "centre": [28.0, 30.0], "range_m": 6.0, "shutters": "drop_behind"},
+   "max_attackers": 2,
+   "fixtures": [
+    {"enemy": "wall_turret", "id": "turret_j4_a", "at": [30.0, 10.0], "up_m": 3.0, "faces": "stand", "online": {"after_wave": "w1"}, "tune": {"attack_interval_ms": [3600, 5200]}},
+    {"enemy": "wall_turret", "id": "turret_j4_b", "at": [48.0, 50.0], "up_m": 3.0, "faces": "stand", "online": {"after_wave": "w1"}, "tune": {"attack_interval_ms": [3600, 5200]}}
+   ],
+   "waves": [
+    {"id": "w1", "start": "on_trigger", "spawn": [
+     {"enemy": "grunt", "count": 3, "at": [48.0, 30.0], "spread_m": 8.0, "state": "patrol"}
+    ]},
+    {"id": "w2", "start": {"after_wave": "w1", "alive_at_most": 1, "or_after_s": 12.0}, "warning": "bark_j4_stand", "spawn": [
+     {"enemy": "brute", "count": 1, "at": [58.0, 30.0], "entrance": "east_shutter", "tune": {"block_chance": 0.3}}
+    ]},
+    {"id": "w3", "start": {"after_wave": "w2", "alive_at_most": 0, "or_after_s": 45.0}, "spawn": [
+     {"enemy": "brute", "count": 1, "at": [58.0, 22.0], "entrance": "east_shutter", "tune": {"block_chance": 0.3}},
+     {"enemy": "signals_drone", "count": 2, "at": [56.0, 42.0], "entrance": "wreck_hatch"}
+    ]}
+   ],
+   "teaches": ["everything together", "turrets as allies", "EMP for the drone-and-heavy pairing"],
+   "hack_showcase": {"hack": "overclock", "target": ["turret_j4_a", "turret_j4_b"], "against": "brute", "also": ["emp", "zap"]},
+   "gain_est": 100,
+   "notes": "The hardest fight on foot. Three waves with a breather between each: three cops, then a Brute, then the second Brute with two drones. The turrets stay quiet until the cops are down (they come online with a warning bark), then fire slow bursts (one every 4 to 5 s each), so they are a dare more than a wall. The mix is a puzzle with three good answers: Overclock a turret onto a Brute, EMP the two drones and the Brute's guard together, or just beat it with the sword. A Brute enrages under 35 percent (enemies.json) and the second one will usually do it with drones in the air. No respawn: it sets j4_stand_cleared and the shutters lift. Ask the Level Designer for one small health glint just inside the shutters after wave 2."
+  },
+
+  "enc_j5_lane": {
+   "room": "junk_j5",
+   "name": "Breaker's Lane",
+   "kind": "regular",
+   "form": "small",
+   "hp_mult": 0.5,
+   "trigger": {"type": "room_enter"},
+   "waves": [
+    {"id": "w1", "start": "on_trigger", "spawn": [
+     {"enemy": "grunt", "count": 3, "at": [34.0, 55.0], "spread_m": 6.0, "state": "patrol"}
+    ]}
+   ],
+   "teaches": ["the loader is huge, they are ants", "smash"],
+   "notes": "Three ant-sized cops to show the scale. A cop has 24 hp here and a loader swing does 32: one hit each."
+  },
+
+  "enc_j5_graveyard": {
+   "room": "junk_j5",
+   "name": "Car Graveyard",
+   "kind": "regular",
+   "form": "small",
+   "hp_mult": 0.5,
+   "max_attackers": 3,
+   "trigger": {"type": "enter_zone", "centre": [90.0, 55.0], "range_m": 45.0},
+   "fixtures": [
+    {"enemy": "wall_turret", "id": "turret_j5_a", "at": [100.0, 8.0], "up_m": 3.0, "faces": "field", "online": "on_trigger", "tune": {"attack_interval_ms": [3200, 4600]}},
+    {"enemy": "wall_turret", "id": "turret_j5_b", "at": [100.0, 102.0], "up_m": 3.0, "faces": "field", "online": "on_trigger", "tune": {"attack_interval_ms": [3200, 4600]}}
+   ],
+   "waves": [
+    {"id": "w1", "start": "on_trigger", "spawn": [
+     {"enemy": "grunt", "count": 3, "at": [68.0, 35.0], "spread_m": 8.0, "state": "idle"},
+     {"enemy": "grunt", "count": 4, "at": [92.0, 70.0], "spread_m": 10.0, "state": "idle"},
+     {"enemy": "grunt", "count": 3, "at": [116.0, 40.0], "spread_m": 8.0, "state": "idle"}
+    ]},
+    {"id": "w2", "start": {"red_x_at_least": 80.0}, "spawn": [
+     {"enemy": "signals_drone", "count": 3, "at": [96.0, 30.0], "entrance": "air"}
+    ]},
+    {"id": "w3", "start": {"red_x_at_least": 105.0}, "spawn": [
+     {"enemy": "signals_drone", "count": 3, "at": [122.0, 80.0], "entrance": "air"}
+    ]}
+   ],
+   "teaches": ["power fantasy"],
+   "notes": "Ten cops, six drones and two turrets, all half-health and ant-sized next to a 3.5 m loader. The loader mows them down; the point is the feel of scale, not the challenge. Cops idle in three clusters so they come in a trickle, not a wall."
+  },
+
+  "enc_j5_canyon": {
+   "room": "junk_j5",
+   "name": "Container Canyon",
+   "kind": "regular",
+   "form": "small",
+   "hp_mult": 0.5,
+   "trigger": {"type": "enter_zone", "centre": [165.0, 55.0], "range_m": 40.0},
+   "fixtures": [
+    {"enemy": "wall_turret", "id": "turret_j5_c", "at": [150.0, 30.0], "up_m": 3.0, "faces": "canyon", "online": "on_trigger", "tune": {"attack_interval_ms": [3200, 4600]}},
+    {"enemy": "wall_turret", "id": "turret_j5_d", "at": [172.0, 76.0], "up_m": 3.0, "faces": "canyon", "online": "on_trigger", "tune": {"attack_interval_ms": [3200, 4600]}},
+    {"enemy": "wall_turret", "id": "turret_j5_e", "at": [190.0, 40.0], "up_m": 3.0, "faces": "canyon", "online": "on_trigger", "tune": {"attack_interval_ms": [3200, 4600]}}
+   ],
+   "waves": [
+    {"id": "w1", "start": "on_trigger", "spawn": [
+     {"enemy": "grunt", "count": 4, "at": [160.0, 55.0], "spread_m": 8.0, "state": "ambush"},
+     {"enemy": "signals_drone", "count": 2, "at": [178.0, 55.0], "entrance": "air"}
+    ]}
+   ],
+   "teaches": ["smash the stacks"],
+   "notes": "Three turrets on platforms down the S-bends and an ambush of four cops and two drones. A turret bolt lands as 4 on the loader (vs_form). The canyon walls fall when hit at the base, which is the show."
+  },
+
+  "enc_j5_wall": {
+   "room": "junk_j5",
+   "name": "The Foreman's Wall",
+   "kind": "regular",
+   "form": "small",
+   "hp_mult": 0.5,
+   "trigger": {"type": "enter_zone", "centre": [230.0, 55.0], "range_m": 30.0},
+   "waves": [
+    {"id": "w1", "start": "on_trigger", "spawn": [
+     {"enemy": "grunt", "count": 4, "at": [236.0, 55.0], "spread_m": 10.0, "state": "patrol"},
+     {"enemy": "signals_drone", "count": 2, "at": [246.0, 40.0], "entrance": "air"}
+    ]}
+   ],
+   "teaches": ["the finale of the run"],
+   "notes": "A last small group before the gate, so the climax of the run (the big gate, hp about 400) is not empty."
+  }
+ },
+
+ "hack_props": {
+  "_about": "Numbers for the junkyard's hack targets that depend on fights (the Level Designer's placements.json places them; these are the values it should use). Wall turrets and the drone line are also in the encounters above.",
+  "dline_j3": {"interval_s": 6.0, "max_alive": 2, "first_after_s": 5.0, "emp_stops_s": 8.0, "node_zaps_to_stop": 2},
+  "crane_j3": {"hijack_s": 10.0, "girder_carry_s": 8.0, "note": "10 s of Overclock and an 8 s carry leaves 2 s spare; a retry costs another 50 battery, and the drone line keeps the battery topped up."},
+  "hack_j1_door": {"zaps_to_open": 1},
+  "loader_j4": {"accepts": "interact", "note": "Recommendation: interact (press the button at the cradle), not Overclock. Overclock costs 50 of battery that Red may not have after the Stand, and a story beat should never be gated by a resource."}
+ }
+}
