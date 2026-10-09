@@ -52,20 +52,33 @@ func _draw() -> void:
 	_draw_part_pips(bar)
 
 
-## The parts-left pips under the bar, right aligned: gold while a leg pair or plate still stands, dark once it is gone.
+## The parts-left pips (B12): the real progress of a phase, so they are big. Under the bar on the right, a label saying what
+## they count ("LEGS", "PLATES") and the count, then one wide pip per part: gold while it stands, dark once it is gone.
+## A pip that has just gone out blinks white and flares a pixel wider for a moment. While none has gone, a dim hint says
+## what to do ("Zap the leg relays"); it leaves with the first drop.
 func _draw_part_pips(bar: Rect2) -> void:
 	if model.pips_total <= 0:
 		return
-	var pip_w: float = SliceUiData.num("boss_bar.pip_w", 14)
-	var pip_h: float = SliceUiData.num("boss_bar.pip_h", 3)
-	var gap: float = SliceUiData.num("boss_bar.pip_gap", 3)
+	var pip_w: float = SliceUiData.num("boss_bar.part_pip_w", 20)
+	var pip_h: float = SliceUiData.num("boss_bar.part_pip_h", 6)
+	var gap: float = SliceUiData.num("boss_bar.part_pip_gap", 3)
 	var y: float = bar.end.y + 4.0
+	var left_x: float = bar.end.x - float(model.pips_total) * (pip_w + gap) + gap
 	for i: int in model.pips_total:
-		var x: float = bar.end.x - float(model.pips_total - i) * (pip_w + gap) + gap
-		var rect: Rect2 = Rect2(x, y, pip_w, pip_h)
+		var rect: Rect2 = Rect2(left_x + float(i) * (pip_w + gap), y, pip_w, pip_h)
 		var up: bool = i < model.pips_standing
-		draw_rect(rect.grow(1.0), SandboxStyle.color("track_edge"))
+		var flashing: bool = model.pip_flashing(i)
+		draw_rect(rect.grow(2.0 if flashing else 1.0), SandboxStyle.color("track_edge"))
+		if flashing:
+			draw_rect(rect.grow(1.0), SliceUiData.color("pip_flash"))
 		draw_rect(rect, SliceUiData.color("boss_phase_lit") if up else SliceUiData.color("boss_phase_dim"))
+	var label_color: Color = SliceUiData.color("pip_flash") if model.pips_flash() > 0.0 and int(model.pips_flash() * 10.0) % 2 == 1 else SandboxStyle.color("text")
+	var label_right: float = left_x - SliceUiData.num("boss_bar.part_label_gap", 5)
+	var count: String = model.pips_count_text()
+	SandboxStyle.text_right(self, "label", label_right, y + pip_h, (model.pips_label() + " " + count).to_upper(), label_color, 80.0)
+	var hint: String = model.pips_hint()
+	if not hint.is_empty():
+		SandboxStyle.text_right(self, "label", bar.end.x, y + pip_h + SliceUiData.num("boss_bar.part_hint_y", 9), hint.to_upper(), SandboxStyle.color("text_dim"), 140.0)
 
 
 ## The phase pips under the bar, left aligned; the lit one is gold, earlier ones stay bright, later ones dim.

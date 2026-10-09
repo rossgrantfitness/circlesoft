@@ -9,12 +9,20 @@ extends Control
 ##
 ## This draws and keeps the focus; the pick itself is the host's HackSelector, mirrored in HackPanelModel.
 ## Automatic mode (option C, still one tuning switch away): the Hack bar says "Auto" and the last hack used; no list.
+##
+## When the hack button offers something else (the Hushmaster's "Jack in", B11) the Hack bar says so, and a button prompt
+## pops up over the deck in the interact prompt's style (pop in, small bob): the button's name in a chip, then the words.
 
 var model: CommandDeckModel = CommandDeckModel.new()
 ## The hack list the deck reads (the HUD hands over the HackPanel's model).
 var hacks: HackPanelModel = HackPanelModel.new()
 
+## The name of the hack button as it is bound right now ("K", "Y"); the HUD keeps it current.
+var prompt_button_text: String = "K"
+
 var _clock: float = 0.0
+var _prompt_seen: String = ""
+var _prompt_age: float = 0.0
 
 
 func _ready() -> void:
@@ -25,6 +33,12 @@ func _ready() -> void:
 func tick(delta: float) -> void:
 	_clock += delta
 	model.tick(delta)
+	var shown: String = hacks.prompt_id() if hacks.has_prompt() else ""
+	if shown != _prompt_seen:
+		_prompt_seen = shown
+		_prompt_age = 0.0
+	elif not shown.is_empty():
+		_prompt_age += delta
 	queue_redraw()
 
 
@@ -76,6 +90,32 @@ func submenu_rects() -> Array[Rect2]:
 	return out
 
 
+## The prompt plate's rectangle (before the pop and bob), or an empty rectangle when the hack button offers nothing else.
+func prompt_rect() -> Rect2:
+	if not hacks.has_prompt():
+		return Rect2()
+	var rows: Array[Rect2] = row_rects()
+	var pad: float = SliceUiData.num("hack_prompt.pad_x", 5)
+	var h: float = SliceUiData.num("hack_prompt.h", 15)
+	var w: float = pad + _button_chip_width() + SliceUiData.num("hack_prompt.gap", 4) + SandboxStyle.text_width("body", hacks.prompt_text()) + pad
+	var x: float = SliceUiData.num("deck.x", 8)
+	var bottom: float = rows[0].position.y - SliceUiData.num("hack_prompt.above_deck_px", 24) + h
+	return Rect2(x, bottom - h, w, h)
+
+
+func _button_chip_width() -> float:
+	return maxf(SliceUiData.num("hack_prompt.button_w", 11), SandboxStyle.text_width("body", prompt_button_text.to_upper()) + 5.0)
+
+
+## 0.5 / 1.15 / 1.0, the interact prompt's pop (data: hack_prompt.pop_scales), then steady.
+func prompt_pop_scale() -> float:
+	var steps: Array = SliceUiData.ui("hack_prompt.pop_scales", [1.0]) as Array
+	var step_s: float = SliceUiData.num("hack_prompt.pop_step_s", 0.05)
+	if steps.is_empty() or step_s <= 0.0:
+		return 1.0
+	return float(steps[mini(int(_prompt_age / step_s), steps.size() - 1)])
+
+
 # ---- drawing ----
 
 func _draw() -> void:
@@ -88,8 +128,46 @@ func _draw() -> void:
 	var note: String = model.note()
 	if not note.is_empty():
 		SandboxStyle.text(self, "label", Vector2(rows[0].position.x, rows[0].position.y - 4.0), note.to_upper(), SandboxStyle.color("text"))
-	if hacks.is_locked():
+	if hacks.fizz_level() > 0.0:
 		_draw_fizz(rows[1])
+	_draw_prompt()
+
+
+## The "Jack in" chip: an Ink-outlined plate with the button's name in a light chip and the words in amber, popping in
+## and bobbing a pixel like the interact prompts, the words blinking slowly between amber and chalk.
+func _draw_prompt() -> void:
+	var rect: Rect2 = prompt_rect()
+	if rect.size == Vector2.ZERO:
+		return
+	var steps: Array = SliceUiData.ui("hack_prompt.pop_scales", [1.0]) as Array
+	var step_s: float = SliceUiData.num("hack_prompt.pop_step_s", 0.05)
+	var popped: bool = _prompt_age > step_s * float(steps.size())
+	var period: float = SliceUiData.num("hack_prompt.bob_period_s", 0.6)
+	var bob: float = 0.0
+	if popped and period > 0.0:
+		bob = -roundf(SliceUiData.num("hack_prompt.bob_px", 1) * (0.5 + 0.5 * sin(_prompt_age * TAU / period)))
+	var scale_now: float = prompt_pop_scale()
+	var center: Vector2 = rect.get_center() + Vector2(0.0, bob)
+	draw_set_transform(center - center * scale_now, 0.0, Vector2(scale_now, scale_now))
+	var back: Color = SliceUiData.color("prompt_back")
+	var edge: Color = SliceUiData.color("prompt_edge")
+	var ink: Color = SandboxStyle.color("track_edge")
+	var r: Rect2 = Rect2(rect.position + Vector2(0.0, bob), rect.size)
+	# an Ink outline, then the amber edge with chamfered corners, then the fill
+	draw_rect(r.grow(1.0), ink)
+	draw_rect(r, edge)
+	draw_rect(r.grow(-1.0), back)
+	for corner: Vector2 in [r.position, Vector2(r.end.x - 1.0, r.position.y), Vector2(r.position.x, r.end.y - 1.0), r.end - Vector2.ONE]:
+		draw_rect(Rect2(corner, Vector2.ONE), ink)
+	var chip_w: float = _button_chip_width()
+	var chip: Rect2 = Rect2(r.position.x + SliceUiData.num("hack_prompt.pad_x", 5), r.position.y + 3.0, chip_w, r.size.y - 6.0)
+	draw_rect(chip.grow(1.0), ink)
+	draw_rect(chip, SliceUiData.color("prompt_button"))
+	SandboxStyle.text_center(self, "body", chip.position.x, chip.end.y - 2.0, prompt_button_text.to_upper(), ink, chip.size.x)
+	var blink: bool = int(_prompt_age / maxf(0.05, SliceUiData.num("hack_prompt.blink_s", 0.5))) % 2 == 1
+	var words: Color = SliceUiData.color("prompt_button") if blink else SliceUiData.color("prompt_text")
+	SandboxStyle.text(self, "body", Vector2(chip.end.x + SliceUiData.num("hack_prompt.gap", 4), r.end.y - 5.0), hacks.prompt_text(), words)
+	draw_set_transform_matrix(Transform2D.IDENTITY)
 
 
 func _draw_row(index: int, rect: Rect2) -> void:
@@ -114,6 +192,9 @@ func _draw_row(index: int, rect: Rect2) -> void:
 func _draw_hack_summary(rect: Rect2, focused: bool, dim: float) -> void:
 	var shown: String = hacks.highlight_id()
 	var name_right: float = rect.end.x - 3.0
+	if hacks.has_prompt():
+		SandboxStyle.text_right(self, "label", name_right, rect.position.y + rect.size.y - 3.0, hacks.prompt_text().to_upper(), SliceUiData.color("prompt_text"), 90.0)
+		return
 	if hacks.is_auto():
 		var text: String = SliceUiData.text("hack.auto")
 		if not shown.is_empty():
@@ -187,11 +268,11 @@ func _draw_fizz(rect: Rect2) -> void:
 
 
 func _draw_fizz_over(at: Vector2, area: Vector2) -> void:
-	if not hacks.is_locked():
+	if hacks.fizz_level() <= 0.0:
 		return
 	var px: float = SliceUiData.num("hack_panel.fizz_px", 2)
 	var step: int = int(_clock / SliceUiData.num("hack_panel.fizz_step_s", 0.0833))
-	var density: float = SliceUiData.num("hack_panel.fizz_density", 0.3)
+	var density: float = SliceUiData.num("hack_panel.fizz_density", 0.3) * hacks.fizz_level()
 	var light: Color = SliceUiData.color("fizz_light")
 	var dark: Color = SliceUiData.color("fizz_dark")
 	for row: int in int(area.y / px):

@@ -7,6 +7,8 @@
   "auto_none": "reads the room",
   "jammed": "Jammed",
   "jammed_time": "{seconds}s",
+  "jamming": "Jamming",
+  "jamming_hint": "Hit the dish!",
   "link": "Link",
   "no_signal": "No signal",
   "need_full": "Needs a full battery",
@@ -16,7 +18,22 @@
  },
  "boss": {
   "phase": "Phase {n}",
-  "phase_of": "{n}/{count}"
+  "phase_of": "{n}/{count}",
+  "pips_label": {
+   "rig": "Legs",
+   "mech": "Plates",
+   "default": "Parts"
+  },
+  "pips_count": "{standing}/{total}",
+  "pips_hint": {
+   "rig": "Zap the leg relays",
+   "default": ""
+  }
+ },
+ "prompt": {
+  "_about": "What the hack button says while something else is offered (CombatDirector.hack_prompt, keyed by its text_key). {button} is the live button name.",
+  "boss_jack_in": "Jack in",
+  "default": "Use"
  },
  "radio": {
   "speakers": {

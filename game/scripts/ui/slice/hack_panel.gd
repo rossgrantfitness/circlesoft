@@ -4,6 +4,8 @@ extends Control
 ## at each hack's cost and the charge in big numbers, the Quiet Hours static ("Jammed" and a countdown over a crackling
 ## bar), a shake when a cast is refused, and the hijack timer ("Link") when Overclock holds something. The hack list
 ## itself is the CommandDeck (bottom-left). HackPanelModel holds the numbers; the HUD feeds it from the director.
+## Before the lock lands (the Quiet Hours warning) the label flickers to "Jamming" with the answer beside it ("Hit the dish!")
+## and the static starts thin and thickens; the screen-edge fizz is QuietHoursFx.
 
 var model: HackPanelModel = HackPanelModel.new()
 
@@ -53,7 +55,7 @@ func _draw() -> void:
 	_draw_battery(_shake_x())
 	var end_y: float = origin().y + SliceUiData.num("hack_panel.label_gap", 9) + SliceUiData.num("hack_panel.battery_h", 4) + SliceUiData.num("hack_panel.hijack_y_gap", 4)
 	_draw_hijack(end_y)
-	if model.is_locked():
+	if model.fizz_level() > 0.0:
 		_draw_fizz(origin().y + SliceUiData.num("hack_panel.label_gap", 9) + SliceUiData.num("hack_panel.battery_h", 4) + 1.0)
 
 
@@ -69,16 +71,23 @@ func _shake_x() -> float:
 func _draw_battery(shake: float) -> void:
 	var at: Vector2 = origin()
 	var locked: bool = model.is_locked()
+	var jamming: bool = model.is_jamming()
+	var flicker: bool = int(_clock / SliceUiData.num("hack_panel.jam_flicker_s", 0.12)) % 2 == 0
 	var number_right: float = at.x + panel_width()
-	if locked:
+	if jamming:
+		var tint: Color = SliceUiData.color("jam") if flicker else SandboxStyle.color("text")
+		SandboxStyle.label(self, at + Vector2(shake, 7.0), SliceUiData.text("hack.jamming"), tint)
+		SandboxStyle.text_right(self, "label", number_right, at.y + 7.0, SliceUiData.text("hack.jamming_hint").to_upper(), SliceUiData.color("jam"), SliceUiData.num("hack_panel.jam_hint_w", 66))
+	elif locked:
 		SandboxStyle.label(self, at + Vector2(shake, 7.0), SliceUiData.text("hack.jammed"), SliceUiData.color("jam"))
 		SandboxStyle.text_right(self, "label", number_right, at.y + 7.0, SliceUiData.fmt("hack.jammed_time", {"seconds": "%.1f" % model.lock_left_s()}).to_upper(), SliceUiData.color("jam"), 50.0)
 	else:
 		SandboxStyle.label(self, at + Vector2(shake, 7.0), SliceUiData.text("hack.battery"), SandboxStyle.color("label"))
 		OffsetStat.draw(self, Vector2(number_right, at.y + 8.0), "", str(roundi(model.charge)), "", SandboxStyle.color("text"), true)
 	var bar: Rect2 = Rect2(at.x + shake, at.y + SliceUiData.num("hack_panel.label_gap", 9), panel_width(), SliceUiData.num("hack_panel.battery_h", 4))
-	var top: Color = SliceUiData.color("battery_locked_top" if locked else "battery_top")
-	var bottom: Color = SliceUiData.color("battery_locked_bottom" if locked else "battery_bottom")
+	var greyed: bool = locked or (jamming and flicker)
+	var top: Color = SliceUiData.color("battery_locked_top" if greyed else "battery_top")
+	var bottom: Color = SliceUiData.color("battery_locked_bottom" if greyed else "battery_bottom")
 	SandboxStyle.thin_bar(self, bar, model.fill(), top, bottom, _chip if not locked else -1.0)
 	var tick_color: Color = SliceUiData.color("tick")
 	for entry: Dictionary in model.cost_ticks():
@@ -108,7 +117,7 @@ func _draw_fizz(end_y: float) -> void:
 	var at: Vector2 = origin()
 	var px: float = SliceUiData.num("hack_panel.fizz_px", 2)
 	var step: int = int(_clock / SliceUiData.num("hack_panel.fizz_step_s", 0.0833))
-	var density: float = SliceUiData.num("hack_panel.fizz_density", 0.38)
+	var density: float = SliceUiData.num("hack_panel.fizz_density", 0.38) * model.fizz_level()
 	var light: Color = SliceUiData.color("fizz_light")
 	var dark: Color = SliceUiData.color("fizz_dark")
 	var top_y: float = at.y + SliceUiData.num("hack_panel.label_gap", 9) - 1.0

@@ -24,12 +24,15 @@ extends SandboxHud
 ##   director.hack_cast(info)                           {hack, ...}: a cast began (the cooldown sweep, "last used")
 ##   director.hack_refused(info)                        {hack, reason, ...}: a button press that fired nothing (the bar shakes)
 ##   director.hijack_changed(info)                      {target, active, duration_s}: the Link timer and the ring over the target
+##   director.hack_prompt_changed(info)                 {id, text_key, button}: the hack button offers "Jack in" (B11); {} = gone
 ##   director.radio_said(speaker, text)                 a bark for the radio box (not in the director yet; radio_say() works today)
 ##   director.feature_changed(id, on)                   (SandboxHud)
 ##   host.knocked_out_rule(rule)                        Red was knocked out: open the Continue screen (not for rule "none")
 ##   host.continue_started(room, spawn)                 the restart began: close it
 ##   host.get_boss_fight() -> Object with signals boss_bar_shown(info), boss_hp_changed(hp, hp_max),
 ##                          boss_phase_changed(index, name), boss_bar_hidden()   (or the director carrying the same)
+##                          boss_pips_changed(standing, total)                   the leg pips (B12)
+##                          quiet_hours_warning(ms), quiet_hours_cleared()       the dish hums: "Jamming" and the screen-edge fizz (B10)
 ## And it calls `host.continue_after_knockout()` when Continue is chosen.
 ## The feel knobs hack_pick_mode, hack_cost_scale and hack_free_cast are read live.
 
@@ -58,6 +61,7 @@ var _hack_panel: HackPanel = null
 var _deck: CommandDeck = null
 var _slowmo_active: bool = false
 var _boss_bar: BossBar = null
+var _quiet_fx: QuietHoursFx = null
 var _radio: RadioBark = null
 var _location: LocationCard = null
 var _continue: ContinueScreen = null
@@ -86,6 +90,8 @@ func _build() -> void:
 	if _slice_pause != null:
 		_slice_pause.field_menu_requested.connect(_on_pause_menu_chosen)
 		_slice_pause.feel_requested.connect(_on_pause_feel_chosen)
+	_quiet_fx = _add_part(QuietHoursFx.new(), "QuietHoursFx") as QuietHoursFx
+	move_child(_quiet_fx, 0)                      # under every readout: the fizz sits at the edges and never covers text
 	_hack_panel = _add_part(HackPanel.new(), "HackPanel") as HackPanel
 	_deck = _add_part(CommandDeck.new(), "CommandDeck") as CommandDeck
 	_boss_bar = _add_part(BossBar.new(), "BossBar") as BossBar
@@ -117,7 +123,7 @@ func _add_part(part: Control, part_name: String) -> Control:
 
 func _place_corners() -> void:
 	super()
-	for part: Control in [_hack_panel, _deck, _boss_bar, _radio, _location]:
+	for part: Control in [_quiet_fx, _hack_panel, _deck, _boss_bar, _radio, _location]:
 		if part != null:
 			part.position = Vector2.ZERO
 			part.size = size
@@ -135,6 +141,10 @@ func get_deck() -> CommandDeck:
 
 func get_boss_bar() -> BossBar:
 	return _boss_bar
+
+
+func get_quiet_fx() -> QuietHoursFx:
+	return _quiet_fx
 
 
 func get_radio() -> RadioBark:
@@ -181,6 +191,10 @@ func bind(target: Object) -> void:
 		_link(_director, &"hack_refused", _on_hack_refused)
 		_link(_director, &"hijack_changed", _on_hijack_changed)
 		_link(_director, &"radio_said", _on_radio_said)
+		_link(_director, &"hack_prompt_changed", _on_hack_prompt_changed)
+		var offered: Variant = _director.get(&"hack_prompt")
+		if offered is Dictionary:
+			_on_hack_prompt_changed(offered as Dictionary)
 	_boss_source = _call(sandbox, &"get_boss_fight") as Object
 	if _boss_source == null:
 		_boss_source = _director
@@ -189,6 +203,8 @@ func bind(target: Object) -> void:
 	_link(_boss_source, &"boss_phase_changed", set_boss_phase)
 	_link(_boss_source, &"boss_bar_hidden", hide_boss_bar)
 	_link(_boss_source, &"boss_pips_changed", set_boss_pips)
+	_link(_boss_source, &"quiet_hours_warning", _on_quiet_warning)
+	_link(_boss_source, &"quiet_hours_cleared", _on_quiet_cleared)
 	_link(sandbox, &"knocked_out_rule", _on_knocked_out)
 	_link(sandbox, &"continue_started", _on_continue_started)
 	if _knobs != null:
@@ -238,6 +254,39 @@ func _on_battery_changed(charge: float, capacity: float) -> void:
 
 func _on_hack_locked(active: bool, ms: float) -> void:
 	_hack_panel.model.set_lock(active, ms)
+
+
+## The dish started to hum: `ms` until the hacks lock. "Jamming" on the panel and the screen edges fizz (B10).
+func _on_quiet_warning(ms: float) -> void:
+	_hack_panel.model.set_warning(ms)
+
+
+## The warning ended early (the dish was hit, or broke). The lock itself arrives through hack_locked.
+func _on_quiet_cleared() -> void:
+	_hack_panel.model.clear_warning()
+
+
+## The hack button offers something else ("Jack in") or stopped (B11).
+func _on_hack_prompt_changed(info: Dictionary) -> void:
+	_hack_panel.model.set_prompt(info)
+	if not info.is_empty():
+		audio.sfx("tick")
+
+
+## The hack button's name as bound now: the controller's when the pad was used last, else the keyboard's ("Y" or "K").
+## Reads the InputMap directly (a key by its physical code), and falls back to the words in data/ui/slice_ui.json.
+func hack_button_text() -> String:
+	var action: StringName = StringName(str(SliceUiData.ui("hack_prompt.actions.%s" % _hack_panel.model.prompt_button(), "heavy")))
+	if InputMap.has_action(action):
+		for event: InputEvent in InputMap.action_get_events(action):
+			if _pad_mode and event is InputEventJoypadButton:
+				return InputRemap.pad_name((event as InputEventJoypadButton).button_index).split(" / ")[0].strip_edges()
+			if not _pad_mode and event is InputEventKey:
+				var key: InputEventKey = event as InputEventKey
+				var code: int = key.physical_keycode if key.physical_keycode != KEY_NONE else key.keycode
+				if code != KEY_NONE:
+					return OS.get_keycode_string(code as Key)
+	return str(SliceUiData.ui("hack_prompt.fallback_pad" if _pad_mode else "hack_prompt.fallback_key", "K"))
 
 
 func _on_hack_selected(hack_id: StringName) -> void:
@@ -487,7 +536,11 @@ func tick(delta: float) -> void:
 	_hack_panel.visible = not is_menu_open()
 	_deck.visible = not is_menu_open()
 	_hack_panel.tick(delta)
+	if _hack_panel.model.has_prompt():
+		_deck.prompt_button_text = hack_button_text()
 	_deck.tick(delta)
+	_quiet_fx.set_level(_hack_panel.model.edge_fizz_level())
+	_quiet_fx.tick(delta)
 	_set_slowmo(_wants_slowmo())
 	_boss_bar.tick(delta)
 	_radio.tick(delta)

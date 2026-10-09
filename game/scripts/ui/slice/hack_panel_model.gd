@@ -26,6 +26,11 @@ var wrap: bool = true
 
 var _lock_left_ms: float = 0.0
 var _lock_total_ms: float = 0.0
+## The Quiet Hours warning (the dish is humming, the lock has not landed yet).
+var _warn_left_ms: float = 0.0
+var _warn_total_ms: float = 0.0
+## The button prompt that replaces the hack ({id, text_key, button}), or {}.
+var _prompt: Dictionary = {}
 var _cooldown_left_ms: Dictionary = {}
 var _cooldown_total_ms: Dictionary = {}
 var _denied_left_s: float = 0.0
@@ -181,6 +186,8 @@ func cooldown_frac(id: String) -> float:
 func set_lock(active: bool, ms: float) -> void:
 	_lock_left_ms = maxf(0.0, ms) if active else 0.0
 	_lock_total_ms = _lock_left_ms if active else 0.0
+	if active:
+		clear_warning()        # the lock has landed: the warning is over
 
 
 func is_locked() -> bool:
@@ -193,6 +200,81 @@ func lock_left_s() -> float:
 
 func lock_frac() -> float:
 	return clampf(_lock_left_ms / _lock_total_ms, 0.0, 1.0) if _lock_total_ms > 0.0 else 0.0
+
+
+## The dish has started to hum: `ms` until the lock lands. The panel shows "Jamming" and the screen edges fizz.
+## The panel waits a little longer than `ms` (data: quiet_fx.grace_ms), because the lock arrives on the boss's own clock.
+func set_warning(ms: float) -> void:
+	_warn_total_ms = maxf(0.0, ms)
+	_warn_left_ms = _warn_total_ms + SliceUiData.num("quiet_fx.grace_ms", 600.0) if _warn_total_ms > 0.0 else 0.0
+
+
+## The warning is over (the lock landed, the dish was hit, or the pattern was dropped).
+func clear_warning() -> void:
+	_warn_left_ms = 0.0
+	_warn_total_ms = 0.0
+
+
+func is_jamming() -> bool:
+	return _warn_left_ms > 0.0 and not is_locked()
+
+
+func warning_left_s() -> float:
+	return _warn_left_ms / 1000.0
+
+
+## 0 at the start of the warning, 1 as the lock lands.
+func warning_progress() -> float:
+	if _warn_total_ms <= 0.0:
+		return 0.0
+	var grace: float = SliceUiData.num("quiet_fx.grace_ms", 600.0)
+	return clampf((_warn_total_ms + grace - _warn_left_ms) / _warn_total_ms, 0.0, 1.0)
+
+
+## How thick the static over the panel is: full while locked, rising through the warning, none otherwise.
+func fizz_level() -> float:
+	if is_locked():
+		return 1.0
+	if is_jamming():
+		var low: float = SliceUiData.num("hack_panel.jam_fizz_min", 0.35)
+		var high: float = SliceUiData.num("hack_panel.jam_fizz_max", 0.8)
+		return lerpf(low, high, warning_progress())
+	return 0.0
+
+
+## How strong the screen-edge fizz is (QuietHoursFx): off, then from `quiet_fx.level_min` up to full as the lock gets close.
+func edge_fizz_level() -> float:
+	if not is_jamming():
+		return 0.0
+	return lerpf(SliceUiData.num("quiet_fx.level_min", 0.4), 1.0, warning_progress())
+
+
+# ---- the button prompt ----
+
+## The hack button offers `info` instead of a hack ({id, text_key, button}); {} takes it away.
+func set_prompt(info: Dictionary) -> void:
+	_prompt = info.duplicate()
+
+
+func has_prompt() -> bool:
+	return not _prompt.is_empty()
+
+
+func prompt_id() -> String:
+	return str(_prompt.get("id", ""))
+
+
+## The words on the prompt (data/text/slice_ui.json "prompt.<text_key>").
+func prompt_text() -> String:
+	if _prompt.is_empty():
+		return ""
+	var words: String = SliceUiData.text("prompt.%s" % str(_prompt.get("text_key", "")))
+	return words if not words.is_empty() else SliceUiData.text("prompt.default")
+
+
+## Which button the prompt is on ("hack").
+func prompt_button() -> String:
+	return str(_prompt.get("button", "hack"))
 
 
 # ---- a refused cast ----
@@ -263,6 +345,7 @@ func tick(delta: float) -> void:
 	for id: String in _cooldown_left_ms.keys():
 		_cooldown_left_ms[id] = maxf(0.0, float(_cooldown_left_ms[id]) - delta * 1000.0)
 	_lock_left_ms = maxf(0.0, _lock_left_ms - delta * 1000.0)
+	_warn_left_ms = maxf(0.0, _warn_left_ms - delta * 1000.0)
 	_denied_left_s = maxf(0.0, _denied_left_s - delta)
 	for id: String in _hijacks.keys():
 		_hijacks[id]["left"] = float(_hijacks[id]["left"]) - delta

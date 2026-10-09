@@ -18,6 +18,8 @@ signal boss_hp_changed(hp: float, hp_max: float)
 signal boss_phase_changed(index: int, phase_name: String)
 signal boss_bar_hidden()
 signal boss_pips_changed(standing: int, total: int)       ## relay pips for a HUD that wants them (leg pairs still standing)
+signal quiet_hours_warning(ms: float)                      ## the dish hums: hacks lock in `ms` (a HUD fizzes the screen edges)
+signal quiet_hours_cleared                                 ## the warning is over without the lock (the dish was hit or broke)
 signal phase_started(phase_id: StringName)
 signal phase_finished(phase_id: StringName)
 signal fight_finished
@@ -165,6 +167,10 @@ func _start_rig(retry: bool) -> void:
 	hushmaster.defeated.connect(_on_rig_defeated)
 	hushmaster.bark.connect(func(id: StringName) -> void: boss_event.emit(id))
 	hushmaster.pattern_started.connect(_on_pattern_started)
+	hushmaster.quiet_hours_started.connect(_on_quiet_started)
+	hushmaster.quiet_hours_cut.connect(func(_by: String) -> void: _emit_quiet_cleared())
+	hushmaster.dish_broke.connect(_emit_quiet_cleared)
+	hushmaster.toppled.connect(_emit_quiet_cleared)
 	director.hp_changed.connect(_on_hp_changed)
 	_build_turrets(rig)
 	_show_bar()
@@ -217,6 +223,20 @@ func _emit_pips(standing: int, total: int) -> void:
 	boss_pips_changed.emit(standing, total)
 	if director != null:
 		director.boss_pips_changed.emit(standing, total)
+
+
+## The dish started to hum (Quiet Hours' warning). The HUD hears it from here and from the director.
+func _on_quiet_started() -> void:
+	var ms: float = hushmaster.quiet_warning_ms() if hushmaster != null else 1400.0
+	quiet_hours_warning.emit(ms)
+	if director != null:
+		director.quiet_hours_warning.emit(ms)
+
+
+func _emit_quiet_cleared() -> void:
+	quiet_hours_cleared.emit()
+	if director != null:
+		director.quiet_hours_cleared.emit()
 
 
 func _on_pattern_started(id: StringName) -> void:

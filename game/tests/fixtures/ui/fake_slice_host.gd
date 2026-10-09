@@ -10,6 +10,8 @@ class StubBossFight extends RefCounted:
 	signal boss_phase_changed(index: int, phase_name: String)
 	signal boss_bar_hidden()
 	signal boss_pips_changed(standing: int, total: int)
+	signal quiet_hours_warning(ms: float)
+	signal quiet_hours_cleared
 
 signal knocked_out_rule(rule: String)
 signal continue_started(room: String, spawn: String)

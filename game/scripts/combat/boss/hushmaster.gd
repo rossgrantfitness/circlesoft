@@ -621,6 +621,12 @@ func _setup_quiet() -> void:
 	bark.emit(&"kasp_rig_quiet_hours")
 
 
+## How long the dish hums before the lock lands, in ms (data: the quiet_hours pattern's `lock_at_ms`). The HUD's warning runs this long.
+func quiet_warning_ms() -> float:
+	var spec: Dictionary = brain.pattern(&"quiet_hours") if brain != null else {}
+	return float(spec.get("lock_at_ms", 1400.0))
+
+
 ## Runs every frame: applies the lock when the hum ends, and cuts it short when the dish has been hit enough.
 func _tick_quiet() -> void:
 	var director: CombatDirector = find_director()
