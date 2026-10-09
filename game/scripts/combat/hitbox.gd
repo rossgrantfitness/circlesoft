@@ -16,6 +16,11 @@ var _active: Dictionary = {}             # slice index -> {box, shape, params}
 var _attack: Dictionary = {}
 var _swing_id: int = -1
 var _ledger: Dictionary = {}
+## Boss boxes name where they are anchored (`origin`: leg_foot, dish, locked_target ...). The boss gives a Callable
+## (name: StringName) -> Transform3D, or null for "the owner's own transform". Empty = every box is on the owner.
+var origin_resolver: Callable = Callable()
+var _overrides: Dictionary = {}          # slice index -> {key: value}, set at run time (the beam's aim yaw, its side)
+var _pending_mult: float = 1.0
 var _clock_ms: float = 0.0
 var _debug: Dictionary = {}              # slice index -> MeshInstance3D
 var _debug_material: StandardMaterial3D = null
@@ -33,10 +38,19 @@ func activate(box: Dictionary, hit: Dictionary, swing_id: int) -> void:
 		_swing_id = swing_id
 	_attack = hit
 	var index: int = int(box.get("index", _active.size()))
-	_active[index] = {"box": box, "shape": _make_shape(box)}
+	_active[index] = {"box": box, "shape": _make_shape(box), "t0": _clock_ms}
+	_overrides.erase(index)
+
+
+## Changes one value of a running box (the Dish Sweep's start yaw and swing side are only known when the sweep starts).
+func set_box_param(index: int, key: String, value: Variant) -> void:
+	var entry: Dictionary = _overrides.get(index, {})
+	entry[key] = value
+	_overrides[index] = entry
 
 
 func deactivate(index: int) -> void:
+	_overrides.erase(index)
 	_active.erase(index)
 	_hide_debug(index)
 
@@ -44,6 +58,7 @@ func deactivate(index: int) -> void:
 ## Everything off and forgotten.
 func clear() -> void:
 	_active.clear()
+	_overrides.clear()
 	_ledger.clear()
 	_swing_id = -1
 	_attack = {}
@@ -60,7 +75,11 @@ func active_count() -> int:
 
 
 func attack_data() -> Dictionary:
-	return _attack
+	if is_equal_approx(_pending_mult, 1.0):
+		return _attack
+	var scaled: Dictionary = _attack.duplicate()
+	scaled["damage"] = int(roundf(float(_attack.get("damage", 0)) * _pending_mult))
+	return scaled
 
 
 func swing_id() -> int:
@@ -68,7 +87,18 @@ func swing_id() -> int:
 
 
 func world_transform_of(box: Dictionary) -> Transform3D:
-	return PerfectDodge.box_transform(owner_actor().global_transform if owner_actor() != null else global_transform, box)
+	return PerfectDodge.box_transform(_base_transform(box), box)
+
+
+## The transform a box hangs from: the owner's, or the named `origin` the boss resolves.
+func _base_transform(box: Dictionary) -> Transform3D:
+	var base: Transform3D = owner_actor().global_transform if owner_actor() != null else global_transform
+	var origin_name: String = str(box.get("origin", ""))
+	if not origin_name.is_empty() and origin_resolver.is_valid():
+		var resolved: Variant = origin_resolver.call(StringName(origin_name))
+		if resolved is Transform3D:
+			return resolved as Transform3D
+	return base
 
 
 ## Query the active shapes. `delta` is the owner's LOCAL time step (it only matters for rehit_ms).
@@ -88,6 +118,11 @@ func tick(delta: float) -> void:
 		if not _active.has(index):
 			continue
 		var entry: Dictionary = _active[index]
+		var kind: String = str((entry["box"] as Dictionary).get("shape", ""))
+		if kind == "ring" or kind == "beam":
+			_tick_geometry(int(index), entry, self_actor, rehit_ms)
+			continue
+		_pending_mult = float((entry["box"] as Dictionary).get("damage_mult", 1.0))
 		var params: PhysicsShapeQueryParameters3D = PhysicsShapeQueryParameters3D.new()
 		params.shape = entry["shape"]
 		params.transform = world_transform_of(entry["box"])
@@ -108,10 +143,52 @@ func tick(delta: float) -> void:
 			contact_box_index = int(index)
 			if director != null:
 				director.report_contact(self, hurtbox)
+		_pending_mult = 1.0
+
+
+## The ring and the beam: no physics shape, plain maths against every fighter on the other side.
+func _tick_geometry(index: int, entry: Dictionary, self_actor: CombatActor, rehit_ms: float) -> void:
+	if director == null:
+		return
+	var box: Dictionary = entry["box"] as Dictionary
+	var age_s: float = (_clock_ms - float(entry["t0"])) / 1000.0
+	var base: Transform3D = _base_transform(box)
+	var centre: Vector3 = PerfectDodge.box_transform(base, box).origin
+	var over: Dictionary = _overrides.get(index, {})
+	var is_ring: bool = str(box.get("shape", "")) == "ring"
+	var yaw: float = 0.0
+	if not is_ring:
+		var start: float = float(over.get("aim_yaw", base.basis.get_euler().y))
+		yaw = HitShapes.beam_yaw(box, age_s, start, float(over.get("sweep_dir", 1.0)))
+	_pending_mult = float(box.get("damage_mult", 1.0))
+	for victim: CombatActor in director.actors():
+		if victim == self_actor or victim.team == self_actor.team or victim.dead or victim.get_hurtbox() == null:
+			continue
+		var hit: bool = false
+		if is_ring:
+			hit = HitShapes.ring_hits(centre, box, age_s, victim.global_position, victim.radius_m)
+		else:
+			hit = HitShapes.beam_hits(centre, yaw, box, victim.global_position, victim.radius_m, victim.height_m)
+		if not hit or not HitResolver.may_hit(_ledger, _swing_id, victim.actor_id, _clock_ms, rehit_ms):
+			continue
+		contact_point = victim.anchor(&"center")
+		contact_box_index = index
+		director.report_contact(self, victim.get_hurtbox())
+	_pending_mult = 1.0
+
+
+## Where a running ring's band is right now (radius), or a beam's yaw, for the FX that draws them. -1 / 0 if the box is off.
+func ring_radius_of(index: int) -> float:
+	if not _active.has(index):
+		return -1.0
+	var entry: Dictionary = _active[index]
+	return HitShapes.ring_radius(entry["box"] as Dictionary, (_clock_ms - float(entry["t0"])) / 1000.0)
 
 
 func _make_shape(box: Dictionary) -> Shape3D:
 	match str(box.get("shape", "sphere")):
+		"ring", "beam":
+			return null              # these two are plain maths (_tick_geometry), not physics shapes
 		"box":
 			var size: Array = box.get("size", [1.0, 1.0, 1.0])
 			var shape: BoxShape3D = BoxShape3D.new()
@@ -141,6 +218,8 @@ func _update_debug() -> void:
 		return
 	for index: Variant in _active.keys():
 		var entry: Dictionary = _active[index]
+		if entry["shape"] == null:
+			continue                  # ring and beam: drawn by the boss's own floor FX
 		var mesh_node: MeshInstance3D = _debug.get(index, null)
 		if mesh_node == null:
 			mesh_node = MeshInstance3D.new()

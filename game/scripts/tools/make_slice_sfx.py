@@ -75,6 +75,15 @@ def finish_loop(x, peak):
     return x / max(1e-9, np.max(np.abs(x))) * peak
 
 
+def plus(*parts):
+    """Add arrays of different lengths (shorter ones are padded with silence at the end)."""
+    n = max(len(p) for p in parts)
+    out = np.zeros(n)
+    for p in parts:
+        out[:len(p)] += p
+    return out
+
+
 def bump(n, power=1.0):
     """A smooth 0 -> 1 -> 0 hill across n samples."""
     return np.sin(np.pi * np.linspace(0.0, 1.0, n)) ** power
@@ -88,8 +97,17 @@ def fade_out(n, power=1.0):
     return np.linspace(1.0, 0.0, n) ** power
 
 
-def lowpass(x, hi):
-    return bandpass(x, 0.0, hi)
+def lowpass(x, hi, circular=False):
+    """Low-pass by FFT. One-shots are zero-padded first so the filter cannot ring across the file's two
+    ends (that would put a click at sample 0); pass circular=True for a buffer that loops."""
+    if circular:
+        return bandpass(x, 0.0, hi)
+    pad = np.zeros(len(x) + SR // 4)
+    pad[:len(x)] = x
+    out = bandpass(pad, 0.0, hi)[:len(x)]
+    ramp = min(len(out), n_of(0.0015))          # a brick-wall filter rings before an onset; trim that to zero
+    out[:ramp] *= np.linspace(0.0, 1.0, ramp)
+    return out
 
 
 def highpass(x, lo):
@@ -396,7 +414,7 @@ def make_hack_target_crane_loop(rng):
     groan = np.zeros(n)
     for h, a in ((1, 1.0), (2, 0.6), (3, 0.45), (4, 0.3), (6, 0.15)):
         groan += a * np.sin(h * (TAU * f * t + 1.6 * np.sin(TAU * fl * t)))
-    groan = lowpass(groan, 900)
+    groan = lowpass(groan, 900, True)
     x = 0.8 * groan * am(n, secs, 2.0, 0.3)
     x += 0.35 * loop_noise(rng, n, 200, 1500) * am(n, secs, 1.0, 0.6)
     for k in range(14):
@@ -564,10 +582,9 @@ def make_boss_topple(rng):
     grind = sweep_noise(rng, n_of(1.4), 200, 2600) * bump(n_of(1.4), 0.7)
     x = place(x, 0.1, grind, 0.35)
     for i, s in enumerate((0.35, 0.7, 0.98, 1.2)):
-        x = place(x, s, clank(rng, n_of(0.4), 300.0 - 40 * i, 0.12) + 0.7 * thump(n_of(0.3), 130, 45, 0.07), 0.45 + 0.1 * i)
+        x = place(x, s, plus(clank(rng, n_of(0.4), 300.0 - 40 * i, 0.12), 0.7 * thump(n_of(0.3), 130, 45, 0.07)), 0.45 + 0.1 * i)
     # the fall
-    big = thump(n_of(1.6), 100, 24, 0.45) * 2.0 + 1.0 * burst(rng, n_of(1.6), 50, 3000, 0.22, 0.0006) + 0.9 * burst(rng, n_of(0.5), 2000, 14000, 0.03, 0.0002)
-    big += 0.7 * clank(rng, n_of(1.2), 190.0, 0.4)
+    big = plus(thump(n_of(1.6), 100, 24, 0.45) * 2.0, 1.0 * burst(rng, n_of(1.6), 50, 3000, 0.22, 0.0006), 0.9 * burst(rng, n_of(0.5), 2000, 14000, 0.03, 0.0002), 0.7 * clank(rng, n_of(1.2), 190.0, 0.4))
     x = place(x, 1.45, big, 1.0)
     x = place(x, 1.5, metal_clatter(rng, 1.4, 60, 150, 1600, 0.6), 0.5)
     x = place(x, 1.5, bandpass(white(rng, n_of(1.5)), 25, 250) * env_exp(n_of(1.5), 0.6, 0.02), 0.8)
@@ -644,7 +661,7 @@ def make_mech_assemble(rng):
     k = 0.4
     while k < 5.3:
         base = float(np.exp(rng.uniform(np.log(110), np.log(900))))
-        c = clank(rng, n_of(0.35), base, float(rng.uniform(0.05, 0.14))) + 0.5 * thump(n_of(0.2), 160, 55, 0.05)
+        c = plus(clank(rng, n_of(0.35), base, float(rng.uniform(0.05, 0.14))), 0.5 * thump(n_of(0.2), 160, 55, 0.05))
         x = place(x, k, c, 0.12 + 0.35 * float(rng.random()))
         k += float(rng.uniform(0.06, 0.26)) * (1.3 - 0.9 * np.sin(np.pi * k / 5.4))
     # the final clamp
@@ -653,7 +670,7 @@ def make_mech_assemble(rng):
     x = place(x, 5.4, burst(rng, n_of(0.9), 1500, 14000, 0.18, 0.0003), 0.9)
     x = place(x, 5.4, metal_clatter(rng, 1.2, 40, 150, 1500, 0.5), 0.5)
     # the floodlight head switches on: relay thunk, ballast buzz that flickers, then steady
-    x = place(x, 6.25, tick(rng, n_of(0.04), 1000, 8000, 0.008) + 0.9 * thump(n_of(0.1), 200, 80, 0.03), 0.9)
+    x = place(x, 6.25, plus(tick(rng, n_of(0.04), 1000, 8000, 0.008), 0.9 * thump(n_of(0.1), 200, 80, 0.03)), 0.9)
     ft = n_of(0.9)
     tf = np.arange(ft) / SR
     flick = np.where(((tf * 14).astype(int) % 5 == 0) & (tf < 0.4), 0.2, 1.0)
@@ -695,7 +712,7 @@ def make_mech_idle_loop(rng):
     t = np.arange(n) / SR
     # rough diesel: slow chugging pulses on a low saw
     f = loop_freq(46.0, secs)
-    engine = lowpass(saw(f, n, 14), 700) * (0.5 + 0.5 * np.maximum(0.0, np.sin(TAU * loop_freq(11.0, secs) * t)) ** 2)
+    engine = lowpass(saw(f, n, 14), 700, True) * (0.5 + 0.5 * np.maximum(0.0, np.sin(TAU * loop_freq(11.0, secs) * t)) ** 2)
     engine += 0.3 * loop_noise(rng, n, 60, 400) * am(n, secs, 11.0, 0.8)
     x = 0.8 * engine
     wind = loop_noise(rng, n, 300, 2200) * am(n, secs, 0.5, 0.7)
@@ -752,7 +769,7 @@ def make_mech_sting_lock(rng):
         d = n_of(0.2)
         stab = pulse_buzz(f, d) + 0.7 * pulse_buzz(f * 1.414, d)
         x = place(x, start, lowpass(stab, 3000) * env_adsr(d, 0.0008, 0.05, 0.05), 0.7)
-        x = place(x, start, tick(rng, n_of(0.04), 2000, 13000, 0.004) + 0.6 * clank(rng, n_of(0.12), 520.0, 0.04), 0.7)
+        x = place(x, start, plus(tick(rng, n_of(0.04), 2000, 13000, 0.004), 0.6 * clank(rng, n_of(0.12), 520.0, 0.04)), 0.7)
     return finish(clip(x, 1.4), 0.9, 0.04)
 
 
@@ -825,13 +842,13 @@ def make_mech_plate_break(rng):
     shriek *= env_adsr(tear_n, 0.01, 0.35, 0.1)
     x = np.zeros(n)
     x = place(x, 0.0, crush(shriek, 2), 0.6)
-    x = place(x, 0.0, tick(rng, n_of(0.03), 2000, 14000, 0.004) + 0.8 * thump(n_of(0.15), 200, 60, 0.04), 0.9)
+    x = place(x, 0.0, plus(tick(rng, n_of(0.03), 2000, 14000, 0.004), 0.8 * thump(n_of(0.15), 200, 60, 0.04)), 0.9)
     # the plate tumbles: bounces that get closer and quieter
     fall_start = 0.7
     bounce = fall_start
     gap = 0.34
     for i in range(6):
-        x = place(x, bounce, clank(rng, n_of(0.5), 150.0 + 40 * (i % 3), 0.22 - 0.02 * i) + thump(n_of(0.3), 120, 40, 0.08), 0.9 * 0.7 ** i)
+        x = place(x, bounce, plus(clank(rng, n_of(0.5), 150.0 + 40 * (i % 3), 0.22 - 0.02 * i), thump(n_of(0.3), 120, 40, 0.08)), 0.9 * 0.7 ** i)
         bounce += gap
         gap *= 0.72
     x = place(x, 1.0, thump(n_of(1.0), 90, 26, 0.3), 1.2)
@@ -876,12 +893,12 @@ def make_mech_defeat(rng):
     can rolling to a stop (the comic button). ~5.6 s."""
     n = n_of(5.6)
     x = np.zeros(n)
-    x = place(x, 0.0, thump(n_of(2.0), 90, 22, 0.55) * 1.5 + 0.8 * burst(rng, n_of(1.6), 40, 2200, 0.5, 0.0005), 1.0)
+    x = place(x, 0.0, plus(thump(n_of(2.0), 90, 22, 0.55) * 1.5, 0.8 * burst(rng, n_of(1.6), 40, 2200, 0.5, 0.0005)), 1.0)
     x = place(x, 0.0, sweep_noise(rng, n_of(1.4), 200, 2400) * bump(n_of(1.4), 0.7), 0.3)
     x = place(x, 0.0, crush(saw(np.geomspace(150, 28, n_of(1.7)), n_of(1.7), 10) * env_adsr(n_of(1.7), 0.01, 0.4, 0.4), 4), 0.3)
     x = place(x, 0.1, metal_clatter(rng, 3.4, 220, 100, 2600, 1.2), 0.75)
     x = place(x, 0.1, bandpass(white(rng, n_of(3.0)), 25, 300) * env_exp(n_of(3.0), 1.0, 0.05), 0.7)
-    x = place(x, 3.35, clank(rng, n_of(1.0), 205.0, 0.45) + 0.6 * thump(n_of(0.4), 130, 50, 0.1), 0.95)
+    x = place(x, 3.35, plus(clank(rng, n_of(1.0), 205.0, 0.45), 0.6 * thump(n_of(0.4), 130, 50, 0.1)), 0.95)
     # the tin can: tinny wobbling roll that slows, then a last little rattle
     roll_n = n_of(1.7)
     tr = np.arange(roll_n) / SR
@@ -930,8 +947,8 @@ def make_robot_hatch(rng):
     hinge_n = n_of(0.25)
     hinge = lowpass(saw(np.geomspace(300, 180, hinge_n), hinge_n, 10), 1500) * bump(hinge_n, 0.5)
     x = place(x, 0.12, hinge, 0.5)
-    x = place(x, 0.34, thump(n_of(0.2), 170, 60, 0.05) + clank(rng, n_of(0.25), 330.0, 0.08), 0.9)
-    x = place(x, 0.5, tick(rng, n_of(0.03), 1500, 9000, 0.005) + 0.6 * clank(rng, n_of(0.08), 1100.0, 0.02), 0.8)
+    x = place(x, 0.34, plus(thump(n_of(0.2), 170, 60, 0.05), clank(rng, n_of(0.25), 330.0, 0.08)), 0.9)
+    x = place(x, 0.5, plus(tick(rng, n_of(0.03), 1500, 9000, 0.005), 0.6 * clank(rng, n_of(0.08), 1100.0, 0.02)), 0.8)
     return finish(clip(x, 1.3), 0.9, 0.06)
 
 
@@ -959,7 +976,7 @@ def make_robot_dock_clank(rng):
     x += 0.9 * thump(n, 230, 65, 0.06)
     x += 0.8 * tick(rng, n, 2000, 15000, 0.004)
     x += 0.6 * bell(hz(52), n, 0.3, (1.0, 2.76, 5.4), (1.0, 0.4, 0.2))
-    x = place(x, 0.6, thump(n_of(0.4), 120, 36, 0.12) * 1.5 + 0.6 * clank(rng, n_of(0.3), 180.0, 0.08) + 0.5 * tick(rng, n_of(0.3), 800, 6000, 0.008), 0.95)
+    x = place(x, 0.6, plus(thump(n_of(0.4), 120, 36, 0.12) * 1.5, 0.6 * clank(rng, n_of(0.3), 180.0, 0.08), 0.5 * tick(rng, n_of(0.3), 800, 6000, 0.008)), 0.95)
     return finish(clip(x, 1.4), 0.98, 0.1)
 
 
@@ -974,7 +991,7 @@ def make_robot_power_up(rng):
     x = 0.8 * hum + 0.9 * furnace
     x += 0.2 * osc(np.geomspace(240, 900, n), n) * fade_in(n, 1.5)
     for i, s in enumerate((0.3, 0.62, 0.94)):
-        x = place(x, s, tick(rng, n_of(0.03), 1200, 8000, 0.006) + 0.8 * thump(n_of(0.06), 400 + 120 * i, 150, 0.015) + 0.4 * osc(1500 + 300 * i, n_of(0.04)) * env_exp(n_of(0.04), 0.015, 0.0006), 0.85)
+        x = place(x, s, plus(tick(rng, n_of(0.03), 1200, 8000, 0.006), 0.8 * thump(n_of(0.06), 400 + 120 * i, 150, 0.015), 0.4 * osc(1500 + 300 * i, n_of(0.04)) * env_exp(n_of(0.04), 0.015, 0.0006)), 0.85)
     x = place(x, 1.2, thump(n_of(0.3), 100, 40, 0.08), 0.6)
     return finish(clip(x, 1.2), 0.9, 0.15)
 
@@ -990,7 +1007,7 @@ def make_robot_servo_small_loop(rng):
     for h, a in ((1, 1.0), (2, 0.6), (3, 0.45), (4, 0.3), (6, 0.2)):
         hum += a * np.sin(h * (TAU * f * t + 0.5 * np.sin(TAU * loop_freq(2.0, secs) * t)))
     whine = 0.2 * np.sin(TAU * loop_freq(620.0, secs) * t + 1.5 * np.sin(TAU * loop_freq(3.0, secs) * t))
-    x = 0.8 * lowpass(hum, 1400) + whine + 0.1 * loop_noise(rng, n, 150, 900)
+    x = 0.8 * lowpass(hum, 1400, True) + whine + 0.1 * loop_noise(rng, n, 150, 900)
     for k in range(8):
         x = place_wrap(x, float(rng.uniform(0, secs)), clank(rng, n_of(0.08), float(rng.uniform(600, 1500)), 0.02), 0.15)
     return finish_loop(clip(x, 0.9), 0.65)
@@ -1243,7 +1260,7 @@ def make_amb_market_patrol(rng):
         s = 0.4 + k * 0.5
         near = np.sin(np.pi * (k + 0.5) / steps) ** 1.3
         for side in (0, 1):
-            x = place(x, s + side * 0.0, thump(n_of(0.12), 150, 60, 0.03) + 0.7 * burst(rng, n_of(0.1), 400, 4000, 0.02, 0.0003) + 0.3 * clank(rng, n_of(0.08), 900.0, 0.02), 0.5 * near + 0.05)
+            x = place(x, s + side * 0.0, plus(thump(n_of(0.12), 150, 60, 0.03), 0.7 * burst(rng, n_of(0.1), 400, 4000, 0.02, 0.0003), 0.3 * clank(rng, n_of(0.08), 900.0, 0.02)), 0.5 * near + 0.05)
     sq = n_of(0.5)
     squawk = bandpass(static_wash(rng, sq, False), 400, 3500) * env_adsr(sq, 0.003, 0.25, 0.1)
     x = place(x, 3.9, squawk, 0.7)
@@ -1272,7 +1289,7 @@ def make_amb_junkyard(rng):
         f0 = float(rng.uniform(220, 800))
         x = place_wrap(x, float(rng.uniform(0, secs)), lowpass(osc(np.linspace(f0, f0 * float(rng.uniform(0.6, 1.5)), d), d, ((1, 1.0), (2, 0.5), (3, 0.3))), 2200) * bump(d, 0.9), 0.1)
     for k in range(18):                                   # ticks of cooling metal
-        x = place_wrap(x, float(rng.uniform(0, secs)), tick(rng, n_of(0.02), 1500, 7000, 0.004) + 0.4 * osc(float(rng.uniform(900, 2400)), n_of(0.03)) * env_exp(n_of(0.03), 0.01, 0.0005), 0.18)
+        x = place_wrap(x, float(rng.uniform(0, secs)), plus(tick(rng, n_of(0.02), 1500, 7000, 0.004), 0.4 * osc(float(rng.uniform(900, 2400)), n_of(0.03)) * env_exp(n_of(0.03), 0.01, 0.0005)), 0.18)
     for s in (2.5, 9.0):                                  # distant crane chains
         for j in range(int(rng.integers(8, 13))):
             x = place_wrap(x, s + j * float(rng.uniform(0.05, 0.11)), clank(rng, n_of(0.12), float(rng.uniform(1500, 2600)), 0.03), 0.07)
@@ -1284,7 +1301,7 @@ def make_amb_junkyard(rng):
     for s in (6.4, 12.7):                                 # scrap settling
         x = place_wrap(x, s, metal_clatter(rng, 1.2, 14, 250, 2200, 0.4, small=True), 0.4)
     drone_f = loop_freq(210.0, secs)                      # a drone buzzing somewhere
-    drone = lowpass(saw(drone_f * (1 + 0.02 * np.sin(TAU * loop_freq(0.25, secs) * t)), n, 8), 1400)
+    drone = lowpass(saw(drone_f * (1 + 0.02 * np.sin(TAU * loop_freq(0.25, secs) * t)), n, 8), 1400, True)
     x += 0.04 * drone * (np.sin(TAU * loop_freq(0.0625, secs) * t) > 0.2)
     return finish_loop(clip(x, 0.9), 0.7)
 
@@ -1308,7 +1325,7 @@ def bars_to_events(bars):
     """[(degree|None, len), ...] per bar -> [(step, degree, len)] over the whole track."""
     out = []
     step = 0
-    for bar in bars:
+    for bar in fix_bars(bars):
         total = 0
         for d, ln in bar:
             if d is not None:
@@ -1689,13 +1706,13 @@ TRANSIENT_IDS = tuple(i for i in TRANSIENT_IDS if i in SOUNDS)
 
 # ---------------------------------------------------------------- output
 
-def to_rate(x, rate):
+def to_rate(x, rate, loop=False):
     """Down-sample by an integer factor (a clean low-pass first). Only SR -> SR and SR -> SR/2."""
     if rate == SR:
         return x
     factor = SR // rate
     assert rate * factor == SR, "only integer down-sampling factors"
-    x = lowpass(x, rate * 0.45)
+    x = lowpass(x, rate * 0.45, circular=loop)
     return x[::factor]
 
 
@@ -1719,7 +1736,7 @@ def write_wav_loop(path, samples, rate, loop):
 def render(sfx_id):
     spec = SOUNDS[sfx_id]
     samples = spec["build"](rng_for(sfx_id))
-    return to_rate(samples, spec["rate"]), spec["rate"]
+    return to_rate(samples, spec["rate"], spec["loop"]), spec["rate"]
 
 
 def write_json():

@@ -24,7 +24,7 @@ shader = ExtResource("1_r")
 shader_parameter/albedo_texture = ExtResource("2_r")
 shader_parameter/uv_scale = Vector2(6.0, 10.0)
 shader_parameter/uv_offset = Vector2(0.0, 10.0)
-shader_parameter/albedo_tint = Color(1.008, 0.9799999999999999, 1.008, 1)
+shader_parameter/albedo_tint = Color(1.296, 1.26, 1.296, 1)
 shader_parameter/use_orm = 0.0
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_3"]
@@ -38,7 +38,7 @@ shader = ExtResource("1_r")
 shader_parameter/albedo_texture = ExtResource("2_r")
 shader_parameter/uv_scale = Vector2(1.0, 4.0)
 shader_parameter/uv_offset = Vector2(6.0, 13.0)
-shader_parameter/albedo_tint = Color(1.008, 0.9799999999999999, 1.008, 1)
+shader_parameter/albedo_tint = Color(1.296, 1.26, 1.296, 1)
 shader_parameter/use_orm = 0.0
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_6"]
@@ -52,7 +52,7 @@ shader = ExtResource("1_r")
 shader_parameter/albedo_texture = ExtResource("2_r")
 shader_parameter/uv_scale = Vector2(25.0, 22.0)
 shader_parameter/uv_offset = Vector2(7.0, 4.0)
-shader_parameter/albedo_tint = Color(1.008, 0.9799999999999999, 1.008, 1)
+shader_parameter/albedo_tint = Color(1.296, 1.26, 1.296, 1)
 shader_parameter/use_orm = 0.0
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_9"]
@@ -66,7 +66,7 @@ shader = ExtResource("1_r")
 shader_parameter/albedo_texture = ExtResource("2_r")
 shader_parameter/uv_scale = Vector2(1.0, 4.0)
 shader_parameter/uv_offset = Vector2(32.0, 13.0)
-shader_parameter/albedo_tint = Color(1.008, 0.9799999999999999, 1.008, 1)
+shader_parameter/albedo_tint = Color(1.296, 1.26, 1.296, 1)
 shader_parameter/use_orm = 0.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_12"]
@@ -74,7 +74,7 @@ shader = ExtResource("1_r")
 shader_parameter/albedo_texture = ExtResource("2_r")
 shader_parameter/uv_scale = Vector2(10.0, 8.0)
 shader_parameter/uv_offset = Vector2(33.0, 11.0)
-shader_parameter/albedo_tint = Color(1.008, 0.9799999999999999, 1.008, 1)
+shader_parameter/albedo_tint = Color(1.296, 1.26, 1.296, 1)
 shader_parameter/use_orm = 0.0
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_13"]
@@ -88,7 +88,7 @@ shader = ExtResource("1_r")
 shader_parameter/albedo_texture = ExtResource("2_r")
 shader_parameter/uv_scale = Vector2(3.0, 4.0)
 shader_parameter/uv_offset = Vector2(43.0, 13.0)
-shader_parameter/albedo_tint = Color(1.008, 0.9799999999999999, 1.008, 1)
+shader_parameter/albedo_tint = Color(1.296, 1.26, 1.296, 1)
 shader_parameter/use_orm = 0.0
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_16"]
@@ -102,7 +102,7 @@ shader = ExtResource("1_r")
 shader_parameter/albedo_texture = ExtResource("2_r")
 shader_parameter/uv_scale = Vector2(3.0, 4.0)
 shader_parameter/uv_offset = Vector2(-3.0, 13.0)
-shader_parameter/albedo_tint = Color(1.008, 0.9799999999999999, 1.008, 1)
+shader_parameter/albedo_tint = Color(1.296, 1.26, 1.296, 1)
 shader_parameter/use_orm = 0.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_19"]
@@ -1497,14 +1497,14 @@ environment = SubResource("Environment_1")
 
 [node name="Sun" type="DirectionalLight3D" parent="."]
 light_color = Color(1.0, 0.78, 0.55, 1)
-light_energy = 1.15
+light_energy = 1.4
 shadow_enabled = true
 directional_shadow_max_distance = 70.0
 transform = Transform3D(-0.8480, 0.1844, -0.4969, -0.5300, -0.2950, 0.7950, 0.0000, 0.9376, 0.3478, 40.714285714285715, 40, 30.0)
 
 [node name="Fill" type="DirectionalLight3D" parent="."]
 light_color = Color(0.7, 0.8, 1, 1)
-light_energy = 0.6
+light_energy = 1.2
 transform = Transform3D(-0.8137, 0.2190, 0.5384, 0.5812, 0.3067, 0.7537, 0.0000, 0.9263, -0.3769, 40.714285714285715, 40, 30.0)
 
 [node name="Collision" type="StaticBody3D" parent="."]

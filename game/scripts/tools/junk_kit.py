@@ -91,7 +91,7 @@ class Y(M):
         self.nodes.append('[node name="%s" type="Marker3D" parent="%s"]\ntransform = %s\n' % (name, parent, aim_transform(origin, d)))
 
     # ---- level shell
-    def shell(self, floor_rects, floor_tile, floor_tint, sun=(1.0, 0.78, 0.55), sun_energy=1.15, sun_dir=(0.5, -0.8, -0.35), fill_energy=0.6,
+    def shell(self, floor_rects, floor_tile, floor_tint, sun=(1.0, 0.78, 0.55), sun_energy=1.4, sun_dir=(0.5, -0.8, -0.35), fill_energy=1.2,
               ambient=(0.55, 0.58, 0.72)):
         env = self.sub("Environment", "background_mode = 1\nbackground_color = Color(0.09, 0.1, 0.13, 1)\nambient_light_source = 2\n"
                        "ambient_light_color = Color(%s, %s, %s, 1)\nambient_light_energy = 1.0" % ambient)
@@ -104,7 +104,7 @@ class Y(M):
         self.node("Fill", "DirectionalLight3D", extra="light_color = Color(0.7, 0.8, 1, 1)\nlight_energy = %s\ntransform = %s" % (
             fill_energy, aim_transform((cx, 40, cz), (-sun_dir[0], -0.7, -sun_dir[2]))))
         self.node("Collision", "StaticBody3D")
-        tint = tuple(min(c * 1.4, 1.5) for c in floor_tint)
+        tint = tuple(min(c * 1.8, 1.9) for c in floor_tint)
         for i, (x0, z0, x1, z1) in enumerate(floor_rects):
             w, d = x1 - x0, z1 - z0
             tw, th = tile_world_size(floor_tile)

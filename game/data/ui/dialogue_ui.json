@@ -96,6 +96,7 @@
     "mox": {"name": "Mox", "accent": "#C9A23A", "head_height": 1.37, "style": "bubble", "voice": true, "portrait": "mox"},
     "zero_old": {"name": "Old Zero", "accent": "#CBA878", "head_height": 1.16, "style": "bubble", "voice": true, "portrait": "zero_old"},
     "kasp": {"name": "Kasp", "accent": "#7A5A3A", "head_height": 1.3, "style": "bubble", "voice": true, "portrait": "kasp"},
+    "vela": {"name": "Vela", "accent": "#7FB6C9", "head_height": 1.0, "style": "box", "voice": true},
     "sign": {"name": "Sign", "accent": "#8D97A5", "head_height": 1.0, "style": "box", "voice": false},
     "narrator": {"name": "", "accent": "chalk", "head_height": 1.0, "style": "box", "voice": false},
     "enemy_grunt": {"name": "Grunt", "accent": "#8D97A5", "head_height": 1.7, "style": "bubble", "voice": true},

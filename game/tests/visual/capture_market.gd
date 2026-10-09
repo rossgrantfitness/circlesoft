@@ -41,9 +41,17 @@ func _initialize() -> void:
 	router.set("main", main)
 	router.set("instant", true)
 	main.start_new_game()
+	for i: int in 60:
+		await process_frame
+	while bool(router.call("is_busy")):
+		await process_frame
 	for room_id: String in _rooms:
 		if str(router.get("current_room_id")) != room_id:
 			router.call("go_to", room_id, "")
+			for i: int in 20:
+				await process_frame
+			while bool(router.call("is_busy")):
+				await process_frame
 		for i: int in SETTLE_FRAMES:
 			await process_frame
 		var room: ActionRoom = main.get_room() as ActionRoom

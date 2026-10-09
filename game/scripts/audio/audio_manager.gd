@@ -9,6 +9,8 @@ extends Node
 ##   AudioManager.play_sfx(&"menu_tick")
 ##   AudioManager.play_voice(&"otis", "H")      # the dialogue runner calls this once per typed character
 ##   AudioManager.reset_voice()                  # optional, at the start of each line (a speaker change resets too)
+##   AudioManager.play_loop(&"amb_junkyard")     # ambience beds and machine hums (sfx.json "loop": true); stop_loop(id) ends it
+##   AudioManager.play_music(&"market")          # a room's "music" key; "market" or "music_market" both work; "" stops
 ## Config menu hooks: set_bus_volume, set_bus_muted, set_voice_volume, set_voices_enabled, get_settings / apply_settings.
 ##
 ## Headless / no audio device: the logic still runs (so tests can check what would play) but no
@@ -42,12 +44,17 @@ var _voice_players: Array[AudioStreamPlayer] = []
 var _sfx_players: Array[AudioStreamPlayer] = []
 var _next_voice_player: int = 0
 var _next_sfx_player: int = 0
+var _loop_players: Dictionary[String, AudioStreamPlayer] = {}
+var _music_player: AudioStreamPlayer = null
 
 # What was last asked for (tests and the debug overlay read these).
 var last_voice_blip: GibberishVoice.Blip = null
 var voice_blips_played: int = 0
 var last_sfx_id: StringName = &""
 var sfx_played: int = 0
+## Looping sounds (ambience, machine hums) that are running, by id, and the current music track. Tests read these headless.
+var active_loops: Dictionary[String, bool] = {}
+var current_music_id: StringName = &""
 ## A multiplier on every sound effect's pitch (the combat sandbox's giant robots set it low so big bodies sound big, CS-21).
 ## 1.0 = the file's own pitch. Set it with set_scale_feel().
 var sfx_pitch_mult: float = 1.0
@@ -295,6 +302,8 @@ func play_sfx(id: StringName) -> bool:
 	if def.is_empty():
 		_warn_once("sfx:%s" % id, "AudioManager: unknown sfx id '%s'" % id)
 		return false
+	if bool(def.get("loop", false)):
+		return play_loop(id)
 	last_sfx_id = id
 	sfx_played += 1
 	if not _playback_enabled or _sfx_players.is_empty():
@@ -318,6 +327,122 @@ func _pick_sfx_player() -> AudioStreamPlayer:
 			return player
 	_next_sfx_player = (_next_sfx_player + 1) % _sfx_players.size()
 	return _sfx_players[_next_sfx_player]
+
+
+# ---- loops (ambience, machine hums) and music ----
+
+const MUSIC_PREFIX: String = "music_"
+const MUSIC_FADE_SEC: float = 0.4
+
+## Starts a looping sound (sfx.json "loop": true) and keeps it going until stop_loop(). Starting one that is already
+## running does nothing. Returns false for an unknown id or a sound that is not a loop.
+func play_loop(id: StringName) -> bool:
+	var key: String = str(id)
+	var def: Dictionary = _sfx_defs.get(key, {})
+	if def.is_empty():
+		_warn_once("sfx:%s" % key, "AudioManager: unknown sfx id '%s'" % key)
+		return false
+	if not bool(def.get("loop", false)):
+		return false
+	if active_loops.has(key):
+		return true
+	active_loops[key] = true
+	if not _playback_enabled:
+		return true
+	var stream: AudioStream = _get_loop_stream(str(def.get("file", "")))
+	if stream == null:
+		return true
+	var player: AudioStreamPlayer = _make_player(StringName(str(def.get("bus", BUS_SFX))))
+	player.stream = stream
+	player.volume_db = float(def.get("volume_db", 0.0))
+	player.pitch_scale = maxf(0.01, float(def.get("pitch_scale", 1.0)))
+	_loop_players[key] = player
+	if player.is_inside_tree():
+		player.play()
+	return true
+
+
+func stop_loop(id: StringName) -> void:
+	var key: String = str(id)
+	active_loops.erase(key)
+	if _loop_players.has(key):
+		var player: AudioStreamPlayer = _loop_players[key]
+		_loop_players.erase(key)
+		player.stop()
+		player.queue_free()
+
+
+func stop_all_loops() -> void:
+	for key: String in active_loops.keys():
+		stop_loop(StringName(key))
+
+
+func is_loop_playing(id: StringName) -> bool:
+	return active_loops.has(str(id))
+
+
+## Plays a room's music track (or any "music_*" id) on the Music bus, looping. Accepts the data's short name ("market")
+## or the full id ("music_market"). The same track again does nothing; an empty or unknown id stops the music.
+## Returns true when a track is now playing.
+func play_music(id: StringName) -> bool:
+	var key: String = resolve_music_id(id)
+	if key.is_empty():
+		stop_music()
+		return false
+	if current_music_id == StringName(key):
+		return true
+	stop_music()
+	current_music_id = StringName(key)
+	if not _playback_enabled:
+		return true
+	var def: Dictionary = _sfx_defs[key]
+	var stream: AudioStream = _get_loop_stream(str(def.get("file", "")))
+	if stream == null:
+		return true
+	if _music_player == null:
+		_music_player = _make_player(BUS_MUSIC)
+	_music_player.stream = stream
+	_music_player.bus = StringName(str(def.get("bus", BUS_MUSIC)))
+	_music_player.volume_db = float(def.get("volume_db", 0.0))
+	if _music_player.is_inside_tree():
+		_music_player.play()
+	return true
+
+
+func stop_music() -> void:
+	current_music_id = &""
+	if _music_player != null:
+		_music_player.stop()
+
+
+## "market" -> "music_market" when that id exists; "" if there is no such track.
+func resolve_music_id(id: StringName) -> String:
+	var raw: String = str(id)
+	if raw.is_empty():
+		return ""
+	if _sfx_defs.has(raw) and raw.begins_with(MUSIC_PREFIX):
+		return raw
+	var full: String = MUSIC_PREFIX + raw
+	if _sfx_defs.has(full):
+		return full
+	_warn_once("music:%s" % raw, "AudioManager: no music track for '%s' (silence)" % raw)
+	return ""
+
+
+## Loads a stream and makes sure it loops: the placeholder WAVs carry loop points, but a replacement file that does not
+## still loops from start to end because this switches it on.
+func _get_loop_stream(path: String) -> AudioStream:
+	var stream: AudioStream = _get_stream(path)
+	if stream is AudioStreamWAV:
+		var wav: AudioStreamWAV = stream as AudioStreamWAV
+		if wav.loop_mode == AudioStreamWAV.LOOP_DISABLED:
+			var looped: AudioStreamWAV = wav.duplicate() as AudioStreamWAV
+			looped.loop_mode = AudioStreamWAV.LOOP_FORWARD
+			looped.loop_begin = 0
+			looped.loop_end = int(round(wav.get_length() * float(wav.mix_rate)))
+			_streams[path] = looped
+			return looped
+	return stream
 
 
 # ---- gibberish voice ----

@@ -1,5 +1,5 @@
 {
- "_about": "What stands in each night-market room (docs/maps/night_market.md): doors, pickups, crates, townsfolk and examine spots. Same shape as world/placements.json; Main lays this file over it in slice mode (Placements.extra_ids), so market ids (mk_*) sit beside the old Harrow ids and the classic game never sees them. 'room' is the room id in slice/rooms.json; the room scene holds the node and its placement_id, this file the contents and the rules. All spoken words are PLACEHOLDERS in data/dialogue/market_placeholder.json for the Writer (Dialogue & writing is Level 0). No fighting in town; the patrol wolves are scenery. Gate 4's barrier door needs the flag job_main_taken (set by taking the main job at the Dispatch Counter; the Courier Pass is handed over with it, see slice/jobs.json). Its target junk_j1 is not built yet (see slice/rooms.json pending_rooms).",
+ "_about": "What stands in each night-market room (docs/maps/night_market.md): doors, pickups, crates, townsfolk and examine spots. Same shape as world/placements.json; Main lays this file over it in slice mode (Placements.extra_ids), so market ids (mk_*) sit beside the old Harrow ids and the classic game never sees them. 'room' is the room id in slice/rooms.json; the room scene holds the node and its placement_id, this file the contents and the rules. All spoken words are the Writer's PLACEHOLDERS (VS-31) in data/dialogue/market_placeholder.json, slice_scenes.json and junkyard_placeholder.json; final text at VS-37 (Dialogue & writing is Level 0). VS-31 also added ambient barks (bark_radius_m, barks) to the chatty townsfolk and story-state variants: _taken (job_main_taken, not kasp_beaten) and _party (market_party, set by the ending scenes in slice/story_scenes.json); Mox's first talk runs the mox_deck scene and the first Gate 4 grunt talk after taking the job runs gate_pass. No fighting in town; the patrol wolves are scenery. Gate 4's barrier door needs the flag job_main_taken (set by taking the main job at the Dispatch Counter; the Courier Pass is handed over with it, see slice/jobs.json). Its target junk_j1 is not built yet (see slice/rooms.json pending_rooms).",
  "pickups": {
   "mk_sq_window_reward": {
    "room": "market_square",
@@ -210,7 +210,7 @@
     "flag": "job_main_taken"
    },
    "locked_message": "Road's closed, courier. Papers? Dispatch is the first door beside your hideout.",
-   "unlocked_message": "Stamp, stamp. Boom's up. Mind the road."
+   "unlocked_message": "The boom lifts. A grunt waves you through without looking up. 'Keep it down on the road.'"
   },
   "mk_hd_to_square": {
    "room": "market_hideout",
@@ -319,6 +319,14 @@
   "mk_sq_pop": {
    "room": "market_square",
    "speaker": "crowd_pop",
+   "bark_radius_m": 5.5,
+   "barks": [
+    "NOODLES! Hot noodles!",
+    "Broth's loud tonight! Come and get it!",
+    "Three stools! Zero patience!",
+    "Slurp responsibly! ...Or don't!"
+   ],
+   "bark_cooldown_s": 10.0,
    "look": {
     "body": "#c9763a",
     "head": "#d6b48a",
@@ -339,6 +347,19 @@
    },
    "variants": [
     {
+     "if": {
+      "flag": "market_party"
+     },
+     "conversation": "mk_sq_pop_party"
+    },
+    {
+     "if": {
+      "flag": "job_main_taken",
+      "not_flag": "kasp_beaten"
+     },
+     "conversation": "mk_sq_pop_taken"
+    },
+    {
      "conversation": "mk_sq_pop"
     }
    ]
@@ -346,6 +367,12 @@
   "mk_sq_dumpling": {
    "room": "market_square",
    "speaker": "crowd_dumpling_cook",
+   "bark_radius_m": 4.5,
+   "barks": [
+    "Dumplings... (yawn) ...dumplings.",
+    "Fresh. Ish. Fresh-ish.",
+    "Zzz... DUMPLINGS!"
+   ],
    "look": {
     "body": "#6aa89a",
     "head": "#c9a67e",
@@ -371,6 +398,12 @@
   "mk_sq_tape": {
    "room": "market_square",
    "speaker": "crowd_tape_keeper",
+   "bark_radius_m": 4.5,
+   "barks": [
+    "Tape! Seventeen kinds of 'stuck'!",
+    "Wire by the foot or by the feeling!",
+    "Name your mood! I'll cut it to length!"
+   ],
    "look": {
     "body": "#8a6fa0",
     "head": "#d6b48a",
@@ -398,6 +431,12 @@
   "mk_sq_odds": {
    "room": "market_square",
    "speaker": "crowd_odds_man",
+   "bark_radius_m": 4.5,
+   "barks": [
+    "Place your bets! I'll be right, you'll be sad!",
+    "Will the green drone crash? Don't bet. It's rude.",
+    "Two rations says the screen glitches!"
+   ],
    "look": {
     "body": "#8a6f4a",
     "head": "#d6b48a",
@@ -418,6 +457,19 @@
    },
    "variants": [
     {
+     "if": {
+      "flag": "market_party"
+     },
+     "conversation": "mk_sq_odds_party"
+    },
+    {
+     "if": {
+      "flag": "job_main_taken",
+      "not_flag": "kasp_beaten"
+     },
+     "conversation": "mk_sq_odds_taken"
+    },
+    {
      "conversation": "mk_sq_odds"
     }
    ]
@@ -425,6 +477,12 @@
   "mk_sq_neighbor": {
    "room": "market_square",
    "speaker": "crowd_neighbor",
+   "bark_radius_m": 4.5,
+   "barks": [
+    "Bread at three! You're welcome!",
+    "Keep it down! ...Not you. The bass.",
+    "Buns! Still warm! Always warm!"
+   ],
    "look": {
     "body": "#9a8a9e",
     "head": "#e0c2a4",
@@ -450,6 +508,12 @@
   "mk_sq_ume": {
    "room": "market_square",
    "speaker": "crowd_grandma_ume",
+   "bark_radius_m": 6.0,
+   "barks": [
+    "Hands OFF the cords!",
+    "Phones! Five minutes a bar!",
+    "Who touched the cords?! I felt that!"
+   ],
    "look": {
     "body": "#d68a9a",
     "head": "#e0c2a4",
@@ -471,6 +535,12 @@
    "reach": 3.2,
    "variants": [
     {
+     "if": {
+      "flag": "market_party"
+     },
+     "conversation": "mk_sq_ume_party"
+    },
+    {
      "conversation": "mk_sq_ume"
     }
    ]
@@ -478,6 +548,11 @@
   "mk_sq_shopper_a": {
    "room": "market_square",
    "speaker": "crowd_shopper_a",
+   "bark_radius_m": 4.0,
+   "barks": [
+    "Four for three! FOUR FOR THREE!",
+    "Is that a good deal? Ask the cart!"
+   ],
    "look": {
     "body": "#5a7a9a",
     "head": "#d6b48a",
@@ -503,6 +578,11 @@
   "mk_sq_shopper_b": {
    "room": "market_square",
    "speaker": "crowd_shopper_b",
+   "bark_radius_m": 4.0,
+   "barks": [
+    "Don't look up. Don't look up.",
+    "Browsing. Just browsing. Very casual."
+   ],
    "look": {
     "body": "#9a5a6a",
     "head": "#c9a67e",
@@ -530,6 +610,11 @@
   "mk_sq_shopper_c": {
    "room": "market_square",
    "speaker": "crowd_shopper_c",
+   "bark_radius_m": 4.0,
+   "barks": [
+    "Turn it UP! Turn it UP!",
+    "WHAT? Say it LOUDER!"
+   ],
    "look": {
     "body": "#4a8a6a",
     "head": "#e0c2a4",
@@ -555,6 +640,11 @@
   "mk_sq_shopper_d": {
    "room": "market_square",
    "speaker": "crowd_shopper_d",
+   "bark_radius_m": 4.0,
+   "barks": [
+    "Hear that? That's a real chime.",
+    "Shh. ...There. Almost a song."
+   ],
    "look": {
     "body": "#a08a4a",
     "head": "#d6b48a",
@@ -592,6 +682,12 @@
    },
    "variants": [
     {
+     "if": {
+      "flag": "market_party"
+     },
+     "conversation": "mk_sq_wolf_a_party"
+    },
+    {
      "conversation": "mk_sq_wolf_a"
     }
    ]
@@ -609,6 +705,12 @@
    },
    "variants": [
     {
+     "if": {
+      "flag": "market_party"
+     },
+     "conversation": "mk_sq_wolf_b_party"
+    },
+    {
      "conversation": "mk_sq_wolf_b"
     }
    ]
@@ -616,6 +718,12 @@
   "mk_wf_juno": {
    "room": "market_wharf",
    "speaker": "crowd_juno",
+   "bark_radius_m": 4.5,
+   "barks": [
+    "Lap three! Don't blink!",
+    "GREEN! NO! GREEN!",
+    "That one's mine! ...That one crashed!"
+   ],
    "look": {
     "body": "#e0782b",
     "head": "#d6b48a",
@@ -641,6 +749,11 @@
   "mk_wf_kid_a": {
    "room": "market_wharf",
    "speaker": "crowd_drone_kid_a",
+   "bark_radius_m": 4.0,
+   "barks": [
+    "Delivery rehearsal! Nothing to see!",
+    "Faster! The patrol's coming! ...It's not!"
+   ],
    "look": {
     "body": "#5a7aaa",
     "head": "#c9a67e",
@@ -668,6 +781,11 @@
   "mk_wf_kid_b": {
    "room": "market_wharf",
    "speaker": "crowd_drone_kid_b",
+   "bark_radius_m": 4.0,
+   "barks": [
+    "Go go go go go!",
+    "Turn! TURN! ...Okay, it's in the water."
+   ],
    "look": {
     "body": "#aa5a7a",
     "head": "#e0c2a4",
@@ -693,6 +811,12 @@
   "mk_wf_judge": {
    "room": "market_wharf",
    "speaker": "crowd_race_judge",
+   "bark_radius_m": 5.0,
+   "barks": [
+    "(megaphone) BLUE IS AHEAD!",
+    "(megaphone) PLEASE STOP TOUCHING THE TRACK.",
+    "(megaphone) A SEAGULL IS WINNING."
+   ],
    "look": {
     "body": "#6a8a5a",
     "head": "#d6b48a",
@@ -766,6 +890,11 @@
   "mk_wf_late_cook": {
    "room": "market_wharf",
    "speaker": "crowd_late_cook",
+   "bark_radius_m": 4.5,
+   "barks": [
+    "Noodles! Same as Pop's! Don't tell Pop!",
+    "Better view! Worse broth! ...Kidding!"
+   ],
    "look": {
     "body": "#c9763a",
     "head": "#d6b48a",
@@ -793,6 +922,12 @@
   "mk_wf_fisher": {
    "room": "market_wharf",
    "speaker": "crowd_fisher",
+   "bark_radius_m": 4.0,
+   "barks": [
+    "Any minute now.",
+    "That was a bite. ...That was wind.",
+    "He's down there. I can feel it."
+   ],
    "look": {
     "body": "#4a6a8a",
     "head": "#c9a67e",
@@ -828,6 +963,13 @@
     "height": 1.4
    },
    "variants": [
+    {
+     "if": {
+      "flag": "job_main_taken",
+      "not_flag": "gate_pass_seen"
+     },
+     "scene": "gate_pass"
+    },
     {
      "if": {
       "flag": "job_main_taken"
@@ -1038,6 +1180,19 @@
    },
    "variants": [
     {
+     "if": {
+      "flag": "market_party"
+     },
+     "conversation": "mk_fg_otis_party"
+    },
+    {
+     "if": {
+      "flag": "job_main_taken",
+      "not_flag": "kasp_beaten"
+     },
+     "conversation": "mk_fg_otis_taken"
+    },
+    {
      "conversation": "mk_fg_otis"
     }
    ]
@@ -1054,6 +1209,18 @@
    },
    "variants": [
     {
+     "if": {
+      "flag": "market_party"
+     },
+     "conversation": "mk_rp_mox_party"
+    },
+    {
+     "if": {
+      "not_flag": "mox_deck_given"
+     },
+     "scene": "mox_deck"
+    },
+    {
      "conversation": "mk_rp_mox"
     }
    ]
@@ -1061,6 +1228,12 @@
   "mk_ar_owner": {
    "room": "market_arcade",
    "speaker": "crowd_arcade_owner",
+   "bark_radius_m": 4.5,
+   "barks": [
+    "Turn it UP!",
+    "Don't touch the claw!",
+    "Credits! Get your credits!"
+   ],
    "look": {
     "body": "#aa5a8a",
     "head": "#d6b48a",
@@ -1088,6 +1261,11 @@
   "mk_ar_kid_a": {
    "room": "market_arcade",
    "speaker": "crowd_arcade_kid_a",
+   "bark_radius_m": 3.5,
+   "barks": [
+    "Beep beep beeeep!",
+    "Beeeeep! (That was a win.)"
+   ],
    "look": {
     "body": "#5a7aaa",
     "head": "#c9a67e",
@@ -1140,6 +1318,11 @@
   "mk_ar_kid_c": {
    "room": "market_arcade",
    "speaker": "crowd_arcade_kid_c",
+   "bark_radius_m": 3.5,
+   "barks": [
+    "BEEP BEEP BEEP!",
+    "Last level! LAST LEVEL!"
+   ],
    "look": {
     "body": "#6a8a5a",
     "head": "#d6b48a",
@@ -1167,6 +1350,11 @@
   "mk_ar_zed": {
    "room": "market_arcade",
    "speaker": "crowd_zed",
+   "bark_radius_m": 3.5,
+   "barks": [
+    "One point. Always one point.",
+    "Next time. Next time."
+   ],
    "look": {
     "body": "#2a2a35",
     "head": "#c9a67e",
@@ -1197,6 +1385,12 @@
    "room": "market_square",
    "kind": "examine",
    "variants": [
+    {
+     "if": {
+      "flag": "market_party"
+     },
+     "conversation": "mk_sq_screen_party"
+    },
     {
      "conversation": "mk_sq_screen"
     }
@@ -1248,6 +1442,12 @@
    "kind": "examine",
    "variants": [
     {
+     "if": {
+      "flag": "market_party"
+     },
+     "conversation": "mk_sq_bets_party"
+    },
+    {
      "conversation": "mk_sq_bets_board"
     }
    ]
@@ -1256,6 +1456,12 @@
    "room": "market_square",
    "kind": "examine",
    "variants": [
+    {
+     "if": {
+      "flag": "market_party"
+     },
+     "conversation": "mk_sq_memo_party"
+    },
     {
      "conversation": "mk_sq_memo_board"
     }
@@ -1324,6 +1530,12 @@
    "room": "market_gate",
    "kind": "examine",
    "variants": [
+    {
+     "if": {
+      "flag": "market_party"
+     },
+     "conversation": "mk_gt_poster_party"
+    },
     {
      "conversation": "mk_gt_poster"
     }

@@ -31,6 +31,8 @@ static func box_transform(attacker_xform: Transform3D, box: Dictionary) -> Trans
 static func point_in_box(point: Vector3, attacker_xform: Transform3D, box: Dictionary, margin_m: float) -> bool:
 	var local: Vector3 = box_transform(attacker_xform, box).affine_inverse() * point
 	match str(box.get("shape", "sphere")):
+		"ring", "beam":
+			return false      # boss shapes have their own floor lines; they never start a Lamp Flare
 		"box":
 			var size: Array = box.get("size", [1.0, 1.0, 1.0])
 			return absf(local.x) <= float(size[0]) * 0.5 + margin_m \

@@ -28,7 +28,7 @@ shader = ExtResource("1_r")
 shader_parameter/albedo_texture = ExtResource("2_r")
 shader_parameter/uv_scale = Vector2(32.0, 22.0)
 shader_parameter/uv_offset = Vector2(0.0, 0.0)
-shader_parameter/albedo_tint = Color(0.9799999999999999, 0.952, 1.008, 1)
+shader_parameter/albedo_tint = Color(1.26, 1.2240000000000002, 1.296, 1)
 shader_parameter/use_orm = 0.0
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_3"]
@@ -42,7 +42,7 @@ shader = ExtResource("1_r")
 shader_parameter/albedo_texture = ExtResource("2_r")
 shader_parameter/uv_scale = Vector2(3.0, 3.0)
 shader_parameter/uv_offset = Vector2(-3.0, 9.5)
-shader_parameter/albedo_tint = Color(0.9799999999999999, 0.952, 1.008, 1)
+shader_parameter/albedo_tint = Color(1.26, 1.2240000000000002, 1.296, 1)
 shader_parameter/use_orm = 0.0
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_6"]
@@ -1087,14 +1087,14 @@ environment = SubResource("Environment_1")
 
 [node name="Sun" type="DirectionalLight3D" parent="."]
 light_color = Color(1.0, 0.78, 0.55, 1)
-light_energy = 1.15
+light_energy = 1.4
 shadow_enabled = true
 directional_shadow_max_distance = 70.0
 transform = Transform3D(-0.8480, 0.1844, -0.4969, -0.5300, -0.2950, 0.7950, 0.0000, 0.9376, 0.3478, 14.5, 40, 22.0)
 
 [node name="Fill" type="DirectionalLight3D" parent="."]
 light_color = Color(0.7, 0.8, 1, 1)
-light_energy = 0.6
+light_energy = 1.2
 transform = Transform3D(-0.8137, 0.2190, 0.5384, 0.5812, 0.3067, 0.7537, 0.0000, 0.9263, -0.3769, 14.5, 40, 22.0)
 
 [node name="Collision" type="StaticBody3D" parent="."]
