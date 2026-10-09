@@ -28,6 +28,10 @@ extends Node
 signal scene_started(scene_id: String)
 signal scene_finished(scene_id: String)
 signal battle_done(result: String)
+## One per physics frame, from this node's own _physics_process. A wait that must not outlive the director awaits this instead of
+## the tree's physics_frame: when the director is freed the signal never fires, so the wait ends silently instead of resuming a
+## function whose instance is gone (bug B19).
+signal _frame_passed
 
 const FLAT_REACH: float = 0.05
 const DEFAULT_SPEED: float = 3.0
@@ -67,6 +71,7 @@ func setup(p_room: FieldRoom) -> void:
 
 
 func _physics_process(_delta: float) -> void:
+	_frame_passed.emit()
 	if _triggers.is_empty() or not triggers_enabled or _running or room == null or room.is_suspended():
 		return
 	var player: CharacterBody3D = room.player
@@ -271,8 +276,8 @@ func _form(step: Dictionary) -> void:
 			push_warning("StoryDirector: unknown form action '%s' in scene %s" % [step.get("action", ""), current_scene])
 			return
 	var waited: int = 0
-	while stage.call("form") != wanted and waited < MAX_WAIT_FRAMES * 4 and is_inside_tree() and not _gone:
-		await get_tree().physics_frame
+	while is_instance_valid(stage) and stage.call("form") != wanted and waited < MAX_WAIT_FRAMES * 4 and is_inside_tree() and not _gone:
+		await _frame_passed                  # not the tree's physics_frame: B19, the room can be freed while this waits
 		waited += 1
 
 

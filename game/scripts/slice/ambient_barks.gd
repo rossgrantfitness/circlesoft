@@ -28,7 +28,9 @@ var _cfg: Dictionary = {}
 var _clock: float = 0.0
 var _next_ok: Dictionary[int, float] = {}
 var _turn: Dictionary[int, int] = {}
-var _live: Array[SpeechBubble] = []
+## Untyped on purpose: a bubble that closes is freed while it is still in here, and a typed array or typed loop variable refuses a
+## freed object (B18). Everything read from it goes through is_instance_valid first.
+var _live: Array = []
 
 
 func _ready() -> void:
@@ -43,7 +45,7 @@ func _physics_process(delta: float) -> void:
 ## One step of `delta` seconds. Returns the NPC that barked this step (or null).
 func tick(delta: float) -> PlacedNpc:
 	_clock += delta
-	_live = _live.filter(func(bubble: SpeechBubble) -> bool: return is_instance_valid(bubble))
+	_prune()
 	if hero == null or not is_instance_valid(hero) or not is_inside_tree():
 		return null
 	if HeroLink.is_frozen(hero) or HeroLink.is_scripted(hero) or UiStage.is_busy(get_tree()):
@@ -105,12 +107,21 @@ func _show(npc: PlacedNpc, speaker: String, text: String) -> void:
 
 
 func live_count() -> int:
-	_live = _live.filter(func(bubble: SpeechBubble) -> bool: return is_instance_valid(bubble))
+	_prune()
 	return _live.size()
 
 
-func _exit_tree() -> void:
-	for bubble: SpeechBubble in _live:
+## Drops the bubbles that have been freed.
+func _prune() -> void:
+	var kept: Array = []
+	for bubble: Variant in _live:
 		if is_instance_valid(bubble):
-			bubble.queue_free()
+			kept.append(bubble)
+	_live = kept
+
+
+func _exit_tree() -> void:
+	for bubble: Variant in _live:
+		if is_instance_valid(bubble):
+			(bubble as SpeechBubble).queue_free()
 	_live.clear()
