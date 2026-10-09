@@ -889,8 +889,8 @@
      "name": "Lunge",
      "state": "ground",
      "startup_ms": 150,
-     "active_ms": 90,
-     "recovery_ms": 240,
+     "active_ms": 150,
+     "recovery_ms": 220,
      "cancels": {
       "chain": [
        200,
@@ -905,13 +905,13 @@
      },
      "launcher": false,
      "motion": {
-      "forward_m": 5.0,
+      "forward_m": 7.0,
       "from_ms": 0,
-      "to_ms": 200,
+      "to_ms": 260,
       "stop_short_m": 0.9
      },
      "magnet": {
-      "range_m": 12.0,
+      "range_m": 8.5,
       "cone_deg": 140
      },
      "hit": {
@@ -930,7 +930,7 @@
      "hitboxes": [
       {
        "from_ms": 160,
-       "to_ms": 200,
+       "to_ms": 230,
        "shape": "capsule",
        "radius": 0.5,
        "height": 1.2,
@@ -946,8 +946,8 @@
        ]
       },
       {
-       "from_ms": 200,
-       "to_ms": 250,
+       "from_ms": 230,
+       "to_ms": 300,
        "shape": "capsule",
        "radius": 0.55,
        "height": 1.2,
@@ -979,17 +979,17 @@
         "clip_s": 0.2
        },
        {
-        "at_ms": 250,
+        "at_ms": 300,
         "clip_s": 0.29
        },
        {
-        "at_ms": 480,
+        "at_ms": 520,
         "clip_s": 0.62
        }
       ],
       "fallback": "thrust"
      },
-     "note": "Gap closer for the single attack button: dashes up to 5 m at the target, stopping 0.9 m short, then thrusts. Reuses the light_3 clip. Counts as hit 1 of a string."
+     "note": "Gap closer for the single attack button: dashes up to 7 m at the target (stopping 0.9 m short) and thrusts. The thrust stays live until 300 ms, so it still connects on a target 8 m away. Reuses the light_3 clip. Counts as hit 1 of a string."
     },
     "sweep": {
      "name": "Sweep",

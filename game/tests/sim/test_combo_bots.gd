@@ -138,7 +138,7 @@ func test_a_lunge_counts_as_hit_one_so_the_string_goes_on_with_light_2() -> void
 func test_mashing_one_button_runs_the_string_then_launches_and_follows_up_with_an_air_string() -> void:
 	await _boot(["grunt_1"])
 	var grunt: ActionEnemy = _enemy("grunt_1")
-	await _stage([[grunt, 2.0, 0.0]])
+	await _stage([[grunt, 1.6, 0.0]])
 	var seen: Dictionary = {"airborne_at_air_1": false}       # a lambda copies plain variables, so share a Dictionary
 	_red.move_started.connect(func(move_id: StringName) -> void:
 		if move_id == &"air_1":
@@ -158,7 +158,7 @@ func test_mashing_one_button_runs_the_string_then_launches_and_follows_up_with_a
 func test_a_brute_gets_five_lights_and_the_heavy_slam_never_the_launcher() -> void:
 	await _boot(["brute_5"])
 	var brute: ActionEnemy = _enemy("brute_5")
-	await _stage([[brute, 2.2, 0.0]])
+	await _stage([[brute, 1.8, 0.0]])   # inside Light 1's reach; from 2 m a press lunges
 	await _mash(10.0, func() -> bool: return _moves.has(&"heavy"))
 	print("      [bot] brute: %s" % [_moves])
 	assert_eq(_moves.slice(0, 6), [&"light_1", &"light_2", &"light_3", &"light_1", &"light_2", &"heavy"] as Array[StringName])

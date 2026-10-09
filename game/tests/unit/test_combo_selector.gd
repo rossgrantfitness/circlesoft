@@ -9,9 +9,9 @@ func _selector() -> ComboSelector:
 	return ComboSelector.from_data(CombatData.combo())
 
 
-## A situation with sensible defaults: Red on the ground, no live string, one launchable target 2 m away.
+## A situation with sensible defaults: Red on the ground, no live string, one launchable target 1.5 m away (inside Light 1's reach).
 func _sit(overrides: Dictionary = {}) -> Dictionary:
-	var base: Dictionary = {"from": &"idle", "player_airborne": false, "target_exists": true, "target_dist_m": 2.0,
+	var base: Dictionary = {"from": &"idle", "player_airborne": false, "target_exists": true, "target_dist_m": 1.5,
 			"target_airborne": false, "target_launchable": true, "target_guarding": false, "enemies_near": 1,
 			"string_pos": 0, "last_hit_connected": false}
 	base.merge(overrides, true)
@@ -48,15 +48,25 @@ func test_rise_to_juggle_needs_the_target_within_3_5_m() -> void:
 	assert_eq(_selector().select(_sit({"target_airborne": true, "target_dist_m": 3.5}))["rule"], &"rise_to_juggle", "3.5 m is still in")
 
 
-func test_lunge_far_a_target_beyond_4_5_m_gets_a_lunge() -> void:
-	_expect("lunge_far", &"lunge", {"target_dist_m": 8.0}, &"", true)
+func _lunge_band() -> Array:
+	for rule: Variant in CombatData.combo().get("rules", []):
+		if (rule as Dictionary).get("id", "") == "lunge_far":
+			return ((rule as Dictionary)["when"] as Dictionary)["target_dist_m"]
+	return [0.0, 0.0]
 
 
-func test_lunge_far_the_distance_band_is_4_5_to_12_m_inclusive() -> void:
-	assert_eq(_selector().select(_sit({"target_dist_m": 4.5}))["rule"], &"lunge_far", "4.5 m lunges")
-	assert_eq(_selector().select(_sit({"target_dist_m": 12.0}))["rule"], &"lunge_far", "12 m lunges")
-	assert_eq(_selector().select(_sit({"target_dist_m": 4.49}))["rule"], &"ground_start", "4.49 m is a normal swing")
-	assert_eq(_selector().select(_sit({"target_dist_m": 12.01}))["rule"], &"ground_start", "past 12 m there is nothing to lunge at")
+func test_lunge_far_a_target_beyond_light_1_s_reach_gets_a_lunge() -> void:
+	_expect("lunge_far", &"lunge", {"target_dist_m": (float(_lunge_band()[0]) + float(_lunge_band()[1])) * 0.5}, &"", true)
+
+
+func test_lunge_far_the_distance_band_comes_from_the_data_and_is_inclusive() -> void:
+	var near_edge: float = float(_lunge_band()[0])
+	var far_edge: float = float(_lunge_band()[1])
+	assert_lt(near_edge, 2.5, "the band starts where Light 1 stops reaching, so no press whiffs in the gap")
+	assert_eq(_selector().select(_sit({"target_dist_m": near_edge}))["rule"], &"lunge_far", "the near edge lunges")
+	assert_eq(_selector().select(_sit({"target_dist_m": far_edge}))["rule"], &"lunge_far", "the far edge lunges")
+	assert_eq(_selector().select(_sit({"target_dist_m": near_edge - 0.01}))["rule"], &"ground_start", "just inside Light 1's reach is a normal swing")
+	assert_eq(_selector().select(_sit({"target_dist_m": far_edge + 0.01}))["rule"], &"ground_start", "past the band there is nothing the lunge reaches")
 
 
 func test_lunge_far_needs_a_target() -> void:

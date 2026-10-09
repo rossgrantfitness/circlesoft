@@ -816,7 +816,7 @@ func test_pressing_attack_at_a_far_target_lunges_toward_it() -> void:
 
 func test_a_close_target_gets_light_1_not_a_lunge() -> void:
 	await _arena(true)
-	var enemy: CombatActor = _enemy(Vector3(0.0, 0.0, -2.0))
+	var enemy: CombatActor = _enemy(Vector3(0.0, 0.0, -1.6))      # inside Light 1's reach (the lunge band starts at 2 m)
 	await tree.physics_frame
 	_stand(enemy)
 	_player.rotation.y = PI

@@ -6,10 +6,10 @@
 
 | Situation when you press | Red does |
 |---|---|
-| Enemy far away (4.5 to 12 m) | **Lunge**: dashes up to 5 m at it, stops just short, thrusts. Counts as hit 1 |
+| Enemy beyond Light 1's reach (2 to 8 m) | **Lunge**: dashes up to 7 m at it, stops just short, thrusts. Counts as hit 1 |
 | Enemy close, you on the ground | **Light 1**, then Light 2, then Light 3 |
 | After Light 3, normal enemy | **Launcher**: pops it into the air |
-| After Light 3, three or more enemies close | **Sweep**: a full spin that hits everyone around her |
+| After Light 3, three or more enemies within 5 m (a Grunt's whole circling ring) | **Sweep**: a full spin that hits everyone around her |
 | After Light 3, enemy is guarding or armored (the Brute) | keeps hitting: Light 1, Light 2, then the **Heavy slam**, which breaks the guard |
 | Enemy is in the air, you on the ground | Red **jumps up** to it and starts the air string |
 | You just launched it | Red **follows it up** automatically (the existing follow-jump) |
@@ -29,7 +29,7 @@ So a normal fight is: press, press, press, launcher, up, press, press, press, sl
 ## What changed in the data
 
 - **New file** `combo.json`: the buttons, the numbers (near/far distances, string length), the situation words, the rules, and an example of each string.
-- **Two new Red moves in `moves.json`**, both reusing existing clips: `lunge` (clip `light_3`, a quick thrust that travels 5 m) and `sweep` (clip `air_3`, the spin, on the ground).
+- **Two new Red moves in `moves.json`**, both reusing existing clips: `lunge` (clip `light_3`, a quick thrust that travels 7 m) and `sweep` (clip `air_3`, the spin, on the ground).
 - The old Heavy, Launcher and the three Lights are unchanged; they are just reached by the rules now instead of by separate buttons.
 - The second button's call-out text is in `combo.json` (`buttons.hack`).
 
@@ -41,6 +41,13 @@ So a normal fight is: press, press, press, launcher, up, press, press, press, sl
 4. The `launcher_input` feel knob and its three modes are no longer used. They can stay, hidden, until Ross says to remove them.
 
 ## Notes and open points
+
+- **How automatic it is (from the Combat Programmer's build, for Ross to judge by playing):**
+  - A launched enemy is followed up with **no choice**: launcher, then the follow-jump, then the air string, all from mashing.
+  - **A crowd forces the sweep.** With three or more wolves around, the third hit is always the spin, never the launcher.
+  - **A Brute can never be launched**, so against him the string always goes to the five-hit slam.
+  - If this feels too automatic, the fix is a new mechanic (for example holding the button for the finisher), which would come to Ross first.
+- **Distances (tuning pass 2026-10-09):** the lunge starts at 2 m, just past Light 1's reach, so a press at any distance connects. The lunge travels 7 m and its thrust stays live until 300 ms, so it reaches a target up to 8 m away; beyond 8 m the press is a plain Light 1.
 
 - Controls card, Config screen and button labels need the new wording ("Attack", "Hack (coming)"): UI Programmer.
 - Parry and dash are untouched.

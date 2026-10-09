@@ -6,15 +6,15 @@
   "hack": {"action": "heavy", "callout": "Hack: coming later", "callout_ms": 1200, "cooldown_ms": 800, "note": "K, right mouse, Y or Triangle. Reserved for Red's hacker abilities. For now it only shows the call-out."}
  },
  "params": {
-  "near_radius_m": 3.0,
-  "far_dist_m": 4.5,
-  "lunge_max_dist_m": 12.0,
+  "near_radius_m": 5.0,
+  "far_dist_m": 2.0,
+  "lunge_max_dist_m": 8.0,
   "crowd_min_enemies": 3,
   "string_timeout_ms": 500,
   "short_string_hits": 3,
   "long_string_hits": 5,
   "finishers": ["launcher", "heavy", "sweep", "air_3"],
-  "_params": "near_radius_m: enemies this close to Red count as 'near'. far_dist_m: further than this from the target counts as 'far'. string_timeout_ms: after a move ends with no press, the string forgets itself. short/long_string_hits: the hit number at which a finisher comes (3 normally, 5 against a guarding or armored target). finishers: moves that end a string."
+  "_params": "near_radius_m: enemies this close to Red count as 'near' (5 m = a Grunt's whole circling ring). far_dist_m: further than this from the target counts as 'far'. string_timeout_ms: after a move ends with no press, the string forgets itself. short/long_string_hits: the hit number at which a finisher comes (3 normally, 5 against a guarding or armored target). finishers: moves that end a string."
  },
  "conditions": {
   "target_dist_m": "[min, max] metres from Red to the current target (lock-on target, else the best target in front)",
@@ -30,7 +30,7 @@
  "rules": [
   {"id": "air_start", "from": "idle", "when": {"player_airborne": true}, "next": "air_1", "why": "Pressing in the air starts the air string."},
   {"id": "rise_to_juggle", "from": "idle", "when": {"player_airborne": false, "target_airborne": true, "target_dist_m": [0.0, 3.5]}, "next": "air_1", "prefix": "follow_jump", "why": "An enemy is in the air: Red jumps up to it and attacks (the existing follow-jump)."},
-  {"id": "lunge_far", "from": "idle", "when": {"player_airborne": false, "target_exists": true, "target_dist_m": [4.5, 12.0]}, "next": "lunge", "why": "A far target: close the gap with a lunge. It counts as hit 1."},
+  {"id": "lunge_far", "from": "idle", "when": {"player_airborne": false, "target_exists": true, "target_dist_m": [2.0, 8.0]}, "next": "lunge", "why": "A target beyond Light 1's reach (2 m) and within the lunge's 8 m: close the gap with a lunge. It counts as hit 1."},
   {"id": "ground_start", "from": "idle", "when": {"player_airborne": false}, "next": "light_1"},
 
   {"id": "l1_to_l2", "from": "light_1", "next": "light_2"},

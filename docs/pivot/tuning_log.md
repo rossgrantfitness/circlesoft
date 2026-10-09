@@ -86,3 +86,15 @@ Question: the bots saw about 1 dodge in 12 Heavies at a 60% roll. Is something b
 What it means for tuning: the real dodge and block rates in play are well below the table, mostly because of 4 and 1. If Ross wants enemies that defend more, the cheapest knobs are `read_weight` for Light (0.6 for the Grunt, in `enemies.json`) and the `enemy_dodge_scale` / `enemy_block_scale` sliders; the cooldowns only matter against slow, spaced swings.
 
 Also seen while building the combo (data for the Combat Designer, nothing changed): a Light 1 thrown at an enemy 2.5 to 4.5 m away whiffs (it moves 0.6 m and reaches about 2 m), because "far" starts at 4.5 m (`far_dist_m`); and a lunge from beyond about 6.5 m closes the gap but cannot connect (5 m of travel); and `near_radius_m` 3.0 is smaller than a Grunt's circling distance (2.2 to 4.5 m), so a crowd of three rarely counts as crowded unless they are on top of her.
+
+## Tuning v1.1: combo distances (Combat Designer, 2026-10-09)
+
+Data only; no mechanic changed.
+
+| Setting | Was | Now | Why |
+|---|---|---|---|
+| `combo.json` `far_dist_m` and the `lunge_far` rule's near edge | 4.5 m | **2.0 m** | Light 1 reaches about 2 m. At 2.5 to 4.5 m it whiffed; now a lunge covers that gap. |
+| `lunge_max_dist_m` and the `lunge_far` rule's far edge | 12 m | **8 m** | Past about 6.5 m the lunge could not connect. |
+| `lunge` travel | 5.0 m over 200 ms | **7.0 m over 260 ms** | So the lunge actually reaches 8 m (it stops 0.9 m short of the target). |
+| `lunge` timing | startup 150, active 90, recovery 240 | **150 / 150 / 220** (thrust live 160 to 300 ms, magnet 8.5 m) | The thrust has to still be live when Red arrives from far away. Total 520 ms. |
+| `near_radius_m` | 3.0 m | **5.0 m** | A Grunt circles at 2.2 to 4.5 m, so three wolves nearby now count as a crowd and the sweep can trigger. |
