@@ -12,6 +12,10 @@ var hp: float = 0.0
 var hp_max: float = 1.0
 var phases: Array[Dictionary] = []
 var phase_index: int = 0
+## Parts still standing out of the total (the Hushmaster's leg pairs, the Heap's armour plates): small pips right of the bar.
+## Set by boss_pips_changed(standing, total); total 0 = none shown.
+var pips_standing: int = 0
+var pips_total: int = 0
 ## Eased fill and the trailing chip, in 0..1.
 var fill_shown: float = 0.0
 var chip: float = 0.0
@@ -23,7 +27,14 @@ var _flash_left_s: float = 0.0
 var _hiding: bool = false
 
 
+func set_pips(standing: int, total: int) -> void:
+	pips_total = maxi(total, 0)
+	pips_standing = clampi(standing, 0, pips_total)
+
+
 func show_bar(info: Dictionary) -> void:
+	pips_standing = 0
+	pips_total = 0
 	shown = true
 	_hiding = false
 	boss_name = str(info.get("name", ""))

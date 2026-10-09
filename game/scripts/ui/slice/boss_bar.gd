@@ -49,6 +49,23 @@ func _draw() -> void:
 		var label: String = SliceUiData.fmt("boss.phase_of", {"n": model.phase_index + 1, "count": model.phase_count()})
 		SandboxStyle.text_right(self, "label", bar.end.x, name_y, label.to_upper(), SandboxStyle.color("label"), 60.0)
 		_draw_pips(bar)
+	_draw_part_pips(bar)
+
+
+## The parts-left pips under the bar, right aligned: gold while a leg pair or plate still stands, dark once it is gone.
+func _draw_part_pips(bar: Rect2) -> void:
+	if model.pips_total <= 0:
+		return
+	var pip_w: float = SliceUiData.num("boss_bar.pip_w", 14)
+	var pip_h: float = SliceUiData.num("boss_bar.pip_h", 3)
+	var gap: float = SliceUiData.num("boss_bar.pip_gap", 3)
+	var y: float = bar.end.y + 4.0
+	for i: int in model.pips_total:
+		var x: float = bar.end.x - float(model.pips_total - i) * (pip_w + gap) + gap
+		var rect: Rect2 = Rect2(x, y, pip_w, pip_h)
+		var up: bool = i < model.pips_standing
+		draw_rect(rect.grow(1.0), SandboxStyle.color("track_edge"))
+		draw_rect(rect, SliceUiData.color("boss_phase_lit") if up else SliceUiData.color("boss_phase_dim"))
 
 
 ## The phase pips under the bar, left aligned; the lit one is gold, earlier ones stay bright, later ones dim.

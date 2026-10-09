@@ -188,6 +188,7 @@ func bind(target: Object) -> void:
 	_link(_boss_source, &"boss_hp_changed", set_boss_hp)
 	_link(_boss_source, &"boss_phase_changed", set_boss_phase)
 	_link(_boss_source, &"boss_bar_hidden", hide_boss_bar)
+	_link(_boss_source, &"boss_pips_changed", set_boss_pips)
 	_link(sandbox, &"knocked_out_rule", _on_knocked_out)
 	_link(sandbox, &"continue_started", _on_continue_started)
 	if _knobs != null:
@@ -298,6 +299,10 @@ func set_boss_hp(hp: float, hp_max: float = -1.0) -> void:
 
 func set_boss_phase(index: int, phase_name: String = "") -> void:
 	_boss_bar.model.set_phase(index, phase_name)
+
+
+func set_boss_pips(standing: int, total: int) -> void:
+	_boss_bar.model.set_pips(standing, total)
 
 
 func hide_boss_bar() -> void:

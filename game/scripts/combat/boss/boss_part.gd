@@ -25,6 +25,9 @@ var owner_boss: Node = null
 ## The boss turns damage off for a while (for example while the rig is still standing, a sword does 30 percent: that is
 ## the boss's own rule on its body; a part has no such thing).
 var invulnerable_now: bool = false
+## What the boss multiplies every hit by right now: the Heap's plates take 35 percent while closed and full damage while open,
+## its core nothing while sealed. 1.0 for the Hushmaster's parts.
+var damage_mult_now: float = 1.0
 
 var _visual: Node3D = null
 
@@ -105,6 +108,9 @@ func apply_hit(result: Dictionary) -> void:
 		clinked.emit(part_id, source)
 	elif source == "hijacked":
 		result["damage"] = int(roundf(float(result.get("damage", 0)) * hijacked_mult))
+	if not is_equal_approx(damage_mult_now, 1.0) and int(result.get("damage", 0)) > 0:
+		var scaled: int = int(roundf(float(result["damage"]) * damage_mult_now))
+		result["damage"] = maxi(scaled, 1) if damage_mult_now > 0.0 else 0
 	super.apply_hit(result)
 	if _visual != null:
 		((_visual as MeshInstance3D).material_override as StandardMaterial3D).albedo_color.a = 0.55

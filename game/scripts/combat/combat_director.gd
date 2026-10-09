@@ -35,6 +35,7 @@ signal boss_bar_shown(info: Dictionary)                    ## {name, hp, hp_max,
 signal boss_hp_changed(hp: float, hp_max: float)
 signal boss_phase_changed(index: int, phase_name: String)
 signal boss_bar_hidden()
+signal boss_pips_changed(standing: int, total: int)        ## parts still standing (leg pairs, armour plates): the bar's small pips
 signal hack_prompt_changed(info: Dictionary)               ## the hack button offers something else for now ("Jack in"): {id, text_key}; {} = gone
 signal hack_prompt_used(id: StringName)                    ## Red pressed the hack button while a prompt was up (the prompt's owner acts on it)
 signal hijack_changed(info: Dictionary)                    ## {target, active, duration_s}: Overclock took something over, or let it go

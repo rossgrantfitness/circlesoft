@@ -27,6 +27,7 @@ const GROUP: StringName = &"boss_fight"
 const DEFAULT_FILE: String = "hushmaster.json"
 const TURRET_SCENE: String = "res://scenes/actors/enemies/wall_turret.tscn"
 const ARENA_ROOM: String = "kasp_arena"
+const MECH_FILE: String = "junk_mech.json"
 
 var room: Node3D = null
 var director: CombatDirector = null
@@ -39,6 +40,9 @@ var turrets: Array[WallTurret] = []
 ## Off in tests that step the fight by hand with tick().
 var run_on_physics: bool = true
 var seed_value: int = 1
+var heap: JunkMech = null
+var heap_doc: Dictionary = {}
+var repair_cells: Array[Dictionary] = []          # {node, position, taken}
 
 var _phase: StringName = &""
 var _started: bool = false
@@ -164,7 +168,7 @@ func _start_rig(retry: bool) -> void:
 	director.hp_changed.connect(_on_hp_changed)
 	_build_turrets(rig)
 	_show_bar()
-	boss_pips_changed.emit(hushmaster.pairs_standing(), Hushmaster.PAIRS.size())
+	_emit_pips(hushmaster.pairs_standing(), Hushmaster.PAIRS.size())
 	var events: Dictionary = rig.get("events", {}) as Dictionary
 	if not retry and events.has("on_phase_start"):
 		boss_event.emit(StringName(str(events["on_phase_start"])))
@@ -206,7 +210,13 @@ func _build_turrets(rig: Dictionary) -> void:
 
 
 func _on_pair_dropped(_pair: StringName, _lost: int) -> void:
-	boss_pips_changed.emit(hushmaster.pairs_standing(), Hushmaster.PAIRS.size())
+	_emit_pips(hushmaster.pairs_standing(), Hushmaster.PAIRS.size())
+
+
+func _emit_pips(standing: int, total: int) -> void:
+	boss_pips_changed.emit(standing, total)
+	if director != null:
+		director.boss_pips_changed.emit(standing, total)
 
 
 func _on_pattern_started(id: StringName) -> void:
@@ -284,11 +294,161 @@ func _on_transition_finished() -> void:
 	_enter_phase(next, false)
 
 
-## Phase 2 (the Heap, VS-28) plugs in here: the retry point is set and the phase is announced; the boss itself comes next.
+## Phase 2, the Heap: a junk mech built from the yard fights Red's colossus. It is made at `mech_start` and walks to meet her; the
+## retry point is `retry_phase2` (already docked, full health). Repair cells are placed in the bowl's smashable containers.
 func _start_next_boss(id: StringName, retry: bool) -> void:
 	_set_retry_point()
 	if retry and _ensure_transition() != null:
 		transition.start_docked()
+	var file_name: String = str(phases.phase(id).get("data", MECH_FILE))
+	heap_doc = CombatData.read_json(CombatData.DIR + "bosses/" + file_name)
+	if heap_doc.is_empty() or room == null:
+		return
+	heap = JunkMech.create(heap_doc, seed_value)
+	room.add_child(heap)
+	var start_at: Node3D = marker(&"mech_start")
+	if start_at != null:
+		heap.global_transform = Transform3D(start_at.global_basis, start_at.global_position)
+	heap.bar_changed.connect(func(hp: float, hp_max: float) -> void: _heap_bar(hp, hp_max))
+	heap.pips_changed.connect(func(standing: int, total: int) -> void: _emit_pips(standing, total))
+	heap.bark.connect(func(event_id: StringName) -> void: boss_event.emit(event_id))
+	heap.shot.connect(func(shot_id: StringName) -> void: boss_event.emit(shot_id))
+	heap.defeated.connect(_on_heap_defeated)
+	if director != null:
+		director.hijack_priority_tags = [] as Array[String]
+	_show_heap_bar()
+	_emit_pips(heap.plates_standing(), JunkMech.PLATE_IDS.size())
+	if bool((heap_doc.get("pickups", {}) as Dictionary).get("enabled", false)):
+		_place_repair_cells()
+
+
+func _show_heap_bar() -> void:
+	var list: Array[Dictionary] = []
+	for phase_id_item: StringName in phases.ids():
+		if not phases.is_scripted(phase_id_item):
+			list.append({"id": String(phase_id_item), "name": phases.name_of(phase_id_item)})
+	var hp: float = 0.0
+	var hp_max: float = 1.0
+	for item: BossPart in heap.parts():
+		if item.kind == &"plate":
+			hp += float(item.hp)
+			hp_max += float(item.hp_max)
+	hp_max = maxf(hp_max - 1.0, 1.0)
+	_bar_info = {"name": str(heap_doc.get("name", "the Heap")).capitalize(), "hp": hp, "hp_max": hp_max, "phases": list, "phase": list.size() - 1}
+	boss_bar_shown.emit(_bar_info)
+	boss_phase_changed.emit(list.size() - 1, phases.name_of(_phase))
+	if director != null:
+		director.boss_bar_shown.emit(_bar_info)
+		director.boss_phase_changed.emit(list.size() - 1, phases.name_of(_phase))
+
+
+func _heap_bar(hp: float, hp_max: float) -> void:
+	boss_hp_changed.emit(hp, hp_max)
+	if director != null:
+		director.boss_hp_changed.emit(hp, hp_max)
+
+
+func _on_heap_defeated() -> void:
+	phase_finished.emit(_phase)
+	boss_bar_hidden.emit()
+	if director != null:
+		director.boss_bar_hidden.emit()
+	var ending: Dictionary = phases.ending()
+	var flag: String = str(ending.get("sets_flag", ""))
+	var state: Node = get_node_or_null("/root/GameState")
+	if not flag.is_empty() and state != null and state.has_method("set_flag"):
+		state.call("set_flag", flag)
+	boss_event.emit(StringName(str(ending.get("scene", ""))))
+	_finish_fight()
+
+
+# ---- repair cells (Ross: "all recommended", so they are on) ----
+
+## Two containers in each of the bowl's clusters hold a green repair cell that heals 12 percent of the colossus. The room's robot
+## yard supplies the smashable props; the cells are picked evenly round the bowl so every part of it has some.
+func _place_repair_cells() -> void:
+	repair_cells.clear()
+	var stage_node: Object = room.call("get_robot_stage") if room.has_method("get_robot_stage") else null
+	var yard: Object = stage_node.get("yard") if stage_node != null and "yard" in stage_node else null
+	if yard == null or not "props" in yard:
+		return
+	var containers: Array[SmashProp] = []
+	for prop: SmashProp in (yard.get("props") as Array):
+		if is_instance_valid(prop) and str(prop.kind).contains("container"):
+			containers.append(prop)
+	var spec: Dictionary = (heap_doc.get("pickups", {}) as Dictionary).get("repair_cell", {}) as Dictionary
+	var wanted: int = int(spec.get("per_cluster", 2)) * int(spec.get("clusters", 8))
+	containers.sort_custom(func(a: SmashProp, b: SmashProp) -> bool:
+		return atan2(a.global_position.x, a.global_position.z) < atan2(b.global_position.x, b.global_position.z))
+	var step: float = maxf(float(containers.size()) / float(maxi(wanted, 1)), 1.0)
+	var index: float = 0.0
+	while int(index) < containers.size() and repair_cells.size() < wanted:
+		var prop: SmashProp = containers[int(index)]
+		var entry: Dictionary = {"prop": prop, "position": prop.global_position, "taken": false, "released": false}
+		repair_cells.append(entry)
+		prop.smashed.connect(func(_smashed: SmashProp) -> void: _release_cell(entry))
+		_mark_container(prop, spec)
+		index += step
+
+
+## A green stripe on the container, so Ross can tell which ones hold a cell.
+func _mark_container(prop: SmashProp, spec: Dictionary) -> void:
+	var stripe: MeshInstance3D = MeshInstance3D.new()
+	var mesh: BoxMesh = BoxMesh.new()
+	mesh.size = Vector3(prop.box_size.x * 1.02, maxf(prop.box_size.y * 0.12, 0.3), prop.box_size.z * 1.02)
+	stripe.mesh = mesh
+	var material: StandardMaterial3D = StandardMaterial3D.new()
+	var colour: Color = Color.html(str(spec.get("glow", "#7dffb0")))
+	material.albedo_color = colour
+	material.emission_enabled = true
+	material.emission = colour
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	stripe.material_override = material
+	stripe.position = prop.box_centre + Vector3.UP * prop.box_size.y * 0.3
+	prop.add_child(stripe)
+
+
+func _release_cell(entry: Dictionary) -> void:
+	if bool(entry["released"]):
+		return
+	entry["released"] = true
+	var spec: Dictionary = (heap_doc.get("pickups", {}) as Dictionary).get("repair_cell", {}) as Dictionary
+	var glow: MeshInstance3D = MeshInstance3D.new()
+	var mesh: SphereMesh = SphereMesh.new()
+	mesh.radius = 2.0
+	mesh.height = 4.0
+	glow.mesh = mesh
+	var colour: Color = Color.html(str(spec.get("glow", "#7dffb0")))
+	var material: StandardMaterial3D = StandardMaterial3D.new()
+	material.albedo_color = colour
+	material.emission_enabled = true
+	material.emission = colour
+	material.emission_energy_multiplier = 3.0
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	glow.material_override = material
+	room.add_child(glow)
+	glow.global_position = (entry["position"] as Vector3) + Vector3.UP * 3.0
+	entry["node"] = glow
+
+
+## Picks up any released cell the colossus is standing on: heals `heal_frac_of_colossus` of her health.
+func _tick_repair_cells() -> void:
+	if player == null or heap == null:
+		return
+	var spec: Dictionary = (heap_doc.get("pickups", {}) as Dictionary).get("repair_cell", {}) as Dictionary
+	for entry: Dictionary in repair_cells:
+		if not bool(entry["released"]) or bool(entry["taken"]):
+			continue
+		var gap: float = Vector2(player.global_position.x - (entry["position"] as Vector3).x, player.global_position.z - (entry["position"] as Vector3).z).length()
+		if gap > player.radius_m + 2.5:
+			continue
+		entry["taken"] = true
+		var heal: int = int(roundf(float(player.hp_max) * float(spec.get("heal_frac_of_colossus", 0.12))))
+		player.hp = mini(player.hp + heal, player.hp_max)
+		director.hp_changed.emit(player.actor_id, player.hp, player.hp_max)
+		if entry.has("node") and is_instance_valid(entry["node"]):
+			(entry["node"] as Node).queue_free()
+		boss_event.emit(&"repair_cell_taken")
 
 
 func _finish_fight() -> void:
@@ -320,6 +480,7 @@ func _show_bar() -> void:
 # ---- hints, the clock ----
 
 func tick(delta: float) -> void:
+	_tick_repair_cells()
 	if hushmaster == null or not is_instance_valid(hushmaster) or phases == null or phases.current() != _phase:
 		return
 	_age_s += delta

@@ -29,6 +29,8 @@ var _gaps: Array = [1900.0, 1700.0, 1500.0, 1300.0]
 var _first_delay_ms: float = 2500.0
 var _no_repeat: bool = true
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
+var _stage_gaps: Dictionary = {}              # the Heap: stage id -> gap ms (rules.min_gap_ms_by_stage)
+const STAGE_RANK: Dictionary = {"armored": 0, "core": 1, "last_stand": 2}
 
 var _busy: bool = false
 var _last: StringName = &""
@@ -54,6 +56,28 @@ static func from_data(phase: Dictionary, rules: Dictionary = {}, rng_seed: int =
 	out._rng.seed = rng_seed
 	out.start(0.0)
 	return out
+
+
+## The Heap (junk_mech.json): the patterns, the opening and the gaps per stage live at the top of the file.
+## Extra view keys it reads: stage (armored / core / last_stand), allowed (the pattern ids this stage may use), bias {id: weight multiplier}.
+static func from_heap(doc: Dictionary, rng_seed: int = 1) -> BossBrain:
+	var out: BossBrain = BossBrain.new()
+	for raw: Variant in doc.get("patterns", []) as Array:
+		if raw is Dictionary:
+			out._patterns.append((raw as Dictionary).duplicate(true))
+	for raw: Variant in (doc.get("opening", {}) as Dictionary).get("patterns", []) as Array:
+		out._opening.append(StringName(str(raw)))
+	var rules: Dictionary = doc.get("rules", {}) as Dictionary
+	out._stage_gaps = (rules.get("min_gap_ms_by_stage", {}) as Dictionary).duplicate()
+	out._first_delay_ms = 0.0
+	out._no_repeat = bool(rules.get("no_pattern_twice_in_a_row", true))
+	out._rng.seed = rng_seed
+	out.start(0.0)
+	return out
+
+
+func stage_gap_ms(stage: String) -> float:
+	return float(_stage_gaps.get(stage, 2400.0))
 
 
 ## A fresh start (or a retry): the opening list again, the first-attack delay from `now_ms`.
@@ -118,11 +142,12 @@ func begin(id: StringName, _now_ms: float) -> void:
 
 
 ## The pattern finished (its recovery too). The next one waits the stage's gap.
-func finish(now_ms: float, pairs_lost: int) -> void:
+func finish(now_ms: float, pairs_lost: int, gap_override_ms: float = -1.0) -> void:
 	if _last != &"":
 		_ended_at[String(_last)] = now_ms
 	_busy = false
-	_next_ok_ms = maxf(_next_ok_ms, now_ms + gap_ms(pairs_lost))
+	var gap: float = gap_override_ms if gap_override_ms >= 0.0 else gap_ms(pairs_lost)
+	_next_ok_ms = maxf(_next_ok_ms, now_ms + gap)
 
 
 ## Delays the next pick (a reaction like a leg drop: "it cannot start an attack for 1.4 s").
@@ -152,14 +177,15 @@ func step(now_ms: float, view: Dictionary) -> Dictionary:
 	var options: Array[Dictionary] = _options(view, now_ms, true)
 	if options.is_empty():
 		options = _options(view, now_ms, false)       # only the pattern that just ran fits: better it repeats than the boss stands idle
+	var bias: Dictionary = view.get("bias", {}) as Dictionary
 	var total: float = 0.0
 	for entry: Dictionary in options:
-		total += maxf(float(entry.get("weight", 1.0)), 0.0)
+		total += maxf(float(entry.get("weight", 1.0)), 0.0) * float(bias.get(str(entry.get("id", "")), 1.0))
 	if options.is_empty():
 		return {}
 	var roll: float = _rng.randf() * total
 	for entry: Dictionary in options:
-		roll -= maxf(float(entry.get("weight", 1.0)), 0.0)
+		roll -= maxf(float(entry.get("weight", 1.0)), 0.0) * float(bias.get(str(entry.get("id", "")), 1.0))
 		if roll <= 0.0:
 			return _pick(entry, view)
 	return _pick(options[options.size() - 1], view)
@@ -187,13 +213,19 @@ func _pick(spec: Dictionary, view: Dictionary) -> Dictionary:
 	var repeat: int = 1
 	if not chain.is_empty() and int(view.get("pairs_lost", 0)) >= int(chain.get("pairs_lost_min", 99)):
 		repeat = int(chain.get("count", 1))
-	return {"pattern": StringName(str(spec.get("id", ""))), "move": StringName(str(spec.get("move", ""))), "spec": spec,
-			"repeat": repeat, "repeat_gap_ms": float(chain.get("gap_ms", 0.0))}
+	var moves: Array = spec.get("moves", []) as Array
+	var first: String = str(moves[0]) if not moves.is_empty() else str(spec.get("move", ""))
+	return {"pattern": StringName(str(spec.get("id", ""))), "move": StringName(first), "moves": moves, "spec": spec,
+			"repeat": repeat, "repeat_gap_ms": float(chain.get("gap_ms", spec.get("gap_ms", 0.0)))}
 
 
 ## Do the pattern's `needs` and `when` hold? `check_when` false (the opening) skips the distance and timing conditions only
 ## to the extent the opening waits for them; they are still checked, but the caller treats "no" as "wait".
 func _eligible(spec: Dictionary, view: Dictionary, now_ms: float, _check_when: bool) -> bool:
+	if view.has("allowed") and not (view["allowed"] as Array).has(str(spec.get("id", ""))):
+		return false                      # this stage does not use it
+	if spec.has("stage_min") and int(STAGE_RANK.get(str(view.get("stage", "armored")), 0)) < int(STAGE_RANK.get(str(spec["stage_min"]), 0)):
+		return false
 	if bool(view.get("hacks_locked", false)) and _blocked_while_locked(StringName(str(spec.get("id", "")))):
 		return false
 	var needs: Dictionary = spec.get("needs", {}) as Dictionary

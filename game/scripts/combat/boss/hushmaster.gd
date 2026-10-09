@@ -336,6 +336,13 @@ func _start_pattern(pick: Dictionary) -> void:
 	state = State.PATTERN
 	velocity = Vector3.ZERO
 	pattern_started.emit(StringName(str(pick["pattern"])))
+	match str(pick["pattern"]):
+		"leg_stomp":
+			BossSfx.play(&"boss_stomp_windup")
+		"dish_sweep":
+			BossSfx.play(&"boss_sweep_line")
+		"drone_drop":
+			BossSfx.play(&"boss_drone_drop")
 	_begin_move(StringName(str(pick["move"])))
 
 
@@ -411,10 +418,12 @@ func _activate_box(event: Dictionary) -> void:
 		box["sweep_deg"] = _fan_deg
 	get_hitbox().activate(box, attack, runner.swing_id())
 	if str(box.get("shape", "")) == "beam":
+		BossSfx.play(&"boss_sweep_beam")
 		get_hitbox().set_box_param(int(event["index"]), "aim_yaw", _fan_start)
 		get_hitbox().set_box_param(int(event["index"]), "sweep_dir", _fan_dir)
 	elif str(box.get("shape", "")) == "ring":
 		_ring_index = int(event["index"])
+		BossSfx.play(&"boss_stomp_ring")
 
 
 func _end_pattern() -> void:
@@ -608,6 +617,7 @@ func _setup_quiet() -> void:
 	_quiet_lock_applied = false
 	_lower_dish(true)
 	quiet_hours_started.emit()
+	BossSfx.play(&"boss_quiet_hours")
 	bark.emit(&"kasp_rig_quiet_hours")
 
 
@@ -651,6 +661,7 @@ func _quiet_cut(by: String) -> void:
 	_quiet_locked = false
 	_quiet_lock_applied = true
 	quiet_hours_cut.emit(by)
+	BossSfx.play(&"boss_quiet_hours_cut")
 	if state == State.PATTERN and str(_pattern.get("pattern", "")) == "quiet_hours":
 		_abort_pattern()
 	_lower_dish(false)
@@ -678,6 +689,7 @@ func _on_relay_broken(part_id: StringName) -> void:
 	if pair == &"" or _pairs_down.has(pair):
 		return
 	_pairs_down[pair] = true
+	BossSfx.play(&"boss_relay_break")
 	var lost: int = pairs_lost()
 	_fold_pair(pair)
 	pair_dropped.emit(pair, lost)
@@ -768,6 +780,7 @@ func _begin_topple() -> void:
 			drone.apply_stun(600000.0)
 	_sag_target = 2.4
 	_lean_target = Vector2.ZERO
+	BossSfx.play(&"boss_topple")
 	bark.emit(&"kasp_rig_topple")
 
 
@@ -816,6 +829,7 @@ func _start_jack_in(_from_prompt: bool) -> void:
 	runner.start(StringName(str(jack.get("move", "jack_in_hit"))), clock.now_usec())
 	_topple_ms = float(runner.data().get("total_ms", 2400.0))
 	jack_in_started.emit()
+	BossSfx.play(&"boss_jack_in")
 	bark.emit(&"kasp_rig_jack_in")
 
 
