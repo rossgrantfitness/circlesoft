@@ -77,3 +77,6 @@ Boot to arena 3.1 s (under 10 s). All 8 directions relative to the camera. Jump,
 - `game/tests/visual/qa_sandbox_ramp_walk.gd`: reproduces BUG-01 (fails by design until the ramp is fixed).
 - `game/tests/visual/qa_sandbox_boot_frames.gd`: first frames after boot, plus 1080p HUD crops.
 - `game/tests/visual/qa_sandbox_ramp.gd`, `qa_sandbox_rack_row.gd`: placed-Red screenshots.
+
+
+**2026-10-09 lead:** BUG-03 fixed in combat_fx.gd: wind-up cues whose attacker was freed (death, Reset arena) are dropped before the cast, so no per-frame error and no stuck ring.

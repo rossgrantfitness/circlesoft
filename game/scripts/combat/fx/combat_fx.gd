@@ -392,8 +392,11 @@ func step(delta: float) -> void:
 		var cue: TelegraphCue = entry["cue"] as TelegraphCue
 		if not is_instance_valid(cue):
 			continue
+		if not is_instance_valid(entry["actor"]):
+			cue.queue_free()  # the attacker is gone (died or Reset arena): drop its wind-up ring
+			continue
 		var actor: Node3D = entry["actor"] as Node3D
-		var local: float = _local_delta(actor.get("actor_id") as StringName, delta) if is_instance_valid(actor) else delta
+		var local: float = _local_delta(actor.get("actor_id") as StringName, delta)
 		if cue.step(local):
 			keep.append(entry)
 		else:
