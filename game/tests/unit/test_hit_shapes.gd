@@ -44,8 +44,9 @@ func test_the_ring_is_measured_from_the_floor_it_stands_on() -> void:
 
 func test_the_ring_stops_at_its_maximum_radius() -> void:
 	assert_false(HitShapes.ring_finished(STOMP_RING, 0.5))
-	assert_true(HitShapes.ring_finished(STOMP_RING, 1.1), "past 7 m with its whole band")
+	assert_true(HitShapes.ring_finished(STOMP_RING, 0.75), "0.6 + 9 x 0.75 = 7.35 m: spent")
 	assert_false(HitShapes.ring_hits(Vector3.ZERO, STOMP_RING, 5.0, Vector3(9.0, 0, 0), 0.3), "nothing out beyond the maximum")
+	assert_false(HitShapes.ring_hits(Vector3.ZERO, STOMP_RING, 0.8, Vector3(6.5, 0, 0), 0.3), "and a spent ring does not park at 7 m and hit late")
 
 
 func test_the_beam_hits_what_is_along_its_line() -> void:

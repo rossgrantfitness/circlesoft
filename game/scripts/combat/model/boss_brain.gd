@@ -165,6 +165,12 @@ func step(now_ms: float, view: Dictionary) -> Dictionary:
 	return _pick(options[options.size() - 1], view)
 
 
+## The pick for pattern `id` as if the brain had chosen it now (repeat counts included): bots and tests start a named pattern.
+func make_pick(id: StringName, view: Dictionary) -> Dictionary:
+	var spec: Dictionary = pattern(id)
+	return _pick(spec, view) if not spec.is_empty() else {}
+
+
 func _options(view: Dictionary, now_ms: float, skip_last: bool) -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	for entry: Dictionary in _patterns:

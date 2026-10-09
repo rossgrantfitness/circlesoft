@@ -1,8 +1,374 @@
 {
- "_about": "VS-21/VS-30. The robots of Kasp's arena (docs/maps/kasp_arena.md): the loader parked at the south gate and the dormant colossus in its cradle on the east side, facing west. rooms.json `robots: kasp_arena`. Coordinates are the arena's own (origin at the plateau's centre, +x east, +z south). The loader faces north (yaw 180); the colossus faces west (yaw -90) and the boss transition (BossTransition) walks it from the cradle to colossus_dock_pos (84, 0). The boss transition re-parks the loader at the scene's `loader_parked` marker if Red climbed out somewhere else. A retry in phase 2 (form huge) hides both displays: she is wearing the colossus. The Level Designer adds the smashable bowl clusters here in VS-29 (kinds from combat/robot_yard.json).",
+ "_about": "VS-29 (written by scripts/tools/make_kasp_arena.py from a fixed seed; edit the generator or hand-edit and stop re-running it). The robots of Kasp's arena: the loader parked at the south gate (loader_parked, facing north) and the colossus standing dormant in its cradle at the east edge (colossus_cradle, facing west). Phase 2's boarding and docking (RobotStage.place_in / dock) move them: the colossus steps to colossus_dock_pos (84, 0). `props` are the eight clusters of smashable containers, cars and crates on the bowl floor, outside the stockade, off the heaps and the cradle (kasp_arena.md); two containers in each cluster hold a repair cell if Ross approves boss_design.md decision 2. Positions are the arena's own coordinates (origin at the plateau's centre).",
  "version": 1,
  "ground": false,
- "small_robot": {"pos": [8.0, 0.0, 56.0], "yaw_deg": 180.0},
- "huge_robot": {"pos": [105.0, 0.0, 0.0], "yaw_deg": -90.0},
- "props": []
+ "small_robot": {
+  "pos": [
+   8.0,
+   0.0,
+   56.0
+  ],
+  "yaw_deg": 180.0
+ },
+ "huge_robot": {
+  "pos": [
+   105.0,
+   0.0,
+   0.0
+  ],
+  "yaw_deg": -90.0
+ },
+ "props": [
+  {
+   "kind": "car",
+   "pos": [
+    131.2,
+    0.0,
+    62.8
+   ],
+   "yaw_deg": 354.0
+  },
+  {
+   "kind": "container",
+   "pos": [
+    134.8,
+    0.0,
+    59.5
+   ],
+   "yaw_deg": 132.0
+  },
+  {
+   "kind": "container",
+   "pos": [
+    51.7,
+    0.0,
+    111.3
+   ],
+   "yaw_deg": 97.0
+  },
+  {
+   "kind": "crate_large",
+   "pos": [
+    43.1,
+    0.0,
+    93.2
+   ],
+   "yaw_deg": 322.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    60.7,
+    0.0,
+    94.0
+   ],
+   "yaw_deg": 126.0
+  },
+  {
+   "kind": "container",
+   "pos": [
+    58.4,
+    0.0,
+    101.9
+   ],
+   "yaw_deg": 205.0
+  },
+  {
+   "kind": "crate_small",
+   "pos": [
+    61.4,
+    0.0,
+    107.8
+   ],
+   "yaw_deg": 27.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    59.9,
+    0.0,
+    107.3
+   ],
+   "yaw_deg": 200.0
+  },
+  {
+   "kind": "container",
+   "pos": [
+    49.6,
+    0.0,
+    110.9
+   ],
+   "yaw_deg": 206.0
+  },
+  {
+   "kind": "crate_large",
+   "pos": [
+    -26.5,
+    0.0,
+    97.4
+   ],
+   "yaw_deg": 62.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    -40.4,
+    0.0,
+    102.1
+   ],
+   "yaw_deg": 276.0
+  },
+  {
+   "kind": "container",
+   "pos": [
+    -27.8,
+    0.0,
+    101.2
+   ],
+   "yaw_deg": 171.0
+  },
+  {
+   "kind": "crate_small",
+   "pos": [
+    -41.7,
+    0.0,
+    91.6
+   ],
+   "yaw_deg": 139.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    -43.4,
+    0.0,
+    89.6
+   ],
+   "yaw_deg": 295.0
+  },
+  {
+   "kind": "container",
+   "pos": [
+    -49.6,
+    0.0,
+    100.6
+   ],
+   "yaw_deg": 53.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    -27.8,
+    0.0,
+    89.9
+   ],
+   "yaw_deg": 282.0
+  },
+  {
+   "kind": "container",
+   "pos": [
+    -45.7,
+    0.0,
+    102.5
+   ],
+   "yaw_deg": 328.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    -104.1,
+    0.0,
+    50.6
+   ],
+   "yaw_deg": 226.0
+  },
+  {
+   "kind": "container",
+   "pos": [
+    -109.6,
+    0.0,
+    55.9
+   ],
+   "yaw_deg": 61.0
+  },
+  {
+   "kind": "crate_small",
+   "pos": [
+    -94.9,
+    0.0,
+    55.1
+   ],
+   "yaw_deg": 94.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    -107.4,
+    0.0,
+    66.0
+   ],
+   "yaw_deg": 205.0
+  },
+  {
+   "kind": "container",
+   "pos": [
+    -105.7,
+    0.0,
+    64.7
+   ],
+   "yaw_deg": 161.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    -110.6,
+    0.0,
+    47.5
+   ],
+   "yaw_deg": 180.0
+  },
+  {
+   "kind": "container",
+   "pos": [
+    -108.3,
+    0.0,
+    56.5
+   ],
+   "yaw_deg": 189.0
+  },
+  {
+   "kind": "container",
+   "pos": [
+    -99.6,
+    0.0,
+    -29.0
+   ],
+   "yaw_deg": 152.0
+  },
+  {
+   "kind": "crate_small",
+   "pos": [
+    -94.3,
+    0.0,
+    -41.1
+   ],
+   "yaw_deg": 278.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    -94.5,
+    0.0,
+    -28.2
+   ],
+   "yaw_deg": 319.0
+  },
+  {
+   "kind": "container",
+   "pos": [
+    -88.6,
+    0.0,
+    -22.7
+   ],
+   "yaw_deg": 106.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    -94.3,
+    0.0,
+    -27.3
+   ],
+   "yaw_deg": 110.0
+  },
+  {
+   "kind": "container",
+   "pos": [
+    -93.6,
+    0.0,
+    -27.9
+   ],
+   "yaw_deg": 225.0
+  },
+  {
+   "kind": "crate_large",
+   "pos": [
+    -87.9,
+    0.0,
+    -26.5
+   ],
+   "yaw_deg": 150.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    -90.1,
+    0.0,
+    -22.9
+   ],
+   "yaw_deg": 168.0
+  },
+  {
+   "kind": "crate_small",
+   "pos": [
+    98.9,
+    0.0,
+    -61.1
+   ],
+   "yaw_deg": 157.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    101.0,
+    0.0,
+    -58.0
+   ],
+   "yaw_deg": 170.0
+  },
+  {
+   "kind": "container",
+   "pos": [
+    104.2,
+    0.0,
+    -57.7
+   ],
+   "yaw_deg": 193.0
+  },
+  {
+   "kind": "container",
+   "pos": [
+    107.6,
+    0.0,
+    -56.3
+   ],
+   "yaw_deg": 263.0
+  },
+  {
+   "kind": "crate_large",
+   "pos": [
+    99.6,
+    0.0,
+    -65.2
+   ],
+   "yaw_deg": 149.0
+  },
+  {
+   "kind": "car",
+   "pos": [
+    109.4,
+    0.0,
+    -57.1
+   ],
+   "yaw_deg": 324.0
+  },
+  {
+   "kind": "container",
+   "pos": [
+    97.1,
+    0.0,
+    -57.6
+   ],
+   "yaw_deg": 315.0
+  }
+ ]
 }

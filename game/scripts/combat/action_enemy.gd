@@ -62,6 +62,8 @@ var tags: PackedStringArray = PackedStringArray()
 ## Set while Overclock has taken it over (Red's side, fights the nearest enemy); null otherwise. See on_hijack_begin().
 var hijacked_by: CombatActor = null
 var hijackable: Hijackable = null
+## False = it never attacks Red (the Hushmaster arena's powered-down turrets). A hijacked unit fights anyway.
+var attacks_allowed: bool = true
 
 var _moves: MoveSet = null
 var _hit_feel: Dictionary = {}
@@ -297,6 +299,8 @@ func _tick_free(dt: float, now_ms: float, director: CombatDirector) -> void:
 		tokens = null            # a hijacked unit queues for nothing: it is on Red's side and attacks when it likes
 		has_token = true
 		enabled = true
+	elif not attacks_allowed:
+		enabled = false
 	enabled = enabled and target != null and not target.dead
 	var view: Dictionary = _make_view(target, dist, has_token, enabled, EnemyBrain.FREE, director)
 	if runner.is_busy():

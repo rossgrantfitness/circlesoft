@@ -31,6 +31,12 @@ signal hack_locked(active: bool, ms: float)                ## Kasp's Quiet Hours
 signal hack_selected(hack_id: StringName)                  ## pick mode: the selected hack changed; auto mode: the last one used
 signal hack_cast(info: Dictionary)                         ## {hack, name, cost, position, target}: a cast began (its cost is spent)
 signal hack_refused(info: Dictionary)                      ## {hack, name, reason, cost, charge}: the button was pressed and nothing fired (HUD fizz and words)
+signal boss_bar_shown(info: Dictionary)                    ## {name, hp, hp_max, phases: [{id, name}], phase}: a boss fight's bar (BossFight)
+signal boss_hp_changed(hp: float, hp_max: float)
+signal boss_phase_changed(index: int, phase_name: String)
+signal boss_bar_hidden()
+signal hack_prompt_changed(info: Dictionary)               ## the hack button offers something else for now ("Jack in"): {id, text_key}; {} = gone
+signal hack_prompt_used(id: StringName)                    ## Red pressed the hack button while a prompt was up (the prompt's owner acts on it)
 signal hijack_changed(info: Dictionary)                    ## {target, active, duration_s}: Overclock took something over, or let it go
 
 const GROUP: StringName = &"combat_director"
@@ -50,6 +56,8 @@ var battery: HackBattery = null
 ## Tags a hijacked unit goes for before the nearest enemy (the boss arena sets ["relay"] so a hijacked turret shoots the
 ## Hushmaster's leg relays). Empty = just the nearest.
 var hijack_priority_tags: Array[String] = []
+## What the hack button offers instead of a hack right now ({} = a hack). A boss sets it (the Hushmaster's "Jack in").
+var hack_prompt: Dictionary = {}
 var hit_feel: Dictionary = {}
 ## True in the game: the fighters' real-time axis follows the engine clock, so a press stamped by `_input`
 ## lines up. Headless tests that step by hand set it false and use stamp_usec().
@@ -617,6 +625,27 @@ func reset_hacks() -> void:
 	_ensure_parts()
 	battery.reset_start()
 	sync_battery()
+
+
+## The hack button offers `info` ({id, text_key}) instead of casting a hack. The HUD hears `hack_prompt_changed`.
+func set_hack_prompt(info: Dictionary) -> void:
+	hack_prompt = info.duplicate()
+	hack_prompt_changed.emit(hack_prompt)
+
+
+func clear_hack_prompt() -> void:
+	if hack_prompt.is_empty():
+		return
+	hack_prompt = {}
+	hack_prompt_changed.emit(hack_prompt)
+
+
+## The hack button was pressed. If a prompt is up it is used (and `hack_prompt_used` fires); returns true then.
+func use_hack_prompt() -> bool:
+	if hack_prompt.is_empty():
+		return false
+	hack_prompt_used.emit(StringName(str(hack_prompt.get("id", ""))))
+	return true
 
 
 ## Is `actor` an enemy that Overclock has taken over (it is on Red's side for now)?

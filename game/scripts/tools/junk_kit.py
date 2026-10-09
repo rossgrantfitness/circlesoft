@@ -82,7 +82,8 @@ class Y(M):
     def marker(self, name, parent, x, y, z, yaw=0.0, meta=None, kind="Marker3D"):
         extra = ""
         for k, v in (meta or {}).items():
-            extra += "metadata/%s = %s\n" % (k, v if not isinstance(v, str) else '"%s"' % v)
+            val = ("true" if v else "false") if isinstance(v, bool) else (v if not isinstance(v, str) else '"%s"' % v)
+            extra += "metadata/%s = %s\n" % (k, val)
         self.node(name, kind, parent, (x, y, z), yaw_deg=yaw, extra=extra.rstrip("\n"))
 
     def aimed_marker(self, name, parent, origin, target):

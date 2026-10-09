@@ -8,7 +8,7 @@ extends SceneTree
 const MAIN_SCENE: String = "res://scenes/core/main.tscn"
 const SETTLE_FRAMES: int = 80
 ## Where Red stands for the shot (room coordinates), when the default spawn would show a corner.
-const STAND: Dictionary = {"market_square": Vector3(11.0, 0.1, 7.6), "market_wharf": Vector3(14.0, 0.1, 6.5), "market_gate": Vector3(7.5, 0.1, 5.0)}
+const STAND: Dictionary = {"market_square": Vector3(11.0, 0.1, 7.6), "market_wharf": Vector3(14.0, 0.1, 6.5), "market_gate": Vector3(7.5, 0.1, 5.0), "kasp_arena": Vector3(0.0, 0.2, 44.0), "junk_j3": Vector3(36.0, 0.1, 30.0)}
 ## Wide shots: the room seen whole (distance in metres, the camera's fov stays).
 const WIDE: Dictionary = {"market_square": 34.0, "market_wharf": 36.0, "market_gate": 24.0}
 ## Overviews of the free-camera rooms (junkyard, arena): a loose camera [position, look-at, fov] so the whole layout reads.

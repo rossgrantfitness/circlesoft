@@ -585,6 +585,10 @@ func _stick_is_back() -> bool:
 ## cooldown stops a mashed button from stacking pop-ups. Text and times are data (combo.json buttons.hack).
 ## Hacks are off while she is in a robot (the slice keeps them to Red on foot).
 func _press_hack(usec: int) -> void:
+	var prompt_director: CombatDirector = find_director()
+	if prompt_director != null and not prompt_director.hack_prompt.is_empty() and not dead:
+		prompt_director.use_hack_prompt()          # the hack button is offering something else for now (a boss's "Jack in")
+		return
 	var caster: HackCaster = hack_caster()
 	if caster != null:
 		if _form_id == &"red" and not dead:

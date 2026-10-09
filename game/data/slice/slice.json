@@ -38,6 +38,11 @@
    "id": "fx",
    "script": "res://scripts/combat/fx/combat_fx.gd",
    "bind": true
+  },
+  {
+   "id": "boss_fight",
+   "script": "res://scripts/combat/boss/boss_fight.gd",
+   "bind": true
   }
  ],
  "new_game_hacks_note": "Which hacks a new slice game starts with (placeholder: all four of the pitch; the Combat Designer decides any unlock order).",

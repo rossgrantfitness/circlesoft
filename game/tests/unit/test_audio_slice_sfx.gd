@@ -204,11 +204,17 @@ func test_every_slice_id_is_in_sfx_json_flagged_placeholder_on_the_right_bus_and
 
 func test_every_sound_id_the_data_asks_for_is_in_sfx_json() -> void:
 	var defs: Dictionary = _sfx_defs()
+	var theme: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://data/ui/ui_theme.json"))
+	var theme_keys: Dictionary = (theme as Dictionary).get("sfx", {}) if theme is Dictionary else {}
 	var found: Dictionary = {}
 	_referenced_ids(DATA_ROOT_DIR, found)
 	assert_gt(found.size(), 20, "the walker found the data's sound ids (found %d)" % found.size())
 	for id: Variant in found.keys():
-		assert_has(defs, str(id), "'%s' (named in %s) is not in sfx.json" % [id, found[id]])
+		# Menus name a theme key ("confirm"), which ui_theme.json maps to a real id; everything else is a real id.
+		var ok: bool = defs.has(str(id)) or theme_keys.has(str(id))
+		assert_true(ok, "'%s' (named in %s) is not in sfx.json" % [id, found[id]])
+	for key: Variant in theme_keys.keys():
+		assert_true(defs.has(str(theme_keys[key])), "ui theme sfx '%s' -> '%s' is not in sfx.json" % [key, theme_keys[key]])
 
 
 func test_the_ids_the_code_expected_exist() -> void:

@@ -20,14 +20,16 @@ static func ring_radius(box: Dictionary, age_s: float) -> float:
 
 ## Has the ring spread past its maximum (the box is done)?
 static func ring_finished(box: Dictionary, age_s: float) -> bool:
-	return ring_radius(box, age_s) - float(box.get("width_m", 1.0)) > float(box.get("max_radius_m", 7.0))
+	return ring_radius(box, age_s) > float(box.get("max_radius_m", 7.0))
 
 
 static func ring_hits(centre: Vector3, box: Dictionary, age_s: float, target: Vector3, radius: float) -> bool:
 	var clear: float = float(box.get("clear_height_m", 0.6))
 	if clear > 0.0 and target.y - centre.y >= clear:
 		return false                 # jumped it
-	var outer: float = minf(ring_radius(box, age_s), float(box.get("max_radius_m", 7.0)))
+	if ring_finished(box, age_s):
+		return false                 # spent: it never parks at its maximum radius
+	var outer: float = ring_radius(box, age_s)
 	var inner: float = maxf(outer - float(box.get("width_m", 1.0)), 0.0)
 	var distance: float = Vector2(target.x - centre.x, target.z - centre.z).length()
 	return distance + radius >= inner and distance - radius <= outer

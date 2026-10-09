@@ -1,5 +1,5 @@
 {
- "_about": "Every slice room the SceneRouter can load (slice mode: GameMode.rooms_id = slice/rooms). Same shape as world/rooms.json plus the ActionRoom keys of docs/slice/slice_tech_plan.md 2.2: kind (town / dungeon / arena), camera (diorama / orbit), combat, look_profile, form, robots, checkpoint, autosave, music, spawns, default_spawn. The night market (VS-14, docs/maps/night_market.md): nine town rooms, scenes made by scripts/tools/make_market_rooms.py. look_profile is grim_ps2 until the Technical Artist's market_ps2 profile exists (VS-39); then change the nine strings. start_room is where a New Game begins (Red's hideout, spawn 'start'). pending_rooms: rooms that doors already point at but that are not built yet (the junkyard, VS-17 on); the rooms test accepts them only while they are listed here, with the spawns the door needs. The junkyard (VS-20, docs/maps/junkyard.md): junk_j1 to junk_j4 on foot, scenes by scripts/tools/make_junkyard_rooms.py. look_profile is grim_ps2 until the Technical Artist's junkyard_ps2 and arena_ps2 profiles exist. Encounters are not in 'enemies' here: who fights is data/slice/encounters.json (marker nodes in each scene), waiting for the encounter runner.",
+ "_about": "Every slice room the SceneRouter can load (slice mode: GameMode.rooms_id = slice/rooms). Same shape as world/rooms.json plus the ActionRoom keys of docs/slice/slice_tech_plan.md 2.2: kind (town / dungeon / arena), camera (diorama / orbit), combat, look_profile, form, robots, checkpoint, autosave, music, spawns, default_spawn. The night market (VS-14, docs/maps/night_market.md): nine town rooms, scenes made by scripts/tools/make_market_rooms.py. look_profile is grim_ps2 until the Technical Artist's market_ps2 profile exists (VS-39); then change the nine strings. start_room is where a New Game begins (Red's hideout, spawn 'start'). pending_rooms: rooms that doors already point at but that are not built yet (the junkyard, VS-17 on); the rooms test accepts them only while they are listed here, with the spawns the door needs. The junkyard (VS-20, docs/maps/junkyard.md): junk_j1 to junk_j4 on foot, scenes by scripts/tools/make_junkyard_rooms.py. look_profile is grim_ps2 until the Technical Artist's junkyard_ps2 and arena_ps2 profiles exist. Encounters are not in 'enemies' here: who fights is data/slice/encounters.json (marker nodes in each scene), waiting for the encounter runner. Kasp's arena (VS-29, docs/maps/kasp_arena.md): kasp_arena, one scene at two scales, made by scripts/tools/make_kasp_arena.py; look_profile is grim_ps2 until arena_ps2 exists. pending_rooms now lists only junk_j5 (the Smash Run, VS-22), which kasp_arena's from_j5 and junk_j4's from_j5 stand in for.",
  "fade": {
   "out_s": 0.24,
   "in_s": 0.24,
@@ -9,9 +9,6 @@
  "pending_rooms": {
   "junk_j5": [
    "from_j4"
-  ],
-  "kasp_arena": [
-   "from_j5"
   ]
  },
  "rooms": {
@@ -250,6 +247,25 @@
     "from_j5"
    ],
    "default_spawn": "from_j3"
+  },
+  "kasp_arena": {
+   "name": "Yard 9 Staging",
+   "scene": "res://scenes/slice/arena/kasp_arena.tscn",
+   "kind": "arena",
+   "camera": "orbit",
+   "combat": true,
+   "look_profile": "grim_ps2",
+   "form": "red",
+   "robots": "kasp_arena",
+   "checkpoint": true,
+   "autosave": true,
+   "music": "kasp_phase1",
+   "spawns": [
+    "from_j5",
+    "retry_phase1",
+    "retry_phase2"
+   ],
+   "default_spawn": "from_j5"
   }
  }
 }
