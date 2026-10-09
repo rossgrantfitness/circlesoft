@@ -1,6 +1,7 @@
 # Enemy AI design (Combat Sandbox)
 
 > **For Ross:** this is how the enemies think. Ross asked (2026-10-08) for enemies that attack, react to being hit, dodge, block, telegraph, reposition, run away and try to flank when hurt. All of it is numbers and enemy behaviour; **nothing changes what Red's buttons do.** Every number is a starting guess in `game/data/combat/enemies.json` (the `behaviour` block of each enemy) and `moves.json`; eleven difficulty sliders in the feel panel (group "Enemies") let you tune it by playing.
+> **Numbers moved on 2026-10-09:** the tables below are the first design values. The shipped numbers were retuned toward Kingdom Hearts (about half the dodging and blocking, slower wind-ups, softer enemy hits, milder flee and flank). See `docs/pivot/tuning_log.md` for what each one is now.
 > Owner: Combat Designer. Builder: Combat Programmer. Contract: `combat_api.md` 3, 4.2, 4.3, 4.6. Status: design for the sandbox, not yet built.
 
 ## 1. The shape of a fight

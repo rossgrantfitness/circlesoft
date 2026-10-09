@@ -1,0 +1,66 @@
+{
+ "_about": "The single-attack-button combo (docs/pivot/kh_combo_design.md). One press asks 'what is the next move?' and the rules below answer from the situation. Rules are checked top to bottom inside the matching 'from'; the first whose 'when' is true wins. Moves are the ones in moves.json (set 'red'). Numbers are starting guesses for Ross to tune. The Combat Programmer builds the selector; no code reads this file yet.",
+ "version": 1,
+ "buttons": {
+  "attack": {"action": "light", "note": "the one attack button (J, left mouse, X or Square). Heavy-button presses no longer start Red's Heavy, Launcher or any attack."},
+  "hack": {"action": "heavy", "callout": "Hack: coming later", "callout_ms": 1200, "cooldown_ms": 800, "note": "K, right mouse, Y or Triangle. Reserved for Red's hacker abilities. For now it only shows the call-out."}
+ },
+ "params": {
+  "near_radius_m": 3.0,
+  "far_dist_m": 4.5,
+  "lunge_max_dist_m": 12.0,
+  "crowd_min_enemies": 3,
+  "string_timeout_ms": 500,
+  "short_string_hits": 3,
+  "long_string_hits": 5,
+  "finishers": ["launcher", "heavy", "sweep", "air_3"],
+  "_params": "near_radius_m: enemies this close to Red count as 'near'. far_dist_m: further than this from the target counts as 'far'. string_timeout_ms: after a move ends with no press, the string forgets itself. short/long_string_hits: the hit number at which a finisher comes (3 normally, 5 against a guarding or armored target). finishers: moves that end a string."
+ },
+ "conditions": {
+  "target_dist_m": "[min, max] metres from Red to the current target (lock-on target, else the best target in front)",
+  "target_exists": "true/false: any target in front within lunge_max_dist_m",
+  "player_airborne": "Red is off the ground",
+  "target_airborne": "the target is off the ground (launched or juggled)",
+  "target_launchable": "the target can be launched (enemies.json launchable)",
+  "target_guarding": "the target is armored or its guard is up",
+  "enemies_near_min": "at least this many living enemies within near_radius_m of Red",
+  "string_pos": "[min, max] how many attack hits this string has started, counting the move that just played",
+  "last_hit_connected": "the move that just played hit something"
+ },
+ "rules": [
+  {"id": "air_start", "from": "idle", "when": {"player_airborne": true}, "next": "air_1", "why": "Pressing in the air starts the air string."},
+  {"id": "rise_to_juggle", "from": "idle", "when": {"player_airborne": false, "target_airborne": true, "target_dist_m": [0.0, 3.5]}, "next": "air_1", "prefix": "follow_jump", "why": "An enemy is in the air: Red jumps up to it and attacks (the existing follow-jump)."},
+  {"id": "lunge_far", "from": "idle", "when": {"player_airborne": false, "target_exists": true, "target_dist_m": [4.5, 12.0]}, "next": "lunge", "why": "A far target: close the gap with a lunge. It counts as hit 1."},
+  {"id": "ground_start", "from": "idle", "when": {"player_airborne": false}, "next": "light_1"},
+
+  {"id": "l1_to_l2", "from": "light_1", "next": "light_2"},
+  {"id": "lunge_to_l2", "from": "lunge", "next": "light_2", "why": "A lunge counts as hit 1, so the string continues with Light 2."},
+  {"id": "l2_long_finisher", "from": "light_2", "when": {"string_pos": [5, 9]}, "next": "heavy", "why": "Fifth hit of a long string: the slam finisher (breaks a guard)."},
+  {"id": "l2_to_l3", "from": "light_2", "next": "light_3"},
+  {"id": "l3_crowd", "from": "light_3", "when": {"enemies_near_min": 3}, "next": "sweep", "why": "Three or more enemies close: the spin finisher hits them all."},
+  {"id": "l3_extend_vs_guard", "from": "light_3", "when": {"target_guarding": true}, "next": "light_1", "why": "A guarding or armored target: keep chipping, the long string ends in the slam."},
+  {"id": "l3_extend_vs_heavy_target", "from": "light_3", "when": {"target_launchable": false}, "next": "light_1", "why": "Cannot be launched: go for the slam at hit 5 instead."},
+  {"id": "l3_launcher", "from": "light_3", "next": "launcher", "why": "A normal target: the string ends by launching it."},
+
+  {"id": "launcher_follow", "from": "launcher", "when": {"last_hit_connected": true, "target_airborne": true}, "next": "air_1", "prefix": "follow_jump", "why": "The target is in the air: Red follows it up (the existing follow-jump)."},
+  {"id": "launcher_whiff", "from": "launcher", "next": "light_1", "restart": true},
+  {"id": "heavy_restart", "from": "heavy", "next": "light_1", "restart": true},
+  {"id": "sweep_restart", "from": "sweep", "next": "light_1", "restart": true},
+
+  {"id": "air_1_to_2", "from": "air_1", "next": "air_2"},
+  {"id": "air_2_to_3", "from": "air_2", "next": "air_3", "why": "The air finisher slams the target down."},
+  {"id": "air_3_end", "from": "air_3", "next": "", "why": "End of the air string; the next press starts fresh when Red lands or after the timeout."}
+ ],
+ "cancel_windows": {
+  "rule": "A press is accepted from the playing move's cancels.chain[0] to chain[1] in moves.json, and a press made earlier waits in the buffer and fires exactly at chain[0] (the existing behaviour). A press inside the window of a move with no chain window (launcher, air_3) is buffered until the move ends.",
+  "dash_cancel": "Dash, jump and parry cancels stay as written in moves.json.",
+  "restart": "A rule marked 'restart' sets string_pos back to 0 after the move, so the next press starts a new string."
+ },
+ "string_shapes": {
+  "_about": "What the rules above produce, for reading. Hit numbers in brackets.",
+  "normal_ground": "Light 1 (1), Light 2 (2), Light 3 (3), Launcher (4), then Air 1 (5), Air 2 (6), Air 3 (7).",
+  "guarding_or_armored": "Light 1, Light 2, Light 3, Light 1, Light 2, Heavy slam (6).",
+  "crowd": "Light 1, Light 2, Light 3, Sweep (4).",
+  "far": "Lunge (1), Light 2 (2), Light 3 (3), Launcher (4)."
+ }
+}

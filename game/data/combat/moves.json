@@ -884,6 +884,215 @@
       ],
       "fallback": "brace"
      }
+    },
+    "lunge": {
+     "name": "Lunge",
+     "state": "ground",
+     "startup_ms": 150,
+     "active_ms": 90,
+     "recovery_ms": 240,
+     "cancels": {
+      "chain": [
+       200,
+       420
+      ],
+      "dash": 240,
+      "jump": 240,
+      "parry": 240
+     },
+     "links": {
+      "light": "light_2"
+     },
+     "launcher": false,
+     "motion": {
+      "forward_m": 5.0,
+      "from_ms": 0,
+      "to_ms": 200,
+      "stop_short_m": 0.9
+     },
+     "magnet": {
+      "range_m": 12.0,
+      "cone_deg": 140
+     },
+     "hit": {
+      "damage": 9,
+      "hitstun_ms": 340,
+      "knockback_m": 0.6,
+      "launch_mps": 0.0,
+      "knockdown": false,
+      "hit_stop_ms": 50,
+      "poise_damage": 10,
+      "style_points": 12,
+      "shake": "light",
+      "spark": "slash",
+      "sfx": "combat_hit_light"
+     },
+     "hitboxes": [
+      {
+       "from_ms": 160,
+       "to_ms": 200,
+       "shape": "capsule",
+       "radius": 0.5,
+       "height": 1.2,
+       "offset": [
+        0.0,
+        0.55,
+        0.9
+       ],
+       "rot_deg": [
+        90,
+        0,
+        0
+       ]
+      },
+      {
+       "from_ms": 200,
+       "to_ms": 250,
+       "shape": "capsule",
+       "radius": 0.55,
+       "height": 1.2,
+       "offset": [
+        0.0,
+        0.55,
+        1.25
+       ],
+       "rot_deg": [
+        90,
+        0,
+        0
+       ]
+      }
+     ],
+     "swing": {
+      "sfx": "combat_swing_light",
+      "trail": true
+     },
+     "anim": {
+      "clip": "light_3",
+      "keys": [
+       {
+        "at_ms": 0,
+        "clip_s": 0.09
+       },
+       {
+        "at_ms": 150,
+        "clip_s": 0.2
+       },
+       {
+        "at_ms": 250,
+        "clip_s": 0.29
+       },
+       {
+        "at_ms": 480,
+        "clip_s": 0.62
+       }
+      ],
+      "fallback": "thrust"
+     },
+     "note": "Gap closer for the single attack button: dashes up to 5 m at the target, stopping 0.9 m short, then thrusts. Reuses the light_3 clip. Counts as hit 1 of a string."
+    },
+    "sweep": {
+     "name": "Sweep",
+     "state": "ground",
+     "startup_ms": 120,
+     "active_ms": 120,
+     "recovery_ms": 360,
+     "cancels": {
+      "chain": [
+       260,
+       560
+      ],
+      "dash": 300,
+      "jump": 300,
+      "parry": 300
+     },
+     "links": {
+      "light": "light_1"
+     },
+     "launcher": false,
+     "motion": {
+      "forward_m": 0.2,
+      "from_ms": 0,
+      "to_ms": 120
+     },
+     "magnet": {
+      "range_m": 5.5,
+      "cone_deg": 360
+     },
+     "hit": {
+      "damage": 12,
+      "hitstun_ms": 460,
+      "knockback_m": 1.8,
+      "launch_mps": 0.0,
+      "knockdown": false,
+      "hit_stop_ms": 70,
+      "poise_damage": 16,
+      "style_points": 18,
+      "shake": "medium",
+      "spark": "slash_big",
+      "sfx": "combat_hit_heavy"
+     },
+     "hitboxes": [
+      {
+       "from_ms": 120,
+       "to_ms": 180,
+       "shape": "sphere",
+       "radius": 1.7,
+       "offset": [
+        0.0,
+        0.5,
+        0.4
+       ],
+       "rot_deg": [
+        0,
+        0,
+        0
+       ]
+      },
+      {
+       "from_ms": 180,
+       "to_ms": 240,
+       "shape": "sphere",
+       "radius": 1.7,
+       "offset": [
+        0.0,
+        0.5,
+        -0.2
+       ],
+       "rot_deg": [
+        0,
+        0,
+        0
+       ]
+      }
+     ],
+     "swing": {
+      "sfx": "combat_swing_heavy",
+      "trail": true
+     },
+     "anim": {
+      "clip": "air_3",
+      "keys": [
+       {
+        "at_ms": 0,
+        "clip_s": 0.0
+       },
+       {
+        "at_ms": 120,
+        "clip_s": 0.1333
+       },
+       {
+        "at_ms": 240,
+        "clip_s": 0.2667
+       },
+       {
+        "at_ms": 480,
+        "clip_s": 0.5333
+       }
+      ],
+      "fallback": "spin"
+     },
+     "note": "Crowd finisher for the single attack button: a full spin that hits every enemy around Red. Reuses the air_3 spin clip. Does not launch, so it keeps the group on the ground."
     }
    }
   },
