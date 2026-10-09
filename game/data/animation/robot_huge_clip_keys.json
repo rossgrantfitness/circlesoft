@@ -1,0 +1,380 @@
+{
+ "_about": "Key poses of Red's clips: where the strike lands (contact_s) and the poses the move data snaps to. 30 fps for Quaternius clips (retarget_ual.py), 15 fps stepped for the TA's hand-posed stand-ins. Use these seconds as clip_s in moves.json anim.keys.",
+ "fps": 30,
+ "clips": {
+  "idle": {
+   "length_s": 1.6667,
+   "loop": true,
+   "source": "UAL1:Sword_Idle",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 50,
+     "clip_s": 1.6667
+    }
+   ],
+   "note": "Sword_Idle: ready stance, sword held up in the right fist"
+  },
+  "walk": {
+   "length_s": 1.3333,
+   "loop": true,
+   "source": "UAL1:Walk_Loop",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 40,
+     "clip_s": 1.3333
+    }
+   ],
+   "stride_mps": 31.52
+  },
+  "run": {
+   "length_s": 0.6667,
+   "loop": true,
+   "source": "UAL1:Sprint_Loop",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 20,
+     "clip_s": 0.6667
+    }
+   ],
+   "stride_mps": 200.92
+  },
+  "jump_up": {
+   "length_s": 0.5,
+   "loop": false,
+   "source": "UAL1:Jump_Start",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 15,
+     "clip_s": 0.5
+    }
+   ],
+   "note": "takeoff stretch, arms swing up; holds the last pose"
+  },
+  "fall": {
+   "length_s": 2.5,
+   "loop": true,
+   "source": "UAL1:Jump_Loop",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 75,
+     "clip_s": 2.5
+    }
+   ]
+  },
+  "land": {
+   "length_s": 0.7,
+   "loop": false,
+   "source": "UAL1:Jump_Land",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 21,
+     "clip_s": 0.7
+    }
+   ]
+  },
+  "dash": {
+   "length_s": 0.7333,
+   "loop": false,
+   "source": "UAL2:Sword_Dash",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 22,
+     "clip_s": 0.7333
+    }
+   ]
+  },
+  "light_1": {
+   "length_s": 0.9333,
+   "loop": false,
+   "source": "UAL2:Sword_Regular_A + UAL2:Sword_Regular_A_Rec",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 8,
+     "clip_s": 0.25
+    },
+    {
+     "frame": 28,
+     "clip_s": 0.9333
+    }
+   ],
+   "contact_s": 0.25,
+   "contact_frame": 8
+  },
+  "light_2": {
+   "length_s": 1.0333,
+   "loop": false,
+   "source": "UAL2:Sword_Regular_B + UAL2:Sword_Regular_B_Rec",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 8,
+     "clip_s": 0.25
+    },
+    {
+     "frame": 31,
+     "clip_s": 1.0333
+    }
+   ],
+   "contact_s": 0.25,
+   "contact_frame": 8
+  },
+  "light_3": {
+   "length_s": 1.0667,
+   "loop": false,
+   "source": "UAL2:Sword_Regular_C",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 6,
+     "clip_s": 0.2
+    },
+    {
+     "frame": 32,
+     "clip_s": 1.0667
+    }
+   ],
+   "contact_s": 0.2,
+   "contact_frame": 6
+  },
+  "heavy": {
+   "length_s": 1.6,
+   "loop": false,
+   "source": "UAL2:Sword_Heavy_Combo",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 16,
+     "clip_s": 0.52
+    },
+    {
+     "frame": 48,
+     "clip_s": 1.6
+    }
+   ],
+   "contact_s": 0.52,
+   "contact_frame": 16
+  },
+  "launcher": {
+   "length_s": 0.9,
+   "loop": false,
+   "source": "UAL1:Sword_Attack",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 8,
+     "clip_s": 0.25
+    },
+    {
+     "frame": 27,
+     "clip_s": 0.9
+    }
+   ],
+   "contact_s": 0.25,
+   "contact_frame": 8
+  },
+  "parry": {
+   "length_s": 1.0,
+   "loop": false,
+   "source": "UAL2:Sword_Block",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 6,
+     "clip_s": 0.2
+    },
+    {
+     "frame": 30,
+     "clip_s": 1.0
+    }
+   ],
+   "contact_s": 0.2,
+   "contact_frame": 6
+  },
+  "hurt": {
+   "length_s": 0.3333,
+   "loop": false,
+   "source": "UAL1:Hit_Chest",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 3,
+     "clip_s": 0.1
+    },
+    {
+     "frame": 10,
+     "clip_s": 0.3333
+    }
+   ],
+   "contact_s": 0.1,
+   "contact_frame": 3
+  },
+  "knockdown": {
+   "length_s": 0.8333,
+   "loop": false,
+   "source": "UAL2:Hit_Knockback",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 9,
+     "clip_s": 0.3
+    },
+    {
+     "frame": 25,
+     "clip_s": 0.8333
+    }
+   ],
+   "contact_s": 0.3,
+   "contact_frame": 9
+  },
+  "getup": {
+   "length_s": 1.5333,
+   "loop": false,
+   "source": "UAL2:LayToIdle",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 46,
+     "clip_s": 1.5333
+    }
+   ]
+  },
+  "air_1": {
+   "length_s": 0.4333,
+   "loop": false,
+   "source": "UAL2:Sword_Regular_A",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 8,
+     "clip_s": 0.25
+    },
+    {
+     "frame": 13,
+     "clip_s": 0.4333
+    }
+   ],
+   "contact_s": 0.25,
+   "contact_frame": 8,
+   "note": "stand-in: Red's air_1 is hand-posed; the robot uses the light_1 swing"
+  },
+  "air_2": {
+   "length_s": 0.5333,
+   "loop": false,
+   "source": "UAL2:Sword_Regular_B",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 8,
+     "clip_s": 0.25
+    },
+    {
+     "frame": 16,
+     "clip_s": 0.5333
+    }
+   ],
+   "contact_s": 0.25,
+   "contact_frame": 8,
+   "note": "stand-in: the light_2 swing"
+  },
+  "air_3": {
+   "length_s": 1.0667,
+   "loop": false,
+   "source": "UAL2:Sword_Regular_C",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 6,
+     "clip_s": 0.2
+    },
+    {
+     "frame": 32,
+     "clip_s": 1.0667
+    }
+   ],
+   "contact_s": 0.2,
+   "contact_frame": 6,
+   "note": "stand-in: the light_3 swing"
+  },
+  "parry_success": {
+   "length_s": 0.8,
+   "loop": false,
+   "source": "UAL2:Sword_Block",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 24,
+     "clip_s": 0.8
+    }
+   ],
+   "note": "stand-in: the block, held"
+  }
+ }
+}

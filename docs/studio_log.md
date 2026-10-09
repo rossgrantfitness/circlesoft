@@ -2,6 +2,10 @@
 
 > A running record of what the studio is doing, newest at the top. Updated as work happens so Ross can follow along.
 
+## 2026-10-09
+
+- **Robot scale test blockouts done (Technical Artist, CS-21), placeholders only.** A 3.5 m squat loader robot (hatch and ladder in its back) and a 50 m furnace colossus with a two-door chest bay the small robot docks into (Ross: "use robots docking into each other"), both on Red's bone names so the same clips drive them (Quaternius clips baked by the retarget tool). Eight scale props (crates, container, car, lamp post, 10/20/30 m buildings), footstep and landing shakes and dust per scale in fx.json, and a handoff with suggested camera, speed, turn, playback and pitch numbers in docs/pivot/robot_scale_test.md. Pictures: docs/screenshots/robots_scale_lineup.png, robots_dock_bay.png, robots_small_poses.png, robots_huge_poses.png. One finding: the arena haze hides the huge robot from a huge-scale camera, so fog distances need to scale too.
+
 ## 2026-10-08
 
 - **Work-in-progress sandbox snapshot sent to Ross (Windows, 5 parts; Mac on request)** at his request, built from the last all-green commit (7ba3010): arena, Red's moves and swords, wolves and Brute, effects, sharp slanted HUD. Not in it yet: the new enemy behaviours, the foot-slide fix. Agents were paused about 18:15-23:45 UTC by an account spend limit; work resumed after it reset. Foot-slide fix now done (locomotion plays faster to match speed; Red's run still slides about 20% at full speed, a feel call).

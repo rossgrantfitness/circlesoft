@@ -1,0 +1,10 @@
+robot_small_ual.glb and robot_huge_ual.glb : animation credits and license
+
+Animations in these files come from the Universal Animation Library 1 and 2 (Standard) by Quaternius, CC0 1.0 (public domain),
+https://quaternius.itch.io/universal-animation-library and https://quaternius.itch.io/universal-animation-library-2
+No credit is required; it is given anyway. License texts: art/placeholder/animations/quaternius_ual/LICENSE_UAL1.txt and LICENSE_UAL2.txt.
+
+They were retargeted offline (Red's bone names kept) by scripts/tools/retarget_ual.py from data/animation/retarget_robot_small.json and
+retarget_robot_huge.json. The meshes are placeholder blockouts built by scripts/tools/make_robots.py (Technical Artist, task CS-21) with
+Ross's city tiles embedded as copies for the plating. air_1, air_2, air_3 and parry_success are baked stand-ins (the light swings and the
+block), not the hand-posed ones Red has.

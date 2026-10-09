@@ -37,8 +37,10 @@ func _swipe(extra: Dictionary = {}) -> Dictionary:
 
 
 func _ctx(rating: String = "miss", extra: Dictionary = {}) -> Dictionary:
+	var feel: FeelKnobs = FeelKnobs.load_defaults()
+	feel.set_value("enemy_damage_scale", 1.0)       # raw damage, not the tuned default
 	var ctx: Dictionary = {"parry": {"rating": rating}, "lights_on": {"active": false, "damage_mult": 1.0, "super_armor": false},
-		"feel": FeelKnobs.load_defaults(), "hit_feel": CombatData.hit_feel()}
+		"feel": feel, "hit_feel": CombatData.hit_feel()}
 	ctx.merge(extra, true)
 	return ctx
 

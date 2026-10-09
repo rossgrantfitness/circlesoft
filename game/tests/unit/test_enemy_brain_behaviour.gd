@@ -7,6 +7,29 @@ const STEP: float = 16.0
 const GRUNT: String = "grunt"
 const BRUTE: String = "brute"
 
+## The studio's design table (docs/pivot/enemy_ai_design.md). The shipped enemies.json is tuned from here
+## (see docs/pivot/tuning_log.md), so these tests pin their own copy and keep proving the mechanics.
+const DESIGN: Dictionary = {
+	"grunt": {"defend": {"dodge_chance": 0.30, "block_chance": 0.08, "combo_escape": {"chance": 0.5}, "dodge": {"counter_chance": 0.25}},
+		"reactions": {"retaliate_chance": 0.15},
+		"low_health": {"threshold_frac": 0.40, "flee_chance_alone": 0.70, "flee_chance_pack": 0.30,
+			"flee": {"max_per_life": 2}, "flank": {"hold_ms": 600}}},
+	"brute": {"defend": {"block_chance": 0.45}, "guard": {"counter_chance": 0.45}, "reactions": {"retaliate_chance": 0.35}},
+}
+
+
+static func _pin_design(data: Dictionary, enemy: String) -> void:
+	_merge_deep(data.get("behaviour", {}) as Dictionary, DESIGN.get(enemy, {}) as Dictionary)
+
+
+static func _merge_deep(into: Dictionary, patch: Dictionary) -> void:
+	for key: Variant in patch.keys():
+		if patch[key] is Dictionary and into.get(key) is Dictionary:
+			_merge_deep(into[key] as Dictionary, patch[key] as Dictionary)
+		else:
+			into[key] = patch[key]
+
+
 
 ## A brain plus the clock and view that drive it.
 class Driver extends RefCounted:
@@ -53,6 +76,7 @@ class Driver extends RefCounted:
 func _make(enemy: String, rng_seed: int = 1, defend_patch: Dictionary = {}, reactions_patch: Dictionary = {}) -> EnemyBrain:
 	var all: Dictionary = CombatData.enemies()
 	var data: Dictionary = ((all["enemies"] as Dictionary)[enemy] as Dictionary).duplicate(true)
+	_pin_design(data, enemy)
 	data["gaits"] = {"strafe": 1.5, "retreat": 3.4, "flee": 4.6}
 	data["telegraph_rules"] = all["telegraph_rules"]
 	if not defend_patch.is_empty():

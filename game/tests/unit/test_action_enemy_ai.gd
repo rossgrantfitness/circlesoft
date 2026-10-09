@@ -40,6 +40,8 @@ func _setup(scene_path: String, at: Vector3, stand_yaw: float = 0.0) -> ActionEn
 	_floor()
 	_director = CombatDirector.new()
 	_director.feel = FeelKnobs.load_defaults()
+	_director.feel.set_value("enemy_damage_scale", 1.0)       # raw damage; the shipped default is tuned lower
+	_director.feel.set_value("enemy_windup_scale", 1.0)       # the data's own wind-up lengths
 	_director.sync_to_wall_clock = false
 	add_to_root(_director)
 	_director.set_physics_process(false)

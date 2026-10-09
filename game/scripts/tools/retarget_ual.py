@@ -4,6 +4,7 @@ OUR bone names (so game code that reads `head`, `upper_arm_r`, `weapon_socket` .
 
     python3 game/scripts/tools/retarget_ual.py red            # builds red_ross_v1_rigged_ual.glb + red_clip_keys.json
     python3 game/scripts/tools/retarget_ual.py wolf
+    python3 game/scripts/tools/retarget_ual.py robot_small   # and robot_huge: the CS-21 blockouts (scripts/tools/make_robots.py writes their settings)
     python3 game/scripts/tools/retarget_ual.py red --report   # also prints the quality report (clipping, sliding, loops)
     python3 game/scripts/tools/retarget_ual.py red --analyze Sword_Regular_A UAL2   # hand speed of a source clip (find contact)
 
@@ -388,7 +389,7 @@ def analyze(rt, clip_name, key, bone="hand_r"):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("name", choices=["red", "wolf", "brute"])
+    ap.add_argument("name", help="red, wolf, brute, robot_small, robot_huge ... (any data/animation/retarget_<name>.json)")
     ap.add_argument("--report", action="store_true")
     ap.add_argument("--only", help="comma list of clip names to rebuild (report only)")
     ap.add_argument("--analyze", nargs=2, metavar=("SOURCE_CLIP", "UAL1|UAL2"))

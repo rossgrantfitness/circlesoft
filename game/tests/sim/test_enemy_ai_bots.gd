@@ -76,7 +76,10 @@ func _frames(seconds: float) -> int:
 func test_a_grunt_dodges_some_heavies_but_not_all() -> void:
 	await _boot(["grunt_1"])
 	var grunt: ActionEnemy = _enemy("grunt_1")
-	_director.feel.set_value("enemy_dodge_scale", 1.5)
+	_director.feel.set_value("enemy_dodge_scale", 2.0)
+	# Pin the studio's design chance (0.30): the shipped Kingdom Hearts tuning halves it, which would make a
+	# 12-swing run depend on luck. This test is about the mechanic, not the tuned rate.
+	(grunt.brain._defence._cfg as Dictionary)["dodge_chance"] = 0.30
 	_place(_red, Vector3(-6.0, 0.1, 4.0), grunt.global_position)
 	var tally: Dictionary = {"swings": 0, "threatened": 0, "dodges": 0, "hits": 0}
 	var was_dodging: bool = false
@@ -131,6 +134,7 @@ func test_the_brutes_guard_breaks_on_a_heavy_and_not_on_a_light() -> void:
 	await _boot(["brute_5"])
 	var brute: ActionEnemy = _enemy("brute_5")
 	_director.feel.set_value("enemy_block_scale", 2.0)
+	(brute.brain._defence._cfg as Dictionary)["block_chance"] = 0.45      # the studio's design chance; see the dodge test
 	_place(_red, brute.global_position + Vector3(0.0, 0.0, 6.0), brute.global_position)
 	var outcomes: Array[Dictionary] = []
 	_director.hit_landed.connect(func(info: Dictionary) -> void:

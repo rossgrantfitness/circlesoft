@@ -11,7 +11,11 @@
     "parry":         {"amplitude_m": 0.04,  "duration_s": 0.14, "frequency_hz": 30.0},
     "perfect_parry": {"amplitude_m": 0.075, "duration_s": 0.22, "frequency_hz": 26.0},
     "flare":         {"amplitude_m": 0.05,  "duration_s": 0.30, "frequency_hz": 14.0},
-    "death":         {"amplitude_m": 0.05,  "duration_s": 0.18, "frequency_hz": 20.0}
+    "death":         {"amplitude_m": 0.05,  "duration_s": 0.18, "frequency_hz": 20.0},
+    "step_small":    {"amplitude_m": 0.04,  "duration_s": 0.22, "frequency_hz": 14.0, "for_camera_m": 14.0, "suggested_mult": 1.0},
+    "land_small":    {"amplitude_m": 0.10,  "duration_s": 0.32, "frequency_hz": 11.0, "for_camera_m": 14.0, "suggested_mult": 1.5},
+    "step_huge":     {"amplitude_m": 0.19,  "duration_s": 0.58, "frequency_hz": 4.5,  "for_camera_m": 75.0, "suggested_mult": 6.0},
+    "land_huge":     {"amplitude_m": 0.199, "duration_s": 0.59, "frequency_hz": 3.2,  "for_camera_m": 75.0, "suggested_mult": 10.0}
   },
   "sparks": {
     "_note": "streak bursts. count, speed [min, max] m/s, life_s, length_m and width_m of each streak, gravity m/s2, cone_deg around the hit normal, flash = the bright pop (size_m, life_s, intensity), ring = optional expanding ring.",
@@ -24,6 +28,19 @@
     "perfect_parry": {"color": "#ffd34a", "core": "#ffffff", "count": 22, "speed": [5.0, 11.0], "life_s": 0.34, "length_m": 0.5, "width_m": 0.055, "gravity": 0.5, "cone_deg": 140.0, "glow": 3.0, "flash": {"size_m": 1.3, "life_s": 0.16, "intensity": 3.6}, "ring": {"max_m": 1.8, "life_s": 0.26}},
     "dodge":         {"color": "#ffcf80", "core": "#ffffff", "count": 8,  "speed": [2.0, 5.0], "life_s": 0.26, "length_m": 0.3,  "width_m": 0.03,  "gravity": 0.0, "cone_deg": 180.0, "glow": 2.0, "flash": {"size_m": 0.6, "life_s": 0.12, "intensity": 2.0}, "ring": {"max_m": 1.2, "life_s": 0.22}},
     "death":         {"color": "#cfe8f2", "core": "#ffffff", "count": 20, "speed": [2.0, 7.0], "life_s": 0.4,  "length_m": 0.35, "width_m": 0.04,  "gravity": 4.0, "cone_deg": 180.0, "glow": 2.2, "flash": {"size_m": 1.1, "life_s": 0.14, "intensity": 2.6}, "ring": {"max_m": 1.4, "life_s": 0.28}}
+  },
+  "shake_scale_note": "Robot scale test (CS-21, Technical Artist). Footfall and landing shakes per scale. amplitude_m is tuned for a camera for_camera_m metres away; pass suggested_mult to the camera so a far camera still shakes (a 75 m camera needs a bigger offset for the same angle). The camera caps amplitude * mult at CameraShake.MAX_AMPLITUDE_M (0.25 m): raise that cap for the huge robot or the shake will not read.",
+  "dust": {
+    "_note": "Footstep dust and landing slams per scale (robot scale test CS-21; scripts/combat/fx/scale_dust.gd reads these). Bigger and slower at large scale: count puffs fly out from a ring of ring_radius_m at speed_mps (min, max), each puff is size_m (min, max) wide at the start and grows by `grow` times by the end of life_s, rises at rise_mps, and fades from `alpha`. gravity is m/s2 (negative pulls down slowly). shock_ring (slams only) is a flat ring on the floor that expands to max_m. Distances in metres, times in seconds of real time.",
+    "step_small": {"color": "#8b857a", "count": 7,  "ring_radius_m": 0.35, "speed_mps": [0.8, 2.0],  "size_m": [0.3, 0.8],  "grow": 2.2, "rise_mps": 0.6, "life_s": 0.7, "alpha": 0.35,  "gravity": -0.4},
+    "land_small": {"color": "#8b857a", "count": 14, "ring_radius_m": 0.9,  "speed_mps": [2.0, 5.0],  "size_m": [0.4, 1.4],  "grow": 2.4, "rise_mps": 1.0, "life_s": 1.0, "alpha": 0.55, "gravity": -0.6, "shock_ring": {"max_m": 5.0, "life_s": 0.35, "intensity": 1.2}},
+    "step_huge":  {"color": "#8b857a", "count": 14, "ring_radius_m": 6.0,  "speed_mps": [4.0, 10.0], "size_m": [5.0, 12.0], "grow": 2.6, "rise_mps": 4.0, "life_s": 2.6, "alpha": 0.3, "gravity": -0.8},
+    "land_huge":  {"color": "#8b857a", "count": 30, "ring_radius_m": 12.0, "speed_mps": [10.0, 26.0], "size_m": [8.0, 22.0], "grow": 2.8, "rise_mps": 7.0, "life_s": 3.8, "alpha": 0.4, "gravity": -1.0, "shock_ring": {"max_m": 70.0, "life_s": 1.3, "intensity": 1.8}}
+  },
+  "scale_sets": {
+    "_note": "Which shake and dust each robot scale uses (the Gameplay Programmer reads this). footfalls_s are the seconds in the baked walk and run clips at playback speed 1.0 where each foot comes down (lowest foot bone: left first, then right); divide by the playback speed you play the clip at. The same clips drive both robots, so the times are shared.",
+    "small": {"step_shake": "step_small", "land_shake": "land_small", "step_dust": "step_small", "land_dust": "land_small", "footfalls_s": {"walk": [0.333, 1.0], "run": [0.033, 0.367]}},
+    "huge":  {"step_shake": "step_huge",  "land_shake": "land_huge",  "step_dust": "step_huge",  "land_dust": "land_huge",  "footfalls_s": {"walk": [0.333, 1.0], "run": [0.033, 0.367]}}
   },
   "spark_by_outcome": {"armored": "guard", "guarded": "guard", "blocked": "guard", "guard_broken": "heavy", "parried": "parry", "perfect_parry": "perfect_parry"},
   "spark_aliases": {"slash": "slash", "slash_big": "heavy", "slash_up": "launch", "heavy": "heavy", "launch": "launch", "air": "air", "slam": "heavy"},

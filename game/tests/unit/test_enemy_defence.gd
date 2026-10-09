@@ -2,11 +2,35 @@ extends TestCase
 ## EnemyDefence: the defence roll's numbers (chance by Red's move, sliders, fatigue, cooldowns, reaction time)
 ## and that a seeded roll repeats. The numbers are the real enemies.json `behaviour.defend` blocks.
 
+## The studio's design table (docs/pivot/enemy_ai_design.md). The shipped enemies.json is tuned from here
+## (see docs/pivot/tuning_log.md), so these tests pin their own copy and keep proving the mechanics.
+const DESIGN: Dictionary = {
+	"grunt": {"defend": {"dodge_chance": 0.30, "block_chance": 0.08, "combo_escape": {"chance": 0.5}, "dodge": {"counter_chance": 0.25}},
+		"reactions": {"retaliate_chance": 0.15},
+		"low_health": {"threshold_frac": 0.40, "flee_chance_alone": 0.70, "flee_chance_pack": 0.30,
+			"flee": {"max_per_life": 2}, "flank": {"hold_ms": 600}}},
+	"brute": {"defend": {"block_chance": 0.45}, "guard": {"counter_chance": 0.45}, "reactions": {"retaliate_chance": 0.35}},
+}
+
+
+static func _pin_design(data: Dictionary, enemy: String) -> void:
+	_merge_deep(data.get("behaviour", {}) as Dictionary, DESIGN.get(enemy, {}) as Dictionary)
+
+
+static func _merge_deep(into: Dictionary, patch: Dictionary) -> void:
+	for key: Variant in patch.keys():
+		if patch[key] is Dictionary and into.get(key) is Dictionary:
+			_merge_deep(into[key] as Dictionary, patch[key] as Dictionary)
+		else:
+			into[key] = patch[key]
+
 
 func _defence(enemy: String, rng_seed: int = 1) -> EnemyDefence:
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.seed = rng_seed
-	var cfg: Dictionary = (((CombatData.enemies().get("enemies", {}) as Dictionary).get(enemy, {}) as Dictionary).get("behaviour", {}) as Dictionary).get("defend", {})
+	var data: Dictionary = ((CombatData.enemies().get("enemies", {}) as Dictionary).get(enemy, {}) as Dictionary).duplicate(true)
+	_pin_design(data, enemy)
+	var cfg: Dictionary = (data.get("behaviour", {}) as Dictionary).get("defend", {})
 	return EnemyDefence.create(cfg, rng)
 
 

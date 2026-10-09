@@ -58,6 +58,7 @@ func _fighter(id: StringName, team: StringName, move_set: StringName, pos: Vecto
 func _arena(foe_team: StringName = &"enemy") -> void:
 	_director = CombatDirector.new()
 	_director.feel = FeelKnobs.load_defaults()
+	_director.feel.set_value("enemy_damage_scale", 1.0)       # these tests count raw damage, not the tuned default
 	_director.sync_to_wall_clock = false
 	add_to_root(_director)
 	_director.set_physics_process(false)
@@ -286,6 +287,17 @@ func test_taking_damage_drops_a_rank_and_hurts_hp() -> void:
 
 # ---- parry ----
 
+## Press times in the middle of each rating band, read from the data so retuning the windows does not break these.
+func _rad_ms() -> float:
+	var window: Dictionary = CombatData.parry_window()
+	return (float(window["totally_rad_ms"]) + float(window["rad_ms"])) * 0.5
+
+
+func _nice_ms() -> float:
+	var window: Dictionary = CombatData.parry_window()
+	return (float(window["rad_ms"]) + float(window["nice_ms"])) * 0.5
+
+
 func _parry_at(ms_before_contact: float) -> void:
 	# Red pressed `ms_before_contact` before the hit lands, on the (hand-stepped) real-time axis.
 	_director.report_parry_press(_director.stamp_usec() - int(ms_before_contact * 1000.0))
@@ -316,7 +328,7 @@ func test_a_rad_parry_recoils_and_flares_but_a_nice_guard_does_not() -> void:
 	await _arena()
 	_tick(30)
 	var flares: Array[Dictionary] = _collect(_director.flare_started)
-	_parry_at(100.0)
+	_parry_at(_rad_ms())
 	_swing(_foe, _swipe())
 	_foe.get_hitbox().tick(FRAME)
 	assert_eq(_foe.parried[0]["outcome"], &"parried")
@@ -324,7 +336,7 @@ func test_a_rad_parry_recoils_and_flares_but_a_nice_guard_does_not() -> void:
 	_foe.get_hitbox().clear()
 	_director.time.end_flare()
 	_director._flare_cooldown_s = 0.0
-	_parry_at(200.0)
+	_parry_at(_nice_ms())
 	_swing(_foe, _swipe(), 2)
 	_foe.get_hitbox().tick(FRAME)
 	assert_eq(_red.hp, 100 - 8, "10 damage less the 25 percent guard")
@@ -361,7 +373,7 @@ func test_flare_on_parry_knob_choices() -> void:
 	_tick(30)
 	var flares: Array[Dictionary] = _collect(_director.flare_started)
 	_director.feel.set_value("flare_on_parry", "perfect_only")
-	_parry_at(100.0)
+	_parry_at(_rad_ms())
 	_swing(_foe, _swipe())
 	_foe.get_hitbox().tick(FRAME)
 	assert_eq(flares.size(), 0, "a plain parry is not enough in perfect_only")
