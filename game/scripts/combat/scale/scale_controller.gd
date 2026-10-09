@@ -304,7 +304,7 @@ func _on_landed() -> void:
 		spawn_dust(at, StringName(str(set_cfg.get("land_dust", ""))))
 		play_shake(StringName(str(set_cfg.get("land_shake", ""))))
 		play_sound(StringName(_form.s("land_sound", "")))
-	stomp_nearby()
+	stomp_nearby(_form.f("slam_radius_mult", 2.0))
 
 
 func _on_dashed(_air: bool) -> void:
@@ -317,14 +317,15 @@ func _on_dashed(_air: bool) -> void:
 	play_shake(StringName(str(set_cfg.get("step_shake", ""))))
 
 
-## Flattens the props the colossus is standing on or walking through (only while it is on the ground).
-func stomp_nearby() -> int:
+## Flattens the props the colossus is standing on or walking through (only while it is on the ground). A landing slam passes
+## a bigger `radius_mult`: the shock of a 50 m robot coming down flattens what is around its feet too.
+func stomp_nearby(radius_mult: float = 1.0) -> int:
 	if _form == null or yard == null or player == null or _form.stomp_radius_m() <= 0.0:
 		return 0
 	if player.get_control_mode() != ActionPlayer.ControlMode.NORMAL or (player.is_airborne() and _air_s > 0.05):
 		return 0
 	var count: int = 0
-	for prop: SmashProp in yard.props_within(player.global_position, _form.stomp_radius_m()):
+	for prop: SmashProp in yard.props_within(player.global_position, _form.stomp_radius_m() * radius_mult):
 		prop.stomp()
 		count += 1
 	stomps += count

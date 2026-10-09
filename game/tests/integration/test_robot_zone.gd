@@ -502,3 +502,22 @@ func test_reset_arena_puts_everything_back() -> void:
 	assert_lt(_kit.yard.huge_display.global_position.distance_to(_kit.yard.home_of(&"huge").origin), 0.01)
 	assert_lt(_kit.player.global_position.distance_to(_kit.sandbox.get_player_spawn().origin), 0.2)
 	assert_eq(_kit.player.hp, 120)
+
+
+func test_a_landing_slam_flattens_the_props_around_the_colossus_s_feet() -> void:
+	await _boot()
+	_kit.controller.set_form(&"huge", 0.0)
+	var spot: Vector3 = Vector3(400.0, 0.02, 0.0)           # the avenue: nothing of the city is kept here
+	_kit.place(spot, 90.0)
+	_kit.step(30)
+	var victims: Array[SmashProp] = []
+	for offset: Vector3 in [Vector3(16.0, 0.0, 0.0), Vector3(-17.0, 0.0, 8.0)]:       # outside a plain 11 m stomp, inside a slam
+		var crate: SmashProp = _kit.yard._add_prop(&"car", spot + offset, 0.0, _kit.yard.data["kinds"] as Dictionary)
+		victims.append(crate)
+	_kit.step(2)
+	assert_eq(_kit.controller.stomp_nearby(), 0, "walking does not reach them")
+	_kit.player.press(&"jump")
+	_kit.step(300)
+	assert_gt(_kit.controller.slams_taken, 0)
+	for car: SmashProp in victims:
+		assert_true(car.dead, "the slam flattened it")
