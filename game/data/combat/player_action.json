@@ -16,6 +16,9 @@
     "dash_time_ms": 150,
     "dash_iframes_ms": 150,
     "air_dash_count": 1,
+    "dash_charges": 5,
+    "dash_recharge_s": 2.0,
+    "dash_chain_gap_s": 0.12,
     "input_buffer_ms": 150
   },
   "move": {
@@ -37,6 +40,7 @@
   },
   "dash": {
     "cooldown_ms": 180,
+    "_cooldown_note": "RETIRED (Ross 2026-10-09, dash on charges): nothing reads cooldown_ms any more. Dash charges and the chain gap are the feel knobs dash_charges, dash_recharge_s and dash_chain_gap_s.",
     "decay": 0.45,
     "air_distance_mult": 0.85,
     "end_speed_mult": 1.0,

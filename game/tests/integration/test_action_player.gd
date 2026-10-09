@@ -317,20 +317,24 @@ func test_she_dashes_through_enemies() -> void:
 	assert_ne(_player.collision_mask & (1 << 10), 0, "and it comes back")
 
 
-func test_dash_cooldown_blocks_an_instant_second_dash() -> void:
+func test_the_chain_gap_holds_a_second_dash_back_then_lets_it_go() -> void:
+	# Was the flat dash cooldown; Ross's dash on charges (2026-10-09) replaced it with the chain gap (tests/integration/test_dash_charges_player.gd
+	# has the whole story). A press the instant a dash ends is not lost: it waits out the gap and then fires.
 	await _arena()
 	var count: Array[int] = [0]
 	_player.dashed.connect(func(_air: bool) -> void: count[0] += 1)
 	_dash_through()
 	assert_eq(count[0], 1)
-	assert_gt(_player.get_dash_cooldown_ms(), 0.0, "the cooldown is running")
+	assert_gt(_player.get_dash_cooldown_ms(), 0.0, "the chain gap is running")
 	_player.press(&"dash")
-	_step(3)
-	assert_eq(count[0], 1, "a dash pressed the instant the last one ends is held back")
+	_step(1)
+	assert_eq(count[0], 1, "a dash pressed the instant the last one ends waits for the gap")
+	_step(40)
+	assert_eq(count[0], 2, "and goes as soon as the gap is over")
 	_step(40)
 	_player.press(&"dash")
 	_step(2)
-	assert_eq(count[0], 2, "after the cooldown it works again")
+	assert_eq(count[0], 3, "after the gap a fresh press goes at once")
 
 
 func test_one_air_dash_per_jump_and_the_ground_resets_it() -> void:

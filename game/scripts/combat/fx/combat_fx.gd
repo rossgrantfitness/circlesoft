@@ -86,6 +86,7 @@ func bind_parts(director: Node, player: Node3D, camera: Node) -> void:
 		_connect(player, "jumped", _on_jumped)
 		_connect(player, "landed", _on_landed)
 		_connect(player, "dashed", _on_dashed)
+		_connect(player, "dash_refused", _on_dash_refused)
 
 
 func _connect(source: Object, signal_name: String, handler: Callable) -> void:
@@ -350,6 +351,11 @@ func _on_jumped(_air: bool) -> void:
 
 func _on_landed() -> void:
 	play(_sound("land"))
+
+
+## The dash button with no charge left: a dull click (fx.json sounds.dash_empty; a placeholder blip until Ross's real one).
+func _on_dash_refused() -> void:
+	play(_sound("dash_empty"))
 
 
 func _on_dashed(air: bool) -> void:

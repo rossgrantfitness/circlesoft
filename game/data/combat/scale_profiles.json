@@ -6,6 +6,7 @@
   "forms": {
     "red": {
       "label": "Red",
+      "_dash_note": "Red has no knobs block on purpose: her dash charges, recharge and chain gap come from the F12 panel (feel.json dash_charges, dash_recharge_s, dash_chain_gap_s). The robots below carry their own.",
       "height_m": 0.95,
       "model": "",
       "camera": {"distance_m": 4.5, "min_distance_m": 0.8, "pivot_height_m": 0.8, "fov_deg": 62.0, "pitch_offset_deg": 0.0, "near_m": 0.1, "far_m": 400.0, "shake_mult": 1.0, "shake_cap_m": 0.25},
@@ -24,7 +25,7 @@
       "armored": true,
       "ignore_bodies": false,
       "body": {"radius_m": 1.0, "height_m": 3.2},
-      "knobs": {"run_speed_mps": 9.0, "jump_height_m": 3.0, "gravity_scale": 0.8, "dash_distance_m": 8.0, "dash_time_ms": 260, "dash_iframes_ms": 220},
+      "knobs": {"run_speed_mps": 9.0, "jump_height_m": 3.0, "gravity_scale": 0.8, "dash_distance_m": 8.0, "dash_time_ms": 260, "dash_iframes_ms": 220, "dash_charges": 3, "dash_recharge_s": 3.0, "dash_chain_gap_s": 0.2},
       "move": {"ground_accel_mps2": 40.0, "ground_decel_mps2": 50.0, "air_accel_mps2": 14.0, "turn_rate_deg_per_s": 480.0, "walk_speed_mps": 2.4},
       "jump": {"rise_time_s": 0.5, "fall_gravity_mult": 1.35, "max_fall_mps": 40.0},
       "anim": {"clip_keys": "res://data/animation/robot_small_clip_keys.json", "playback_scale_min": 0.4, "playback_scale_max": 2.0, "walk_below_mps": 3.4},
@@ -51,7 +52,7 @@
       "armored": true,
       "ignore_bodies": true,
       "body": {"radius_m": 11.0, "height_m": 46.0},
-      "knobs": {"run_speed_mps": 22.0, "jump_height_m": 12.0, "gravity_scale": 1.0, "dash_distance_m": 40.0, "dash_time_ms": 520, "dash_iframes_ms": 400},
+      "knobs": {"run_speed_mps": 22.0, "jump_height_m": 12.0, "gravity_scale": 1.0, "dash_distance_m": 40.0, "dash_time_ms": 520, "dash_iframes_ms": 400, "dash_charges": 2, "dash_recharge_s": 5.0, "dash_chain_gap_s": 0.35},
       "move": {"ground_accel_mps2": 10.0, "ground_decel_mps2": 14.0, "air_accel_mps2": 4.0, "turn_rate_deg_per_s": 70.0, "walk_speed_mps": 14.0},
       "jump": {"rise_time_s": 1.1, "fall_gravity_mult": 1.35, "max_fall_mps": 70.0},
       "anim": {"clip_keys": "res://data/animation/robot_huge_clip_keys.json", "playback_scale_min": 0.2, "playback_scale_max": 1.2, "walk_below_mps": 999.0},

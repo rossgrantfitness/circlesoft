@@ -14,7 +14,7 @@ extends CombatActor
 ##     she gets up at full health.
 ##
 ## Movement numbers are the feel knobs (run_speed_mps, jump_height_m, gravity_scale, dash_distance_m,
-## dash_time_ms, dash_iframes_ms, air_dash_count), read every frame so the panel works live; the rest
+## dash_time_ms, dash_iframes_ms, air_dash_count, dash_charges, dash_recharge_s, dash_chain_gap_s), read every frame so the panel works live; the rest
 ## is data/combat/player_action.json. Her model is picked from that file's "models" list.
 ##
 ## Bots and tests: set read_engine_input = false, then press() / release() / set_move_input() and call
@@ -26,6 +26,8 @@ enum State { LOCOMOTION, AIR, DASH, AIR_DASH, ATTACK, PARRY, HURT, KNOCKDOWN, GE
 signal jumped(air: bool)
 signal landed
 signal dashed(air: bool)
+## A dash was asked for with no charge left (Ross 2026-10-09, dash on charges): the HUD flashes the pips and a dull click plays.
+signal dash_refused
 signal move_started(move_id: StringName)
 signal swing_started(move_id: StringName, swing: Dictionary)
 signal state_changed(state: State)
@@ -96,7 +98,9 @@ var _event_fed: bool = false
 var _vy: float = 0.0
 var _coyote_left: float = 0.0
 var _dash: DashRun = null
-var _dash_cooldown_left_s: float = 0.0
+## Dash charges (Ross 2026-10-09): up to dash_charges, refilled one at a time every dash_recharge_s, a dash_chain_gap_s
+## pause between chained dashes. Replaces the old flat dash cooldown (player_action.json dash.cooldown_ms, now unused).
+var _dash_charges: DashCharges = DashCharges.create(0)
 var _air_dashes_left: int = 1
 var _was_airborne: bool = false
 var _invuln_left_s: float = 0.0
@@ -217,6 +221,7 @@ func _ready() -> void:
 	if find_director() == null:
 		clock.anchor_real(Time.get_ticks_usec())
 	_air_dashes_left = int(_knob("air_dash_count"))
+	_dash_charges = DashCharges.create(int(_knob("dash_charges")))
 	_visual = get_node_or_null(NODE_VISUAL) as Node3D
 	_size_body()
 	_load_model()
@@ -303,8 +308,23 @@ func get_air_dashes_left() -> int:
 	return _air_dashes_left
 
 
+## What is left of the pause between two chained dashes, in ms (the old flat cooldown's slot; now the chain gap).
 func get_dash_cooldown_ms() -> float:
-	return _dash_cooldown_left_s * 1000.0
+	return _dash_charges.gap_left_s * 1000.0
+
+
+## The dash charges as the HUD draws them: {count, max, fraction (of the charge being refilled), gap_left_s}.
+func get_dash_charges() -> Dictionary:
+	return _dash_charges.snapshot()
+
+
+func get_dash_charge_count() -> int:
+	return _dash_charges.count
+
+
+## The charge model itself (tests, bots).
+func get_dash_charge_model() -> DashCharges:
+	return _dash_charges
 
 
 ## The dash that is running (null when not dashing).
@@ -422,7 +442,8 @@ func reset_to(where: Transform3D) -> void:
 	_queued_move = &""
 	_auto_jump_hold = false
 	_dash = null
-	_dash_cooldown_left_s = 0.0
+	_dash_charges.sync_max(int(_knob("dash_charges")))
+	_dash_charges.refill_all()
 	_presses.clear()
 	_parry_stamps.clear()
 	if _buffer != null:
@@ -475,7 +496,11 @@ func tick(delta: float) -> void:
 	var dt: float = _combat_delta
 	var now: int = clock.now_usec()
 	_invuln_left_s = maxf(_invuln_left_s - dt, 0.0)
-	_dash_cooldown_left_s = maxf(_dash_cooldown_left_s - dt, 0.0)
+	_dash_charges.sync_max(int(_knob("dash_charges")))
+	_dash_charges.tick(dt, _knob("dash_recharge_s"))
+	if _dash != null or _dash_charges.gap_left_s > 0.0:
+		# A dash pressed during a dash or its gap waits for the gap to end instead of timing out (it is not lost).
+		_buffer.hold_latest(TOKEN_DASH, now)
 	match _state:
 		State.DASH, State.AIR_DASH:
 			_tick_dash(dt, scale, now)
@@ -544,6 +569,9 @@ func _ingest_presses() -> void:
 		var local: int = clock.local_at_real(int(entry["usec"]))
 		var token: StringName = _token_for(action, local)
 		if token == &"":
+			continue
+		if token == TOKEN_DASH and not _dash_charges.has_charge():
+			dash_refused.emit()        # no charge: the button does nothing (a dull click and the pips flash)
 			continue
 		if token == TOKEN_PARRY:
 			_parry_stamps.append(int(entry["usec"]))
@@ -755,7 +783,7 @@ func _free_accepts(token: StringName, on_floor: bool, now: int) -> bool:
 		TOKEN_JUMP:
 			return _coyote_left > 0.0
 		TOKEN_DASH:
-			return _dash_cooldown_left_s <= 0.0 and (on_floor or _air_dashes_left > 0)
+			return _dash_charges.is_ready() and (on_floor or _air_dashes_left > 0)
 		TOKEN_PARRY:
 			return on_floor and _moves.has_move(SET_ID, MOVE_PARRY)
 		TOKEN_HACK:
@@ -798,6 +826,7 @@ func _start_dash(stick_direction: Vector3, in_air: bool, _now: int) -> void:
 	var direction: Vector3 = ActionMotion.dash_direction(stick_direction, get_facing(), str(cfg.get("no_stick", "facing")))
 	var distance: float = _knob("dash_distance_m") * (float(cfg.get("air_distance_mult", 0.85)) if in_air else 1.0)
 	_dash = DashRun.create(direction, distance, _knob("dash_time_ms"), _knob("dash_iframes_ms"), float(cfg.get("decay", 0.45)), in_air)
+	_dash_charges.spend()
 	if in_air:
 		_air_dashes_left -= 1
 		_vy = 0.0
@@ -873,15 +902,15 @@ func _finish_dash(run: DashRun) -> void:
 	_current_clip = &""
 
 
-## Drops the dash (enemy collision back on). `start_cooldown` false when something else interrupted it.
-func _end_dash_state(start_cooldown: bool = false) -> void:
+## Drops the dash (enemy collision back on). `start_gap` false when something else interrupted it; true starts the short
+## pause (dash_chain_gap_s) before a chained dash may begin.
+func _end_dash_state(start_gap: bool = false) -> void:
 	if _dash == null:
 		return
-	var cfg: Dictionary = _data.get("dash", {}) as Dictionary
 	_dash = null
 	_restore_enemy_collision()
-	if start_cooldown:
-		_dash_cooldown_left_s = float(cfg.get("cooldown_ms", 220.0)) / 1000.0
+	if start_gap:
+		_dash_charges.start_gap(_knob("dash_chain_gap_s"))
 
 
 func _restore_enemy_collision() -> void:
@@ -1053,7 +1082,7 @@ func _handle_move_inputs(now: int, direction: Vector3, on_floor: bool) -> void:
 func _move_accepts(token: StringName, now: int, on_floor: bool) -> bool:
 	match token:
 		TOKEN_DASH:
-			return _runner.can_cancel(&"dash", now) and _dash_cooldown_left_s <= 0.0 and (on_floor or _air_dashes_left > 0)
+			return _runner.can_cancel(&"dash", now) and _dash_charges.is_ready() and (on_floor or _air_dashes_left > 0)
 		TOKEN_PARRY:
 			return _runner.can_cancel(&"parry", now) and on_floor
 		TOKEN_HACK:
@@ -1573,6 +1602,7 @@ func set_scale_profile(profile: ScaleProfile) -> void:
 	scale_profile = profile
 	_form_id = profile.id
 	_data = profile.merged_player_data(_base_data)
+	_dash_charges = DashCharges.create(int(_knob("dash_charges")))      # a new body brings its own number, full
 	_strides_loaded = false
 	_strides = {}
 	_show_form_model(profile, sword)

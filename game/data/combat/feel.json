@@ -107,6 +107,41 @@
    "step": 1
   },
   {
+   "id": "dash_charges",
+   "group": "movement",
+   "label": "Dash charges",
+   "type": "int",
+   "value": 5,
+   "min": 1,
+   "max": 8,
+   "step": 1,
+   "hint": "How many dashes Red can chain before she runs dry (Ross: up to 5 in a row). Each dash spends one; the pips by her health show them. With none left the dash button only clicks."
+  },
+  {
+   "id": "dash_recharge_s",
+   "group": "movement",
+   "label": "Dash recharge",
+   "type": "float",
+   "value": 2.0,
+   "min": 0.5,
+   "max": 4.0,
+   "step": 0.1,
+   "unit": "s",
+   "hint": "Seconds for ONE spent charge to come back. They refill one at a time, and dashing again does not restart the timer."
+  },
+  {
+   "id": "dash_chain_gap_s",
+   "group": "movement",
+   "label": "Dash chain gap",
+   "type": "float",
+   "value": 0.12,
+   "min": 0.0,
+   "max": 0.4,
+   "step": 0.01,
+   "unit": "s",
+   "hint": "The small pause between the end of one dash and the start of the next when you chain them. A press made during a dash or the gap is remembered and fires the moment the gap ends."
+  },
+  {
    "id": "cam_distance_m",
    "group": "camera",
    "label": "Camera distance",

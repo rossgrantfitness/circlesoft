@@ -101,6 +101,7 @@
   "sounds": {
     "_note": "who plays what (combat_api.md 4.6). A move's own sfx / swing.sfx wins over these. The HUD plays combat_noise_rank_up and combat_lock_on, so they are NOT here.",
     "jump": "combat_jump", "land": "combat_land", "dash": "combat_dash", "air_dash": "combat_air_dash",
+    "dash_empty": "hack_denied",
     "swing_light": "combat_swing_light", "swing_heavy": "combat_swing_heavy",
     "hit_light": "combat_hit_light", "hit_heavy": "combat_hit_heavy", "hit_air": "combat_hit_air", "launch": "combat_hit_launch",
     "parry": "combat_parry", "perfect_parry": "combat_parry_perfect",
