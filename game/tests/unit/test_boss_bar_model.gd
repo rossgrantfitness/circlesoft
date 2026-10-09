@@ -73,3 +73,16 @@ func test_hiding_fades_the_bar_away_and_it_can_come_back() -> void:
 	assert_false(model.shown)
 	model.show_bar(INFO)
 	assert_almost_eq(model.fill_shown, 1.0, 0.0001, "a new fight starts full")
+
+
+func test_part_pips_count_what_still_stands_and_clamp() -> void:
+	var model: BossBarModel = BossBarModel.new()
+	model.set_pips(3, 4)
+	assert_eq(model.pips_standing, 3)
+	assert_eq(model.pips_total, 4)
+	model.set_pips(9, 4)
+	assert_eq(model.pips_standing, 4, "never more than the total")
+	model.set_pips(-2, 4)
+	assert_eq(model.pips_standing, 0)
+	model.show_bar({"name": "x", "hp": 1.0, "hp_max": 1.0})
+	assert_eq(model.pips_total, 0, "showing a new bar clears them")

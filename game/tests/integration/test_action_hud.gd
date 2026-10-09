@@ -204,6 +204,19 @@ func test_the_deck_stays_in_the_bottom_left_corner() -> void:
 
 # ---- the boss bar ----
 
+func test_the_boss_bar_shows_the_parts_left_as_pips() -> void:
+	_setup()
+	_host.boss.boss_bar_shown.emit({"name": "The Heap", "hp": 10000.0, "hp_max": 10000.0, "phases": [{"id": "rig", "name": "The rig"}, {"id": "mech", "name": "The Heap"}], "phase": 1})
+	_host.boss.boss_pips_changed.emit(4, 4)
+	var model: BossBarModel = _hud.get_boss_bar().model
+	assert_eq(model.pips_total, 4)
+	assert_eq(model.pips_standing, 4)
+	_host.boss.boss_pips_changed.emit(1, 4)
+	assert_eq(model.pips_standing, 1, "three plates gone")
+	_host.boss.boss_bar_shown.emit({"name": "Next", "hp": 1.0, "hp_max": 1.0, "phases": [], "phase": 0})
+	assert_eq(model.pips_total, 0, "a new bar starts with no pips")
+
+
 func test_the_host_can_run_the_boss_bar() -> void:
 	_setup()
 	var info: Dictionary = {"name": "The Hushmaster", "hp": 300, "hp_max": 300, "phases": [{"id": "rig", "name": "The rig"}, {"id": "mech", "name": "The junk mech"}]}
