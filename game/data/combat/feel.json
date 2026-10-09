@@ -3,6 +3,34 @@
  "version": 1,
  "knobs": [
   {
+   "id": "hit_freeze_s",
+   "group": "hits",
+   "label": "Hit freeze length",
+   "type": "float",
+   "value": 0.25,
+   "min": 0.05,
+   "max": 0.3,
+   "step": 0.01,
+   "unit": "s",
+   "hint": "PLAYTEST ME. How long the game freezes when a hit lands. This is the freeze of the heaviest hits (heavy, finishers, launcher, guard break); light hits freeze about 40 percent of it. 0.25 is the big chunky try. If it feels sluggish, go down toward 0.10."
+  },
+  {
+   "id": "hit_flash_on",
+   "group": "hits",
+   "label": "White impact flash",
+   "type": "bool",
+   "value": true,
+   "hint": "The struck enemy, boss part or robot turns flat white for a split second as a hit lands. Off shows the plain hit."
+  },
+  {
+   "id": "hit_flash_red_on",
+   "group": "hits",
+   "label": "Flash Red when she is hit",
+   "type": "bool",
+   "value": false,
+   "hint": "Red turns flat white for a split second when an enemy hits her. Off by default."
+  },
+  {
    "id": "run_speed_mps",
    "group": "movement",
    "label": "Run speed",

@@ -72,7 +72,7 @@
         "type": "pulse",
         "radius_m": 4.5,
         "affects_team": "enemy",
-        "hit": {"damage": 4, "hitstun_ms": 420, "knockback_m": 3.0, "launch_mps": 0.0, "knockdown": false, "guard_break": true, "hit_stop_ms": 60, "poise_damage": 28, "style_points": 12, "spark": "heavy", "shake": "heavy", "sfx": "hack_emp_hit"},
+        "hit": {"damage": 4, "hitstun_ms": 420, "knockback_m": 3.0, "launch_mps": 0.0, "knockdown": false, "guard_break": true, "hit_stop_ms": 150, "poise_damage": 28, "style_points": 12, "spark": "heavy", "shake": "heavy", "sfx": "hack_emp_hit"},
         "stun_ms": {"drone": 3000, "turret": 4000, "robot": 2500},
         "bosses_ignore_stun": true
       },

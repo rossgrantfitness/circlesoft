@@ -178,6 +178,7 @@
       "folder_failed": "Could not open the folder. It is here: {path}"
     },
     "groups": {
+      "hits": "Hit feel",
       "movement": "Movement",
       "camera": "Camera",
       "combat": "Combat",
@@ -204,7 +205,7 @@
       "air_dash_count": "How many dashes Red gets in the air per jump.",
       "cam_distance_m": "How far behind Red the camera sits.",
       "cam_sensitivity": "How fast the mouse and right stick turn the camera.",
-      "hit_stop_scale": "How long the game freezes on a hit. 0 turns the freeze off.",
+      "hit_stop_scale": "An extra multiplier on every hit freeze, on top of Hit freeze length (Hit feel tab). Leave at 1 and use Hit feel instead. 0 turns the freeze off.",
       "juggle_float": "How long enemies hang in the air between hits.",
       "launch_height_scale": "How high the launcher throws an enemy.",
       "input_buffer_ms": "How early you can press the next button and still have it count.",

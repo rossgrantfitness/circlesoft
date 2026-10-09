@@ -26,6 +26,7 @@ const OUTCOME_ARMORED: StringName = &"armored"
 const OUTCOME_HIT: StringName = &"hit"
 const OUTCOME_STAGGER: StringName = &"stagger"
 const TEAM_PLAYER: StringName = &"player"
+const FREEZE_KNOB: String = "hit_freeze_s"
 
 
 static func resolve(attack: Dictionary, attacker: Dictionary, target: Dictionary, ctx: Dictionary) -> Dictionary:
@@ -44,7 +45,8 @@ static func resolve(attack: Dictionary, attacker: Dictionary, target: Dictionary
 		result["outcome"] = OUTCOME_EVADED
 		return result
 
-	var hit_stop_scale: float = feel.get_f("hit_stop_scale") if feel != null and feel.has("hit_stop_scale") else 1.0
+	var hit_stop_scale: float = (feel.get_f("hit_stop_scale") if feel != null and feel.has("hit_stop_scale") else 1.0) \
+			* freeze_scale(feel, hit_feel)
 	var launch_scale: float = feel.get_f("launch_height_scale") if feel != null and feel.has("launch_height_scale") else 1.0
 	var base_damage: float = float(attack.get("damage", 0))
 	var lights: Dictionary = ctx.get("lights_on", {})
@@ -174,7 +176,19 @@ static func _resolve_guard(result: Dictionary, attack: Dictionary, attacker: Dic
 	result["lethal"] = int(target.get("hp", 0)) - chip <= 0
 	result["style_points"] = 0.0
 	result["feedback"] = {"spark": str(guard.get("spark", "guard")), "sfx": str(guard.get("sfx", "combat_hit_light"))}
+	if breaks:      # Tuning v1.3: a broken guard freezes like a heavy hit, whatever the blow that broke it
+		var broke_ms: float = float((hit_feel.get("hit_freeze", {}) as Dictionary).get("guard_break_hit_stop_ms", 0.0))
+		result["hit_stop_ms"] = maxf(float(result["hit_stop_ms"]), broke_ms * hit_stop_scale)
 	return result
+
+
+## The F12 knob "Hit freeze length" (seconds, the freeze of the heaviest hits) as a multiplier on every hit-stop in the data:
+## knob / hit_feel.hit_freeze.reference_s. 1.0 with no knob (a bare test), or at the studio default.
+static func freeze_scale(feel: FeelKnobs, hit_feel: Dictionary) -> float:
+	if feel == null or not feel.has(FREEZE_KNOB):
+		return 1.0
+	var reference: float = float((hit_feel.get("hit_freeze", {}) as Dictionary).get("reference_s", 0.25))
+	return feel.get_f(FREEZE_KNOB) / reference if reference > 0.0 else 1.0
 
 
 ## One swing hits each target once, unless the move has `rehit_ms`. `ledger` maps "swing:target" to the

@@ -18,12 +18,17 @@
  "threat_margin_m": 0.35,
  "guard": {"hitstun_scale": 0.4, "knockback_scale": 0.5},
  "armored": {"hit_stop_scale": 0.5},
+ "hit_freeze": {
+  "_about": "Tuning v1.3 (Ross: chunky hits). The freeze on impact. Each move's own hit_stop_ms (moves.json) is its freeze in ms when the F12 knob `hit_freeze_s` sits at reference_s; the knob scales every freeze by hit_freeze_s / reference_s. So the knob reads as 'how long the heaviest hits freeze', in seconds. Light hits are about 0.10 s and heavy hits, finishers, launchers and the guard break about 0.25 s at the default.",
+  "reference_s": 0.25,
+  "guard_break_hit_stop_ms": 250
+ },
  "stagger_ms": 1100,
  "parry": {
   "recoil_ms": 700,
   "stagger_ms": 1500,
-  "parried_hit_stop_ms": 90,
-  "perfect_hit_stop_ms": 140,
+  "parried_hit_stop_ms": 120,
+  "perfect_hit_stop_ms": 200,
   "perfect_style": "perfect_parry"
  },
  "reaction": {
