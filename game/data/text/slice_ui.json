@@ -60,5 +60,13 @@
    "feel": "Open the tuning panel (F12) to change how the game feels.",
    "quit": "Go back to the title screen."
   }
+ },
+ "deck": {
+  "attack": "Attack",
+  "hack": "Hack",
+  "item": "Item",
+  "item_note": "Items: coming later",
+  "attack_note": "Attack: light and heavy buttons",
+  "auto_note": "Auto picks the hack for you"
  }
 }

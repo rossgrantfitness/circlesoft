@@ -175,7 +175,7 @@ func test_the_panel_draws_every_state_without_errors() -> void:
 	panel.queue_redraw()
 	await tree.process_frame
 	assert_true(panel.is_inside_tree())
-	assert_eq(panel.row_rects().size(), 4)
+	assert_eq(_hud.get_deck().row_rects().size(), 3)
 
 
 func test_the_panel_hides_while_a_menu_is_open() -> void:
@@ -187,14 +187,19 @@ func test_the_panel_hides_while_a_menu_is_open() -> void:
 	assert_false(_hud.get_hack_panel().visible)
 
 
-func test_the_stack_stays_inside_the_ui() -> void:
+func test_the_deck_stays_in_the_bottom_left_corner() -> void:
 	_setup()
-	var rects: Dictionary = _hud.get_hack_panel().row_rects()
-	for id: String in rects:
-		var rect: Rect2 = rects[id]
-		assert_ge(rect.position.x, 0.0)
-		assert_le(rect.end.x + 8.0, float(SandboxStyle.REFERENCE_SIZE.x) / 2.0, "the list stays in its corner")
-		assert_le(rect.end.y, float(SandboxStyle.REFERENCE_SIZE.y) * 0.6)
+	var deck: CommandDeck = _hud.get_deck()
+	for ui_size: Vector2 in [Vector2(384, 216), Vector2(640, 360)]:
+		deck.size = ui_size
+		deck.model.submenu_open = true
+		for rect: Rect2 in deck.row_rects() + deck.submenu_rects():
+			assert_ge(rect.position.x, 0.0)
+			assert_le(rect.end.y, ui_size.y - 4.0, "above the hint line")
+			assert_gt(rect.position.y, ui_size.y * 0.5, "in the lower half")
+		var radio: Rect2 = _hud.get_radio().box_rect(ui_size)
+		var deck_right: float = deck.row_rects()[0].end.x
+		assert_ge(radio.position.x, deck_right, "the radio box clears the deck")
 
 
 # ---- the boss bar ----

@@ -1,4 +1,4 @@
-[gd_scene load_steps=60 format=3]
+[gd_scene load_steps=66 format=3]
 
 [ext_resource type="Script" path="res://scripts/field/camera_bounds.gd" id="1_r"]
 [ext_resource type="Script" path="res://scripts/field/diorama_camera.gd" id="2_r"]
@@ -213,60 +213,86 @@ shader_parameter/use_orm = 0.0
 shader_parameter/roughness_base = 0.85
 
 [sub_resource type="BoxMesh" id="BoxMesh_37"]
-size = Vector3(0.8, 1.0, 3.0)
+size = Vector3(0.7, 1.0, 3.0)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_38"]
-size = Vector3(0.8, 1.0, 3.0)
+size = Vector3(0.7, 1.0, 3.0)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_39"]
 shader = ExtResource("5_r")
-shader_parameter/albedo_tint = Color(0.9, 0.9, 0.85, 1)
+shader_parameter/albedo_tint = Color(0.12, 0.12, 0.15, 1)
 shader_parameter/use_orm = 0.0
 shader_parameter/roughness_base = 0.85
 
 [sub_resource type="BoxMesh" id="BoxMesh_40"]
-size = Vector3(0.3, 0.3, 0.3)
+size = Vector3(0.6, 0.9, 0.5)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_41"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_41"]
+size = Vector3(0.6, 0.9, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_42"]
+shading_mode = 0
+albedo_color = Color(0.2, 0.95, 0.85, 1)
+emission_enabled = true
+emission = Color(0.2, 0.95, 0.85, 1)
+emission_energy_multiplier = 1.1
+
+[sub_resource type="BoxMesh" id="BoxMesh_43"]
+size = Vector3(0.3, 0.3, 0.04)
+
+[sub_resource type="BoxMesh" id="BoxMesh_44"]
+size = Vector3(0.48, 0.7200000000000001, 0.4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_45"]
+shading_mode = 0
+albedo_color = Color(1.0, 0.45, 0.7, 1)
+emission_enabled = true
+emission = Color(1.0, 0.45, 0.7, 1)
+emission_energy_multiplier = 1.1
+
+[sub_resource type="BoxMesh" id="BoxMesh_46"]
+size = Vector3(0.24, 0.24, 0.04)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_47"]
 shading_mode = 0
 albedo_color = Color(0.3, 1.0, 0.6, 1)
 emission_enabled = true
 emission = Color(0.3, 1.0, 0.6, 1)
 emission_energy_multiplier = 0.9
 
-[sub_resource type="BoxMesh" id="BoxMesh_42"]
+[sub_resource type="BoxMesh" id="BoxMesh_48"]
 size = Vector3(2.0, 0.9, 0.08)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_43"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_49"]
 shader = ExtResource("5_r")
 shader_parameter/albedo_tint = Color(0.65, 0.85, 0.9, 1)
 shader_parameter/use_orm = 0.0
 shader_parameter/roughness_base = 0.85
 
-[sub_resource type="BoxMesh" id="BoxMesh_44"]
-size = Vector3(0.9, 1.8, 0.9)
+[sub_resource type="BoxMesh" id="BoxMesh_50"]
+size = Vector3(0.9, 1.8, 0.8)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_45"]
-size = Vector3(0.9, 1.8, 0.9)
+[sub_resource type="BoxShape3D" id="BoxShape3D_51"]
+size = Vector3(0.9, 1.8, 0.8)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_46"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_52"]
 shading_mode = 0
 albedo_color = Color(0.7, 1.0, 1.0, 1)
 emission_enabled = true
 emission = Color(0.7, 1.0, 1.0, 1)
 emission_energy_multiplier = 0.6
 
-[sub_resource type="BoxMesh" id="BoxMesh_47"]
+[sub_resource type="BoxMesh" id="BoxMesh_53"]
 size = Vector3(0.8, 1.0, 0.04)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_48"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_54"]
 shading_mode = 0
 albedo_color = Color(1.0, 0.35, 0.7, 1)
 emission_enabled = true
 emission = Color(1.0, 0.35, 0.7, 1)
 emission_energy_multiplier = 1.5
 
-[sub_resource type="BoxMesh" id="BoxMesh_49"]
+[sub_resource type="BoxMesh" id="BoxMesh_55"]
 size = Vector3(1.8, 0.28, 0.06)
 
 [node name="MarketArcade" type="Node3D"]
@@ -469,22 +495,51 @@ mesh = SubResource("BoxMesh_20")
 surface_material_override/0 = SubResource("StandardMaterial3D_35")
 
 [node name="SnackCounter" type="MeshInstance3D" parent="."]
-transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 0.6, 0.5, 2.5)
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 1.3, 0.5, 2.5)
 mesh = SubResource("BoxMesh_37")
 surface_material_override/0 = SubResource("ShaderMaterial_36")
 
 [node name="SnackCounterShape" type="CollisionShape3D" parent="Collision"]
-transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 0.6, 0.5, 2.5)
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 1.3, 0.5, 2.5)
 shape = SubResource("BoxShape3D_38")
 
-[node name="SockJar" type="MeshInstance3D" parent="."]
-transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 0.6, 1.15, 1.5)
+[node name="ArcadeSpeakerA" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 0.6, 0.45, 0.4)
 mesh = SubResource("BoxMesh_40")
 surface_material_override/0 = SubResource("ShaderMaterial_39")
 
-[node name="SockRule" type="Label3D" parent="."]
+[node name="ArcadeSpeakerAShape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 0.6, 0.45, 0.4)
+shape = SubResource("BoxShape3D_41")
+
+[node name="ArcadeSpeakerACone0" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 0.6, 0.28, 0.66)
+mesh = SubResource("BoxMesh_43")
+surface_material_override/0 = SubResource("StandardMaterial3D_42")
+
+[node name="ArcadeSpeakerACone1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 0.6, 0.66, 0.66)
+mesh = SubResource("BoxMesh_43")
+surface_material_override/0 = SubResource("StandardMaterial3D_42")
+
+[node name="ArcadeSpeakerB" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.0000, 0, -1.0000, 0, 1, 0, 1.0000, 0, 0.0000, 8.4, 0.36000000000000004, 5.2)
+mesh = SubResource("BoxMesh_44")
+surface_material_override/0 = SubResource("ShaderMaterial_39")
+
+[node name="ArcadeSpeakerBCone0" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.0000, 0, -1.0000, 0, 1, 0, 1.0000, 0, 0.0000, 8.192, 0.22400000000000003, 5.2)
+mesh = SubResource("BoxMesh_46")
+surface_material_override/0 = SubResource("StandardMaterial3D_45")
+
+[node name="ArcadeSpeakerBCone1" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.0000, 0, -1.0000, 0, 1, 0, 1.0000, 0, 0.0000, 8.192, 0.528, 5.2)
+mesh = SubResource("BoxMesh_46")
+surface_material_override/0 = SubResource("StandardMaterial3D_45")
+
+[node name="TurnItUp" type="Label3D" parent="."]
 transform = Transform3D(0.0000, 0, 1.0000, 0, 1, 0, -1.0000, 0, 0.0000, 0.1, 2.2, 3.4)
-text = "SOCKS ON SPEAKERS"
+text = "TURN IT UP"
 pixel_size = 0.008
 font_size = 28
 outline_size = 8
@@ -493,8 +548,8 @@ texture_filter = 0
 
 [node name="ScoreBoard" type="MeshInstance3D" parent="."]
 transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 4.5, 2.2, 0.05)
-mesh = SubResource("BoxMesh_42")
-surface_material_override/0 = SubResource("StandardMaterial3D_41")
+mesh = SubResource("BoxMesh_48")
+surface_material_override/0 = SubResource("StandardMaterial3D_47")
 
 [node name="ScoreText" type="Label3D" parent="."]
 transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 4.5, 2.2, 0.12)
@@ -510,27 +565,27 @@ transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 4.5, 0.0
 placement_id = "mk_ar_scores"
 
 [node name="PrizeClaw" type="MeshInstance3D" parent="."]
-transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 8.3, 0.9, 0.55)
-mesh = SubResource("BoxMesh_44")
-surface_material_override/0 = SubResource("ShaderMaterial_43")
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 8.1, 0.9, 0.5)
+mesh = SubResource("BoxMesh_50")
+surface_material_override/0 = SubResource("ShaderMaterial_49")
 
 [node name="PrizeClawShape" type="CollisionShape3D" parent="Collision"]
-transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 8.3, 0.9, 0.55)
-shape = SubResource("BoxShape3D_45")
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 8.1, 0.9, 0.5)
+shape = SubResource("BoxShape3D_51")
 
 [node name="ClawGlass" type="MeshInstance3D" parent="."]
-transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 8.3, 1.2, 0.99)
-mesh = SubResource("BoxMesh_47")
-surface_material_override/0 = SubResource("StandardMaterial3D_46")
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 8.1, 1.2, 0.92)
+mesh = SubResource("BoxMesh_53")
+surface_material_override/0 = SubResource("StandardMaterial3D_52")
 
 [node name="BehindClaw" parent="." instance=ExtResource("8_r")]
-transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 8.6, 0.0, 0.3)
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 8.75, 0.0, 1.1)
 placement_id = "mk_ar_behind_claw"
 
 [node name="SignOpen" type="MeshInstance3D" parent="."]
 transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 4.5, 2.65, 0.06)
-mesh = SubResource("BoxMesh_49")
-surface_material_override/0 = SubResource("StandardMaterial3D_48")
+mesh = SubResource("BoxMesh_55")
+surface_material_override/0 = SubResource("StandardMaterial3D_54")
 
 [node name="SignOpenText" type="Label3D" parent="."]
 transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 4.5, 2.65, 0.11)

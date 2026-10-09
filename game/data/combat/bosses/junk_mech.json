@@ -1,0 +1,176 @@
+{
+ "_about": "Phase 2 of the Kasp fight (VS-23, Combat Designer; numbers and names are Level 1, the attack list is NEW and waits for Ross: docs/slice/boss_design.md). The Heap, Sergeant Kasp's junk mech, about 40 m tall, built from the yard, fights Red's loader docked into the 50 m colossus (Ross's option C). Everything here is written in FINAL WORLD UNITS: metres, real milliseconds, damage numbers as the colossus takes them. Do NOT run Red's scale_attack on the 'junk_mech' moves.json set again (hitbox_scale, time_scale 0.45 and damage_mult 40 are already folded into these numbers); scale_form 'huge' is only for the model, lock-on range, shake and sound. Wind-ups are 1700 ms or more (Red-scale bosses use 1000): slow, huge and readable from a camera 75 m behind. The Combat Programmer builds BossFight / BossBrain / BossPart from this; the key names are my proposal.",
+ "version": 1,
+ "id": "junk_mech",
+ "name": "the Heap",
+ "working_name": "junk mech",
+ "pilot": "Sergeant Kasp",
+ "name_key": "boss_heap",
+ "form": "huge",
+ "authored": "world",
+
+ "versus": {
+  "_about": "The colossus (scale_profiles.json 'huge'): 50 m, hp_max 6000, run 22 m/s, walk 14 m/s, turns 70 degrees a second, dash 40 m in 520 ms with 400 ms of i-frames, jump 12 m, attack damage x40, attacks at 0.45 speed. Hacks are OFF in robot forms. The Heap is deliberately the slow, heavy one: half the turn rate, half the speed, double the wind-up. The colossus is the fast, sharp one.",
+  "colossus_hp": 6000,
+  "colossus_light_damage": [320, 320, 480],
+  "colossus_heavy_damage": 1280,
+  "colossus_dps_estimate": 380,
+  "player_goal": "Dodge the big telegraphs, hit the open plate in the recovery, then the core."
+ },
+
+ "body": {
+  "move_set": "junk_mech",
+  "height_m": 40.0, "radius_m": 9.0,
+  "tags": ["boss", "robot", "signals"],
+  "hijackable": false,
+  "move_speed_mps": 12.0,
+  "circle_speed_mps": 9.0,
+  "approach_speed_mps": 16.0,
+  "turn_rate_deg_per_s": 38.0,
+  "preferred_range_m": [26.0, 40.0],
+  "back_off_closer_than_m": 18.0,
+  "walk_when_farther_than_m": 60.0,
+  "start": "mech_start",
+  "start_walks_to": "colossus",
+  "contact_s": 8.0,
+  "blockout": {"shape": "box", "color": "#7a4f3a", "face_color": "#ffb02e"},
+  "lamps": {"idle": "#ffb02e", "winding_up": "#ff9a3c", "about_to_hit": "#ff2a1a", "plate_open": "#bff4ff", "_about": "The language of the fight: amber while it works, orange as it winds up, RED for the last 400 ms before an impact, pale cyan on the one plate that is open. The same on every attack."}
+ },
+
+ "rules": {
+  "boss_windup_floor_ms": 1600,
+  "no_pattern_twice_in_a_row": true,
+  "hacks_work_in_this_phase": false,
+  "min_gap_ms_by_stage": {"armored": 2600, "core": 2200, "last_stand": 1800},
+  "min_impact_gap_ms": 900,
+  "every_attack_must_have": ["a lamp change to orange and then red", "a floor decal at least min_width_m wide (see readability)", "a silhouette change of the body (arm back, both arms up, leg up, shoulders back)", "a sound sting when it starts and a second when the aim locks"],
+  "damage_to_colossus": {"scrap_swing": 720, "wrecking_drop": 1040, "wrecking_drop_ring": 572, "stomp_march": 560, "stomp_ring": 392, "scrap_barrage": 360,
+                          "_about": "Against 6000 hp. A clean fight takes 0 to 2 hits; an average first try takes 5 to 8; about 11 average hits end it. The Heap makes about 24 attacks in the 200 s fight, so dying means being hit by nearly half of them."}
+ },
+
+ "parts": {
+  "_about": "Plates and core. A plate takes 35 percent damage while 'closed' and full damage while 'open'. A plate opens during the RECOVERY of the attack that names it (moves.json 'opens') plus 400 ms, shown by pale cyan lamps and a lock-on pointer. The core is Kasp's cab behind the chest: sealed until every plate has fallen, then half damage normally and 150 percent in every recovery. The first time a plate is open the camera does not cut: the pointer is enough.",
+  "plate_shoulder_l": {"kind": "plate", "hp": 2200, "closed_mult": 0.35, "open_mult": 1.0, "opened_by": "scrap_swing_l", "linger_ms": 400, "lock_target": true, "on_break": {"reaction": "plate_break", "fx": "part_break", "drops": "scrap_pile"}},
+  "plate_shoulder_r": {"kind": "plate", "hp": 2200, "closed_mult": 0.35, "open_mult": 1.0, "opened_by": "scrap_swing_r", "linger_ms": 400, "lock_target": true, "on_break": {"reaction": "plate_break", "fx": "part_break", "drops": "scrap_pile"}},
+  "plate_chest": {"kind": "plate", "hp": 3200, "closed_mult": 0.35, "open_mult": 1.0, "opened_by": "wrecking_drop", "linger_ms": 400, "lock_target": true, "on_break": {"reaction": "plate_break", "fx": "part_break", "drops": "scrap_pile"}},
+  "plate_back": {"kind": "plate", "hp": 2400, "closed_mult": 0.35, "open_mult": 1.0, "opened_by": "stomp_march", "linger_ms": 400, "lock_target": true, "on_break": {"reaction": "plate_break", "fx": "part_break", "drops": "scrap_pile"}},
+  "core": {"kind": "core", "hp": 8400, "requires_broken": ["plate_shoulder_l", "plate_shoulder_r", "plate_chest", "plate_back"], "sealed_mult": 0.0, "exposed_mult": 0.5, "open_mult": 1.5, "opened_by": "any_recovery", "lock_target": true,
+           "on_break": {"reaction": "defeat", "ends_phase": true}},
+  "totals": {"plates_hp": 10000, "core_hp": 8400, "boss_bar": "plates then core: the bar shows the plates as four pips and the core as the main bar"}
+ },
+
+ "stages": [
+  {"id": "armored", "while": "any_plate_alive", "patterns": ["scrap_swing", "wrecking_drop", "stomp_march", "scrap_barrage"],
+   "bias_to_open_alive_plates": 1.6,
+   "_about": "The mech prefers (weight x1.6) the attack that would open a plate that is still standing, so the fight always moves forward instead of grinding on a plate whose attack never comes."},
+  {"id": "core_reveal", "when": "last_plate_broken", "move": "core_reveal", "invulnerable_ms": 2600, "shot": "shot_core_reveal"},
+  {"id": "core", "while": "core_hp_frac_above_0.35", "patterns": ["scrap_swing", "wrecking_drop", "stomp_march", "scrap_barrage"]},
+  {"id": "last_stand", "when": "core_hp_frac_at_most_0.35", "move": "last_stand", "invulnerable_ms": 2200, "patterns": ["chain_a", "chain_b", "scrap_barrage"], "damage_mult": 1.0, "_about": "No damage boost: the last stand is faster (shorter gaps) and chains two attacks, never faster wind-ups."}
+ ],
+
+ "patterns": [
+  {
+   "id": "scrap_swing", "name": "Scrap Swing", "weight": 3,
+   "moves": ["scrap_swing_l", "scrap_swing_r"], "side": "alternate_unless_plate_bias",
+   "when": {"dist_max_m": 38.0},
+   "answer": "back out of the arc (dash), run round behind the arm, or jump it",
+   "reads": "arm hauls back 2 s, 34 m arc painted on the floor, lamps orange then red; 9 m tall, so a 12 m jump clears it"
+  },
+  {
+   "id": "wrecking_drop", "name": "Wrecking Drop", "weight": 2,
+   "moves": ["wrecking_drop"],
+   "when": {"dist_max_m": 60.0},
+   "track_ms": 1500,
+   "answer": "leave the circle; jump the ring",
+   "reads": "both arms over the head 2.4 s, 16 m circle follows you until 0.9 s before impact, then the ring races out to 52 m"
+  },
+  {
+   "id": "stomp_march", "name": "Stomp March", "weight": 2,
+   "moves": ["stomp_march"],
+   "when": {"dist_max_m": 45.0},
+   "answer": "jump both rings (or stand outside 46 m)",
+   "reads": "right leg lifts 1.7 s with a siren; a faint 46 m ring is painted on the floor from the start; two stomps a second apart"
+  },
+  {
+   "id": "scrap_barrage", "name": "Scrap Barrage", "weight": 2,
+   "moves": ["scrap_barrage"],
+   "when": {"dist_min_m": 30.0},
+   "answer": "keep moving; each circle lands where you were 0.6 s ago",
+   "reads": "shoulder launchers rear back 1.8 s, three 9 m circles painted 0.6 s ahead of each landing"
+  },
+  {
+   "id": "chain_a", "name": "Swing and Drop", "weight": 2, "stage_min": "last_stand",
+   "moves": ["scrap_swing_l", "wrecking_drop"], "gap_ms": 700,
+   "when": {"dist_max_m": 38.0},
+   "answer": "dodge the arc, then be ready for the circle",
+   "reads": "the second attack's silhouette starts the moment the arm lands; nothing is hidden, nothing is faster than in the open fight"
+  },
+  {
+   "id": "chain_b", "name": "March and Barrage", "weight": 2, "stage_min": "last_stand",
+   "moves": ["stomp_march", "scrap_barrage"], "gap_ms": 900,
+   "when": {"dist_max_m": 45.0},
+   "answer": "jump the rings, then keep moving",
+   "reads": "the shoulders rear back as the second stomp lands"
+  }
+ ],
+
+ "opening": {
+  "patterns": ["scrap_swing", "wrecking_drop"],
+  "first_attack_when_within_m": 50.0,
+  "_about": "The Heap walks to meet the colossus (about 8 s from its start at (0, -105) to the colossus at (84, 0)), and its first two attacks are fixed: the swing (back out, run round or jump) then the drop (leave the circle, jump the ring). After that the random mix begins."
+ },
+
+ "readability": {
+  "_about": "The camera sits 75 m behind the colossus, 26 m up, FOV 56 (scale_profiles.json). The mech is usually 30 to 60 m in front of the colossus, so 100 to 135 m from the camera, with its body 40 m tall. Rules the Technical Artist and Programmer must meet so every attack reads at that distance.",
+  "camera_distance_m": 75.0, "camera_fov_deg": 56.0,
+  "decal_min_width_m": 12.0,
+  "angular_check": {"decal_width_m": 12.0, "distance_m": 100.0, "angle_deg": 6.9, "share_of_screen_height_pct": 12.3, "_about": "2 x atan(6 / 100) is 6.9 degrees, 12 percent of a 56 degree view: a 12 m decal at 100 m is as big as a coin held at arm's length. The real decals (an arc, a circle, a ring) are 16 to 52 m across."},
+  "telegraph_cues": {
+   "lamp_colour_change": true, "decal_on_floor": true, "body_silhouette": true, "sting_at_start": "mech_sting_windup", "sting_at_lock": "mech_sting_lock", "pitch": "lower than Red's (ScaleController audio 0.4)"
+  },
+  "open_plate_marker": {"colour": "#bff4ff", "pointer": true, "lock_priority": "open_plate_first"},
+  "never": ["an impact with no decal", "a decal that appears less than the wind-up minus 400 ms before impact", "a hitbox bigger than its decal (except the ring, whose preview is drawn)", "two different attacks with the same silhouette"]
+ },
+
+ "pacing": {
+  "_about": "Colossus versus mech. About 200 s (3 minutes 20) from control to collapse, in five beats.",
+  "beats": [
+   {"id": "meet", "s": 8, "what": "The Heap walks 150 m to contact. The colossus can also advance (22 m/s); either way the first swing comes within about 10 s."},
+   {"id": "plates", "s": 100, "what": "Four plates, one per attack: swing left, swing right, drop (chest), march (back). About 12 openings, each 2.2 to 2.8 s of free hitting at 380 damage a second: a plate takes 2 to 4 openings."},
+   {"id": "reveal", "s": 8, "what": "Last plate falls, 2.6 s core reveal with a camera shot."},
+   {"id": "core", "s": 55, "what": "Core hit at half damage, 150 percent in every recovery: about 7 openings."},
+   {"id": "last_stand", "s": 30, "what": "At 35 percent core health: 2.2 s roar, then chained attacks, shorter gaps. The loudest part, and the end."}
+  ],
+  "attack_cycle_s": "wind-up 1.7 to 2.4 + active 0.9 to 1.9 + recovery 2.0 to 2.8 + gap 1.8 to 2.6 = 7 to 11 s per attack",
+  "colossus_outpaces": "The colossus runs at 22 m/s and turns at 70 degrees a second against the Heap's 12 m/s and 38: stepping out of an attack is always possible; the question is only whether Red watched the decal."
+ },
+
+ "pickups": {
+  "_about": "PROPOSED, NOT BUILT, waiting for Ross (decision 2 in boss_design.md). With hacks off, Reboot is gone, so the colossus has no healing. The arena doc already puts 8 clusters of smashable containers and cars on the bowl floor; this makes two containers per cluster hold a repair cell.",
+  "enabled": false,
+  "repair_cell": {"heal_frac_of_colossus": 0.12, "heal_hp": 720, "per_cluster": 2, "clusters": 8, "glow": "#7dffb0", "marked": "green hazard stripe on the container"}
+ },
+
+ "retry": {
+  "node": "retry_phase2",
+  "colossus_hp": "full",
+  "mech_hp": "full",
+  "docked": true
+ },
+
+ "events": {
+  "_about": "Bark ids for the Writer. No words here.",
+  "on_start": "kasp_mech_intro",
+  "on_first_plate_open": "vela_mech_open_plate",
+  "on_plate_break": "kasp_mech_plate",
+  "on_core_reveal": "kasp_mech_core",
+  "on_last_stand": "kasp_mech_last_stand",
+  "on_defeat": "kasp_mech_defeat",
+  "hints": {
+   "vela_mech_open_plate": {"after_s": 30, "unless": "any_plate_hit_while_open", "once": true},
+   "vela_mech_jump_ring": {"on": "first_ring_hit_on_colossus", "once": true}
+  }
+ },
+
+ "ending": {"after": "defeat", "scene": "kasp_wreck", "sets_flag": "slice_done"}
+}

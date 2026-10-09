@@ -1,7 +1,7 @@
 class_name RadioBark
 extends Control
 ## The radio bark box (VS-11): Vela's voice in Red's ear. A small dark panel with a teal edge sliding in above the
-## bottom-left corner: a portrait square on the left (a placeholder with the speaker's initial and a flicker of radio
+## bottom edge: a portrait square on the left (a placeholder with the speaker's initial and a flicker of radio
 ## static until the portraits arrive, VS-46), the speaker's name in small caps, and the line typed out in the slanted
 ## face, two lines at most. Lines queue; each holds long enough to read. RadioQueue holds the state.
 ## Say something with `say("vela", "Turret on the left, Red.")`; text for speaker names is in data/text/slice_ui.json.
@@ -64,19 +64,21 @@ func tick(delta: float) -> void:
 		queue_redraw()
 
 
-## The box's rectangle, bottom-left. It grows taller for a line that wraps to a second or third row (decided from the
+## The box's rectangle, bottom center (clear of the deck). It grows taller for a line that wraps to a second or third row (decided from the
 ## whole line, so it doesn't jump while the letters type), never shorter than the portrait.
 func box_rect(ui_size: Vector2, line_count: int = 2) -> Rect2:
-	var w: float = SliceUiData.num("radio.w", 240)
 	var pad: float = SliceUiData.num("radio.pad", 4)
 	var step: float = SliceUiData.num("radio.line_step", 14)
 	var h: float = maxf(SliceUiData.num("radio.portrait", 26) + pad * 2.0, 14.0 + step * float(line_count) + pad)
-	return Rect2(SliceUiData.num("radio.x_from_left", 8), ui_size.y - SliceUiData.num("radio.bottom_gap", 22) - h, w, h)
+	# Bottom center, but never over the command deck in the corner.
+	var x: float = maxf(floorf((ui_size.x - SliceUiData.num("radio.w", 240)) / 2.0), SliceUiData.num("radio.x_min", 152))
+	var w: float = minf(SliceUiData.num("radio.w", 240), ui_size.x - x - 8.0)
+	return Rect2(x, ui_size.y - SliceUiData.num("radio.bottom_gap", 22) - h, w, h)
 
 
 ## The line wrapped to the box's text width (at most `radio.max_lines` rows).
 func wrapped_lines(text: String) -> PackedStringArray:
-	var wrap_w: int = int(SliceUiData.num("radio.w", 240) - SliceUiData.num("radio.text_x", 36) - SliceUiData.num("radio.pad", 4) - 2.0)
+	var wrap_w: int = int(minf(SliceUiData.num("radio.w", 240), size.x - SliceUiData.num("radio.x_min", 152) - 8.0) - SliceUiData.num("radio.text_x", 36) - SliceUiData.num("radio.pad", 4) - 2.0)
 	var lines: PackedStringArray = TextWrap.wrap(SandboxStyle.font("body"), SandboxStyle.font_size("body"), text, wrap_w)
 	return lines.slice(0, SliceUiData.whole("radio.max_lines", 3))
 
@@ -88,7 +90,7 @@ func _draw() -> void:
 	var line: Dictionary = current_line()
 	var lines: PackedStringArray = wrapped_lines(str(line["text"]))
 	var rect: Rect2 = box_rect(size, lines.size())
-	rect.position.x -= floorf((1.0 - presence) * 30.0)
+	rect.position.y += floorf((1.0 - presence) * 12.0)
 	modulate = Color(1, 1, 1, presence)
 	var pad: float = SliceUiData.num("radio.pad", 4)
 	SandboxStyle.list_bar(self, rect, false)

@@ -198,7 +198,7 @@ func test_placements_point_at_words_scenes_items_and_shops_that_exist() -> void:
 	var items: Array[String] = []
 	for row: Variant in DataDB.get_value("items/items", "items", []) as Array:
 		items.append(str((row as Dictionary).get("id", "")))
-	for row: Variant in DataDB.get_value("items/equipment", "equipment", []) as Array:
+	for row: Variant in DataDB.get_value("items/equipment", "gear", []) as Array:
 		items.append(str((row as Dictionary).get("id", "")))
 	for section_name: String in ["npcs", "spots"]:
 		for pid: String in _section(section_name):
@@ -530,7 +530,7 @@ func test_new_game_boots_the_hideout_as_an_action_room_on_the_start_spawn() -> v
 func test_every_room_boots_in_town_mode_with_red_on_its_spawn() -> void:
 	await _start()
 	for id: String in _market_ids():
-		if id != START_ROOM:
+		if _room().room_id != id:
 			_router.call("go_to", id, str(_rooms()[id]["default_spawn"]))
 			await _until_room(id)
 		var room: ActionRoom = _room()

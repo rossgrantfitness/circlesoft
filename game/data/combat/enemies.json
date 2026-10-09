@@ -735,8 +735,8 @@
     "color": "#33f2ff",
     "attack_move": "burst_ally",
     "interval_ms": [
-     300,
-     600
+     0,
+     100
     ],
     "targets": "nearest_enemy",
     "_about": "While Overclock has it the turret fires burst_ally (a 0.5 s wind-up, three bolts, about every 1.4 s) at the nearest enemy; in the boss arena it prefers the Hushmaster's relays (bosses/hushmaster.json hijack_priority)."

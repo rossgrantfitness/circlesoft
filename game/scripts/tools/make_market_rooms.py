@@ -199,6 +199,14 @@ class M(Room):
             f = (i + 0.5) / bulbs
             self.box("%sBulb%d" % (name, i), x0 + (x1 - x0) * f, y - 0.14, z0 + (z1 - z0) * f, 0.14, 0.18, 0.14, bulb_mat)
 
+    def speaker(self, name, x, z, y=0.0, yaw=0.0, size=1.0, color=(0.2, 0.95, 0.85)):
+        """A speaker stack / boombox (the market is loud and cheerful from the start: music, radios, arcade beeps are sound sources
+        listed in data/slice/market.json "ambience"). Two glowing cones on a dark cabinet."""
+        dx, dz = math.sin(math.radians(yaw)), math.cos(math.radians(yaw))
+        self.box(name, x, y + 0.45 * size, z, 0.6 * size, 0.9 * size, 0.5 * size, self.lit((0.12, 0.12, 0.15)), solid=size >= 1.0, yaw=yaw)
+        for i, cy in enumerate((0.28, 0.66)):
+            self.box("%sCone%d" % (name, i), x + dx * 0.26 * size, y + cy * size, z + dz * 0.26 * size, 0.3 * size, 0.3 * size, 0.04, self.glow(color, 1.1), yaw=yaw)
+
     # ---------------------------------------------------------------- props (the old prop scenes, through placements)
     def inst(self, path):
         return self.ext_res("PackedScene", path)
@@ -399,6 +407,10 @@ def square():
     stall("Tape", 18.5, 6.5, tarp_c, pot=False, w=2.0)
     for i, x in enumerate((17.9, 18.4, 18.9)):
         r.cyl("TapeSpool%d" % i, x, 1.25, 6.45, 0.17, 0.3, r.lit((0.2 + 0.25 * i, 0.4, 0.8 - 0.2 * i)))
+    r.speaker("TapeBoombox", 19.6, 6.0, y=1.04, size=0.5, yaw=-20)
+    r.speaker("NoodleRadio", 16.2, 8.1, y=1.04, size=0.45, yaw=10, color=(1.0, 0.45, 0.7))
+    r.speaker("StackA", 21.0, 9.6, size=1.0, yaw=-30, color=(1.0, 0.45, 0.7))
+    r.speaker("StackB", 1.2, 10.4, size=1.0, yaw=30)
     # ---- string lights over the back half only, neon wash, skyline beyond the roofs with the Signals tower and dish
     bulbs = r.glow((1.0, 0.85, 0.5), 1.4)
     r.wires("StringA", 1.0, 3.2, 21.0, 2.6, 5.0, wire, bulbs=10, bulb_mat=bulbs)
@@ -505,6 +517,9 @@ def wharf():
     bulbs = r.glow((1.0, 0.8, 0.45), 1.4)
     r.wires("StringA", 2.0, 1.8, 22.0, 1.8, 5.2, wire, bulbs=12, bulb_mat=bulbs)
     r.wires("StringB", 4.0, 3.2, 20.0, 3.2, 5.5, wire, bulbs=9, bulb_mat=r.glow((1.0, 0.45, 0.7), 1.3))
+    r.speaker("TrackStackA", 11.4, 3.2, size=1.0, yaw=20)
+    r.speaker("TrackStackB", 21.4, 3.0, size=1.0, yaw=-20, color=(1.0, 0.45, 0.7))
+    r.speaker("LateRadio", 20.6, 7.7, y=1.04, size=0.45, yaw=-10)
     r.omni("WarmWash", 15.0, 3.5, 3.0, (1.0, 0.75, 0.45), 3.0, 9.0)
     r.omni("RepairTeal", 5.0, 3.0, 2.0, (0.3, 1.0, 0.9), 2.0, 6.0)
     r.omni("ArcadePink", 19.0, 3.0, 2.0, (1.0, 0.35, 0.7), 2.2, 6.0)
@@ -735,15 +750,16 @@ def arcade():
         cabinet("CabinetN%d" % i, x, 0.55, 0, i)
     for i, z in enumerate((2.0, 3.8)):
         cabinet("CabinetE%d" % i, 8.55, z, -90, i + 4)
-    r.box("SnackCounter", 0.6, 0.5, 2.5, 0.8, 1.0, 3.0, r.lit((0.5, 0.3, 0.25)), solid=True)
-    r.box("SockJar", 0.6, 1.15, 1.5, 0.3, 0.3, 0.3, r.lit((0.9, 0.9, 0.85)))
-    r.text("SockRule", "SOCKS ON SPEAKERS", 0.1, 2.2, 3.4, yaw=90, size=0.008, color=(1.0, 0.9, 0.5), font=28)
+    r.box("SnackCounter", 1.3, 0.5, 2.5, 0.7, 1.0, 3.0, r.lit((0.5, 0.3, 0.25)), solid=True)
+    r.speaker("ArcadeSpeakerA", 0.6, 0.4, size=1.0, yaw=0)
+    r.speaker("ArcadeSpeakerB", 8.4, 5.2, size=0.8, yaw=-90, color=(1.0, 0.45, 0.7))
+    r.text("TurnItUp", "TURN IT UP", 0.1, 2.2, 3.4, yaw=90, size=0.008, color=(1.0, 0.9, 0.5), font=28)
     r.box("ScoreBoard", 4.5, 2.2, 0.05, 2.0, 0.9, 0.08, r.glow((0.3, 1.0, 0.6), 0.9))
     r.text("ScoreText", "ZED 9990  RED 9989", 4.5, 2.2, 0.12, size=0.01, color=(0.02, 0.1, 0.05), font=30)
     r.spot("ScoreSpot", "mk_ar_scores", 4.5, 1.2)
-    r.box("PrizeClaw", 8.3, 0.9, 0.55, 0.9, 1.8, 0.9, r.lit((0.65, 0.85, 0.9)), solid=True)
-    r.box("ClawGlass", 8.3, 1.2, 0.99, 0.8, 1.0, 0.04, r.glow((0.7, 1.0, 1.0), 0.6))
-    r.pickup("BehindClaw", "mk_ar_behind_claw", 8.6, 0.3)
+    r.box("PrizeClaw", 8.1, 0.9, 0.5, 0.9, 1.8, 0.8, r.lit((0.65, 0.85, 0.9)), solid=True)
+    r.box("ClawGlass", 8.1, 1.2, 0.92, 0.8, 1.0, 0.04, r.glow((0.7, 1.0, 1.0), 0.6))
+    r.pickup("BehindClaw", "mk_ar_behind_claw", 8.75, 1.1)
     r.neon("SignOpen", "OPEN LATE", 4.5, 2.65, 0.06, 1.8, 0.28, (1.0, 0.35, 0.7))
     r.door("DoorWharf", "mk_ar_to_wharf", 7.0, 6.0, yaw=180)
     r.npc("Owner", "mk_ar_owner", 0.6, 2.5, face=(1, 0))

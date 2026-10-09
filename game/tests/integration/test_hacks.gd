@@ -467,6 +467,78 @@ func test_the_pick_mode_knob_switches_while_playing() -> void:
 	assert_eq(_kit.caster().selected(), &"emp", "the pick is remembered")
 
 
+# ---- the command deck's API (Ross's Decision 1: a menu with a hack submenu) ----
+
+func test_the_menu_can_choose_a_hack_and_fire_it() -> void:
+	await _setup()
+	_kit.battery().set_charge(100.0)
+	var chosen: Array[StringName] = []
+	_kit.director.hack_selected.connect(func(id: StringName) -> void: chosen.append(id))
+	assert_true(_kit.caster().set_current(&"emp"))
+	assert_eq(_kit.caster().current(), &"emp")
+	assert_eq(chosen, [&"emp"] as Array[StringName])
+	assert_false(_kit.caster().set_current(&"nope"))
+	assert_true(_kit.caster().cast_current())
+	await _kit.frames(30)
+	assert_eq(_kit.moves, [&"hack_emp"] as Array[StringName])
+	assert_eq(_kit.battery().charge(), 60.0)
+
+
+func test_cast_direct_fires_a_named_hack_without_changing_the_current_one() -> void:
+	await _setup()
+	_kit.battery().set_charge(100.0)
+	assert_eq(_kit.caster().current(), &"zap_drone")
+	assert_true(_kit.caster().cast_direct(&"emp"))
+	await _kit.frames(30)
+	assert_eq(_kit.moves, [&"hack_emp"] as Array[StringName])
+	assert_eq(_kit.caster().current(), &"zap_drone", "the shortcut leaves the menu's choice alone")
+	assert_false(_kit.caster().cast_direct(&"nope"), "an unknown hack makes no request")
+
+
+func test_cast_direct_still_obeys_the_rules() -> void:
+	await _setup()
+	_kit.battery().set_charge(10.0)
+	assert_true(_kit.caster().cast_direct(&"emp"))
+	await _kit.frames(20)
+	assert_eq(_kit.moves, [] as Array[StringName])
+	assert_eq(_kit.refusals(HackRules.R_BATTERY), 1)
+	_kit.red.set_town_mode(true)
+	assert_false(_kit.caster().cast_direct(&"zap_drone"), "not in town")
+
+
+func test_hack_status_tells_a_menu_row_what_it_needs() -> void:
+	await _setup()
+	var zap: Dictionary = _kit.caster().hack_status(&"zap_drone")
+	assert_eq(zap["name"], "Zap Drone")
+	assert_eq(zap["icon"], "hack_zap")
+	assert_eq(zap["cost"], 20.0)
+	assert_true(bool(zap["affordable"]))
+	assert_true(bool(zap["castable"]))
+	var overclock: Dictionary = _kit.caster().hack_status(&"overclock")
+	assert_true(bool(overclock["affordable"]), "50 of 50")
+	assert_false(bool(overclock["castable"]), "but nothing to take")
+	assert_eq(overclock["reason"], HackRules.R_NO_SIGNAL)
+	var reboot: Dictionary = _kit.caster().hack_status(&"reboot")
+	assert_true(bool(reboot["cost_all"]))
+	assert_false(bool(reboot["affordable"]), "needs a full battery")
+	assert_eq(reboot["reason"], HackRules.R_NOT_FULL)
+	assert_eq(_kit.caster().hack_list().size(), 4)
+	assert_eq(_kit.caster().battery_charge(), 50.0)
+	assert_eq(_kit.caster().battery_capacity(), 100.0)
+
+
+func test_hack_status_shows_the_cooldown_and_the_jam() -> void:
+	await _setup()
+	_kit.battery().set_charge(100.0)
+	await _kit.tap_hack()
+	await _kit.frames(10)
+	assert_gt(float(_kit.caster().hack_status(&"zap_drone")["cooldown"]), 0.0)
+	assert_false(bool(_kit.caster().hack_status(&"zap_drone")["ready"]))
+	await _kit.frames(60)
+	_kit.director.lock_hacks(5000.0)
+	assert_eq(_kit.caster().hack_status(&"emp")["reason"], HackRules.R_LOCKED)
+
+
 # ---- the arena reset ----
 
 func test_resetting_the_director_puts_the_battery_back() -> void:

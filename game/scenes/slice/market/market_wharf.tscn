@@ -1,4 +1,4 @@
-[gd_scene load_steps=102 format=3]
+[gd_scene load_steps=110 format=3]
 
 [ext_resource type="Script" path="res://scripts/field/camera_bounds.gd" id="1_r"]
 [ext_resource type="Script" path="res://scripts/field/diorama_camera.gd" id="2_r"]
@@ -426,6 +426,41 @@ emission_energy_multiplier = 1.3
 
 [sub_resource type="BoxMesh" id="BoxMesh_86"]
 size = Vector3(16.0, 0.04, 0.04)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_87"]
+shader = ExtResource("5_r")
+shader_parameter/albedo_tint = Color(0.12, 0.12, 0.15, 1)
+shader_parameter/use_orm = 0.0
+shader_parameter/roughness_base = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_88"]
+size = Vector3(0.6, 0.9, 0.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_89"]
+size = Vector3(0.6, 0.9, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_90"]
+shading_mode = 0
+albedo_color = Color(0.2, 0.95, 0.85, 1)
+emission_enabled = true
+emission = Color(0.2, 0.95, 0.85, 1)
+emission_energy_multiplier = 1.1
+
+[sub_resource type="BoxMesh" id="BoxMesh_91"]
+size = Vector3(0.3, 0.3, 0.04)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_92"]
+shading_mode = 0
+albedo_color = Color(1.0, 0.45, 0.7, 1)
+emission_enabled = true
+emission = Color(1.0, 0.45, 0.7, 1)
+emission_energy_multiplier = 1.1
+
+[sub_resource type="BoxMesh" id="BoxMesh_93"]
+size = Vector3(0.27, 0.405, 0.225)
+
+[sub_resource type="BoxMesh" id="BoxMesh_94"]
+size = Vector3(0.135, 0.135, 0.04)
 
 [node name="MarketWharf" type="Node3D"]
 
@@ -1004,6 +1039,59 @@ surface_material_override/0 = SubResource("StandardMaterial3D_85")
 transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 19.11111111111111, 5.36, 3.2)
 mesh = SubResource("BoxMesh_84")
 surface_material_override/0 = SubResource("StandardMaterial3D_85")
+
+[node name="TrackStackA" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9397, 0, 0.3420, 0, 1, 0, -0.3420, 0, 0.9397, 11.4, 0.45, 3.2)
+mesh = SubResource("BoxMesh_88")
+surface_material_override/0 = SubResource("ShaderMaterial_87")
+
+[node name="TrackStackAShape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(0.9397, 0, 0.3420, 0, 1, 0, -0.3420, 0, 0.9397, 11.4, 0.45, 3.2)
+shape = SubResource("BoxShape3D_89")
+
+[node name="TrackStackACone0" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9397, 0, 0.3420, 0, 1, 0, -0.3420, 0, 0.9397, 11.488925237264674, 0.28, 3.4443200814043364)
+mesh = SubResource("BoxMesh_91")
+surface_material_override/0 = SubResource("StandardMaterial3D_90")
+
+[node name="TrackStackACone1" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9397, 0, 0.3420, 0, 1, 0, -0.3420, 0, 0.9397, 11.488925237264674, 0.66, 3.4443200814043364)
+mesh = SubResource("BoxMesh_91")
+surface_material_override/0 = SubResource("StandardMaterial3D_90")
+
+[node name="TrackStackB" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9397, 0, -0.3420, 0, 1, 0, 0.3420, 0, 0.9397, 21.4, 0.45, 3.0)
+mesh = SubResource("BoxMesh_88")
+surface_material_override/0 = SubResource("ShaderMaterial_87")
+
+[node name="TrackStackBShape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(0.9397, 0, -0.3420, 0, 1, 0, 0.3420, 0, 0.9397, 21.4, 0.45, 3.0)
+shape = SubResource("BoxShape3D_89")
+
+[node name="TrackStackBCone0" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9397, 0, -0.3420, 0, 1, 0, 0.3420, 0, 0.9397, 21.311074762735323, 0.28, 3.2443200814043363)
+mesh = SubResource("BoxMesh_91")
+surface_material_override/0 = SubResource("StandardMaterial3D_92")
+
+[node name="TrackStackBCone1" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9397, 0, -0.3420, 0, 1, 0, 0.3420, 0, 0.9397, 21.311074762735323, 0.66, 3.2443200814043363)
+mesh = SubResource("BoxMesh_91")
+surface_material_override/0 = SubResource("StandardMaterial3D_92")
+
+[node name="LateRadio" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9848, 0, -0.1736, 0, 1, 0, 0.1736, 0, 0.9848, 20.6, 1.2425000000000002, 7.7)
+mesh = SubResource("BoxMesh_93")
+surface_material_override/0 = SubResource("ShaderMaterial_87")
+
+[node name="LateRadioCone0" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9848, 0, -0.1736, 0, 1, 0, 0.1736, 0, 0.9848, 20.57968316321297, 1.1660000000000001, 7.815222507102429)
+mesh = SubResource("BoxMesh_94")
+surface_material_override/0 = SubResource("StandardMaterial3D_90")
+
+[node name="LateRadioCone1" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9848, 0, -0.1736, 0, 1, 0, 0.1736, 0, 0.9848, 20.57968316321297, 1.3370000000000002, 7.815222507102429)
+mesh = SubResource("BoxMesh_94")
+surface_material_override/0 = SubResource("StandardMaterial3D_90")
 
 [node name="WarmWash" type="OmniLight3D" parent="."]
 transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 15.0, 3.5, 3.0)

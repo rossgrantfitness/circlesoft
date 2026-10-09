@@ -1,14 +1,14 @@
 {
- "_about": "PLACEHOLDER lines for the night market's townsfolk and examine spots (VS-14), so every placed person and sign says something while the town is graybox. Whisper-market tone (docs/maps/night_market.md, Decision 1A): murmured, nervous, warm. The Writer replaces these with data/dialogue/market.json (same conversation ids or new ones; update slice/placements.json to match). Dialogue & writing is Level 0: Ross approves final words.",
+ "_about": "PLACEHOLDER lines for the night market's townsfolk and examine spots (VS-14), so every placed person and sign says something while the town is graybox. Loud-and-cheerful market tone (Ross 2026-10-09, docs/maps/night_market.md): chatty, busy, warm; the Signals patrol is the only hush. The Writer replaces these with data/dialogue/market.json (same conversation ids or new ones; update slice/placements.json to match). Dialogue & writing is Level 0: Ross approves final words.",
  "conversations": {
   "mk_sq_pop": [
    {
     "speaker": "mk_sq_pop",
-    "text": "Noodles. Quietly, please. Sit, sit."
+    "text": "NOODLES! Hot noodles! Sit, sit, the broth is loud tonight!"
    },
    {
     "speaker": "mk_sq_pop",
-    "text": "Everyone eats here. Even them. ...Especially them."
+    "text": "Everyone eats here. Even the patrol. ...Especially the patrol."
    }
   ],
   "mk_sq_dumpling": [
@@ -20,7 +20,7 @@
   "mk_sq_tape": [
    {
     "speaker": "mk_sq_tape",
-    "text": "Scrap wire by the foot. Tape by the mood. Whisper your length."
+    "text": "Scrap wire by the foot! Tape by the mood! Name your length!"
    }
   ],
   "mk_sq_odds": [
@@ -36,11 +36,11 @@
   "mk_sq_neighbor": [
    {
     "speaker": "mk_sq_neighbor",
-    "text": "You were out at all hours again. I bake at three. We are not so different."
+    "text": "You were out at all hours again! I bake at three. We are not so different."
    },
    {
     "speaker": "mk_sq_neighbor",
-    "text": "Keep it down. ...I said keep it down, I did not say stop."
+    "text": "Bring me a speaker and I will bake to it. ...Not THAT loud."
    }
   ],
   "mk_sq_ume": [
@@ -56,7 +56,7 @@
   "mk_sq_shopper_a": [
    {
     "speaker": "mk_sq_shopper_a",
-    "text": "...four for the price of three. Shh."
+    "text": "Four for the price of three! Get in, get in!"
    }
   ],
   "mk_sq_shopper_b": [
@@ -68,13 +68,13 @@
   "mk_sq_shopper_c": [
    {
     "speaker": "mk_sq_shopper_c",
-    "text": "Headphones. In my ears. Loud. In my head only."
+    "text": "New headphones! Turned all the way up. Do not tell Mom."
    }
   ],
   "mk_sq_shopper_d": [
    {
     "speaker": "mk_sq_shopper_d",
-    "text": "Wind chimes are in socks this week. Do not ask me why."
+    "text": "Wind chimes are back on the poles this week. Hear that? That is the good stuff."
    }
   ],
   "mk_sq_wolf_a": [
@@ -90,7 +90,7 @@
   "mk_sq_wolf_b": [
    {
     "speaker": "mk_sq_wolf_b",
-    "text": "...Quiet hours, courier. Not that you were loud."
+    "text": "...Move it along, courier. Everybody out of the lane."
    }
   ],
   "mk_wf_juno": [
@@ -108,19 +108,19 @@
   "mk_wf_kid_b": [
    {
     "speaker": "mk_wf_kid_b",
-    "text": "Shh, shh, it is turning!"
+    "text": "Go go go! It is turning!"
    }
   ],
   "mk_wf_judge": [
    {
     "speaker": "mk_wf_judge",
-    "text": "(whisper-shouting into the megaphone) FIRST. PLACE. Green one crashed."
+    "text": "(through the megaphone) FIRST. PLACE. The green one crashed. AGAIN."
    }
   ],
   "mk_wf_pell": [
    {
     "speaker": "mk_wf_pell",
-    "text": "Hello, courier. Papers are my hobby. Ask me about papers, quietly."
+    "text": "Hello, courier! Papers are my hobby. Ask me about papers, I dare you."
    }
   ],
   "mk_wf_late_cook": [
@@ -150,7 +150,7 @@
   "mk_gt_line_a": [
    {
     "speaker": "mk_gt_line_a",
-    "text": "It's only a wind chime. In a sock."
+    "text": "It's only a wind chime. One little wind chime."
    }
   ],
   "mk_gt_line_b": [
@@ -202,7 +202,7 @@
   "mk_ar_owner": [
    {
     "speaker": "mk_ar_owner",
-    "text": "Socks on the speakers. House rule. Quiet Hours does not get to hear the game over."
+    "text": "Turn it up! Every machine has a different beep. Do not touch the claw. The claw knows."
    }
   ],
   "mk_ar_kid_a": [
@@ -220,7 +220,7 @@
   "mk_ar_kid_c": [
    {
     "speaker": "mk_ar_kid_c",
-    "text": "Shhh, I'm on the last level."
+    "text": "Beep beep BEEP! I am on the last level!"
    }
   ],
   "mk_ar_zed": [
@@ -238,13 +238,13 @@
   "mk_dp_dispatcher_taken": [
    {
     "speaker": "mk_dp_dispatcher",
-    "text": "Yard 9. Gate 4, show the pass, mind the quiet. Why are you still here?"
+    "text": "Yard 9. Gate 4, show the pass, and keep it down on the road. Why are you still here?"
    }
   ],
   "mk_dp_dispatcher_done": [
    {
     "speaker": "mk_dp_dispatcher",
-    "text": "Stamped DONE. ...Everyone is talking about it, in whispers."
+    "text": "Stamped DONE. ...Everyone is talking about it. Loudly."
    }
   ],
   "mk_dp_dispatcher": [
@@ -334,7 +334,7 @@
   "mk_hd_photo": [
    {
     "speaker": "narrator",
-    "text": "Mom, young, grinning, in a flight jacket. Written on the back: 'Keep it down. Fly anyway.'"
+    "text": "Mom, young, grinning, in a flight jacket. Written on the back: 'Fly loud.'"
    }
   ],
   "mk_hd_charts": [

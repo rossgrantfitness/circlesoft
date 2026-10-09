@@ -28,14 +28,6 @@
   "w": 128,
   "label_gap": 9,
   "battery_h": 4,
-  "list_y": 12,
-  "row_h": 10,
-  "row_step": 11,
-  "list_inset": 3,
-  "icon_x": 3,
-  "name_x": 16,
-  "cost_right": 0,
-  "dim_alpha": 0.55,
   "fizz_px": 2,
   "fizz_step_s": 0.0833,
   "fizz_density": 0.3,
@@ -86,7 +78,8 @@
   "max_lines": 3,
   "queue_max": 6,
   "static_step_s": 0.0833,
-  "line_step": 14
+  "line_step": 14,
+  "x_min": 152
  },
  "location_card": {
   "h": 26,
@@ -177,5 +170,21 @@
    "....X....",
    "........."
   ]
+ },
+ "deck": {
+  "x": 8,
+  "w": 136,
+  "bottom_gap": 22,
+  "row_h": 11,
+  "row_h_focus": 16,
+  "gap": 1,
+  "stagger": 3,
+  "dim_alpha": 0.6,
+  "sub_gap": 10,
+  "sub_w": 132,
+  "sub_h": 11,
+  "sub_step": 12,
+  "note_s": 1.6,
+  "slowmo_ease_s": 0.15
  }
 }

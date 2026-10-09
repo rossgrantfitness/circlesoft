@@ -124,7 +124,7 @@
     "flag": "job_main_taken"
    },
    "locked_message": "Road's closed, courier. Papers? Dispatch is the first door beside your hideout.",
-   "unlocked_message": "Stamp, stamp. Boom's up. Mind the quiet."
+   "unlocked_message": "Stamp, stamp. Boom's up. Mind the road."
   },
   "mk_hd_to_square": {
    "room": "market_hideout",

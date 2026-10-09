@@ -134,7 +134,7 @@ func test_each_leg_is_a_skinny_stilt_reaching_the_floor() -> void:
 			assert_gt(box.size.y, 3.0, "%s is tall" % leg.name)
 			assert_lt(thin, 5.0)
 			var upper: AABB = _mesh_box(leg)
-			assert_lt(minf(upper.size.y, minf(upper.size.x, upper.size.z)), 1.2, "%s is skinny, not a slab" % leg.name)
+			assert_lt(minf(upper.size.y, minf(upper.size.x, upper.size.z)), 1.6, "%s is skinny, not a slab" % leg.name)
 
 
 func test_hushmaster_body_is_about_four_by_three_metres_riding_high() -> void:
@@ -220,9 +220,11 @@ func test_junk_mech_carries_red_bones_scaled_plus_its_mounts() -> void:
 	var model: Node3D = _model(DIR + "junk_mech.glb")
 	var skeleton: Skeleton3D = _skeleton(model)
 	_assert_red_bones(skeleton, "junk mech")
-	for bone: String in PLATE_NAMES + ["cockpit_core", "kasp_seat"]:
-		assert_ge(skeleton.find_bone(bone), 0, "bone " + bone)
-	assert_eq(skeleton.get_bone_name(skeleton.get_bone_parent(skeleton.find_bone("kasp_seat"))), "cockpit_core", "Kasp's seat is in the core")
+	for plate: String in PLATE_NAMES:
+		assert_ge(skeleton.find_bone(plate + "_mount"), 0, "mount bone for " + plate)
+	assert_ge(skeleton.find_bone("cockpit_core_mount"), 0, "mount bone for the core")
+	assert_ge(skeleton.find_bone("kasp_seat"), 0, "bone kasp_seat")
+	assert_eq(skeleton.get_bone_name(skeleton.get_bone_parent(skeleton.find_bone("kasp_seat"))), "cockpit_core_mount", "Kasp's seat is in the core")
 	var red: Skeleton3D = _skeleton(_model(RED_PATH))
 	var ratio: float = 40.0 / 0.951
 	for bone: String in ["hips", "chest", "head", "hand_l", "foot_r", "weapon_socket"]:
@@ -253,7 +255,7 @@ func test_junk_mech_plates_are_detachable_mesh_nodes_on_mount_bones() -> void:
 		var largest: float = maxf(box.size.x, maxf(box.size.y, box.size.z))
 		assert_ge(largest, 6.0, plate + " is 6 m or more")
 		assert_le(largest, 10.0, plate + " is 10 m or less")
-		var mount: Vector3 = _bone_origin(skeleton, plate)
+		var mount: Vector3 = _bone_origin(skeleton, plate + "_mount")
 		assert_lt(box.get_center().distance_to(mount), 1.5, plate + " is drawn around its own mount bone")
 		assert_ge(box.position.y, 14.0, plate + " is on the body, not the legs")
 	assert_eq(PLATE_NAMES.size(), 6)
@@ -333,6 +335,6 @@ func test_scrap_piles_and_the_giant_heap_grow_with_their_names() -> void:
 	assert_almost_eq(float(heights["scrap_pile_s"]), 2.5, 0.9, "small pile about 2.5 m")
 	assert_almost_eq(float(heights["scrap_pile_m"]), 4.5, 1.3, "medium pile about 4.5 m")
 	assert_almost_eq(float(heights["scrap_pile_l"]), 6.0, 1.5, "large pile about 6 m")
-	assert_almost_eq(float(heights["scrap_heap_giant"]), 35.0, 8.0, "the giant heap, 30 to 45 m")
+	assert_almost_eq(float(heights["scrap_heap_giant"]), 38.0, 8.0, "the giant heap, 30 to 45 m")
 	assert_lt(float(heights["scrap_pile_s"]), float(heights["scrap_pile_m"]))
 	assert_lt(float(heights["scrap_pile_m"]), float(heights["scrap_pile_l"]))

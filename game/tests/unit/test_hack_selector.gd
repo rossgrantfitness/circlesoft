@@ -72,6 +72,18 @@ func test_the_number_keys_choose_by_slot() -> void:
 	assert_false(selector.select_id(&"nope"))
 
 
+func test_the_menu_names_set_current_and_current_work_in_either_mode() -> void:
+	var selector: HackSelector = _selector()
+	assert_eq(selector.current(), &"zap_drone")
+	assert_true(selector.set_current(&"overclock"))
+	assert_eq(selector.current(), &"overclock")
+	assert_false(selector.set_current(&"nope"))
+	assert_eq(selector.current(), &"overclock", "a bad id changes nothing")
+	selector.set_mode_from_knob("automatic")
+	assert_true(selector.set_current(&"emp"))
+	assert_eq(selector.current(), &"emp")
+
+
 func test_the_feel_knob_flips_the_mode_both_ways() -> void:
 	var selector: HackSelector = _selector()
 	selector.set_mode_from_knob("automatic")

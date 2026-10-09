@@ -12,8 +12,8 @@ VS-A1 and VS-A2 files arrive). Ross's city tiles are read-only inputs, embedded 
                         Every leg and relay pivot is at its hip / mount point, so rotating or hiding a node is all a "drop" needs.
     kasp.glb            1.05 m, rigged on Red's bone names (scaled), so the free Quaternius clips retarget like the robots.
     junk_mech.glb       40 m, Red's bone names scaled x42, plus mount bones. One skin, several mesh nodes: junk_mech_body,
-                        floodlights, plate_* (six armour plates, each on its own mount bone of the same name), cockpit_core (on
-                        the bone cockpit_core), and the bone kasp_seat inside the core. No face anywhere.
+                        floodlights, plate_* (six armour plates, each on its own mount bone plate_*_mount), cockpit_core (on
+                        the bone cockpit_core_mount), and the bone kasp_seat inside the core. No face anywhere.
     arena/              wall, gate post, plateau rail, scrap piles, a giant heap and a turret pylon for Kasp's arena.
 
 Axes: glTF space, Y up, models face +Z, left (l) is +X, metres.
@@ -233,7 +233,7 @@ def write_rigged(path, shared, rig, meshes, model_name, note):
         m[:3, :3] = sk.rest_world_r[node]
         m[:3, 3] = sk.rest_world_p[node]
         ibm[k] = np.linalg.inv(m).T.flatten()
-    nodes[arm]["name"] = model_name
+    nodes[arm]["name"] = model_name + "_armature"
     skin = {"name": model_name + "_armature", "joints": joints, "inverseBindMatrices": pack.accessor(ibm, 5126, "MAT4")}
     doc = {"asset": {"version": "2.0", "generator": "circlesoft scripts/tools/make_bosses.py (placeholder blockout)", "extras": {"note": note}},
            "samplers": [{"magFilter": 9729, "minFilter": 9987, "wrapS": 10497, "wrapT": 10497}],
@@ -555,9 +555,9 @@ KASP_SEAT = (0.0, 22.6, 1.6)
 
 def build_mech(path):
     red_doc, _ = load_glb(RED)
-    extras = [{"name": n, "parent": spec[0], "at": tuple(np.array(spec[1]) / U)} for n, spec in PLATES.items()]
-    extras.append({"name": "cockpit_core", "parent": CORE[0], "at": tuple(np.array(CORE[1]) / U)})
-    extras.append({"name": "kasp_seat", "parent": "cockpit_core", "at": tuple(np.array(KASP_SEAT) / U)})
+    extras = [{"name": n + "_mount", "parent": spec[0], "at": tuple(np.array(spec[1]) / U)} for n, spec in PLATES.items()]
+    extras.append({"name": "cockpit_core_mount", "parent": CORE[0], "at": tuple(np.array(CORE[1]) / U)})
+    extras.append({"name": "kasp_seat", "parent": "cockpit_core_mount", "at": tuple(np.array(KASP_SEAT) / U)})
     rig = scaled_rig(red_doc, U, extras)
     nodes, joints, names, mesh_node, arm = rig
     index = {nodes[n]["name"]: k for k, n in enumerate(joints)}
@@ -708,28 +708,29 @@ def build_mech(path):
     plate_meshes = []
     for name, (parent, c, size, mat, tilt) in PLATES.items():
         pb = new()
+        bone = name + "_mount"
         pd = Draw(pb)
         rot = rot_x(tilt) if tilt else None
-        pd.box(name, c, size, M[mat], rot=rot)
+        pd.box(bone, c, size, M[mat], rot=rot)
         # rim, rivets and stencils (a Signals poster on the billboard)
         w, h, dd = size
         pd.push(rot, c)
         if name == "plate_chest_front":
-            pd.box(name, (0, 0, dd / 2 + 0.03), (w - 0.8, h - 0.8, 0.05), M["slate"])
-            pd.box(name, (0, h / 2 - 0.9, dd / 2 + 0.07), (w - 1.4, 0.5, 0.05), M["white"])           # a stencil strip along the top
-            pd.box(name, (-1.2, -0.3, dd / 2 + 0.07), (0.9, 4.0, 0.05), M["lamp"], rot=rot_z(28))      # the Signals mark: a slash
+            pd.box(bone, (0, 0, dd / 2 + 0.03), (w - 0.8, h - 0.8, 0.05), M["slate"])
+            pd.box(bone, (0, h / 2 - 0.9, dd / 2 + 0.07), (w - 1.4, 0.5, 0.05), M["white"])           # a stencil strip along the top
+            pd.box(bone, (-1.2, -0.3, dd / 2 + 0.07), (0.9, 4.0, 0.05), M["lamp"], rot=rot_z(28))      # the Signals mark: a slash
             for k in range(3):
-                pd.box(name, (1.8, 0.8 - k * 0.9, dd / 2 + 0.07), (2.6 - 0.5 * k, 0.28, 0.05), M["white"])   # lines of small print
+                pd.box(bone, (1.8, 0.8 - k * 0.9, dd / 2 + 0.07), (2.6 - 0.5 * k, 0.28, 0.05), M["white"])   # lines of small print
             for sx in (-1, 1):
-                pd.prism(name, (sx * (w / 2 - 0.5), h / 2, 0.0), (sx * (w / 2 - 0.5), h / 2 + 2.0, -0.6), 0.1, 0.1, M["frame"], n=6)   # chains
+                pd.prism(bone, (sx * (w / 2 - 0.5), h / 2, 0.0), (sx * (w / 2 - 0.5), h / 2 + 2.0, -0.6), 0.1, 0.1, M["frame"], n=6)   # chains
         elif name in ("plate_flank_l", "plate_flank_r"):
             sx = 1 if name.endswith("_l") else -1
-            pd.box(name, (sx * (w / 2 + 0.03), 0, 0), (0.05, h - 0.6, dd - 0.6), M["steel"])
-            pd.box(name, (sx * (w / 2 + 0.07), 1.2, 0), (0.05, 0.8, dd - 1.2), M["white"])
+            pd.box(bone, (sx * (w / 2 + 0.03), 0, 0), (0.05, h - 0.6, dd - 0.6), M["steel"])
+            pd.box(bone, (sx * (w / 2 + 0.07), 1.2, 0), (0.05, 0.8, dd - 1.2), M["white"])
         elif name == "plate_belly":
-            pd.box(name, (0, dd * 0.0 + h / 2 + 0.03, 0), (w - 0.8, 0.05, dd - 0.8), M["hazard"])
+            pd.box(bone, (0, dd * 0.0 + h / 2 + 0.03, 0), (w - 0.8, 0.05, dd - 0.8), M["hazard"])
         else:
-            pd.box(name, (0, h / 2 + 0.03, 0), (w - 0.8, 0.05, dd - 0.8), M["frame"])
+            pd.box(bone, (0, h / 2 + 0.03, 0), (w - 0.8, 0.05, dd - 0.8), M["frame"])
         pd.pop()
         plate_meshes.append((name, pb))
 
@@ -737,13 +738,13 @@ def build_mech(path):
     core = new()
     cd = Draw(core)
     cx, cy, cz = CORE[1]
-    cd.box("cockpit_core", (cx, cy, cz), (4.0, 2.6, 3.8), M["signals"])
-    cd.box("cockpit_core", (cx, cy + 0.35, cz + 1.92), (2.8, 1.2, 0.08), M["glass"])
-    cd.box("cockpit_core", (cx, cy - 0.85, cz + 1.93), (2.8, 0.3, 0.08), M["lamp"])
-    cd.box("cockpit_core", (cx, cy + 1.35, cz), (3.2, 0.14, 3.0), M["white"])
-    cd.prism("cockpit_core", (cx + 1.0, cy + 1.4, cz - 0.6), (cx + 1.0, cy + 1.7, cz - 0.6), 0.28, 0.2, M["lamp"], n=8)
+    cd.box("cockpit_core_mount", (cx, cy, cz), (4.0, 2.6, 3.8), M["signals"])
+    cd.box("cockpit_core_mount", (cx, cy + 0.35, cz + 1.92), (2.8, 1.2, 0.08), M["glass"])
+    cd.box("cockpit_core_mount", (cx, cy - 0.85, cz + 1.93), (2.8, 0.3, 0.08), M["lamp"])
+    cd.box("cockpit_core_mount", (cx, cy + 1.35, cz), (3.2, 0.14, 3.0), M["white"])
+    cd.prism("cockpit_core_mount", (cx + 1.0, cy + 1.4, cz - 0.6), (cx + 1.0, cy + 1.7, cz - 0.6), 0.28, 0.2, M["lamp"], n=8)
     for sx in (-1, 1):
-        cd.box("cockpit_core", (cx + sx * 2.02, cy, cz), (0.06, 1.8, 3.0), M["slate"])
+        cd.box("cockpit_core_mount", (cx + sx * 2.02, cy, cz), (0.06, 1.8, 3.0), M["slate"])
 
     meshes = [("junk_mech_body", body), ("floodlights", flood)] + plate_meshes + [("cockpit_core", core)]
     return write_rigged(path, shared, rig, meshes, "junk_mech", "Placeholder blockout by the Technical Artist (task VS-24): the giant junk mech, 40 m, Red's bone names scaled x%.1f. No face." % U)
@@ -760,10 +761,9 @@ def build_wall(path):
     d.box(None, (0.0, 7.9, 0.0), (12.3, 0.2, 2.6), M["hazard"])
     for x in (-5.8, 5.8):
         d.box(None, (x, 3.9, 1.3), (0.3, 7.8, 0.12), M["frame"])
-    car(d, None, M, (-3.0, 0.85, 2.4), basis((1.0, 0.0, 0.0)), 1.0, "rust")
-    car(d, None, M, (3.2, 0.85, 2.4), basis((1.0, 0.0, 0.0)), 1.0, "streak")
+    car(d, None, M, (-3.0, 0.97, 2.4), basis((1.0, 0.0, 0.0)), 1.0, "rust")
+    car(d, None, M, (3.2, 0.97, 2.4), basis((1.0, 0.0, 0.0)), 1.0, "streak")
     tyre(d, None, M, (0.0, 0.6, -1.7), 0.6, 12.0, (1.0, 0.0, 0.0), n=8)
-    d.box(None, (0.0, 8.5, 0.0), (12.0, 0.8, 0.12), M["steel"], rot=rot_x(0))
     sc.node("arena_wall_segment", builder=b)
     return write_scene(path, sc, "arena_wall_segment", "Stockade wall segment, 8 m high, 12.2 m long. Stack them around r = 62 m.")
 
@@ -814,17 +814,19 @@ def pile(d, M, seed, radius, height, count, scale=1.0, bone=None):
         tilt = rot_x(rng.uniform(-18, 18)) @ rot_z(rng.uniform(-18, 18))
         R = rot_y(yaw) @ tilt
         pos = np.array([r * math.cos(ang), surf, r * math.sin(ang)])
+        s = scale
         if kind == "car":
-            car(d, bone, M, pos + np.array([0, 0.5 * scale, 0]), R, scale, paint)
+            car(d, bone, M, np.array([pos[0], max(pos[1] + 0.5 * s, 1.9 * s), pos[2]]), R, s, paint)
         elif kind == "cube":
-            s = scale * rng.uniform(1.4, 2.4)
-            crushed_cube(d, bone, M, pos + np.array([0, s * 0.4, 0]), (s, s * 0.9, s), paint, R)
+            c = s * rng.uniform(1.4, 2.4)
+            crushed_cube(d, bone, M, np.array([pos[0], max(pos[1] + c * 0.4, c * 0.9), pos[2]]), (c, c * 0.9, c), paint, R)
         elif kind == "container":
-            container(d, bone, M, pos + np.array([0, 1.0 * scale, 0]), R, paint, size=(2.44 * scale, 2.6 * scale, rng.uniform(4.0, 12.2) * scale))
+            ln = rng.uniform(4.0, 12.2) * s
+            container(d, bone, M, np.array([pos[0], max(pos[1] + 1.0 * s, 1.3 * s + 0.32 * ln), pos[2]]), R, paint, size=(2.44 * s, 2.6 * s, ln))
         elif kind == "tyre":
-            tyre(d, bone, M, pos + np.array([0, 0.4 * scale, 0]), 0.6 * scale, 0.4 * scale, R @ np.array([1.0, 0, 0]))
+            tyre(d, bone, M, pos + np.array([0, 0.9 * s, 0]), 0.6 * s, 0.4 * s, R @ np.array([1.0, 0, 0]))
         else:
-            d.box(bone, pos + np.array([0, 0.6 * scale, 0]), (0.9 * scale, 1.8 * scale, 0.9 * scale), M["fridge"], rot=R)
+            d.box(bone, np.array([pos[0], max(pos[1] + 0.6 * s, 1.3 * s), pos[2]]), (0.9 * s, 1.8 * s, 0.9 * s), M["fridge"], rot=R)
 
 
 def build_pile(path, name, seed, radius, height, count, scale, note):

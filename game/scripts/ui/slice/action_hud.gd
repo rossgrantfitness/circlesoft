@@ -6,7 +6,8 @@ extends SandboxHud
 ## (`bind(room)`; ActionRoom does this itself when it finds the node in group "slice_hud").
 ##
 ## New parts:
-##   HackPanel      the battery, the hack list, the Quiet Hours static, the hijack timer
+##   HackPanel      the battery (top-left), the Quiet Hours static, the hijack timer
+##   CommandDeck    bottom-left: Attack / Hack / Item, and the hack list (Ross's pick for Decision 1)
 ##   BossBar        boss name, health, phase pips
 ##   RadioBark      Vela's voice in Red's ear
 ##   LocationCard   the area name on entering a new area
@@ -41,6 +42,10 @@ const SCENE_PATH_ACTION: String = "res://scenes/ui/slice/action_hud.tscn"
 const SLICE_PAUSE_SCENE: String = "res://scenes/ui/slice/slice_pause.tscn"
 const RULE_NONE: String = "none"
 const ROUTER_PATH: NodePath = ^"/root/SceneRouter"
+const ACTION_DECK_OPEN: StringName = &"deck_open"
+const ACTION_DECK_SCROLL: StringName = &"deck_scroll"
+const KNOB_SLOWMO: String = "deck_slowmo"
+const KNOB_SLOWMO_SCALE: String = "deck_slowmo_scale"
 const KNOB_PICK_MODE: String = "hack_pick_mode"
 const KNOB_COST_SCALE: String = "hack_cost_scale"
 const KNOB_FREE: String = "hack_free_cast"
@@ -50,6 +55,8 @@ const KNOB_COOLDOWN_SCALE: String = "hack_cooldown_scale"
 var auto_router: bool = true
 
 var _hack_panel: HackPanel = null
+var _deck: CommandDeck = null
+var _slowmo_active: bool = false
 var _boss_bar: BossBar = null
 var _radio: RadioBark = null
 var _location: LocationCard = null
@@ -80,6 +87,7 @@ func _build() -> void:
 		_slice_pause.field_menu_requested.connect(_on_pause_menu_chosen)
 		_slice_pause.feel_requested.connect(_on_pause_feel_chosen)
 	_hack_panel = _add_part(HackPanel.new(), "HackPanel") as HackPanel
+	_deck = _add_part(CommandDeck.new(), "CommandDeck") as CommandDeck
 	_boss_bar = _add_part(BossBar.new(), "BossBar") as BossBar
 	_radio = _add_part(RadioBark.new(), "RadioBark") as RadioBark
 	_radio.audio = audio
@@ -94,6 +102,8 @@ func _build() -> void:
 	_continue.quit_chosen.connect(_on_quit_chosen)
 	add_child(_continue)
 	_hack_panel.model = HackPanelModel.load_default()
+	_deck.hacks = _hack_panel.model
+	ensure_deck_actions()
 	_place_corners()
 
 
@@ -107,7 +117,7 @@ func _add_part(part: Control, part_name: String) -> Control:
 
 func _place_corners() -> void:
 	super()
-	for part: Control in [_hack_panel, _boss_bar, _radio, _location]:
+	for part: Control in [_hack_panel, _deck, _boss_bar, _radio, _location]:
 		if part != null:
 			part.position = Vector2.ZERO
 			part.size = size
@@ -117,6 +127,10 @@ func _place_corners() -> void:
 
 func get_hack_panel() -> HackPanel:
 	return _hack_panel
+
+
+func get_deck() -> CommandDeck:
+	return _deck
 
 
 func get_boss_bar() -> BossBar:
@@ -148,7 +162,9 @@ func is_menu_open() -> bool:
 func bind(target: Object) -> void:
 	super(target)
 	_hack_panel.model = HackPanelModel.load_default()
-	_hack_panel.model.clear_hijacks()
+	_deck.hacks = _hack_panel.model
+	_deck.model = CommandDeckModel.new()
+	_set_slowmo(false)
 	_boss_bar.model.hide_bar()
 	_boss_bar.model.shown = false
 	_continue.close_screen()
@@ -181,6 +197,12 @@ func bind(target: Object) -> void:
 
 func unbind() -> void:
 	_boss_source = null
+	_set_slowmo(false)
+	super()
+
+
+func _exit_tree() -> void:
+	_set_slowmo(false)
 	super()
 
 
@@ -231,6 +253,7 @@ func _on_hack_cast(info: Dictionary) -> void:
 	var model: HackPanelModel = _hack_panel.model
 	var id: String = str(info.get("hack", ""))
 	model.note_cast(id, model.cooldown_ms_of(id))
+	_deck.model.close_submenu()
 
 
 ## A press that fired nothing: the bar shakes, and a couple of reasons get a call-out.
@@ -358,12 +381,109 @@ func _on_pause_feel_chosen() -> void:
 	_panel.open_panel()
 
 
+# ---- the command deck ----
+
+## Adds the deck's two buttons if the project does not have them: R / d-pad up chooses (opens or closes the hack list),
+## G / d-pad down moves the focus to the next row (Attack, Hack, Item). The pick itself is the wheel, d-pad left / right
+## and keys 1 to 4 (HackCaster owns those) and the hack button fires the current hack.
+static func ensure_deck_actions() -> void:
+	_ensure_action(ACTION_DECK_OPEN, KEY_R, JOY_BUTTON_DPAD_UP)
+	_ensure_action(ACTION_DECK_SCROLL, KEY_G, JOY_BUTTON_DPAD_DOWN)
+
+
+static func _ensure_action(action: StringName, key: Key, button: JoyButton) -> void:
+	if InputMap.has_action(action):
+		return
+	InputMap.add_action(action)
+	var key_event: InputEventKey = InputEventKey.new()
+	key_event.physical_keycode = key
+	InputMap.action_add_event(action, key_event)
+	var pad_event: InputEventJoypadButton = InputEventJoypadButton.new()
+	pad_event.button_index = button
+	InputMap.action_add_event(action, pad_event)
+
+
+func _input(event: InputEvent) -> void:
+	super(event)
+	if listen_input and handle_deck_event(event):
+		get_viewport().set_input_as_handled()
+
+
+## One input event for the deck. True when it was the deck's. (Not while a menu is open.)
+func handle_deck_event(event: InputEvent) -> bool:
+	if is_menu_open() or event.is_echo():
+		return false
+	if InputMap.has_action(ACTION_DECK_OPEN) and event.is_action_pressed(ACTION_DECK_OPEN):
+		deck_choose()
+		return true
+	if InputMap.has_action(ACTION_DECK_SCROLL) and event.is_action_pressed(ACTION_DECK_SCROLL):
+		deck_scroll(1)
+		return true
+	return false
+
+
+## Moves the deck's focus one row.
+func deck_scroll(direction: int) -> void:
+	_deck.model.scroll(direction)
+	audio.sfx("tick")
+
+
+## "Choose" on the focused row: opens or closes the hack list, or says an unbuilt row is coming later.
+func deck_choose() -> String:
+	var result: String = _deck.model.choose(_hack_panel.model.is_auto())
+	audio.sfx("confirm" if result == "opened" else "tick")
+	return result
+
+
+## The pick, for hosts that want to set it from the UI (a mouse click on the list). Calls the player's HackCaster when it
+## has `select_id`; otherwise the HUD just remembers it.
+func pick_hack(id: String) -> void:
+	_hack_panel.model.select(id)
+	var player: Object = _call(sandbox, &"get_player") as Object
+	var caster: Object = _call(player, &"hack_caster") as Object
+	if caster != null and caster.has_method(&"select_id"):
+		caster.call(&"select_id", StringName(id))
+
+
+# ---- slow time while the list is open (a tuning switch, off by default) ----
+
+func is_slowmo_active() -> bool:
+	return _slowmo_active
+
+
+func _wants_slowmo() -> bool:
+	if _knobs == null or not _deck.model.submenu_open or is_menu_open():
+		return false
+	var knobs: FeelKnobs = _knobs as FeelKnobs
+	return knobs != null and knobs.has(KNOB_SLOWMO) and knobs.get_b(KNOB_SLOWMO)
+
+
+func _set_slowmo(on: bool) -> void:
+	if on == _slowmo_active:
+		return
+	_slowmo_active = on
+	if on:
+		var knobs: FeelKnobs = _knobs as FeelKnobs
+		var scale_to: float = knobs.get_f(KNOB_SLOWMO_SCALE) if knobs != null and knobs.has(KNOB_SLOWMO_SCALE) else 0.35
+		Engine.time_scale = clampf(scale_to, 0.05, 1.0)
+	else:
+		Engine.time_scale = 1.0
+
+
+## The HUD runs on real time even while the game is slowed.
+func _process(delta: float) -> void:
+	tick(delta / maxf(Engine.time_scale, 0.05) if _slowmo_active else delta)
+
+
 # ---- time ----
 
 func tick(delta: float) -> void:
 	super(delta)
 	_hack_panel.visible = not is_menu_open()
+	_deck.visible = not is_menu_open()
 	_hack_panel.tick(delta)
+	_deck.tick(delta)
+	_set_slowmo(_wants_slowmo())
 	_boss_bar.tick(delta)
 	_radio.tick(delta)
 	_location.tick(delta)
