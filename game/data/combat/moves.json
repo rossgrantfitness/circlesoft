@@ -362,7 +362,7 @@
       "cone_deg": 70
      },
      "hit": {
-      "damage": 22,
+      "damage": 32,
       "hitstun_ms": 480,
       "knockback_m": 1.6,
       "launch_mps": 0.0,
@@ -559,7 +559,7 @@
       "from_ms": 0,
       "to_ms": 100,
       "up_mps": 1.5,
-      "hang_ms": 300
+      "hang_ms": 150
      },
      "magnet": {
       "range_m": 3.5,
@@ -665,7 +665,7 @@
       "from_ms": 0,
       "to_ms": 100,
       "up_mps": 1.0,
-      "hang_ms": 300
+      "hang_ms": 150
      },
      "magnet": {
       "range_m": 3.5,
@@ -851,7 +851,7 @@
      "state": "ground",
      "startup_ms": 30,
      "active_ms": 170,
-     "recovery_ms": 280,
+     "recovery_ms": 150,
      "cancels": {
       "dash": 260
      },
@@ -878,7 +878,7 @@
         "clip_s": 0.37
        },
        {
-        "at_ms": 480,
+        "at_ms": 350,
         "clip_s": 0.65
        }
       ],
@@ -1024,7 +1024,7 @@
      "tell": {
       "flash": "edge_cyan",
       "from_ms": 0,
-      "to_ms": 40
+      "to_ms": 100
      },
      "punish": {
       "from_ms": 260,

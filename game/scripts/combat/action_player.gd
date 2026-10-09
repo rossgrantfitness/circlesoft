@@ -76,6 +76,9 @@ var _held: Dictionary[StringName, bool] = {}
 var _presses: Array[Dictionary] = []
 var _press_local: Dictionary[StringName, int] = {}
 var _heavy_down_local: int = -1
+## Real timestamps of parry presses still waiting in the buffer, oldest first. The judge gets THESE, not the
+## moment the parry move happens to begin (a press can wait up to input_buffer_ms for a cancel window).
+var _parry_stamps: Array[int] = []
 var _event_fed: bool = false
 var _vy: float = 0.0
 var _coyote_left: float = 0.0
@@ -330,6 +333,7 @@ func reset_to(where: Transform3D) -> void:
 	_dash = null
 	_dash_cooldown_left_s = 0.0
 	_presses.clear()
+	_parry_stamps.clear()
 	if _buffer != null:
 		_buffer.clear()
 	_invuln_left_s = 0.0
@@ -405,11 +409,17 @@ func _ingest_presses() -> void:
 		var token: StringName = _token_for(action, local)
 		if token == &"":
 			continue
+		if token == TOKEN_PARRY:
+			_parry_stamps.append(int(entry["usec"]))
 		_buffer.push(token, local)
 		_press_local[token] = local
 		if action == TOKEN_HEAVY:
 			_heavy_down_local = local
 	_presses.clear()
+	# Stamps whose token has expired from the buffer go with it.
+	var keep_usec: int = int(_buffer.window_ms() * 1000.0) + 20000
+	while not _parry_stamps.is_empty() and clock.real_now_usec() - _parry_stamps[0] > keep_usec:
+		_parry_stamps.pop_front()
 
 
 func _token_for(action: StringName, _local_usec: int) -> StringName:
@@ -666,7 +676,10 @@ func _on_move_began(move_id: StringName, stick_direction: Vector3, now: int) -> 
 	if move_id == MOVE_PARRY:
 		var director: CombatDirector = find_director()
 		if director != null:
-			director.report_parry_press(clock.real_now_usec())
+			# The ORIGINAL press time, carried through the buffer; only a parry that began without a recorded press
+			# (a bot calling the runner directly) falls back to now.
+			var stamp: int = _parry_stamps.pop_front() if not _parry_stamps.is_empty() else clock.real_now_usec()
+			director.report_parry_press(stamp)
 	var anim: Dictionary = move.get("anim", {}) as Dictionary
 	_start_move_clip(anim, float(move.get("total_ms", 500.0)))
 	move_started.emit(move_id)

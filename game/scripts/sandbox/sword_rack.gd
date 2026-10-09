@@ -15,7 +15,7 @@ const LAYER_PLAYER_BODY: int = 10
 const SWORDS_DATA_ID: String = "combat/swords"
 const SPIN_DEG_PER_S: float = 40.0
 const BOB_M: float = 0.06
-const FLOAT_HEIGHT_M: float = 1.15
+const FLOAT_HEIGHT_M: float = 0.95
 ## The ring is a soft, dim marker, never bright enough to be mistaken for an enemy's wind-up warning.
 const RING_GLOW: float = 0.3
 const RING_GREY_MIX: float = 0.55
@@ -132,11 +132,11 @@ func _build() -> void:
 
 	var base: MeshInstance3D = MeshInstance3D.new()
 	var base_mesh: CylinderMesh = CylinderMesh.new()
-	base_mesh.top_radius = radius_m * 0.55
-	base_mesh.bottom_radius = radius_m * 0.7
-	base_mesh.height = 0.35
+	base_mesh.top_radius = radius_m * 0.55 * ring_scale
+	base_mesh.bottom_radius = radius_m * 0.7 * ring_scale
+	base_mesh.height = 0.3
 	base.mesh = base_mesh
-	base.position.y = 0.175
+	base.position.y = 0.15
 	var base_material: StandardMaterial3D = StandardMaterial3D.new()
 	base_material.albedo_color = Color(0.16, 0.17, 0.2)
 	base_material.roughness = 0.8
@@ -148,7 +148,7 @@ func _build() -> void:
 	ring_mesh.inner_radius = radius_m * 0.62 * ring_scale
 	ring_mesh.outer_radius = radius_m * 0.72 * ring_scale
 	_ring.mesh = ring_mesh
-	_ring.position.y = 0.37
+	_ring.position.y = 0.31
 	var ring_material: StandardMaterial3D = StandardMaterial3D.new()
 	var tint: Color = _trail_color().lerp(Color(0.5, 0.52, 0.55), RING_GREY_MIX)
 	ring_material.albedo_color = tint
@@ -184,7 +184,7 @@ func _make_label(font: Font, color: Color, offset_px: Vector2, priority: int) ->
 	label.no_depth_test = true
 	label.render_priority = priority
 	label.offset = offset_px
-	label.position.y = 1.65
+	label.position.y = 1.4
 	label.modulate = color
 	return label
 

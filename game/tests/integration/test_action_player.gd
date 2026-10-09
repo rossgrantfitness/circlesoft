@@ -721,3 +721,37 @@ func test_a_slow_stick_walks_and_attacks_are_not_rescaled() -> void:
 	_step(3)
 	assert_eq(_player.get_state(), ActionPlayer.State.ATTACK)
 	assert_ne(_player.current_clip(), &"run")
+
+
+func test_a_buffered_parry_is_rated_on_the_time_of_the_press_not_when_the_move_begins() -> void:
+	await _arena(true)
+	_player.press(&"light")
+	_step(3)
+	assert_eq(_player.get_state(), ActionPlayer.State.ATTACK)
+	assert_eq(_director._parry_presses.size(), 0)
+	var pressed_at: int = _player.clock.real_now_usec()
+	_player.press(&"parry")                                # light_1 can't be cut into a parry for 150 ms
+	_step(2)
+	assert_eq(_player.get_state(), ActionPlayer.State.ATTACK, "still waiting in the buffer")
+	_step_until(func() -> bool: return _player.get_state() == ActionPlayer.State.PARRY, 40)
+	assert_eq(_player.get_state(), ActionPlayer.State.PARRY)
+	var began_at: int = _player.clock.real_now_usec()
+	assert_eq(_director._parry_presses.size(), 1)
+	assert_eq(int(_director._parry_presses[0]), pressed_at, "the judge got the press time (_input stamp)")
+	assert_gt(began_at - pressed_at, 60000, "the move began well after the press, so the old stamp would have been late")
+
+
+func test_two_buffered_parries_each_keep_their_own_stamp() -> void:
+	await _arena(true)
+	_player.press(&"parry")
+	_step(1)
+	assert_eq(_director._parry_presses.size(), 1)
+	var first: int = int(_director._parry_presses[0])
+	assert_lt(first, _player.clock.real_now_usec() + 1)
+	_step_until(func() -> bool: return _player.get_state() != ActionPlayer.State.PARRY, 60)
+	_step(10)
+	var second_press: int = _player.clock.real_now_usec()
+	_player.press(&"parry")
+	_step(2)
+	assert_eq(_director._parry_presses.size(), 2)
+	assert_eq(int(_director._parry_presses[1]), second_press)

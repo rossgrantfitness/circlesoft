@@ -60,7 +60,7 @@
     "blend_s": 0.08,
     "clip_keys": "res://data/combat/red_clip_keys.json",
     "playback_scale_min": 0.6,
-    "playback_scale_max": 2.0,
+    "playback_scale_max": 2.4,
     "walk_below_mps": 1.1
   },
   "lamp": {"fallback_bone": "chest", "offset": [0.0, 0.1, 0.15]}
