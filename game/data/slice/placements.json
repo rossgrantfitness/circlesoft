@@ -27,7 +27,7 @@
   },
   "mk_ar_behind_claw": {
    "room": "market_arcade",
-   "item": "juice_box",
+   "item": "ration_bar",
    "count": 1
   },
   "jk_j1_glint_a": {
@@ -48,7 +48,7 @@
   },
   "jk_j2_cell": {
    "room": "junk_j2",
-   "item": "juice_box",
+   "item": "ration_bar",
    "count": 1
   },
   "jk_j4_heal": {
@@ -78,7 +78,7 @@
   "jk_j5_loot_04": {
    "room": "junk_j5",
    "credits": 50,
-   "item": "juice_box",
+   "item": "ration_bar",
    "count": 1
   },
   "jk_j5_loot_05": {
@@ -120,7 +120,7 @@
   "jk_j5_prize": {
    "room": "junk_j5",
    "credits": 300,
-   "item": "juice_box",
+   "item": "ration_bar",
    "count": 2
   }
  },

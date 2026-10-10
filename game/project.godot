@@ -298,4 +298,4 @@ psx_color_depth_enabled={
 
 [editor]
 
-run/main_run_args="-- --sandbox"
+run/main_run_args="-- --slice"
