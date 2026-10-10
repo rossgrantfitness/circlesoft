@@ -36,7 +36,7 @@
 - [x] Hacks as magic: Zap Drone, EMP, Overclock, Reboot, picked from a KH / FF command menu
 - [x] Chunky hits (freeze, white flash, punchy sound) and dash on 5 charges
 
-## Phase 1: Slice graybox ⏳ (now)
+## Phase 1: Slice graybox ⏳ (built; waiting on Ross's play)
 
 Built:
 - [x] Slice plan, game modes, one shared room system, feature switches
@@ -50,12 +50,13 @@ Built:
 - [x] Kasp's arena, the on-foot-to-robot transition, placeholder words and sounds
 
 Still to do:
-- [ ] Loader run J5: finish and wire it in (built; tests and hookups left)
-- [ ] Phase 2, the Heap robot round (in progress; 5 tests still red)
-- [ ] Gameplay hookups: saves in robot rooms, one-way door, smashable walls, encounter and radio runners, music and sound wiring
-- [ ] Graybox QA: automated run from title to the end of the boss
-- [ ] Feel pass by the Playtester
-- [ ] **Build for Ross: title to the end of the boss (Windows and Mac)**
+- [x] Loader run J5: finish and wire it in (built; tests and hookups left)
+- [x] Phase 2, the Heap robot round (in progress; 5 tests still red)
+- [x] Gameplay hookups: saves in robot rooms, one-way door, smashable walls, encounter and radio runners, music and sound wiring
+- [x] Graybox QA: automated run from title to the end of the boss
+- [x] Feel pass by the Playtester
+- [x] **Build for Ross: title to the end of the boss** (build 4, Mac, 2026-10-10; Windows on request)
+- [ ] Ross plays build 4 and sends notes
 
 ## Phase 2: Slice content and look
 
