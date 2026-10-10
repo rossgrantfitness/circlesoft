@@ -1,0 +1,174 @@
+{
+ "_about": "Strings for the field menu. {name}, {hp}, {juice}, {owner}, {names}, {stat}, {n} are replaced where shown. Item, skill and gear names come from the item and skill data, not from here.",
+ "commands": {
+  "items": {
+   "label": "Items",
+   "hint": "Look through your bag and use things."
+  },
+  "skills": {
+   "label": "Skills",
+   "hint": "Check skills. Heals work out here too."
+  },
+  "equip": {
+   "label": "Equip",
+   "hint": "Change weapons, armor and charms."
+  },
+  "status": {
+   "label": "Status",
+   "hint": "Check how everyone is doing."
+  },
+  "party": {
+   "label": "Party",
+   "hint": "Set the order the crew fights in."
+  },
+  "config": {
+   "label": "Config",
+   "hint": "Text speed, voices and timing."
+  },
+  "save": {
+   "label": "Save",
+   "hint": "Save your game at a save lamp.",
+   "locked": "Find a save lamp to save."
+  },
+  "sword": {
+   "label": "Sword",
+   "hint": "Choose the sword in Red's hand."
+  }
+ },
+ "place": {
+  "title": "Place",
+  "name": "Test Room"
+ },
+ "side": {
+  "credits": "Credits",
+  "time": "Time"
+ },
+ "items": {
+  "tabs": {
+   "items": "Items",
+   "gear": "Gear",
+   "key": "Key"
+  },
+  "empty": {
+   "items": "Nothing in the bag yet.",
+   "gear": "No spare gear in the bag.",
+   "key": "No key items yet."
+  },
+  "count": "x{n}",
+  "who": "Use it on whom?",
+  "who_all": "Use it on the whole crew? Press confirm.",
+  "gear_hint": "Spare gear. Wear it from the Equip page.",
+  "recovered": "{name} recovered {hp} HP.",
+  "juiced": "{name} got {juice} Juice back.",
+  "recovered_both": "{name} recovered {hp} HP and {juice} Juice.",
+  "revived": "{name} is back on their feet with {hp} HP.",
+  "rested": "Everyone is rested up. Full HP and Juice.",
+  "boosted": "{name} feels stronger. {stat} +{n}."
+ },
+ "skills": {
+  "head_skill": "Skill",
+  "head_cost": "Juice",
+  "who": "Who gets it?",
+  "none": "No skills yet.",
+  "cast": "{name} feels better: +{hp} HP.",
+  "cast_juice": "{name} got some Juice back."
+ },
+ "equip": {
+  "slots": {
+   "weapon": "Weapon",
+   "armor": "Armor",
+   "charm": "Charm"
+  },
+  "none": "- nothing -",
+  "remove": "Take it off",
+  "spare": "x{n}",
+  "pick_slot": "Pick a slot to change.",
+  "pick_gear": "Pick something to wear.",
+  "no_spares": "No spare {slot} in the bag.",
+  "equipped": "{name} is wearing {item}.",
+  "removed": "{name} took off the {slot}.",
+  "perks_blocks": "Blocks: {names}.",
+  "stat_names": {
+   "hp": "HP",
+   "juice": "Juice",
+   "attack": "Attack",
+   "defense": "Defense",
+   "heart": "Heart",
+   "speed": "Speed",
+   "luck": "Luck"
+  }
+ },
+ "status": {
+  "title": "Status",
+  "level": "Lv {level}",
+  "hp": "HP",
+  "juice": "Juice",
+  "xp_next": "{n} XP to next level",
+  "xp_max": "Top level",
+  "gear": {
+   "weapon": "Weapon",
+   "armor": "Armor",
+   "charm": "Charm"
+  },
+  "skills": "Skills",
+  "condition": "Status",
+  "fine": "Fine",
+  "down": "Down for the Count",
+  "no_skills": "none yet",
+  "stat_names": {
+   "hp": "HP",
+   "juice": "Juice",
+   "attack": "Attack",
+   "defense": "Defense",
+   "heart": "Heart",
+   "speed": "Speed",
+   "luck": "Luck"
+  },
+  "hint": "Up and down switch fighters."
+ },
+ "party": {
+  "leader": "Leader",
+  "slots": [
+   "1st",
+   "2nd",
+   "3rd",
+   "4th"
+  ],
+  "pick": "Pick a fighter to move.",
+  "swap": "Swap {name} with whom?",
+  "swapped": "Order set: {names}.",
+  "red_leads": "{name} always leads.",
+  "fixed": "The order can't be changed right now.",
+  "later": [
+   "Lane Chart and Swap",
+   "come later."
+  ]
+ },
+ "reasons": {
+  "battle_only": "Battle only.",
+  "lamp_only": "Use it at a save lamp.",
+  "not_owned": "None left.",
+  "key_item": "Key items can't be used here.",
+  "cant_use": "Can't use that here.",
+  "nobody_needs": "Nobody needs that right now.",
+  "nobody_down": "Nobody is Down.",
+  "all_rested": "Everyone is already rested up.",
+  "not_down": "{name} is not Down.",
+  "is_down": "{name} is Down. Needs a revive first.",
+  "already_full": "{name} is already fine.",
+  "no_juice": "Not enough Juice.",
+  "wrong_owner": "Only {owner} can use this.",
+  "too_heavy": "Heavy armor: {names} only.",
+  "not_in_bag": "Not in the bag.",
+  "bag_full_gear": "The bag has no room for the old one.",
+  "cant_equip": "Can't wear that."
+ },
+ "sword": {
+  "hint": "Put it in her hand.",
+  "in_hand": "This one is in her hand.",
+  "locked": "Not found yet.",
+  "empty": "No swords.",
+  "equipped": "{name} is in her hand.",
+  "marker": "In hand"
+ }
+}

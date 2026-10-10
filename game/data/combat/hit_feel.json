@@ -1,0 +1,42 @@
+{
+ "_about": "Hit and juggle feel numbers (docs/pivot/combat_api.md 4.2). Starting guesses; the feel knobs scale the big ones live.",
+ "version": 1,
+ "gravity_mps2": 26.0,
+ "knockback_min_weight": 0.25,
+ "juggle": {
+  "lift_falloff": 0.8,
+  "min_lift_mps": 3.0,
+  "air_hit_lift_mps": 4.2,
+  "max_hits": 10,
+  "float_ms": 380,
+  "float_gravity_scale": 0.22,
+  "float_ramp_ms": 220
+ },
+ "launcher_hold_ms": 170,
+ "string_end_move": "light_2",
+ "follow_jump": {"height_m": 2.4, "attack_after_ms": 200, "_attack_after_ms": "One-button combo: after the follow-jump starts, the air attack begins this many ms later (near the top of the jump)."},
+ "threat_margin_m": 0.35,
+ "guard": {"hitstun_scale": 0.4, "knockback_scale": 0.5},
+ "armored": {"hit_stop_scale": 0.5},
+ "hit_freeze": {
+  "_about": "Tuning v1.3 (Ross: chunky hits). The freeze on impact. Each move's own hit_stop_ms (moves.json) is its freeze in ms when the F12 knob `hit_freeze_s` sits at reference_s; the knob scales every freeze by hit_freeze_s / reference_s. So the knob reads as 'how long the heaviest hits freeze', in seconds. Light hits are about 0.10 s and heavy hits, finishers, launchers and the guard break about 0.25 s at the default.",
+  "reference_s": 0.25,
+  "guard_break_hit_stop_ms": 250
+ },
+ "stagger_ms": 1100,
+ "parry": {
+  "recoil_ms": 700,
+  "stagger_ms": 1500,
+  "parried_hit_stop_ms": 120,
+  "perfect_hit_stop_ms": 200,
+  "perfect_style": "perfect_parry"
+ },
+ "reaction": {
+  "knockdown_ms": 900,
+  "getup_ms": 600,
+  "slam_down_mps": 18.0,
+  "death_ms": 700,
+  "poise_regen_delay_ms": 1500,
+  "poise_regen_per_s": 15.0
+ }
+}

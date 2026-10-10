@@ -1,0 +1,19 @@
+{
+  "_about": "The Signals inspectors' hand scanner on the ore train (docs/maps/ore_train.md, 'Scanner sweep'). The cone is the only way an inspector notices Red: length_m long, half_angle_deg each side of where the scanner points, which swings sweep_deg left and right once every sweep_period_s. Red has to stay inside it, unblocked, for spot_time_s to be spotted (the cone turns red and a question mark pops up: never an exclamation mark, that is the battle cue). Anything in the group 'cover' taller than cover_min_height (ore heaps, container stacks, freight stacks) blocks the ray from the scanner (scan_height up) to Red's chest (target_height up); the low lashed crates do not. A cutscene pauses the sweep and the detection. After he spots her he is a normal map enemy (chase, then a fight if he catches her).",
+  "length_m": 5.0,
+  "half_angle_deg": 25.0,
+  "sweep_deg": 20.0,
+  "sweep_period_s": 2.0,
+  "spot_time_s": 0.4,
+  "scan_height": 1.0,
+  "target_height": 0.6,
+  "cover_min_height": 1.2,
+  "question_s": 1.1,
+  "question_text": "?",
+  "cone_steps": 10,
+  "cone_y": 0.045,
+  "dither_cell_m": 0.2,
+  "colors": {"calm": "#d6ecff", "spotted": "#ff4a3a"},
+  "calm_energy": 1.1,
+  "spotted_energy": 1.4
+}

@@ -1,0 +1,194 @@
+{
+ "_about": "Every string on the Config screen (scripts/ui/config_screen.gd). {ms}, {n} and similar words in braces are filled in by the screen.",
+ "title": "Config",
+ "back_hint": "Left/right changes a value. Cancel goes back.",
+ "on": "On",
+ "off": "Off",
+ "ms_format": "{ms} ms",
+ "percent_format": "{n}%",
+ "speed_names": {
+  "slow": "Slow",
+  "normal": "Normal",
+  "fast": "Fast"
+ },
+ "rows": {
+  "auto_timing": {
+   "label": "Auto-Timing",
+   "hint": "Battle timing presses themselves. Off by default."
+  },
+  "wide_windows": {
+   "label": "Wide Windows",
+   "hint": "Bigger timing windows. You still press."
+  },
+  "battle_camera": {
+   "label": "Battle Camera",
+   "hint": "Dynamic pans and cranes around the fight. Calm keeps one steady view.",
+   "value_on": "Dynamic",
+   "value_off": "Calm"
+  },
+  "timing_offset": {
+   "label": "Timing Offset",
+   "hint": "Nudge the timing for laggy TVs and headphones."
+  },
+  "tap_along": {
+   "label": "Tap-Along Test",
+   "hint": "Tap along to a beat and find your best offset.",
+   "value": "Start"
+  },
+  "text_speed": {
+   "label": "Text Speed",
+   "hint": "How fast the speech bubbles type out."
+  },
+  "auto_advance": {
+   "label": "Auto-Advance",
+   "hint": "Finished text turns by itself. Hold Cancel to hurry text."
+  },
+  "skip_seen": {
+   "label": "Skip Seen Cutscenes",
+   "hint": "Let a cutscene you have watched be skipped."
+  },
+  "master_volume": {
+   "label": "Master Volume",
+   "hint": "Everything at once."
+  },
+  "music_volume": {
+   "label": "Music Volume",
+   "hint": "The tunes."
+  },
+  "sfx_volume": {
+   "label": "SFX Volume",
+   "hint": "Menu ticks, hits and dings."
+  },
+  "voice_volume": {
+   "label": "Voice Volume",
+   "hint": "How loud the gibberish voices are."
+  },
+  "controls": {
+   "label": "Controls",
+   "hint": "Change which buttons do what.",
+   "value": "Remap"
+  },
+  "vibration": {
+   "label": "Vibration",
+   "hint": "Controller rumble.",
+   "hint_no_pad": "No controller found. Saved for when you plug one in."
+  }
+ },
+ "preview": {
+  "text": "The quick brown pup jumps over the lazy lamp.",
+  "speaker": "otis"
+ },
+ "controls": {
+  "title": "Controls",
+  "keyboard": "Keyboard",
+  "controller": "Controller",
+  "hint": "Pick a button, left/right picks keyboard or controller.",
+  "capture_key": "Press a key...",
+  "capture_pad": "Press a button...",
+  "capture_hint_key": "Press the new key. Esc cancels.",
+  "capture_hint_pad": "Press the new button. Right-click cancels.",
+  "reserved": "That one is taken (movement, Esc and F-keys can't be changed).",
+  "swapped": "Swapped with {label}.",
+  "bound": "Saved.",
+  "fixed_note": "Moving: WASD / arrows / d-pad / stick.",
+  "reset": "Reset to Defaults",
+  "reset_hint": "Put every button back the way it was.",
+  "reset_done": "Buttons are back to normal.",
+  "rows": {
+   "confirm": {
+    "label": "Confirm",
+    "hint": "Pick, advance text, confirm."
+   },
+   "cancel": {
+    "label": "Cancel",
+    "hint": "Back out. Hold to speed up text."
+   },
+   "interact": {
+    "label": "Talk / Examine",
+    "hint": "Talk to people, examine and pick things up."
+   },
+   "jump": {
+    "label": "Jump",
+    "hint": "Hop over things."
+   },
+   "run": {
+    "label": "Run",
+    "hint": "Hold to run."
+   },
+   "menu": {
+    "label": "Menu",
+    "hint": "Open the field menu."
+   },
+   "clutch": {
+    "label": "Clutch Press",
+    "hint": "The timing button in battle."
+   },
+   "light": {
+    "label": "Attack",
+    "hint": "Sword attack. Keep pressing it: Red picks the right move for the moment."
+   },
+   "heavy": {
+    "label": "Hack",
+    "hint": "Fires Red's selected hack. Sword hits charge the battery, hacks spend it. Numbers 1 to 4, the mouse wheel or the d-pad change the hack."
+   },
+   "dash": {
+    "label": "Dash",
+    "hint": "Dodge in any direction. Safe for a moment at the start."
+   },
+   "parry": {
+    "label": "Parry",
+    "hint": "Brace just before a hit lands to block or parry it."
+   },
+   "lock_on": {
+    "label": "Lock On",
+    "hint": "Lock onto the nearest enemy, or let go."
+   },
+   "camera_toggle": {
+    "label": "Camera Style",
+    "hint": "Switch between the free camera and the diorama camera."
+   },
+   "feel_panel": {
+    "label": "Feel Knobs",
+    "hint": "Open the panel that tunes how the game feels. F12 is fixed; the pad button can change."
+   }
+  },
+  "pad_buttons": [
+   "A",
+   "B",
+   "X",
+   "Y",
+   "Back",
+   "Guide",
+   "Start",
+   "L3",
+   "R3",
+   "LB",
+   "RB",
+   "D-Up",
+   "D-Down",
+   "D-Left",
+   "D-Right",
+   "Share"
+  ]
+ },
+ "tap_along": {
+  "title": "Tap-Along Test",
+  "intro_1": "A light will flash and ding on a steady beat.",
+  "intro_2": "Tap {button} right on every flash.",
+  "intro_go": "Confirm starts. Cancel goes back.",
+  "get_ready": "Get ready...",
+  "tap_now": "Tap on the flash! {n} of {total}",
+  "button_name": "Clutch",
+  "late": "Your taps ran about {ms} ms late.",
+  "early": "Your taps ran about {ms} ms early.",
+  "on_time": "Your taps landed right on the beat.",
+  "suggest": "Suggested Timing Offset: {ms} ms",
+  "unsteady": "Those taps were a bit uneven. You can still use it, or try again.",
+  "too_few": "Not enough good taps to tell. Try again.",
+  "messy": "The taps were all over the place. Try again, nice and steady.",
+  "use": "Use {ms} ms",
+  "retry": "Try Again",
+  "back": "Back",
+  "applied": "Timing Offset set to {ms} ms."
+ }
+}

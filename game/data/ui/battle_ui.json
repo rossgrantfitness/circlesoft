@@ -1,0 +1,115 @@
+{
+  "_about": "Layout, timing and look numbers for the battle HUD (scenes/ui/battle/battle_hud.tscn). All positions are internal pixels on the 384x216 UI stage. Strings live in data/text/battle.json. Rating colors follow docs/style_guide.md ('Ratings' row). Everything drawn here is placeholder art until Ross's lettering, digits, heads and icons arrive (docs/art_requests.md).",
+  "timing": {
+    "_note": "Pop-ups step at about 12 fps (style guide: no easing). Scales are the 3-step overshoot (60%, 120%, 100%); fade_alphas is the stepped fade-out (dither stand-in).",
+    "step_s": 0.0833,
+    "menu_slide_steps": 3,
+    "menu_slide_px": 320,
+    "menu_open_steps": 2,
+    "message_s": 1.4,
+    "message_s_queued": 0.7,
+    "message_open_steps": 2,
+    "ko_flash_steps": 3,
+    "bar_fill_per_s": 0.9,
+    "popup": {
+      "rating": {"in_scales": [0.6, 1.2, 1.0], "hold_s": 0.6, "drift_px": 8, "fade_alphas": [0.66, 0.33, 0.0]},
+      "number": {"in_scales": [0.7, 1.2, 1.0], "hold_s": 0.45, "drift_px": 10, "fade_alphas": [0.66, 0.33, 0.0]},
+      "cue": {"in_scales": [0.6, 1.2, 1.0], "hold_s": 0.3, "drift_px": 0, "fade_alphas": [0.5, 0.0]},
+      "slam": {"in_scales": [2.6, 1.3, 1.0], "hold_s": 0.95, "drift_px": 0, "fade_alphas": [0.66, 0.33, 0.0]},
+      "ko": {"in_scales": [0.5, 1.3, 1.0], "hold_s": 1.0, "drift_px": 0, "fade_alphas": [0.66, 0.33, 0.0]}
+    }
+  },
+  "settings": {
+    "_note": "Ranges for the timing options in Config (the field menu's Config page uses the same step).",
+    "timing_offset_min_ms": -200,
+    "timing_offset_max_ms": 200,
+    "timing_offset_step_ms": 10
+  },
+  "layout": {
+    "turn_row": {"y": 3, "head": 18, "gap": 2, "pad_x": 8, "pad_y": 4, "divider": 16, "next_alpha": 0.65},
+    "command_window": {"x": 6, "y": 58, "w": 90, "h": 96},
+    "sub_window": {"x": 100, "y": 58, "w": 214, "h": 96, "strip_h": 24, "rows": 4, "reason_y": 76},
+    "list": {"first_y": 8, "step": 16, "text_x": 20, "cursor_x": 6, "value_pad": 10},
+    "party_panel": {"x": 8, "y": 158, "w": 368, "h": 50, "col_w": 116, "col_x": 14, "arrow_x": 6, "name_y": 16, "hp_y": 31, "juice_y": 43, "bar_x": 28, "hp_bar_w": 46, "hp_bar_h": 6, "juice_bar_w": 46, "juice_bar_h": 3, "chip_w": 11, "chip_h": 12, "chip_gap": 1, "name_w": 54},
+    "message": {"y": 34, "h": 22, "pad_x": 14},
+    "target_tag": {"y": 34, "h": 22, "pad_x": 14},
+    "victory": {"x": 24, "y": 14, "w": 336, "h": 188, "left_w": 118, "icon_x": 12, "icon_y": 12, "icon_scale": 2, "title_x": 12, "title_y": 78, "row_y": 100, "row_step": 16, "cards_x": 130, "cards_y": 10, "card_w": 196, "card_gap": 4, "gain_line_h": 11, "gains_per_line": 4, "prompt_y": 182},
+    "encounter_picker": {"x": 8, "y": 40, "w": 368, "h": 152, "row_h": 24, "first_y": 22, "text_x": 20, "cursor_x": 6, "rows": 5},
+    "game_over": {"title_y": 70, "sub_y": 100, "list": {"x": 132, "y": 128, "w": 120, "h": 56}}
+  },
+  "anchors": {
+    "_note": "Offsets from the point the stage returns for screen_pos_of(id) (the top of the head, in 384x216 picture pixels).",
+    "cue": [0, -12],
+    "rating": [0, -22],
+    "number": [0, -4],
+    "target_arrow": [0, -6],
+    "body_height": 22,
+    "ko": [0, 4],
+    "fallback_party": [[286, 84], [318, 104], [262, 108], [294, 128]],
+    "fallback_enemy": [[160, 76], [124, 96], [196, 96], [160, 116]]
+  },
+  "target": {"hit_radius": 20, "bob_px": 2, "bob_s": 0.4, "arrow_w": 11, "arrow_h": 8, "highlight_ring": 14},
+  "heads": {
+    "red": {"accent": "#C8322A", "initial": "R"},
+    "otis": {"accent": "#E0782B", "initial": "O"},
+    "mox": {"accent": "#C9A23A", "initial": "M"},
+    "party_default": {"accent": "#FFB347"},
+    "enemy_default": {"accent": "#5B6573"},
+    "enemy_by_kind": {"signals_drone": "#6F8BA8", "signals_grunt": "#6F8BA8"}
+  },
+  "statuses": {
+    "_note": "Placeholder status chips (a colored tile with one letter). Final 16x16 icons: docs/art_requests.md row 35.",
+    "burnt_toast": {"letter": "B", "color": "#E0782B"},
+    "noise_ticket": {"letter": "N", "color": "#E8456A"},
+    "wobbly": {"letter": "W", "color": "#5FE0C8"},
+    "tangled": {"letter": "T", "color": "#8D97A5"},
+    "butterfingers": {"letter": "F", "color": "#D9A441"},
+    "fired_up": {"letter": "U", "color": "#FFB347"},
+    "stunned": {"letter": "S", "color": "#FFD23F"},
+    "default": {"letter": "?", "color": "#8D97A5"}
+  },
+  "tiers": {"_note": "Battle Test picker tier tags (placeholder colors; no teal, that is the call).", "tutorial": "#9BE35A", "regular": "#FFB347", "tough": "#FF7A59", "boss": "#FF5A36"},
+  "bars": {"hp": "#FF7A59", "juice": "#9BE35A", "empty": "#3A3566", "low_hp_pct": 25, "low_hp_text": "#FF7A59"},
+  "ratings": {
+    "_note": "sfx: the HUD plays the attack ratings' sounds; the stage already plays battle_block / battle_perfect_block / battle_payback from the hit signal, so those three stay empty here to avoid doubling. Placeholder lettering drawn from the UI font. 'colors' are the style guide's rating colors; more than one color cycles every cycle_steps steps. ink/white are the outline radii in pixels (2px Ink + 1px white inner = 3 / 1).",
+    "ink": 3,
+    "white": 1,
+    "highlight_px": 2,
+    "skew": 0.18,
+    "highlight": "#FFFFFF",
+    "ink_color": "#14121F",
+    "white_color": "#FFFFFF",
+    "kinds": {
+      "nice": {"colors": ["#7FE0FF"], "size": 24, "sfx": "battle_rating_nice"},
+      "rad": {"colors": ["#FFD23F"], "size": 24, "sfx": "battle_rating_rad"},
+      "totally_rad": {"colors": ["#FF3E9A", "#FF9A2E", "#FFD23F"], "size": 22, "cycle_steps": 2, "bounce_px": 3, "bounce_step_s": 0.0833, "sfx": "battle_rating_totally_rad"},
+      "blocked": {"colors": ["#8FB8FF"], "size": 18, "sfx": ""},
+      "perfect_block": {"colors": ["#FFF2B0"], "size": 20, "sfx": ""},
+      "payback": {"colors": ["#FF5A36"], "size": 21, "sfx": ""}
+    },
+    "from_press": {
+      "attack": {"nice": "nice", "rad": "rad", "totally_rad": "totally_rad"},
+      "block": {"nice": "blocked", "rad": "blocked", "totally_rad": "perfect_block"}
+    }
+  },
+  "numbers": {"size": 20, "ink": 2, "damage": "#FFFFFF", "heal": "#9BE35A", "stack_px": 8, "ink_color": "#14121F"},
+  "cue": {"fill": "#FF5A36", "outline": "#FFFFFF", "ink": "#14121F", "w": 16, "h": 16, "big_w": 24, "big_h": 16, "shake_px": 1, "shake_s": 0.2},
+  "slam": {"clear_before_cue_ms": 150, "y": 70, "band_h": 40, "band_color": "#14121F", "band_alpha": 0.85, "size": 26, "colors": ["#FFE08A"], "shake_px": 2, "shake_steps": 2, "stripe_color": "#FF5A36", "stripe_h": 3},
+  "ko": {"size": 40, "colors": ["#FF5A36", "#FFD23F"], "cycle_steps": 3, "hold_s": 1.0, "freeze_s": 0.35, "to_end_s": 0.3, "flash_alpha": 0.7, "y": 96},
+  "victory": {
+    "dim_step": 4,
+    "xp_rate": 400.0,
+    "credits_rate": 400.0,
+    "count_min_s": 0.35,
+    "count_max_s": 1.0,
+    "row_reveal_s": 0.18,
+    "level_reveal_s": 0.3,
+    "hold_after_s": 1.4,
+    "input_grace_s": 0.4,
+    "prompt_blink_s": 0.5,
+    "title_size": 20
+  },
+  "game_over": {"dim_step": 7, "delay_s": 0.9, "title_size": 32, "input_grace_s": 0.3},
+  "end": {"ran_delay_s": 1.0},
+  "sfx": {"menu_open": "battle_menu_open", "ko": "battle_ko", "victory": "battle_victory", "game_over": "battle_game_over"}
+}

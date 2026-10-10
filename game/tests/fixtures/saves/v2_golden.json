@@ -1,0 +1,17 @@
+{
+	"save_version": 2,
+	"bag": {"ration_bar": 3, "juice_box": 1},
+	"flags": {"otis_met": true},
+	"party": ["red", "mox"],
+	"credits": 340,
+	"member_state": {
+		"red": {"level": 5, "xp": 410, "hp": 40, "hp_max": 52, "juice": 9, "juice_max": 15, "equipment": {"weapon": "scrap_sword", "armor": "", "charm": "lucky_lamp"}, "skills": ["porch_light"], "bonus": {"hp": 2}},
+		"otis": {"level": 3, "xp": 90, "hp": 61, "hp_max": 66, "juice": 5, "juice_max": 10},
+		"mox": {"level": 4, "xp": 150, "hp": 30, "hp_max": 34, "juice": 14, "juice_max": 16}
+	},
+	"play_time_s": 3725.5,
+	"location": {"room": "tower_floor_2", "spawn": "lamp"},
+	"story_beat": "tower_climb",
+	"opened": ["crate_dock_1", "pickup_card_a"],
+	"hero_name": "Dot"
+}

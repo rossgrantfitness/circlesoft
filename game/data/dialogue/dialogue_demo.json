@@ -1,0 +1,22 @@
+{
+  "_about": "Short showcase conversations for the dialogue system: portraits that change expression mid-line ({face:...} tags), and a crowd NPC in the plain box. They are used by the dialogue bench (scenes/debug/dialogue_test.tscn), the screenshots and the tests; the Writer's real town lines live in their own files. Placeholder text.",
+  "conversations": {
+    "demo_mox_faces": [
+      {"speaker": "mox", "face": "boasting", "text": "Behold! My Automatic Door-Opener-Closer-Opener! {face:panicking}Wait. Why is it ticking? {face:sheepish}Tuesday, did you touch the button? {face:proud}Never mind! Ticking means it's working."},
+      {"speaker": "mox", "text": "{face:focused}Okay, okay. Hold this. {face:panicking}NOT THAT END!"}
+    ],
+
+    "demo_otis_faces": [
+      {"speaker": "otis", "face": "calm", "text": "Welcome to Harrow Landing, friend. {face:apologetic}Sorry about the smell. {face:laughing}That's the harbor! We stopped noticing years ago. {face:calm}You'll get used to it."}
+    ],
+
+    "demo_crowd_dockhand": [
+      {"speaker": "crowd_dockhand", "text": "Mind the cranes. They only swing at folks who ask if they're safe."},
+      {"speaker": "crowd_dockhand", "text": "Lamps are lit, tide's in, and nobody's lost a boat since Tuesday. Good night, all around."}
+    ],
+
+    "demo_crowd_named_line": [
+      {"speaker": "crowd_townsfolk", "name": "Baker", "text": "Fresh rolls! Still warm, still slightly crooked, still the best on the dock."}
+    ]
+  }
+}

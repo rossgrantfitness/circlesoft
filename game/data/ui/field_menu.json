@@ -1,0 +1,207 @@
+{
+  "_about": "Layout for the field menu (internal pixels, 384x216). Strings live in data/text/field_menu.json, colors for HP / Juice / arrows are in 'colors' (palette names come from ui/ui_theme.json).",
+  "open_steps": 4,
+  "page_slide_px": 8,
+  "page_slide_steps": 3,
+  "commands": [
+    {
+      "id": "items",
+      "page": "items"
+    },
+    {
+      "id": "skills",
+      "page": "skills"
+    },
+    {
+      "id": "equip",
+      "page": "equip"
+    },
+    {
+      "id": "status",
+      "page": "status"
+    },
+    {
+      "id": "party",
+      "page": "party"
+    },
+    {
+      "id": "config",
+      "page": "config"
+    },
+    {
+      "id": "save",
+      "page": "save"
+    }
+  ],
+  "main_window": {
+    "x": 8,
+    "y": 8,
+    "w": 92,
+    "h": 128
+  },
+  "place_window": {
+    "x": 8,
+    "y": 140,
+    "w": 92,
+    "h": 30
+  },
+  "side_window": {
+    "x": 108,
+    "y": 8,
+    "w": 268,
+    "h": 162
+  },
+  "info_window": {
+    "x": 8,
+    "y": 173,
+    "w": 368,
+    "h": 35
+  },
+  "list_first_y": 10,
+  "list_step": 16,
+  "list_text_x": 20,
+  "cursor_x": 6,
+  "save_spot_radius": 2.2,
+  "colors": {
+    "hp": "#FF7A59",
+    "juice": "#9BE35A",
+    "up": "#9BE35A",
+    "down": "#FF7A59",
+    "reason": "#FF9B7A",
+    "good": "#9BE35A"
+  },
+  "portrait_size": 28,
+  "portrait_initial_size": 16,
+  "hp_bar_h": 6,
+  "juice_bar_h": 3,
+  "bar_label_w": 36,
+  "member_column": {
+    "cursor_x": 2,
+    "row_h": 48,
+    "compact_row_h": 50,
+    "panel_row_h": 44,
+    "portrait": 28,
+    "portrait_x": 20,
+    "compact_portrait_x": 16,
+    "width": 128,
+    "compact_width": 46,
+    "text_x": 54,
+    "panel_inset": 8,
+    "panel_pick_inset": 22
+  },
+  "main_panel": {
+    "x": 0,
+    "y": 0,
+    "footer_y": 146
+  },
+  "items_page": {
+    "tabs_y": 12,
+    "tab_x": [
+      8,
+      50,
+      88
+    ],
+    "list": {
+      "x": 0,
+      "y": 16,
+      "w": 260,
+      "h": 138,
+      "first_y": 3,
+      "step": 16,
+      "rows": 8
+    },
+    "target": {
+      "x": 0,
+      "y": 20
+    },
+    "target_header_y": 12
+  },
+  "skills_page": {
+    "header_y": 12,
+    "list": {
+      "x": 128,
+      "y": 16,
+      "w": 132,
+      "h": 138,
+      "first_y": 3,
+      "step": 16,
+      "rows": 8
+    },
+    "column": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  "equip_page": {
+    "column": {
+      "x": 0,
+      "y": 2
+    },
+    "slots": {
+      "x": 46,
+      "y": 2,
+      "w": 214,
+      "h": 48,
+      "first_y": 3,
+      "step": 15,
+      "text_x": 66,
+      "rows": 3,
+      "text_x_items": 22
+    },
+    "tag_x": 20,
+    "removable_slots": [
+      "armor",
+      "charm"
+    ],
+    "stats": {
+      "x": 46,
+      "y": 53,
+      "step": 12,
+      "label_x": 14,
+      "now_right": 112,
+      "arrow_x": 120,
+      "next_right": 158
+    }
+  },
+  "status_page": {
+    "column": {
+      "x": 0,
+      "y": 2
+    },
+    "x": 50,
+    "name_y": 13,
+    "bar_hp_y": 27,
+    "bar_juice_y": 40,
+    "stat_y": [
+      56,
+      69
+    ],
+    "stat_cols": [
+      4,
+      74,
+      144
+    ],
+    "gear_y": [
+      87,
+      99,
+      111
+    ],
+    "tag_x": 4,
+    "value_x": 54,
+    "skills_y": [
+      127,
+      139
+    ],
+    "w": 208,
+    "stat_value_w": 62
+  },
+  "party_page": {
+    "column": {
+      "x": 0,
+      "y": 0
+    },
+    "label_x": 140,
+    "label_dy": 22
+  },
+  "page_inset": 4
+}

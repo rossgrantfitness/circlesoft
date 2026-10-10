@@ -1,0 +1,37 @@
+{
+  "_about": "Strings for the shops. {name}, {n}, {total}, {item} are replaced where shown. 'reasons' are keyed by the ShopLogic blocker ids.",
+  "commands": {
+    "buy": "Buy",
+    "sell": "Sell",
+    "leave": "Leave"
+  },
+  "hints": {
+    "buy": "See what's on the shelf.",
+    "sell": "Sell things from your bag for half what they cost.",
+    "leave": "Back out to the street."
+  },
+  "credits": "Credits",
+  "owned": "Owned",
+  "list_title": {
+    "buy": "For sale",
+    "sell": "Your bag"
+  },
+  "empty_sell": "Nothing here to sell.",
+  "quantity": {
+    "how_many_buy": "How many?",
+    "how_many_sell": "Sell how many?",
+    "total": "Total",
+    "owned": "Owned"
+  },
+  "bought": "Bought {n} {item}. Keep the receipt. They check.",
+  "sold": "Sold {n} {item}. No questions asked.",
+  "reasons": {
+    "unknown_item": "The shop doesn't deal in that.",
+    "bad_quantity": "Pick at least one.",
+    "key_item": "Key items can't be bought or sold.",
+    "not_for_sale": "Not for sale.",
+    "not_enough_credits": "Not enough credits.",
+    "bag_full": "You can't carry any more of those (99 max).",
+    "not_owned": "You don't have that many."
+  }
+}

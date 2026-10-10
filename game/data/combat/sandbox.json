@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "_note": "The combat sandbox arena (docs/pivot/combat_api.md 1 and 6). Metres. Positions are [x, y, z] on the floor (y 0 = the floor). Tiles are ids from data/world/city_texture_atlas.json; a missing tile falls back to plain grey.",
+  "look_profile": "grim_ps2",
+  "fallback_look_profile": "grim",
+  "internal_resolution": "640x360",
+  "stage_size": [640, 360],
+  "capture_mouse": true,
+  "respawn_s": 6.0,
+  "scenes": {
+    "player": "res://scenes/actors/action_player.tscn"
+  },
+  "attachments": [
+    {"id": "director", "script": "res://scripts/combat/combat_director.gd", "bind": false},
+    {"id": "fx", "script": "res://scripts/combat/fx/combat_fx.gd", "bind": true},
+    {"id": "hud", "scene": "res://scenes/ui/sandbox/sandbox_hud.tscn", "layer": "stage", "bind": true}
+  ],
+
+  "arena": {
+    "size_m": [44.0, 44.0],
+    "wall_height_m": 7.0,
+    "wall_thickness_m": 1.0,
+    "tile_variant": "clean",
+    "tile_m": 2.0,
+    "floor_tile": "floor_plate_diamond_cross_a",
+    "wall_tile": "rust_panel_strips_riveted",
+    "pillar_tile": "steel_plate_riveted_grey",
+    "ledge_tile": "floor_plate_diamond_cross_a",
+    "grey": [0.34, 0.35, 0.38],
+    "pillars": [
+      {"pos": [-10.0, 0.0, -4.0], "radius": 1.0, "height": 5.0},
+      {"pos": [10.0, 0.0, -4.0], "radius": 1.0, "height": 5.0},
+      {"pos": [-10.0, 0.0, 6.0], "radius": 1.0, "height": 5.0},
+      {"pos": [10.0, 0.0, 6.0], "radius": 1.0, "height": 5.0},
+      {"pos": [0.0, 0.0, -2.0], "radius": 0.7, "height": 2.4}
+    ],
+    "ledges": [
+      {"pos": [0.0, 0.0, -17.0], "size": [18.0, 1.2, 6.0]},
+      {"pos": [-17.0, 0.0, 8.0], "size": [5.0, 0.7, 7.0]}
+    ],
+    "ramps": [
+      {"pos": [-6.0, 0.0, -8.0], "dir": [0.0, 0.0, -1.0], "width_m": 4.0, "length_m": 6.05, "rise_m": 1.2}
+    ]
+  },
+  "lighting": {
+    "key": {"color": "#ffd9b0", "energy": 1.1, "rot_deg": [-58.0, 35.0, 0.0], "shadow": true, "shadow_max_distance_m": 30.0},
+    "ambient": {"color": "#59607a", "energy": 1.1},
+    "background": "#14172a",
+    "fog": {"color": "#1f2540", "density": 0.012},
+    "lamps": [
+      {"pos": [-10.0, 4.5, -4.0], "color": "#ffb347", "energy": 2.2, "range": 14.0},
+      {"pos": [10.0, 4.5, 6.0], "color": "#4fd8ff", "energy": 2.0, "range": 14.0},
+      {"pos": [0.0, 5.0, -15.0], "color": "#ff5fa8", "energy": 1.8, "range": 14.0}
+    ]
+  },
+  "robot_zone": {
+    "_note": "The giant-robot scale test (CS-21). The yard is through a gate in the east wall (layout in data/combat/robot_yard.json, body-size numbers in data/combat/scale_profiles.json). Set enabled to false to get the plain arena back.",
+    "enabled": true,
+    "enemy_spawns": [
+      {"enemy": "grunt", "pos": [84.0, 0.1, -20.0]},
+      {"enemy": "grunt", "pos": [112.0, 0.1, 18.0]},
+      {"enemy": "grunt", "pos": [236.0, 0.1, -8.0]}
+    ]
+  },
+  "player_spawn": {"pos": [0.0, 0.1, 12.0], "yaw_deg": 180.0},
+  "enemy_spawns": [
+    {"enemy": "grunt", "pos": [-6.0, 0.1, 0.0]},
+    {"enemy": "grunt", "pos": [6.0, 0.1, 0.0]},
+    {"enemy": "grunt", "pos": [-3.0, 0.1, -9.0]},
+    {"enemy": "grunt", "pos": [4.0, 0.1, -8.0]},
+    {"enemy": "brute", "pos": [0.0, 0.1, -9.0]}
+  ],
+  "enemy_scenes": {
+    "grunt": "res://scenes/actors/enemies/grunt.tscn",
+    "brute": "res://scenes/actors/enemies/brute.tscn",
+    "signals_drone": "res://scenes/actors/enemies/signals_drone.tscn",
+    "wall_turret": "res://scenes/actors/enemies/wall_turret.tscn"
+  },
+  "racks": {
+    "interact_radius_m": 0.9,
+    "ring_scale": 0.6,
+    "label_show_m": 2.5,
+    "label_fade_m": 0.5,
+    "stands": [
+      {"sword": "katana_cyan", "pos": [-12.5, 0.0, 17.5]},
+      {"sword": "heavy_duty", "pos": [-7.5, 0.0, 17.5]},
+      {"sword": "hook_cyan", "pos": [-2.5, 0.0, 17.5]},
+      {"sword": "glass_core", "pos": [2.5, 0.0, 17.5]},
+      {"sword": "machete", "pos": [7.5, 0.0, 17.5]},
+      {"sword": "twin_orange", "pos": [12.5, 0.0, 17.5]}
+    ]
+  }
+}

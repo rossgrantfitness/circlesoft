@@ -1,0 +1,74 @@
+{
+  "_about": "What the battle simulator checks. Fight time = virtual-clock timeline ms plus menu_ms_per_command for every party command. Tiers are set per encounter in encounters.json. Win-rate floors/ceilings are per player type and tier.",
+  "menu_ms_per_command": 2000,
+  "fight_seconds": {
+    "tutorial": {"min": 25, "max": 90},
+    "regular":  {"min": 60, "max": 180},
+    "tough":    {"min": 90, "max": 240},
+    "boss":     {"min": 300, "max": 480}
+  },
+  "win_rate": {
+    "tutorial": {"perfect": [0.99, 1.0], "good": [0.97, 1.0], "auto": [0.9, 1.0], "miss": [0.8, 1.0]},
+    "regular":  {"perfect": [0.97, 1.0], "good": [0.85, 1.0], "auto": [0.7, 1.0], "miss": [0.3, 1.0]},
+    "tough":    {"perfect": [0.9, 1.0],  "good": [0.8, 1.0], "auto": [0.5, 1.0], "miss": [0.0, 0.6]},
+    "boss":     {"perfect": [0.9, 1.0],  "good": [0.7, 1.0], "auto": [0.4, 1.0], "miss": [0.0, 0.5]}
+  },
+  "perfect_beats_miss_by": 0.1,
+  "level_at_kasp": 6,
+  "credits_at_kasp": 1500,
+  "walkthrough": {
+    "_about": "The slice's fights in the order a player meets them (docs/maps: ore train, Harrow's dock fight, the Spillway, the jammer works), with who is in the party for each. optional = a fight a player can dodge (the route 'must_win' skips them). Fighters join the first time they appear, at the party's top level minus join_level_offset (the studio's call: joiners arrive at the party's level). final_level and battle_credits are checked on the full route before Kasp; must_win_final_level on the dodger's route.",
+    "join_level_offset": 0,
+    "route": [
+      {"encounter": "train_tutorial", "party": ["red"]},
+      {"encounter": "dock_ambush", "party": ["red", "otis"]},
+      {"encounter": "spillway_patrol", "party": ["red", "otis"], "optional": true},
+      {"encounter": "card_solo", "party": ["red", "otis", "mox"]},
+      {"encounter": "drone_flock", "party": ["red", "otis", "mox"], "optional": true},
+      {"encounter": "card_pair", "party": ["red", "otis", "mox"]},
+      {"encounter": "card_squad", "party": ["red", "otis", "mox"]},
+      {"encounter": "ambush_no_exit", "party": ["red", "otis", "mox"], "optional": true},
+      {"encounter": "kasp_hushmaster", "party": ["red", "otis", "mox"], "bag": "boss_bag", "boss": true}
+    ],
+    "final_level": [6, 6],
+    "must_win_final_level": [5, 6],
+    "battle_credits": [800, 1100],
+    "min_completed_rate": {"perfect": 0.95, "good": 0.8, "auto": 0.5, "miss": 0.0}
+  },
+  "sim": {
+    "good_sigma_ms": 40,
+    "good_lapse_chance": 0.08,
+    "hold_lead_ms": 450,
+    "start_bag": {"ration_bar": 4, "can_of_chili": 1, "canned_coffee": 2, "smelling_salts": 1, "burn_gel": 1},
+    "heal_below_pct": 40,
+    "boss_bag": {"ration_bar": 6, "can_of_chili": 3, "canned_coffee": 3, "juice_box": 2, "smelling_salts": 2, "burn_gel": 1},
+    "scramble_follow": {"good": 0.45},
+    "gear": {
+      "_about": "What the simulated party wears, by party level (the highest by_level row at or below the level wins): the starting gear; then the three shop weapons bought in town (about 1,100 credits); then Mox in the Padded Work Vest too. Loadouts are item ids from items/equipment.json. Remove this block to simulate a party in no gear at all.",
+      "loadouts": {
+        "starting": {
+          "red": {"weapon": "scrap_sword", "armor": "quilted_lining", "charm": ""},
+          "otis": {"weapon": "dock_mallet", "armor": "lucky_coveralls", "charm": ""},
+          "mox": {"weapon": "big_wrench", "armor": "too_many_pockets_vest", "charm": ""}
+        },
+        "shop_weapons": {
+          "red": {"weapon": "rebar_blade", "armor": "quilted_lining", "charm": ""},
+          "otis": {"weapon": "rivet_hammer", "armor": "lucky_coveralls", "charm": ""},
+          "mox": {"weapon": "pipe_wrench", "armor": "too_many_pockets_vest", "charm": ""}
+        },
+        "shop_full": {
+          "red": {"weapon": "rebar_blade", "armor": "quilted_lining", "charm": ""},
+          "otis": {"weapon": "rivet_hammer", "armor": "lucky_coveralls", "charm": ""},
+          "mox": {"weapon": "pipe_wrench", "armor": "padded_work_vest", "charm": ""}
+        }
+      },
+      "by_level": [
+        {"level": 1, "loadout": "starting"},
+        {"level": 3, "loadout": "shop_weapons"},
+        {"level": 5, "loadout": "shop_full"}
+      ]
+    },
+    "checks_runs": 200,
+    "full_runs": 5000
+  }
+}

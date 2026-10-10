@@ -1,0 +1,932 @@
+{
+ "_about": "Enemies for the combat sandbox (docs/pivot/combat_api.md 4.2). Numbers are starting guesses for Ross to tune. 'model' is tried first, then 'fallback_model', then a coloured blockout (capsule or box) so nothing is ever missing.",
+ "version": 1,
+ "max_attackers": 2,
+ "token_rules": {
+  "_about": "enemy_ai_design 5. Defending and fleeing enemies hold no token (they do not ask). Two hits never land closer than min_impact_gap_ms. Only max_rear_attackers enemy may attack from Red's rear arc (rear_arc_deg wide, centred behind her). A flanker queues as if it had waited flanker_queue_bonus_ms longer. The 'Enemies attacking at once' feel knob (enemy_max_attackers) overrides max_attackers.",
+  "min_impact_gap_ms": 450,
+  "max_rear_attackers": 1,
+  "rear_arc_deg": 120,
+  "flanker_queue_bonus_ms": 1500,
+  "max_flankers": 1,
+  "defending_holds_token": false,
+  "fleeing_holds_token": false
+ },
+ "telegraph_rules": {
+  "_about": "enemy_ai_design 4. Every attack: at least min_windup_ms from telegraph to impact (rear_min_windup_ms when the attacker stands in Red's rear arc), and the aim locks at least min_aim_lock_before_impact_ms before impact. The 'Attack wind-up length' knob can only make wind-ups longer. tests/unit/test_enemy_ai_data.gd checks every enemy attack against these.",
+  "min_windup_ms": 500,
+  "rear_min_windup_ms": 650,
+  "min_aim_lock_before_impact_ms": 150,
+  "rear_arc_deg": 120
+ },
+ "play_bounds": {
+  "_about": "B8 safety net. An enemy that leaves the playable space (physics blow-up, bad launch) is taken out of play cleanly and counted as defeated, instead of flying off and flooding the log. All distances are from the enemy's spawn spot. kill_below_spawn_m: lower than this (negative) is below the floor; ceiling_above_spawn_m: higher than this is above the level; max_from_spawn_m: further than this sideways is out of the arena. spawn_gap_m: extra space left when an enemy spawned on top of an ally steps clear of it.",
+  "kill_below_spawn_m": -30.0,
+  "ceiling_above_spawn_m": 60.0,
+  "max_from_spawn_m": 300.0,
+  "spawn_gap_m": 0.1
+ },
+ "player_read": {
+  "_about": "How enemies read Red: her move as a class (light / heavy / launcher / air; a move not listed here is classed from its own data), how long a string of her hits stays 'a combo', and what counts as a dash toward an enemy.",
+  "combo_gap_ms": 1200,
+  "move_class": {
+   "light_1": "light", "light_2": "light", "light_3": "light",
+   "heavy": "heavy", "launcher": "launcher",
+   "air_1": "air", "air_2": "air", "air_3": "air",
+   "parry": ""
+  },
+  "dash_toward_dot": 0.7,
+  "dash_toward_range_m": 7.0
+ },
+ "enemies": {
+  "grunt": {
+   "name": "Cyberwolf Sentinel",
+   "hijackable": true,
+   "hijack": {"_about": "Overclock can take this enemy for a few seconds (plan 4.4 lists the cop/Grunt). Added by the Combat Programmer so the sandbox has something to hijack; the Combat Designer keeps it (VS-17): a hijacked cop is the answer to a pack.", "color": "#33f2ff"},
+   "roster_name": "Signals cop",
+   "tags": ["cop", "signals"],
+   "roster": {"_about": "VS-17. In the slice the Grunt IS the Signals cop (Ross's Cyberwolf Sentinel). No stat changed. Tags: cop = a Signals foot soldier; no 'robot' tag on purpose, so EMP shoves cops but only stuns drones, turrets and robots.", "job": "the bread-and-butter fighter: fills the battery, teaches lock-on and the dash", "answers": ["sword", "zap", "overclock"]},
+   "model": "res://art/final/enemies/cyberwolf_sentinel_rigged_ual.glb",
+   "fallback_model": "res://art/final/enemies/cyberwolf_sentinel_ross_v1.glb",
+   "blockout": {"shape": "capsule", "color": "#5d6f8c", "face_color": "#e8d36a"},
+   "height_m": 1.19,
+   "radius_m": 0.36,
+   "hp": 48,
+   "poise": 30,
+   "poise_regen_per_s": 15,
+   "poise_regen_delay_ms": 1500,
+   "weight": 1.0,
+   "launchable": true,
+   "base_armor": false,
+   "move_set": "grunt",
+   "move_speed_mps": 2.8,
+   "turn_rate_deg_per_s": 420,
+   "brain": {
+    "notice_range_m": 14.0,
+    "notice_ms": 450,
+    "circle_range_m": 4.5,
+    "min_range_m": 2.2,
+    "circle_speed_mult": 0.55,
+    "circle_flip_ms": [1500, 3200],
+    "attack_interval_ms": [1400, 3000],
+    "recover_ms": 450,
+    "react_ms": 250,
+    "land_react_ms": 300,
+    "dead_ms": 100000
+   },
+   "attacks": [
+    {"move": "swipe", "weight": 1.0, "track_ms": 380, "when": {"max_dist_m": 2.1, "player_airborne": false}},
+    {"move": "swipe", "weight": 0.5, "track_ms": 380, "when": {"max_dist_m": 2.1, "player_airborne": true}}
+   ],
+   "behaviour": {
+    "role": "agile: dodges, hit-and-runs, flanks, flees",
+    "rear_move": "swipe_flank",
+    "clips": {
+     "idle": {
+      "clip": "idle",
+      "source": "Idle_Loop"
+     },
+     "notice": {
+      "clip": "notice",
+      "source": "Sword_Idle"
+     },
+     "walk": {
+      "clip": "walk",
+      "source": "Walk_Loop"
+     },
+     "strafe": {
+      "clip": "walk",
+      "source": "Walk_Loop",
+      "note": "same clip, body turned to face Red"
+     },
+     "approach": {
+      "clip": "run",
+      "source": "Jog_Fwd_Loop"
+     },
+     "retreat": {
+      "clip": "retreat",
+      "source": "Jog_Fwd_Loop",
+      "reverse": true
+     },
+     "flank": {
+      "clip": "stalk",
+      "source": "Crouch_Fwd_Loop",
+      "speed_scale": 1.4
+     },
+     "flee": {
+      "clip": "flee",
+      "source": "Sprint_Loop"
+     },
+     "dodge_side": {
+      "clip": "dodge_side",
+      "source": "Sword_Dash"
+     },
+     "dodge_back": {
+      "clip": "dodge_back",
+      "source": "Roll"
+     },
+     "block_start": {
+      "clip": "block_start",
+      "source": "Sword_Block",
+      "use": "first 0.3 s"
+     },
+     "block_hold": {
+      "clip": "block_hold",
+      "source": "Idle_Shield_Loop"
+     },
+     "block_impact": {
+      "clip": "block_impact",
+      "source": "Shield_OneShot",
+      "note": "small shudder when a hit is blocked"
+     },
+     "block_break": {
+      "clip": "block_break",
+      "source": "Idle_Shield_Break"
+     },
+     "flinch_a": {
+      "clip": "hurt",
+      "source": "Hit_Chest"
+     },
+     "flinch_b": {
+      "clip": "hurt_head",
+      "source": "Hit_Head"
+     },
+     "stagger": {
+      "clip": "stagger",
+      "source": "Hit_Chest",
+      "speed_scale": 0.6,
+      "note": "slowed, held at the end pose"
+     },
+     "launched": {
+      "clip": "launched",
+      "source": "Hit_Knockback",
+      "use": "first 0.4 s then hold the airborne pose"
+     },
+     "knockdown": {
+      "clip": "knockdown",
+      "source": "Hit_Knockback",
+      "use": "landing half"
+     },
+     "getup": {
+      "clip": "getup",
+      "source": "LayToIdle"
+     },
+     "death": {
+      "clip": "death",
+      "source": "Death01"
+     }
+    },
+    "defend": {
+     "reaction_ms": [
+      80,
+      150
+     ],
+     "threat_range_m": 3.2,
+     "read_weight": {
+      "light": 0.6,
+      "heavy": 1.0,
+      "launcher": 0.8,
+      "air": 0.4
+     },
+     "dodge_chance": 0.15,
+     "block_chance": 0.04,
+     "dodge_cooldown_ms": 2500,
+     "block_cooldown_ms": 1800,
+     "fatigue_per_defence": 0.4,
+     "fatigue_decay_s": 4.0,
+     "no_defence_in_flare": true,
+     "combo_escape": {
+      "after_hits": 3,
+      "window_ms": 2500,
+      "chance": 0.25,
+      "move": "dodge"
+     },
+     "dodge": {
+      "side_pct": 70,
+      "back_pct": 30,
+      "back_if_closer_m": 1.6,
+      "counter_chance": 0.15,
+      "counter_move": "swipe"
+     }
+    },
+    "guard": {
+     "arc_deg": 150,
+     "meter": 24,
+     "meter_regen_per_s": 12,
+     "regen_delay_ms": 800,
+     "chip_damage_scale": 0.25,
+     "min_chip_damage": 1,
+     "knockback_scale": 0.35,
+     "hit_stop_scale": 0.5,
+     "break_poise": 20,
+     "break_by_launcher": true,
+     "max_in_row": 2,
+     "counter_chance": 0.0,
+     "hold_ms": [350, 550],
+     "drop_after_threat_ms": 300,
+     "spark": "guard",
+     "sfx": "combat_hit_light"
+    },
+    "reposition": {
+     "ring_m": [
+      3.2,
+      5.0
+     ],
+     "separation_m": 1.6,
+     "slot_spread_deg": 70,
+     "crowd_count": 2,
+     "crowd_radius_m": 2.6,
+     "back_off_extra_m": 1.2,
+     "back_off_red_combo_len": 2,
+     "retreat_after_attack_chance": 0.5,
+     "retreat_m": 2.0,
+     "keep_away_chance": 0.35,
+     "keep_away_cooldown_ms": 3000
+    },
+    "low_health": {
+     "mode": "flee_or_flank",
+     "threshold_frac": 0.3,
+     "flee_chance_alone": 0.5,
+     "flee_chance_pack": 0.2,
+     "pack_radius_m": 8.0,
+     "flee": {
+      "speed_mps": 4.6,
+      "until_dist_m": 9.0,
+      "max_ms": 3500,
+      "max_per_life": 1,
+      "bold_after_ms": 6000,
+      "cornered_after_ms": 600,
+      "cornered_move": "swipe",
+      "hit_while_fleeing": "knockdown",
+      "release_token": true
+     },
+     "flank": {
+      "arc_deg": [
+       135,
+       225
+      ],
+      "radius_m": 3.6,
+      "speed_mult": 1.3,
+      "hold_ms": 800,
+      "max_ms": 3500,
+      "move": "swipe_flank",
+      "track_ms": 480,
+      "token_priority_ms": 1500,
+      "max_flankers": 1
+     }
+    },
+    "alert": {
+     "radius_m": 9.0,
+     "ally_notice_ms": 150,
+     "step_up_ms": 900,
+     "on_ally_hit": true,
+     "on_ally_death": true,
+     "ally_down_morale_hit": 0.08,
+     "morale_window_s": 6.0,
+     "morale_max_bonus": 0.16
+    },
+    "reactions": {
+     "flinch_max_hitstun_ms": 400,
+     "turn_to_red_ms": 120,
+     "stagger_ms": 1100,
+     "getup_roll_chance": 0.25,
+     "getup_invuln_ms": 250,
+     "retaliate_chance": 0.1,
+     "retaliate_cooldown_ms": 3500,
+     "retaliate_range_m": 2.1,
+     "flinch_anims": [
+      "flinch_a",
+      "flinch_b"
+     ]
+    }
+   },
+   "look": "grunt",
+   "telegraph_color": "#ff4a3a",
+   "death_color": "#222222"
+  },
+  "brute": {
+   "name": "Brute",
+   "roster_name": "Signals heavy",
+   "tags": ["heavy", "signals"],
+   "roster": {"_about": "VS-17. In the slice the Brute is the Signals heavy until Ross's model arrives. No stat changed. Its guard (guard.meter 60) is the EMP lesson: EMP breaks guards, so the pack is shoved off and the heavy is open for 1.3 s.", "job": "the slow, armoured wall: teaches 'break the guard, then punish'", "answers": ["emp", "launcher", "turret_fire"]},
+   "model": "res://art/placeholder/enemies/sandbox_brute/enm_sandbox_brute_ual.glb",
+   "fallback_model": "",
+   "blockout": {"shape": "box", "color": "#7a4f3a", "face_color": "#e8a23a"},
+   "height_m": 1.95,
+   "radius_m": 0.6,
+   "hp": 220,
+   "poise": 90,
+   "poise_regen_per_s": 10,
+   "poise_regen_delay_ms": 2500,
+   "weight": 3.0,
+   "launchable": false,
+   "base_armor": true,
+   "move_set": "brute",
+   "move_speed_mps": 2.0,
+   "turn_rate_deg_per_s": 240,
+   "brain": {
+    "notice_range_m": 16.0,
+    "notice_ms": 600,
+    "circle_range_m": 5.5,
+    "min_range_m": 3.0,
+    "circle_speed_mult": 0.4,
+    "circle_flip_ms": [2000, 4000],
+    "attack_interval_ms": [2200, 4200],
+    "recover_ms": 700,
+    "react_ms": 200,
+    "land_react_ms": 300,
+    "dead_ms": 100000
+   },
+   "attacks": [
+    {"move": "slam", "weight": 1.0, "track_ms": 600, "when": {"max_dist_m": 3.2, "player_airborne": false}},
+    {"move": "slam", "weight": 0.6, "track_ms": 600, "when": {"max_dist_m": 3.2, "player_airborne": true}}
+   ],
+   "behaviour": {
+    "role": "heavy: blocks, stands his ground, never flees, enrages",
+    "clips": {
+     "idle": {
+      "clip": "idle",
+      "source": "Zombie_Idle_Loop"
+     },
+     "notice": {
+      "clip": "notice",
+      "source": "Zombie_Scratch",
+      "use": "first 0.5 s"
+     },
+     "walk": {
+      "clip": "walk",
+      "source": "Zombie_Walk_Fwd_Loop"
+     },
+     "strafe": {
+      "clip": "walk",
+      "source": "Zombie_Walk_Fwd_Loop",
+      "speed_scale": 0.8
+     },
+     "approach": {
+      "clip": "run",
+      "source": "Zombie_Walk_Fwd_Loop",
+      "speed_scale": 1.3
+     },
+     "retreat": {
+      "clip": "retreat",
+      "source": "Zombie_Walk_Fwd_Loop",
+      "reverse": true,
+      "speed_scale": 0.9
+     },
+     "block_start": {
+      "clip": "block_start",
+      "source": "Sword_Block",
+      "use": "first 0.3 s"
+     },
+     "block_hold": {
+      "clip": "block_hold",
+      "source": "Idle_Shield_Loop"
+     },
+     "block_impact": {
+      "clip": "block_impact",
+      "source": "Shield_OneShot"
+     },
+     "block_break": {
+      "clip": "block_break",
+      "source": "Idle_Shield_Break"
+     },
+     "slam_windup": {
+      "clip": "slam",
+      "source": "Sword_Heavy_Combo",
+      "use": "first swing, held at its top"
+     },
+     "enrage": {
+      "clip": "enrage",
+      "source": "Zombie_Scratch",
+      "note": "arms thrashing, reads as a roar"
+     },
+     "flinch_a": {
+      "clip": "hurt",
+      "source": "Hit_Chest",
+      "note": "only after a poise break; armored hits play no flinch"
+     },
+     "stagger": {
+      "clip": "stagger",
+      "source": "Hit_Chest",
+      "speed_scale": 0.5
+     },
+     "knockdown": {
+      "clip": "knockdown",
+      "source": "Hit_Knockback"
+     },
+     "getup": {
+      "clip": "getup",
+      "source": "LayToIdle",
+      "speed_scale": 0.8
+     },
+     "death": {
+      "clip": "death",
+      "source": "Death01",
+      "speed_scale": 0.8
+     }
+    },
+    "defend": {
+     "reaction_ms": [
+      160,
+      260
+     ],
+     "threat_range_m": 3.6,
+     "read_weight": {
+      "light": 1.0,
+      "heavy": 0.5,
+      "launcher": 0.4,
+      "air": 0.6
+     },
+     "dodge_chance": 0.0,
+     "block_chance": 0.22,
+     "dodge_cooldown_ms": 0,
+     "block_cooldown_ms": 1500,
+     "fatigue_per_defence": 0.35,
+     "fatigue_decay_s": 5.0,
+     "no_defence_in_flare": true,
+     "combo_escape": {
+      "after_hits": 99,
+      "window_ms": 0,
+      "chance": 0.0,
+      "move": "block_start"
+     }
+    },
+    "guard": {
+     "arc_deg": 140,
+     "meter": 60,
+     "meter_regen_per_s": 18,
+     "regen_delay_ms": 1000,
+     "chip_damage_scale": 0.15,
+     "min_chip_damage": 1,
+     "knockback_scale": 0.15,
+     "hit_stop_scale": 0.5,
+     "break_poise": 30,
+     "break_by_launcher": true,
+     "max_in_row": 3,
+     "counter_chance": 0.25,
+     "hold_ms": [600, 1200],
+     "drop_after_threat_ms": 300,
+     "spark": "guard",
+     "sfx": "combat_hit_light"
+    },
+    "reposition": {
+     "ring_m": [
+      4.5,
+      6.5
+     ],
+     "separation_m": 2.4,
+     "slot_spread_deg": 90,
+     "crowd_count": 3,
+     "crowd_radius_m": 3.0,
+     "back_off_extra_m": 0.0,
+     "back_off_red_combo_len": 99,
+     "retreat_after_attack_chance": 0.0,
+     "retreat_m": 1.0,
+     "keep_away_chance": 0.0,
+     "keep_away_cooldown_ms": 0
+    },
+    "low_health": {
+     "mode": "enrage",
+     "threshold_frac": 0.35,
+     "never_flee": true,
+     "enrage": {
+      "move": "enrage",
+      "once": true,
+      "speed_mult": 1.25,
+      "attack_interval_mult": 0.65,
+      "block_chance_mult": 0.4,
+      "damage_mult": 1.15,
+      "chain_slam_chance": 0.5,
+      "chain_recover_ms": 350,
+      "no_poise_regen": true,
+      "color": "#ff3a1a"
+     }
+    },
+    "alert": {
+     "radius_m": 10.0,
+     "ally_notice_ms": 350,
+     "step_up_ms": 1200,
+     "on_ally_hit": true,
+     "on_ally_death": true,
+     "ally_down_morale_hit": 0.0,
+     "morale_window_s": 6.0,
+     "morale_max_bonus": 0.0
+    },
+    "reactions": {
+     "flinch_max_hitstun_ms": 400,
+     "turn_to_red_ms": 250,
+     "stagger_ms": 1300,
+     "getup_roll_chance": 0.0,
+     "getup_invuln_ms": 300,
+     "armored_flinch": false,
+     "retaliate_chance": 0.2,
+     "retaliate_cooldown_ms": 3500,
+     "retaliate_range_m": 2.6,
+     "flinch_anims": [
+      "flinch_a"
+     ]
+    }
+   },
+   "look": "brute",
+   "telegraph_color": "#ffb02e",
+   "death_color": "#222222"
+  },
+  "signals_drone": {
+   "name": "Signals Drone",
+   "roster_name": "Signals drone",
+   "tags": [
+    "drone",
+    "signals",
+    "flying"
+   ],
+   "hijackable": true,
+   "hijack": {
+    "color": "#33f2ff",
+    "attack_move": "dive"
+   },
+   "roster": {
+    "_about": "VS-17. A flying pest that comes in threes. Dies to one Zap (12 x2 for the drone tag = 24 against 22 hp) or three Light hits. EMP knocks it out of the sky for 3 s. Overclock turns it into a 10 s ally that dives at enemies.",
+    "job": "a fast, fragile pressure piece that makes the player look up and reach for EMP or Zap",
+    "answers": [
+     "zap",
+     "emp",
+     "overclock",
+     "sword"
+    ]
+   },
+   "model": "",
+   "fallback_model": "",
+   "blockout": {
+    "shape": "capsule",
+    "color": "#6c8fb8",
+    "face_color": "#ff9a3c"
+   },
+   "height_m": 0.7,
+   "radius_m": 0.32,
+   "hp": 22,
+   "poise": 10,
+   "poise_regen_per_s": 10,
+   "poise_regen_delay_ms": 1200,
+   "weight": 0.4,
+   "launchable": true,
+   "base_armor": false,
+   "flying": {
+    "hover_height_m": 1.7,
+    "bob_m": 0.12,
+    "bob_hz": 0.8,
+    "falls_when_stunned": true,
+    "lands_after_dive_ms": 1100,
+    "_about": "Placeholder numbers for the Combat Programmer's signals_drone.gd: it hovers 1.7 m up; after a dive it sinks to 0.6 m for the 1.1 s of recovery (sword height); EMP drops it to the floor for the stun."
+   },
+   "move_set": "signals_drone",
+   "move_speed_mps": 4.6,
+   "turn_rate_deg_per_s": 360,
+   "brain": {
+    "notice_range_m": 16.0,
+    "notice_ms": 500,
+    "circle_range_m": 6.0,
+    "min_range_m": 2.4,
+    "circle_speed_mult": 0.7,
+    "circle_flip_ms": [
+     1500,
+     3000
+    ],
+    "attack_interval_ms": [
+     2200,
+     4000
+    ],
+    "recover_ms": 600,
+    "react_ms": 250,
+    "land_react_ms": 300,
+    "dead_ms": 100000
+   },
+   "attacks": [
+    {
+     "move": "dive",
+     "weight": 1.0,
+     "track_ms": 560,
+     "when": {
+      "max_dist_m": 7.0,
+      "player_airborne": false
+     }
+    },
+    {
+     "move": "dive",
+     "weight": 0.6,
+     "track_ms": 560,
+     "when": {
+      "max_dist_m": 7.0,
+      "player_airborne": true
+     }
+    },
+    {
+     "move": "shock",
+     "weight": 2.0,
+     "track_ms": 500,
+     "when": {
+      "max_dist_m": 2.0,
+      "player_airborne": false
+     }
+    }
+   ],
+   "behaviour": {
+    "role": "swarm: hovers round Red, dives along a locked line, sinks low afterwards; never blocks or flees",
+    "clips": {},
+    "defend": {
+     "reaction_ms": [
+      200,
+      320
+     ],
+     "threat_range_m": 3.0,
+     "read_weight": {
+      "light": 0.5,
+      "heavy": 0.5,
+      "launcher": 0.5,
+      "air": 0.5
+     },
+     "dodge_chance": 0.0,
+     "block_chance": 0.0,
+     "dodge_cooldown_ms": 0,
+     "block_cooldown_ms": 0,
+     "fatigue_per_defence": 0.0,
+     "fatigue_decay_s": 4.0,
+     "no_defence_in_flare": true,
+     "combo_escape": {
+      "after_hits": 99,
+      "window_ms": 0,
+      "chance": 0.0,
+      "move": "strafe"
+     }
+    },
+    "guard": {
+     "_about": "No guard. The drone never blocks (block_chance 0); the numbers only keep the shared data tests happy.",
+     "enabled": false,
+     "arc_deg": 30,
+     "meter": 1,
+     "meter_regen_per_s": 0,
+     "regen_delay_ms": 1000,
+     "chip_damage_scale": 1.0,
+     "min_chip_damage": 1,
+     "knockback_scale": 1.0,
+     "hit_stop_scale": 1.0,
+     "break_poise": 1,
+     "break_by_launcher": true,
+     "max_in_row": 1,
+     "counter_chance": 0.0,
+     "hold_ms": [
+      300,
+      300
+     ],
+     "drop_after_threat_ms": 300,
+     "spark": "guard",
+     "sfx": "combat_hit_light"
+    },
+    "reposition": {
+     "ring_m": [
+      4.5,
+      7.0
+     ],
+     "separation_m": 2.0,
+     "slot_spread_deg": 120,
+     "crowd_count": 3,
+     "crowd_radius_m": 3.0,
+     "back_off_extra_m": 0.0,
+     "back_off_red_combo_len": 99,
+     "retreat_after_attack_chance": 0.0,
+     "retreat_m": 2.0,
+     "keep_away_chance": 0.0,
+     "keep_away_cooldown_ms": 0
+    },
+    "low_health": {
+     "mode": "none",
+     "threshold_frac": 0.25,
+     "never_flee": true
+    },
+    "alert": {
+     "radius_m": 10.0,
+     "ally_notice_ms": 200,
+     "step_up_ms": 600,
+     "on_ally_hit": true,
+     "on_ally_death": false,
+     "ally_down_morale_hit": 0.0,
+     "morale_window_s": 6.0,
+     "morale_max_bonus": 0.0
+    },
+    "reactions": {
+     "flinch_max_hitstun_ms": 300,
+     "turn_to_red_ms": 150,
+     "stagger_ms": 900,
+     "getup_roll_chance": 0.0,
+     "getup_invuln_ms": 0,
+     "armored_flinch": true,
+     "retaliate_chance": 0.0,
+     "retaliate_cooldown_ms": 0,
+     "retaliate_range_m": 0.0,
+     "flinch_anims": []
+    }
+   },
+   "look": "grunt",
+   "telegraph_color": "#ff9a3c",
+   "death_color": "#222222"
+  },
+  "wall_turret": {
+   "name": "Wall Turret",
+   "roster_name": "Wall turret",
+   "tags": [
+    "turret",
+    "signals",
+    "static"
+   ],
+   "hijackable": true,
+   "hijack": {
+    "color": "#33f2ff",
+    "attack_move": "burst_ally",
+    "interval_ms": [
+     0,
+     100
+    ],
+    "targets": "nearest_enemy",
+    "_about": "While Overclock has it the turret fires burst_ally (a 0.5 s wind-up, three bolts, about every 1.4 s) at the nearest enemy; in the boss arena it prefers the Hushmaster's relays (bosses/hushmaster.json hijack_priority)."
+   },
+   "roster": {
+    "_about": "VS-17. Bolted to a ledge. Fires one telegraphed burst of three bolts down a single locked line every 3 to 4 s. Two Zaps break its poise (stun 2.5 s); EMP knocks it out for 4 s; Overclock makes it fire for Red about every 1.4 s for 10 s (three bursts of 21 is most of a Brute's guard-free health).",
+    "job": "the hack puzzle you can also ignore by side-stepping; Overclock is the payoff",
+    "answers": [
+     "overclock",
+     "emp",
+     "zap",
+     "dodge"
+    ]
+   },
+   "model": "",
+   "fallback_model": "",
+   "blockout": {
+    "shape": "box",
+    "color": "#5b6b82",
+    "face_color": "#ff4a3a"
+   },
+   "height_m": 1.2,
+   "radius_m": 0.6,
+   "hp": 80,
+   "poise": 20,
+   "poise_regen_per_s": 8,
+   "poise_regen_delay_ms": 1800,
+   "weight": 6.0,
+   "launchable": false,
+   "base_armor": false,
+   "mount": {
+    "static": true,
+    "turn_rate_deg_per_s": 60,
+    "yaw_range_deg": 160,
+    "pitch_range_deg": [
+     -55,
+     20
+    ],
+    "range_m": 30.0,
+    "aim_laser": true,
+    "_about": "Placeholder for wall_turret.gd. Slow aim (60 degrees a second), so circling Red beats the line; the laser is the telegraph and locks 350 ms before the first bolt."
+   },
+   "move_set": "wall_turret",
+   "move_speed_mps": 0.0,
+   "turn_rate_deg_per_s": 60,
+   "brain": {
+    "notice_range_m": 26.0,
+    "notice_ms": 700,
+    "circle_range_m": 0.0,
+    "min_range_m": 0.0,
+    "circle_speed_mult": 0.0,
+    "circle_flip_ms": [
+     3000,
+     6000
+    ],
+    "attack_interval_ms": [
+     2600,
+     4200
+    ],
+    "recover_ms": 500,
+    "react_ms": 300,
+    "land_react_ms": 300,
+    "dead_ms": 100000
+   },
+   "attacks": [
+    {
+     "move": "burst",
+     "weight": 1.0,
+     "track_ms": 650,
+     "when": {
+      "max_dist_m": 30.0,
+      "player_airborne": false
+     }
+    },
+    {
+     "move": "burst",
+     "weight": 0.6,
+     "track_ms": 650,
+     "when": {
+      "max_dist_m": 30.0,
+      "player_airborne": true
+     }
+    }
+   ],
+   "behaviour": {
+    "role": "static gun: tracks slowly, one telegraphed burst at a time; never moves, blocks or flees",
+    "clips": {},
+    "defend": {
+     "reaction_ms": [
+      250,
+      400
+     ],
+     "threat_range_m": 0.0,
+     "read_weight": {
+      "light": 0.5,
+      "heavy": 0.5,
+      "launcher": 0.5,
+      "air": 0.5
+     },
+     "dodge_chance": 0.0,
+     "block_chance": 0.0,
+     "dodge_cooldown_ms": 0,
+     "block_cooldown_ms": 0,
+     "fatigue_per_defence": 0.0,
+     "fatigue_decay_s": 4.0,
+     "no_defence_in_flare": true,
+     "combo_escape": {
+      "after_hits": 99,
+      "window_ms": 0,
+      "chance": 0.0,
+      "move": "strafe"
+     }
+    },
+    "guard": {
+     "_about": "No guard (block_chance 0); numbers only keep the shared data tests happy.",
+     "enabled": false,
+     "arc_deg": 30,
+     "meter": 1,
+     "meter_regen_per_s": 0,
+     "regen_delay_ms": 1000,
+     "chip_damage_scale": 1.0,
+     "min_chip_damage": 1,
+     "knockback_scale": 0.0,
+     "hit_stop_scale": 1.0,
+     "break_poise": 1,
+     "break_by_launcher": false,
+     "max_in_row": 1,
+     "counter_chance": 0.0,
+     "hold_ms": [
+      300,
+      300
+     ],
+     "drop_after_threat_ms": 300,
+     "spark": "guard",
+     "sfx": "combat_hit_light"
+    },
+    "reposition": {
+     "ring_m": [
+      0.0,
+      1.0
+     ],
+     "separation_m": 0.0,
+     "slot_spread_deg": 0,
+     "crowd_count": 1,
+     "crowd_radius_m": 1.0,
+     "back_off_extra_m": 0.0,
+     "back_off_red_combo_len": 99,
+     "retreat_after_attack_chance": 0.0,
+     "retreat_m": 0.0,
+     "keep_away_chance": 0.0,
+     "keep_away_cooldown_ms": 0
+    },
+    "low_health": {
+     "mode": "none",
+     "threshold_frac": 0.25,
+     "never_flee": true
+    },
+    "alert": {
+     "radius_m": 0.0,
+     "ally_notice_ms": 0,
+     "step_up_ms": 0,
+     "on_ally_hit": false,
+     "on_ally_death": false,
+     "ally_down_morale_hit": 0.0,
+     "morale_window_s": 1.0,
+     "morale_max_bonus": 0.0
+    },
+    "reactions": {
+     "flinch_max_hitstun_ms": 0,
+     "turn_to_red_ms": 0,
+     "stagger_ms": 2500,
+     "getup_roll_chance": 0.0,
+     "getup_invuln_ms": 0,
+     "armored_flinch": false,
+     "retaliate_chance": 0.0,
+     "retaliate_cooldown_ms": 0,
+     "retaliate_range_m": 0.0,
+     "flinch_anims": []
+    }
+   },
+   "look": "grunt",
+   "telegraph_color": "#ff4a3a",
+   "death_color": "#222222"
+  }
+ }
+}

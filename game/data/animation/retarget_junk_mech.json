@@ -1,0 +1,637 @@
+{
+ "_about": "Retarget of the free Quaternius Universal Animation Library (CC0) onto the giant junk mech (task VS-25, 40 m, Red's bone names scaled x42.1). Read by scripts/tools/retarget_ual.py; edit and rerun `retarget_ual.py junk_mech`. Size-dependent numbers are Red's times the scale. Every clip is an existing clip sliced and slowed (`speed`, `from_s`, `to_s`, `hold_end_s` are data here): nothing is hand-keyed. Attacks come as a wind-up clip and a strike clip (the wind-up entry names its strike; sync_move_keys.py writes the pose keys into moves.json) so the move data's timing decides when the strike lands.",
+ "target": "art/placeholder/bosses/junk_mech.glb",
+ "output": "art/placeholder/bosses/junk_mech_ual.glb",
+ "clip_keys": "data/animation/junk_mech_clip_keys.json",
+ "clip_keys_about": "Key poses of the clips: where the strike lands (contact_s) and the poses the move data snaps to. 30 fps, baked by retarget_ual.py from the free Quaternius clips (CC0). Use these seconds as clip_s in moves.json anim.keys.",
+ "sources": {
+  "UAL1": "art/placeholder/animations/quaternius_ual/UAL1_Standard.glb",
+  "UAL2": "art/placeholder/animations/quaternius_ual/UAL2_Standard.glb"
+ },
+ "fps": 30,
+ "hips": {
+  "target": "hips",
+  "source": "pelvis",
+  "scale": 17.245
+ },
+ "ground": {
+  "scale": 17.245,
+  "target_points": [
+   {
+    "bone": "foot_l",
+    "offset": [
+     0.0,
+     -2.1451,
+     -4.1
+    ]
+   },
+   {
+    "bone": "foot_l",
+    "offset": [
+     0.0,
+     -2.1451,
+     8.8
+    ]
+   },
+   {
+    "bone": "foot_r",
+    "offset": [
+     0.0,
+     -2.1451,
+     -4.1
+    ]
+   },
+   {
+    "bone": "foot_r",
+    "offset": [
+     0.0,
+     -2.1451,
+     8.8
+    ]
+   },
+   {
+    "bone": "hips",
+    "offset": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "lift": 2.103
+   },
+   {
+    "bone": "chest",
+    "offset": [
+     0.0,
+     0.8412,
+     0.0
+    ],
+    "lift": 2.9443
+   },
+   {
+    "bone": "head",
+    "offset": [
+     0.0,
+     4.2061,
+     0.0
+    ],
+    "lift": 5.0473
+   },
+   {
+    "bone": "hand_l",
+    "offset": [
+     0.0,
+     -1.2618,
+     0.0
+    ],
+    "lift": 1.6824
+   },
+   {
+    "bone": "hand_r",
+    "offset": [
+     0.0,
+     -1.2618,
+     0.0
+    ],
+    "lift": 1.6824
+   }
+  ],
+  "source_points": [
+   {
+    "bone": "foot_l",
+    "offset": [
+     0,
+     -0.104,
+     -0.045
+    ]
+   },
+   {
+    "bone": "ball_l",
+    "offset": [
+     0,
+     -0.015,
+     0.0
+    ]
+   },
+   {
+    "bone": "ball_l",
+    "offset": [
+     0,
+     -0.015,
+     0.079
+    ]
+   },
+   {
+    "bone": "foot_r",
+    "offset": [
+     0,
+     -0.104,
+     -0.045
+    ]
+   },
+   {
+    "bone": "ball_r",
+    "offset": [
+     0,
+     -0.015,
+     0.0
+    ]
+   },
+   {
+    "bone": "ball_r",
+    "offset": [
+     0,
+     -0.015,
+     0.079
+    ]
+   },
+   {
+    "bone": "pelvis",
+    "offset": [
+     0,
+     0,
+     0
+    ],
+    "lift": 0.045
+   },
+   {
+    "bone": "spine_03",
+    "offset": [
+     0,
+     0.03,
+     0
+    ],
+    "lift": 0.07
+   },
+   {
+    "bone": "Head",
+    "offset": [
+     0,
+     0.08,
+     0
+    ],
+    "lift": 0.1
+   },
+   {
+    "bone": "hand_l",
+    "offset": [
+     0,
+     -0.04,
+     0
+    ],
+    "lift": 0.04
+   },
+   {
+    "bone": "hand_r",
+    "offset": [
+     0,
+     -0.04,
+     0
+    ],
+    "lift": 0.04
+   }
+  ],
+  "_about": "Contact points for the ground lock: [bone, offset in the rest world frame, lift]. Soles have lift 0, body points a radius. The source's ball bone is used for the toe so a sprint's toe-off does not sink through the floor."
+ },
+ "bones": [
+  {
+   "target": "hips",
+   "source": "pelvis"
+  },
+  {
+   "target": "spine",
+   "source": "spine_02"
+  },
+  {
+   "target": "chest",
+   "source": "spine_03"
+  },
+  {
+   "target": "neck",
+   "source": "neck_01"
+  },
+  {
+   "target": "head",
+   "source": "Head"
+  },
+  {
+   "target": "shoulder_{s}",
+   "source": "clavicle_{s}"
+  },
+  {
+   "target": "upper_arm_{s}",
+   "source": "upperarm_{s}",
+   "t_dir": "forearm_{s}",
+   "to": [
+    1,
+    0,
+    0
+   ]
+  },
+  {
+   "target": "forearm_{s}",
+   "source": "lowerarm_{s}",
+   "t_dir": "hand_{s}",
+   "to": [
+    1,
+    0,
+    0
+   ]
+  },
+  {
+   "target": "hand_l",
+   "source": "hand_l",
+   "t_dir": "parent",
+   "to": [
+    1,
+    0,
+    0
+   ]
+  },
+  {
+   "target": "hand_r",
+   "source": "hand_r",
+   "t_dir": "parent",
+   "to": [
+    -1,
+    0,
+    0
+   ],
+   "blade_socket": "weapon_socket",
+   "blade_dir_in_source_rest": [
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "target": "thigh_{s}",
+   "source": "thigh_{s}"
+  },
+  {
+   "target": "shin_{s}",
+   "source": "calf_{s}"
+  },
+  {
+   "target": "foot_{s}",
+   "source": "foot_{s}"
+  }
+ ],
+ "clips": [
+  {
+   "name": "idle",
+   "source": "UAL1:Idle_Loop",
+   "speed": 0.5,
+   "loop": true,
+   "note": "Idle_Loop at half speed: a heavy breath"
+  },
+  {
+   "name": "walk",
+   "source": "UAL1:Walk_Loop",
+   "speed": 0.4,
+   "loop": true,
+   "note": "Walk_Loop slowed so the stride matches walk speed_mps (12 m/s); stride_mps is in the key data"
+  },
+  {
+   "name": "swing_r_windup",
+   "strike": "swing_r_strike",
+   "parts": [
+    {
+     "source": "UAL2:Sword_Regular_A",
+     "from_s": 0.0,
+     "to_s": 0.19,
+     "speed": 0.1
+    }
+   ],
+   "note": "Scrap Swing wind-up: the first 0.19 s of Sword_Regular_A at 0.1x = 1.9 s (the arm hauls back)."
+  },
+  {
+   "name": "swing_r_strike",
+   "parts": [
+    {
+     "source": "UAL2:Sword_Regular_A",
+     "from_s": 0.19,
+     "to_s": 0.2,
+     "speed": 0.1
+    },
+    {
+     "source": "UAL2:Sword_Regular_A",
+     "from_s": 0.2,
+     "to_s": 0.3,
+     "speed": 0.12
+    },
+    {
+     "source": "UAL2:Sword_Regular_A",
+     "from_s": 0.3,
+     "to_s": 0.43,
+     "speed": 0.3
+    },
+    {
+     "source": "UAL2:Sword_Regular_A_Rec",
+     "speed": 0.3
+    }
+   ],
+   "contact_src_s": 0.2,
+   "contact_part": 0,
+   "note": "Scrap Swing strike: Sword_Regular_A through the swing at 0.12x (the 0.9 s sweep of the hitboxes) and its recovery at 0.3x; contact = the start of the sweep."
+  },
+  {
+   "name": "swing_l_windup",
+   "strike": "swing_l_strike",
+   "parts": [
+    {
+     "source": "UAL2:Sword_Regular_A",
+     "from_s": 0.0,
+     "to_s": 0.19,
+     "speed": 0.1
+    }
+   ],
+   "note": "Scrap Swing wind-up: the first 0.19 s of Sword_Regular_A at 0.1x = 1.9 s (the arm hauls back). Mirrored: the left arm.",
+   "mirror": true
+  },
+  {
+   "name": "swing_l_strike",
+   "parts": [
+    {
+     "source": "UAL2:Sword_Regular_A",
+     "from_s": 0.19,
+     "to_s": 0.2,
+     "speed": 0.1
+    },
+    {
+     "source": "UAL2:Sword_Regular_A",
+     "from_s": 0.2,
+     "to_s": 0.3,
+     "speed": 0.12
+    },
+    {
+     "source": "UAL2:Sword_Regular_A",
+     "from_s": 0.3,
+     "to_s": 0.43,
+     "speed": 0.3
+    },
+    {
+     "source": "UAL2:Sword_Regular_A_Rec",
+     "speed": 0.3
+    }
+   ],
+   "contact_src_s": 0.2,
+   "contact_part": 0,
+   "note": "Scrap Swing strike: Sword_Regular_A through the swing at 0.12x (the 0.9 s sweep of the hitboxes) and its recovery at 0.3x; contact = the start of the sweep. Mirrored: the left arm.",
+   "mirror": true
+  },
+  {
+   "name": "drop_windup",
+   "strike": "drop_strike",
+   "parts": [
+    {
+     "source": "UAL2:Sword_Heavy_Combo",
+     "from_s": 2.0,
+     "to_s": 2.5,
+     "speed": 0.2174
+    }
+   ],
+   "note": "Wrecking Drop wind-up: Sword_Heavy_Combo 2.0 to 2.5 s (the overhead raise) at 0.22x = 2.3 s."
+  },
+  {
+   "name": "drop_strike",
+   "parts": [
+    {
+     "source": "UAL2:Sword_Heavy_Combo",
+     "from_s": 2.5,
+     "to_s": 2.6,
+     "speed": 1.0
+    },
+    {
+     "source": "UAL2:Sword_Heavy_Combo",
+     "from_s": 2.6,
+     "to_s": 2.75,
+     "speed": 0.75
+    },
+    {
+     "source": "UAL2:Sword_Heavy_Combo",
+     "from_s": 2.75,
+     "to_s": 3.3,
+     "speed": 0.2
+    }
+   ],
+   "contact_src_s": 2.6,
+   "contact_part": 0,
+   "hold_end_s": 0.9,
+   "note": "Wrecking Drop strike: the slam of Sword_Heavy_Combo (contact at 2.6 s of the source), then the slammed crouch drifts and holds (arms stuck in the ground)."
+  },
+  {
+   "name": "stomp_windup",
+   "strike": "stomp_strike",
+   "parts": [
+    {
+     "source": "UAL1:Walk_Loop",
+     "from_s": 0.2,
+     "to_s": 0.42,
+     "speed": 0.1375
+    }
+   ],
+   "note": "Stomp March wind-up: the right foot of Walk_Loop lifts (0.2 to 0.42 s) at 0.14x = 1.6 s."
+  },
+  {
+   "name": "stomp_strike",
+   "parts": [
+    {
+     "source": "UAL1:Walk_Loop",
+     "from_s": 0.42,
+     "to_s": 0.67,
+     "speed": 2.5
+    },
+    {
+     "source": "UAL1:Walk_Loop",
+     "from_s": 0.67,
+     "to_s": 1.0,
+     "speed": 0.3667
+    },
+    {
+     "source": "UAL1:Walk_Loop",
+     "from_s": 1.0,
+     "to_s": 1.33,
+     "speed": 3.3
+    }
+   ],
+   "contact_src_s": 0.67,
+   "contact_part": 0,
+   "extra_contacts": [
+    [
+     1.33,
+     2
+    ]
+   ],
+   "hold_end_s": 2.9,
+   "note": "Stomp March strike: the right foot drops (first stomp = contact), the left lifts and drops one second later (extra_contacts_s), then it stands still while it catches its balance."
+  },
+  {
+   "name": "barrage_windup",
+   "strike": "barrage_strike",
+   "parts": [
+    {
+     "source": "UAL2:OverhandThrow",
+     "from_s": 0.0,
+     "to_s": 0.3,
+     "speed": 0.1667
+    }
+   ],
+   "note": "Scrap Barrage wind-up: OverhandThrow 0 to 0.3 s (arm back and up) at 0.17x = 1.8 s."
+  },
+  {
+   "name": "barrage_strike",
+   "parts": [
+    {
+     "source": "UAL2:OverhandThrow",
+     "from_s": 0.3,
+     "to_s": 0.4
+    },
+    {
+     "source": "UAL2:OverhandThrow",
+     "from_s": 0.4,
+     "to_s": 0.5
+    },
+    {
+     "source": "UAL2:OverhandThrow",
+     "from_s": 0.5,
+     "to_s": 0.3,
+     "speed": 0.5
+    },
+    {
+     "source": "UAL2:OverhandThrow",
+     "from_s": 0.3,
+     "to_s": 0.4
+    },
+    {
+     "source": "UAL2:OverhandThrow",
+     "from_s": 0.4,
+     "to_s": 0.5
+    },
+    {
+     "source": "UAL2:OverhandThrow",
+     "from_s": 0.5,
+     "to_s": 0.3,
+     "speed": 0.5
+    },
+    {
+     "source": "UAL2:OverhandThrow",
+     "from_s": 0.3,
+     "to_s": 0.4
+    },
+    {
+     "source": "UAL2:OverhandThrow",
+     "from_s": 0.4,
+     "to_s": 1.3,
+     "speed": 0.4
+    }
+   ],
+   "contact_src_s": 0.4,
+   "contact_part": 0,
+   "extra_contacts": [
+    [
+     0.4,
+     3
+    ],
+    [
+     0.4,
+     6
+    ]
+   ],
+   "note": "Scrap Barrage strike: three throws of OverhandThrow, 0.6 s apart (contact and extra_contacts_s are the releases); the arm is wound back between them by playing the follow-through in reverse."
+  },
+  {
+   "name": "hurt",
+   "source": "UAL1:Hit_Chest",
+   "speed": 0.33,
+   "contact_src_s": 0.1,
+   "note": "plate-hit flinch: Hit_Chest at a third of its speed (about 1 s, the plate_break recoil)"
+  },
+  {
+   "name": "stagger",
+   "parts": [
+    {
+     "source": "UAL1:Hit_Chest",
+     "speed": 0.3
+    }
+   ],
+   "hold_end_s": 1.5,
+   "note": "cab opens (core_reveal): Hit_Chest at 0.3x then the end pose held; 2.6 s, exactly the move (the importer loops this name)"
+  },
+  {
+   "name": "roar",
+   "source": "UAL2:Zombie_Scratch",
+   "speed": 0.8,
+   "note": "last stand: arms thrashing (Zombie_Scratch at 0.8x = 2.25 s); the brute's enrage uses the same clip"
+  },
+  {
+   "name": "knockdown",
+   "source": "UAL1:Death01",
+   "speed": 0.5,
+   "hold_end_s": 0.2,
+   "note": "defeat collapse: Death01 at half speed = 4.8 s, then holds the pose on the floor: 5.0 s, the length of the move"
+  }
+ ],
+ "keep_standins": [],
+ "proxies": {
+  "_about": "Rough body shapes used only by --report to count frames where an arm goes through the head or the torso (the chibi proportions cause this). Head sphere, torso ellipsoid (x,z half sizes) between two bones, arm segments [from bone, to bone, start fraction].",
+  "head": {
+   "bone": "head",
+   "center_offset": [
+    0.0,
+    4.2061,
+    0.0
+   ],
+   "radius": 5.8885
+  },
+  "torso": {
+   "from": "hips",
+   "to": "neck",
+   "half_width": 5.4679,
+   "half_depth": 4.2061
+  },
+  "arm_radius": 1.4721,
+  "arm_segments": [
+   [
+    "upper_arm_l",
+    "forearm_l",
+    0.5
+   ],
+   [
+    "forearm_l",
+    "hand_l"
+   ],
+   [
+    "hand_l",
+    "prop_socket"
+   ],
+   [
+    "upper_arm_r",
+    "forearm_r",
+    0.5
+   ],
+   [
+    "forearm_r",
+    "hand_r"
+   ],
+   [
+    "hand_r",
+    "weapon_socket"
+   ]
+  ]
+ },
+ "importer_loops": [
+  "idle",
+  "walk",
+  "run",
+  "fall",
+  "battle_ready",
+  "climb",
+  "launched",
+  "stagger"
+ ],
+ "_importer_loops_about": "Clip names that scripts/tools/psx_post_import.gd (LOOPING_CLIPS) loops whatever the file says; the key data lists them as loops.",
+ "robot": {
+  "height_m": 40.0,
+  "unit": 42.061
+ }
+}

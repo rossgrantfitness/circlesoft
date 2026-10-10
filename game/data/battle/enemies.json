@@ -1,0 +1,99 @@
+{
+  "_about": "Enemy types. ai is a weighted list of skills; 'if' conditions: target_lacks_status, self_hp_below_pct, self_hp_above_pct, round_at_least, round_at_most, allies_alive_at_least, allies_alive_at_most. flee_at_hp_pct: waves a white flag and leaves on its turn once HP is at or under that percent (never for bosses). status_resist: 0..1 chance reduction (1.0 = immune). Model paths are for the Technical Artist's blockouts.",
+  "enemies": [
+    {
+      "id": "signals_grunt", "name": "Signals Grunt", "level": 2,
+      "stats": {"hp": 146, "juice": 0, "attack": 13, "defense": 4, "heart": 3, "speed": 5, "luck": 3},
+      "xp": 14, "credits": 42,
+      "drops": [{"item": "ration_bar", "chance": 0.2}],
+      "status_resist": {},
+      "flee_at_hp_pct": 25,
+      "ai": [
+        {"skill": "grunt_bonk", "weight": 3},
+        {"skill": "grunt_write_ticket", "weight": 1, "if": {"target_lacks_status": "noise_ticket"}}
+      ],
+      "field": {"walk_speed": 2.0, "chase_speed": 3.2, "sight_m": 6.0, "give_up_s": 4.0},
+      "model": "res://art/placeholder/enemies/signals_grunt/enm_signals_grunt.glb"
+    },
+    {
+      "id": "signals_drone", "name": "Signals Drone", "level": 2,
+      "stats": {"hp": 108, "juice": 0, "attack": 12, "defense": 3, "heart": 8, "speed": 8, "luck": 3},
+      "xp": 14, "credits": 44,
+      "drops": [{"item": "canned_coffee", "chance": 0.2}],
+      "status_resist": {"burnt_toast": 0.5},
+      "ai": [
+        {"skill": "drone_zap", "weight": 3},
+        {"skill": "drone_twin_zap", "weight": 2},
+        {"skill": "drone_dive", "weight": 1, "if": {"self_hp_below_pct": 60}}
+      ],
+      "field": {"walk_speed": 1.6, "chase_speed": 3.8, "sight_m": 8.0, "give_up_s": 5.0},
+      "model": "res://art/placeholder/enemies/signals_drone/enm_signals_drone.glb"
+    },
+    {
+      "id": "whistle_blower", "name": "Whistle Blower", "level": 3,
+      "stats": {"hp": 208, "juice": 0, "attack": 18, "defense": 5, "heart": 4, "speed": 6, "luck": 4},
+      "xp": 22, "credits": 64,
+      "drops": [{"item": "ration_bar", "chance": 0.25}, {"item": "can_of_chili", "chance": 0.08}],
+      "status_resist": {"wobbly": 0.5},
+      "flee_at_hp_pct": 20,
+      "ai": [
+        {"skill": "whistle_smack", "weight": 3},
+        {"skill": "whistle_blast", "weight": 2, "if": {"target_lacks_status": "wobbly"}}
+      ],
+      "field": {"walk_speed": 2.2, "chase_speed": 3.4, "sight_m": 7.0, "give_up_s": 4.0},
+      "model": "res://art/placeholder/enemies/grunt_variant/enm_grunt_variant.glb"
+    },
+    {
+      "id": "buzzkill_drone", "name": "Buzzkill", "level": 3,
+      "stats": {"hp": 136, "juice": 0, "attack": 17, "defense": 3, "heart": 9, "speed": 11, "luck": 5},
+      "xp": 24, "credits": 68,
+      "drops": [{"item": "juice_box", "chance": 0.15}, {"item": "canned_coffee", "chance": 0.15}],
+      "status_resist": {"burnt_toast": 0.5},
+      "ai": [
+        {"skill": "buzz_sting", "weight": 3},
+        {"skill": "buzz_pile_on", "weight": 2}
+      ],
+      "field": {"walk_speed": 1.8, "chase_speed": 4.2, "sight_m": 8.0, "give_up_s": 5.0},
+      "model": "res://art/placeholder/enemies/drone_variant/enm_drone_variant.glb"
+    },
+    {
+      "id": "kasp_hushmaster", "name": "Sgt. Kasp in the Hushmaster", "level": 6, "is_boss": true,
+      "_about": "The slice boss (M5-1). stats.hp is Kasp's HP once the rig topples (the first phase's HP bar shows the four leg pairs' total). While phase 'rig' is on, damage goes to the leg pairs (Heave-Ho counts double); when the fourth pair breaks he topples into phase 'on_foot' (stats there override the rig's, he is stunned for a turn). cue_scramble: the Quiet Hours jam pulse, one row per pair broken: rounds it lasts after the one it is cast in, how far off the beat the fake flash lands (offset_ms min/max), the chance the flash does not come at all, and the cooldown (Kasp's own turns) before the next pulse. The real timing window never moves. Lines in text/boss_lines.json are PLACEHOLDER.",
+      "stats": {"hp": 1150, "juice": 0, "attack": 28, "defense": 8, "heart": 6, "speed": 7, "luck": 5},
+      "xp": 120, "credits": 150,
+      "drops": [],
+      "status_resist": {"stunned": 0.7, "wobbly": 0.5, "noise_ticket": 0.5, "burnt_toast": 0.5},
+      "parts": [
+        {"id": "legs_front", "name": "Front legs", "legs": 2, "hp": 320},
+        {"id": "legs_mid_front", "name": "Forward-middle legs", "legs": 2, "hp": 320},
+        {"id": "legs_mid_rear", "name": "Rear-middle legs", "legs": 2, "hp": 320},
+        {"id": "legs_rear", "name": "Rear legs", "legs": 2, "hp": 320}
+      ],
+      "phases": [
+        {"id": "rig", "name": "Sgt. Kasp in the Hushmaster"},
+        {"id": "on_foot", "name": "Sgt. Kasp", "stats": {"attack": 25, "defense": 6, "speed": 8}, "on_enter": {"status": "stunned"}, "start_cooldowns": {"kasp_whistle": 1}}
+      ],
+      "cue_scramble": {
+        "by_pairs_broken": [
+          {"rounds": 2, "offset_ms": [160, 300], "dropout_chance": 0.3, "cooldown_turns": 3},
+          {"rounds": 2, "offset_ms": [130, 240], "dropout_chance": 0.2, "cooldown_turns": 4},
+          {"rounds": 1, "offset_ms": [100, 180], "dropout_chance": 0.1, "cooldown_turns": 5},
+          {"rounds": 1, "offset_ms": [80, 130], "dropout_chance": 0.0, "cooldown_turns": 6}
+        ]
+      },
+      "start_cooldowns": {"kasp_quiet_hours": 1, "kasp_dish_blast": 3},
+      "line_chance": 0.6, "low_hp_pct": 35,
+      "ai": [
+        {"skill": "kasp_quiet_hours", "weight": 9, "if": {"phase_is": "rig"}},
+        {"skill": "kasp_dish_blast", "weight": 6, "if": {"phase_is": "rig"}},
+        {"skill": "kasp_leg_stomp", "weight": 3, "if": {"phase_is": "rig"}},
+        {"skill": "kasp_leg_sweep", "weight": 2, "if": {"phase_is": "rig"}},
+        {"skill": "kasp_final_notice", "weight": 6, "if": {"phase_is": "on_foot", "self_hp_below_pct": 50}},
+        {"skill": "kasp_whistle", "weight": 3, "if": {"phase_is": "on_foot"}},
+        {"skill": "kasp_clipboard_smack", "weight": 4, "if": {"phase_is": "on_foot"}}
+      ],
+      "field": {"walk_speed": 0.5, "chase_speed": 0.6, "sight_m": 1.0, "give_up_s": 1.0},
+      "model": "res://art/placeholder/enemies/grunt_variant/enm_grunt_variant.glb"
+    }
+  ]
+}

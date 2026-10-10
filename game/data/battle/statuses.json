@@ -1,0 +1,10 @@
+{
+  "_about": "Status effects. duration_turns counts the afflicted fighter's own turns. Flags: hp_loss_pct (per turn, floored at min_hp_loss), can_down (false = it can't finish you off), blocks_skills, random_target_chance, skips_turn, window_mult (Clutch window size), clears_after_battle. Down for the Count is not a timer: it is HP 0 (the model's down flag) and is described here for text and tests.",
+  "statuses": [
+    {"id": "burnt_toast", "name": "Burnt Toast", "kind": "bad", "duration_turns": 3, "hp_loss_pct": 8, "min_hp_loss": 2, "can_down": false, "clears_after_battle": true, "desc": "Loses a bit of HP every turn."},
+    {"id": "noise_ticket", "name": "Noise Ticket", "kind": "bad", "duration_turns": 3, "blocks_skills": true, "clears_after_battle": true, "desc": "Can't use Skills for a few turns."},
+    {"id": "wobbly", "name": "Wobbly", "kind": "bad", "duration_turns": 3, "random_target_chance": 0.5, "clears_after_battle": true, "desc": "Hits a random target, sometimes a friend. (Porch Light's blinding flare uses this one.)"},
+    {"id": "stunned", "name": "Stunned", "kind": "bad", "duration_turns": 1, "skips_turn": true, "clears_after_battle": true, "desc": "Skips the next turn. (Heave-Ho's perfect release.)"},
+    {"id": "down_for_the_count", "name": "Down for the Count", "kind": "down", "down": true, "revive_item_only": true, "desc": "Knocked out at 0 HP. Bring them back with an item or skill."}
+  ]
+}

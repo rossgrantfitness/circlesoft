@@ -1,0 +1,39 @@
+{
+  "_about": "Save system data (task M3-9). slots: manual slots (1..N); the auto-save has its own file. new_game: where a fresh run starts (room id and spawn name; the scene router's rooms.json owns the real ids later). lamp_check: the beats Red goes through at a save spot before the save screen opens: light (the lamp glows up over 's' seconds), tap (a pulse on the glass), thumbs_up (Red's gesture pop-up, ends on a press). 'full' plays the first time each session, 'short' after that; one press skips either. sfx values are UI sound keys from ui_theme.json. Whether a lamp also heals the party is the lamp's own 'rest' setting (Red's home yes, dungeon lamps no).",
+  "slots": 3,
+  "file_format": 1,
+  "new_game": {
+    "room": "train_flatcar",
+    "spawn": "start",
+    "story_beat": "b0_train"
+  },
+  "lamp_check": {
+    "skip_grace_s": 0.25,
+    "full": [
+      {"id": "light", "s": 0.9, "sfx": "confirm"},
+      {"id": "tap", "s": 0.4, "sfx": "tick"},
+      {"id": "tap", "s": 0.4, "sfx": "tick"},
+      {"id": "thumbs_up", "gesture": "thumbs_up"}
+    ],
+    "short": [
+      {"id": "light", "s": 0.3, "sfx": "confirm"},
+      {"id": "thumbs_up", "gesture": "thumbs_up"}
+    ],
+    "glow": {"dim_energy": 1.2, "lit_energy": 5.5, "tap_boost": 2.0, "bulb_dim": 0.35, "bulb_lit": 1.8}
+  },
+  "prompt": {
+    "window": {"x": 28, "y": 12, "w": 328, "h": 158},
+    "hint_window": {"x": 28, "y": 176, "w": 328, "h": 32},
+    "confirm_window": {"x": 112, "y": 70, "w": 160, "h": 52},
+    "row_height": 36,
+    "first_row_y": 12,
+    "text_x": 26,
+    "cursor_x": 8,
+    "open_steps": 4,
+    "arm_frames": 3,
+    "portrait_size": 14,
+    "portrait_gap": 2,
+    "portrait_x": 26,
+    "detail_dy": 14
+  }
+}

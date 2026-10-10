@@ -1,0 +1,1895 @@
+{
+ "_about": "What stands in each night-market room (docs/maps/night_market.md): doors, pickups, crates, townsfolk and examine spots. Same shape as world/placements.json; Main lays this file over it in slice mode (Placements.extra_ids), so market ids (mk_*) sit beside the old Harrow ids and the classic game never sees them. 'room' is the room id in slice/rooms.json; the room scene holds the node and its placement_id, this file the contents and the rules. All spoken words are the Writer's PLACEHOLDERS (VS-31) in data/dialogue/market_placeholder.json, slice_scenes.json and junkyard_placeholder.json; final text at VS-37 (Dialogue & writing is Level 0). VS-31 also added ambient barks (bark_radius_m, barks) to the chatty townsfolk and story-state variants: _taken (job_main_taken, not kasp_beaten) and _party (market_party, set by the ending scenes in slice/story_scenes.json); Mox's first talk runs the mox_deck scene and the first Gate 4 grunt talk after taking the job runs gate_pass. No fighting in town; the patrol wolves are scenery. Gate 4's barrier door needs the flag job_main_taken (set by taking the main job at the Dispatch Counter; the Courier Pass is handed over with it, see slice/jobs.json). Its target junk_j1 is not built yet (see slice/rooms.json pending_rooms).",
+ "pickups": {
+  "mk_sq_window_reward": {
+   "room": "market_square",
+   "item": "lucky_bolt",
+   "count": 1,
+   "credits": 100,
+   "show_if": {
+    "flag": "job_charge_done"
+   }
+  },
+  "mk_wf_crate_top": {
+   "room": "market_wharf",
+   "item": "can_of_chili",
+   "count": 1
+  },
+  "mk_wf_pier_end": {
+   "room": "market_wharf",
+   "item": "canned_coffee",
+   "count": 1
+  },
+  "mk_hd_pantry": {
+   "room": "market_hideout",
+   "item": "ration_bar",
+   "count": 2
+  },
+  "mk_ar_behind_claw": {
+   "room": "market_arcade",
+   "item": "ration_bar",
+   "count": 1
+  },
+  "jk_j1_glint_a": {
+   "room": "junk_j1",
+   "credits": 20
+  },
+  "jk_j1_glint_b": {
+   "room": "junk_j1",
+   "credits": 30
+  },
+  "jk_j2_glint_a": {
+   "room": "junk_j2",
+   "credits": 25
+  },
+  "jk_j2_glint_b": {
+   "room": "junk_j2",
+   "credits": 25
+  },
+  "jk_j2_cell": {
+   "room": "junk_j2",
+   "item": "ration_bar",
+   "count": 1
+  },
+  "jk_j4_heal": {
+   "room": "junk_j4",
+   "item": "ration_bar",
+   "count": 1
+  },
+  "jk_j3_heal": {
+   "room": "junk_j3",
+   "item": "can_of_chili",
+   "count": 1
+  },
+  "jk_j5_loot_01": {
+   "room": "junk_j5",
+   "credits": 40
+  },
+  "jk_j5_loot_02": {
+   "room": "junk_j5",
+   "credits": 60,
+   "item": "ration_bar",
+   "count": 1
+  },
+  "jk_j5_loot_03": {
+   "room": "junk_j5",
+   "credits": 80
+  },
+  "jk_j5_loot_04": {
+   "room": "junk_j5",
+   "credits": 50,
+   "item": "ration_bar",
+   "count": 1
+  },
+  "jk_j5_loot_05": {
+   "room": "junk_j5",
+   "credits": 70
+  },
+  "jk_j5_loot_06": {
+   "room": "junk_j5",
+   "credits": 90,
+   "item": "can_of_chili",
+   "count": 1
+  },
+  "jk_j5_loot_07": {
+   "room": "junk_j5",
+   "credits": 100
+  },
+  "jk_j5_loot_08": {
+   "room": "junk_j5",
+   "credits": 60,
+   "item": "canned_coffee",
+   "count": 1
+  },
+  "jk_j5_loot_09": {
+   "room": "junk_j5",
+   "credits": 120
+  },
+  "jk_j5_loot_10": {
+   "room": "junk_j5",
+   "credits": 80,
+   "item": "ration_bar",
+   "count": 1
+  },
+  "jk_j5_loot_11": {
+   "room": "junk_j5",
+   "credits": 150,
+   "item": "camp_stove",
+   "count": 1
+  },
+  "jk_j5_prize": {
+   "room": "junk_j5",
+   "credits": 300,
+   "item": "ration_bar",
+   "count": 2
+  }
+ },
+ "crates": {
+  "mk_sq_alley_stash": {
+   "room": "market_square",
+   "style": "chalk",
+   "items": [
+    {
+     "item": "smoke_bomb",
+     "count": 1
+    }
+   ],
+   "credits": 60
+  },
+  "mk_gt_bin": {
+   "room": "market_gate",
+   "style": "wood",
+   "items": [
+    {
+     "item": "earplugs",
+     "count": 1
+    }
+   ]
+  },
+  "jk_j1_stash": {
+   "room": "junk_j1",
+   "style": "chalk",
+   "items": [
+    {
+     "item": "ration_bar",
+     "count": 1
+    }
+   ],
+   "credits": 80
+  },
+  "jk_j2_stash": {
+   "room": "junk_j2",
+   "style": "chalk",
+   "credits": 90
+  },
+  "jk_j3_node_cache": {
+   "room": "junk_j3",
+   "style": "wood",
+   "items": [
+    {
+     "item": "canned_coffee",
+     "count": 1
+    }
+   ],
+   "credits": 50
+  },
+  "jk_j3_roof_stash": {
+   "room": "junk_j3",
+   "style": "chalk",
+   "items": [
+    {
+     "item": "ration_bar",
+     "count": 1
+    }
+   ],
+   "credits": 70
+  },
+  "jk_j3_vault_cache": {
+   "room": "junk_j3",
+   "style": "supply",
+   "items": [
+    {
+     "item": "camp_stove",
+     "count": 1
+    }
+   ],
+   "credits": 300
+  },
+  "jk_j4_head_cache": {
+   "room": "junk_j4",
+   "style": "wood",
+   "items": [
+    {
+     "item": "ration_bar",
+     "count": 1
+    }
+   ],
+   "credits": 120
+  }
+ },
+ "doors": {
+  "mk_sq_to_hideout": {
+   "room": "market_square",
+   "to_room": "market_hideout",
+   "to_spawn": "from_square",
+   "label": "HOME"
+  },
+  "mk_sq_to_dispatch": {
+   "room": "market_square",
+   "to_room": "market_dispatch",
+   "to_spawn": "from_square"
+  },
+  "mk_sq_to_corner": {
+   "room": "market_square",
+   "to_room": "market_corner",
+   "to_spawn": "from_square"
+  },
+  "mk_sq_to_forge": {
+   "room": "market_square",
+   "to_room": "market_forge",
+   "to_spawn": "from_square"
+  },
+  "mk_sq_to_gate": {
+   "room": "market_square",
+   "to_room": "market_gate",
+   "to_spawn": "from_square",
+   "width": 3.0,
+   "style": "arch"
+  },
+  "mk_sq_to_wharf": {
+   "room": "market_square",
+   "to_room": "market_wharf",
+   "to_spawn": "from_square",
+   "width": 3.0,
+   "style": "mat"
+  },
+  "mk_wf_to_square": {
+   "room": "market_wharf",
+   "to_room": "market_square",
+   "to_spawn": "from_wharf",
+   "width": 3.0,
+   "style": "arch"
+  },
+  "mk_wf_to_repair": {
+   "room": "market_wharf",
+   "to_room": "market_repair",
+   "to_spawn": "from_wharf"
+  },
+  "mk_wf_to_arcade": {
+   "room": "market_wharf",
+   "to_room": "market_arcade",
+   "to_spawn": "from_wharf"
+  },
+  "mk_gt_to_square": {
+   "room": "market_gate",
+   "to_room": "market_square",
+   "to_spawn": "from_gate",
+   "width": 3.0,
+   "style": "mat"
+  },
+  "mk_gt_to_junk": {
+   "room": "market_gate",
+   "to_room": "junk_j1",
+   "to_spawn": "from_market",
+   "width": 3.0,
+   "style": "arch",
+   "requires": {
+    "flag": "job_main_taken"
+   },
+   "locked_message": "Road's closed, courier. Papers? Dispatch is the first door beside your hideout.",
+   "unlocked_message": "The boom lifts. A grunt waves you through without looking up. 'Keep it down on the road.'"
+  },
+  "mk_hd_to_square": {
+   "room": "market_hideout",
+   "to_room": "market_square",
+   "to_spawn": "from_hideout"
+  },
+  "mk_hd_hatch": {
+   "room": "market_hideout",
+   "to_room": "market_repair",
+   "to_spawn": "from_hideout",
+   "width": 1.0,
+   "style": "mat"
+  },
+  "mk_dp_to_square": {
+   "room": "market_dispatch",
+   "to_room": "market_square",
+   "to_spawn": "from_dispatch"
+  },
+  "mk_cs_to_square": {
+   "room": "market_corner",
+   "to_room": "market_square",
+   "to_spawn": "from_corner"
+  },
+  "mk_fg_to_square": {
+   "room": "market_forge",
+   "to_room": "market_square",
+   "to_spawn": "from_forge"
+  },
+  "mk_rp_to_wharf": {
+   "room": "market_repair",
+   "to_room": "market_wharf",
+   "to_spawn": "from_repair"
+  },
+  "mk_rp_hatch": {
+   "room": "market_repair",
+   "to_room": "market_hideout",
+   "to_spawn": "from_repair",
+   "width": 1.0,
+   "style": "mat"
+  },
+  "mk_ar_to_wharf": {
+   "room": "market_arcade",
+   "to_room": "market_wharf",
+   "to_spawn": "from_arcade"
+  },
+  "jk_j1_to_market": {
+   "room": "junk_j1",
+   "to_room": "market_gate",
+   "to_spawn": "from_junk",
+   "width": 6.0,
+   "style": "arch"
+  },
+  "jk_j1_to_j2": {
+   "room": "junk_j1",
+   "to_room": "junk_j2",
+   "to_spawn": "from_j1",
+   "width": 5.0,
+   "style": "arch",
+   "requires": {
+    "flag": "hack_j1_door_open"
+   },
+   "locked_message": "The gate is shut. That fuse box up on the pylon is wired to it."
+  },
+  "jk_j2_to_j1": {
+   "room": "junk_j2",
+   "to_room": "junk_j1",
+   "to_spawn": "from_j2",
+   "width": 5.0,
+   "style": "arch"
+  },
+  "jk_j2_to_j3": {
+   "room": "junk_j2",
+   "to_room": "junk_j3",
+   "to_spawn": "from_j2",
+   "width": 6.0,
+   "style": "arch",
+   "requires": {
+    "flag": "term_j2_gate_open"
+   },
+   "locked_message": "The gate is latched. The terminal at the top of the ramp opens it."
+  },
+  "jk_j3_to_j2": {
+   "room": "junk_j3",
+   "to_room": "junk_j2",
+   "to_spawn": "from_j3",
+   "width": 6.0,
+   "style": "arch"
+  },
+  "jk_j3_to_j4": {
+   "room": "junk_j3",
+   "to_room": "junk_j4",
+   "to_spawn": "from_j3",
+   "width": 6.0,
+   "style": "arch"
+  },
+  "jk_j4_to_j3": {
+   "room": "junk_j4",
+   "to_room": "junk_j3",
+   "to_spawn": "from_j4",
+   "width": 6.0,
+   "style": "arch",
+   "not_flag": "loader_awake",
+   "locked_message": "The way back is blocked by a rockfall of scrap. Only forward now."
+  },
+  "jk_j4_to_j5": {
+   "room": "junk_j4",
+   "to_room": "junk_j5",
+   "to_spawn": "from_j4",
+   "width": 8.0,
+   "style": "arch"
+  },
+  "jk_j5_to_arena": {
+   "room": "junk_j5",
+   "to_room": "kasp_arena",
+   "to_spawn": "from_j5",
+   "width": 16.0,
+   "style": "arch"
+  }
+ },
+ "enemies": {},
+ "npcs": {
+  "mk_sq_pop": {
+   "room": "market_square",
+   "speaker": "crowd_pop",
+   "bark_radius_m": 5.5,
+   "barks": [
+    "NOODLES! Hot noodles!",
+    "Broth's loud tonight! Come and get it!",
+    "Three stools! Zero patience!",
+    "Slurp responsibly! ...Or don't!"
+   ],
+   "bark_cooldown_s": 10.0,
+   "look": {
+    "body": "#c9763a",
+    "head": "#d6b48a",
+    "accessory": {
+     "shape": "box",
+     "color": "#f2e8d0",
+     "size": [
+      0.5,
+      0.12,
+      0.46
+     ],
+     "pos": [
+      0,
+      1.05,
+      0.02
+     ]
+    }
+   },
+   "variants": [
+    {
+     "if": {
+      "flag": "market_party"
+     },
+     "conversation": "mk_sq_pop_party"
+    },
+    {
+     "if": {
+      "flag": "job_main_taken",
+      "not_flag": "kasp_beaten"
+     },
+     "conversation": "mk_sq_pop_taken"
+    },
+    {
+     "conversation": "mk_sq_pop"
+    }
+   ]
+  },
+  "mk_sq_dumpling": {
+   "room": "market_square",
+   "speaker": "crowd_dumpling_cook",
+   "bark_radius_m": 4.5,
+   "barks": [
+    "Dumplings... (yawn) ...dumplings.",
+    "Fresh. Ish. Fresh-ish.",
+    "Zzz... DUMPLINGS!"
+   ],
+   "look": {
+    "body": "#6aa89a",
+    "head": "#c9a67e",
+    "accessory": {
+     "shape": "sphere",
+     "color": "#f2e8d0",
+     "size": [
+      0.14
+     ],
+     "pos": [
+      0,
+      1.05,
+      0
+     ]
+    }
+   },
+   "variants": [
+    {
+     "conversation": "mk_sq_dumpling"
+    }
+   ]
+  },
+  "mk_sq_tape": {
+   "room": "market_square",
+   "speaker": "crowd_tape_keeper",
+   "bark_radius_m": 4.5,
+   "barks": [
+    "Tape! Seventeen kinds of 'stuck'!",
+    "Wire by the foot or by the feeling!",
+    "Name your mood! I'll cut it to length!"
+   ],
+   "look": {
+    "body": "#8a6fa0",
+    "head": "#d6b48a",
+    "accessory": {
+     "shape": "box",
+     "color": "#e8a838",
+     "size": [
+      0.5,
+      0.12,
+      0.46
+     ],
+     "pos": [
+      0,
+      1.0,
+      0.02
+     ]
+    }
+   },
+   "variants": [
+    {
+     "conversation": "mk_sq_tape"
+    }
+   ]
+  },
+  "mk_sq_odds": {
+   "room": "market_square",
+   "speaker": "crowd_odds_man",
+   "bark_radius_m": 4.5,
+   "barks": [
+    "Place your bets! I'll be right, you'll be sad!",
+    "Will the green drone crash? Don't bet. It's rude.",
+    "Two rations says the screen glitches!"
+   ],
+   "look": {
+    "body": "#8a6f4a",
+    "head": "#d6b48a",
+    "accessory": {
+     "shape": "box",
+     "color": "#3b3b44",
+     "size": [
+      0.5,
+      0.12,
+      0.46
+     ],
+     "pos": [
+      0,
+      1.02,
+      0.02
+     ]
+    }
+   },
+   "variants": [
+    {
+     "if": {
+      "flag": "market_party"
+     },
+     "conversation": "mk_sq_odds_party"
+    },
+    {
+     "if": {
+      "flag": "job_main_taken",
+      "not_flag": "kasp_beaten"
+     },
+     "conversation": "mk_sq_odds_taken"
+    },
+    {
+     "conversation": "mk_sq_odds"
+    }
+   ]
+  },
+  "mk_sq_neighbor": {
+   "room": "market_square",
+   "speaker": "crowd_neighbor",
+   "bark_radius_m": 4.5,
+   "barks": [
+    "Bread at three! You're welcome!",
+    "Keep it down! ...Not you. The bass.",
+    "Buns! Still warm! Always warm!"
+   ],
+   "look": {
+    "body": "#9a8a9e",
+    "head": "#e0c2a4",
+    "accessory": {
+     "shape": "sphere",
+     "color": "#c8b0d0",
+     "size": [
+      0.17
+     ],
+     "pos": [
+      0,
+      1.0,
+      0
+     ]
+    }
+   },
+   "variants": [
+    {
+     "conversation": "mk_sq_neighbor"
+    }
+   ]
+  },
+  "mk_sq_ume": {
+   "room": "market_square",
+   "speaker": "crowd_grandma_ume",
+   "bark_radius_m": 6.0,
+   "barks": [
+    "Hands OFF the cords!",
+    "Phones! Five minutes a bar!",
+    "Who touched the cords?! I felt that!"
+   ],
+   "look": {
+    "body": "#d68a9a",
+    "head": "#e0c2a4",
+    "accessory": {
+     "shape": "sphere",
+     "color": "#f2e8d0",
+     "size": [
+      0.2
+     ],
+     "pos": [
+      0,
+      1.0,
+      0
+     ]
+    },
+    "radius": 0.15,
+    "height": 0.9
+   },
+   "reach": 3.2,
+   "variants": [
+    {
+     "if": {
+      "flag": "market_party"
+     },
+     "conversation": "mk_sq_ume_party"
+    },
+    {
+     "conversation": "mk_sq_ume"
+    }
+   ]
+  },
+  "mk_sq_shopper_a": {
+   "room": "market_square",
+   "speaker": "crowd_shopper_a",
+   "bark_radius_m": 4.0,
+   "barks": [
+    "Four for three! FOUR FOR THREE!",
+    "Is that a good deal? Ask the cart!"
+   ],
+   "look": {
+    "body": "#5a7a9a",
+    "head": "#d6b48a",
+    "accessory": {
+     "shape": "sphere",
+     "color": "#e8a838",
+     "size": [
+      0.12
+     ],
+     "pos": [
+      0.2,
+      1.1,
+      0
+     ]
+    }
+   },
+   "variants": [
+    {
+     "conversation": "mk_sq_shopper_a"
+    }
+   ]
+  },
+  "mk_sq_shopper_b": {
+   "room": "market_square",
+   "speaker": "crowd_shopper_b",
+   "bark_radius_m": 4.0,
+   "barks": [
+    "Don't look up. Don't look up.",
+    "Browsing. Just browsing. Very casual."
+   ],
+   "look": {
+    "body": "#9a5a6a",
+    "head": "#c9a67e",
+    "accessory": {
+     "shape": "box",
+     "color": "#4a4a5a",
+     "size": [
+      0.5,
+      0.12,
+      0.46
+     ],
+     "pos": [
+      0,
+      1.0,
+      0.02
+     ]
+    }
+   },
+   "variants": [
+    {
+     "conversation": "mk_sq_shopper_b"
+    }
+   ]
+  },
+  "mk_sq_shopper_c": {
+   "room": "market_square",
+   "speaker": "crowd_shopper_c",
+   "bark_radius_m": 4.0,
+   "barks": [
+    "Turn it UP! Turn it UP!",
+    "WHAT? Say it LOUDER!"
+   ],
+   "look": {
+    "body": "#4a8a6a",
+    "head": "#e0c2a4",
+    "accessory": {
+     "shape": "sphere",
+     "color": "#d6b48a",
+     "size": [
+      0.12
+     ],
+     "pos": [
+      0,
+      1.1,
+      0
+     ]
+    }
+   },
+   "variants": [
+    {
+     "conversation": "mk_sq_shopper_c"
+    }
+   ]
+  },
+  "mk_sq_shopper_d": {
+   "room": "market_square",
+   "speaker": "crowd_shopper_d",
+   "bark_radius_m": 4.0,
+   "barks": [
+    "Hear that? That's a real chime.",
+    "Shh. ...There. Almost a song."
+   ],
+   "look": {
+    "body": "#a08a4a",
+    "head": "#d6b48a",
+    "accessory": {
+     "shape": "box",
+     "color": "#7a3a3a",
+     "size": [
+      0.5,
+      0.12,
+      0.46
+     ],
+     "pos": [
+      0,
+      1.02,
+      0.02
+     ]
+    }
+   },
+   "variants": [
+    {
+     "conversation": "mk_sq_shopper_d"
+    }
+   ]
+  },
+  "mk_sq_wolf_a": {
+   "room": "market_square",
+   "speaker": "crowd_patrol_wolf_a",
+   "look": {
+    "body": "#3a4a6a",
+    "head": "#8a8a9a",
+    "model": "res://art/final/enemies/cyberwolf_sentinel_ross_v1.glb",
+    "radius": 0.45,
+    "height": 1.2,
+    "scale": 0.8
+   },
+   "variants": [
+    {
+     "if": {
+      "flag": "market_party"
+     },
+     "conversation": "mk_sq_wolf_a_party"
+    },
+    {
+     "conversation": "mk_sq_wolf_a"
+    }
+   ]
+  },
+  "mk_sq_wolf_b": {
+   "room": "market_square",
+   "speaker": "crowd_patrol_wolf_b",
+   "look": {
+    "body": "#3a4a6a",
+    "head": "#8a8a9a",
+    "model": "res://art/final/enemies/cyberwolf_sentinel_ross_v1.glb",
+    "radius": 0.45,
+    "height": 1.2,
+    "scale": 0.8
+   },
+   "variants": [
+    {
+     "if": {
+      "flag": "market_party"
+     },
+     "conversation": "mk_sq_wolf_b_party"
+    },
+    {
+     "conversation": "mk_sq_wolf_b"
+    }
+   ]
+  },
+  "mk_wf_juno": {
+   "room": "market_wharf",
+   "speaker": "crowd_juno",
+   "bark_radius_m": 4.5,
+   "barks": [
+    "Lap three! Don't blink!",
+    "GREEN! NO! GREEN!",
+    "That one's mine! ...That one crashed!"
+   ],
+   "look": {
+    "body": "#e0782b",
+    "head": "#d6b48a",
+    "accessory": {
+     "shape": "sphere",
+     "color": "#35d6c4",
+     "size": [
+      0.13
+     ],
+     "pos": [
+      0,
+      1.05,
+      0
+     ]
+    }
+   },
+   "variants": [
+    {
+     "conversation": "mk_wf_juno"
+    }
+   ]
+  },
+  "mk_wf_kid_a": {
+   "room": "market_wharf",
+   "speaker": "crowd_drone_kid_a",
+   "bark_radius_m": 4.0,
+   "barks": [
+    "Delivery rehearsal! Nothing to see!",
+    "Faster! The patrol's coming! ...It's not!"
+   ],
+   "look": {
+    "body": "#5a7aaa",
+    "head": "#c9a67e",
+    "accessory": {
+     "shape": "box",
+     "color": "#e8a838",
+     "size": [
+      0.5,
+      0.12,
+      0.46
+     ],
+     "pos": [
+      0,
+      0.95,
+      0.02
+     ]
+    }
+   },
+   "variants": [
+    {
+     "conversation": "mk_wf_kid_a"
+    }
+   ]
+  },
+  "mk_wf_kid_b": {
+   "room": "market_wharf",
+   "speaker": "crowd_drone_kid_b",
+   "bark_radius_m": 4.0,
+   "barks": [
+    "Go go go go go!",
+    "Turn! TURN! ...Okay, it's in the water."
+   ],
+   "look": {
+    "body": "#aa5a7a",
+    "head": "#e0c2a4",
+    "accessory": {
+     "shape": "sphere",
+     "color": "#35d6c4",
+     "size": [
+      0.1
+     ],
+     "pos": [
+      0,
+      1.0,
+      0
+     ]
+    }
+   },
+   "variants": [
+    {
+     "conversation": "mk_wf_kid_b"
+    }
+   ]
+  },
+  "mk_wf_judge": {
+   "room": "market_wharf",
+   "speaker": "crowd_race_judge",
+   "bark_radius_m": 5.0,
+   "barks": [
+    "(megaphone) BLUE IS AHEAD!",
+    "(megaphone) PLEASE STOP TOUCHING THE TRACK.",
+    "(megaphone) A SEAGULL IS WINNING."
+   ],
+   "look": {
+    "body": "#6a8a5a",
+    "head": "#d6b48a",
+    "accessory": {
+     "shape": "box",
+     "color": "#c8322a",
+     "size": [
+      0.5,
+      0.12,
+      0.46
+     ],
+     "pos": [
+      0,
+      1.0,
+      0.02
+     ]
+    }
+   },
+   "variants": [
+    {
+     "conversation": "mk_wf_judge"
+    }
+   ]
+  },
+  "mk_wf_pell": {
+   "room": "market_wharf",
+   "speaker": "crowd_pell",
+   "look": {
+    "body": "#8a7a5a",
+    "head": "#d6b48a",
+    "accessory": {
+     "shape": "box",
+     "color": "#6a5a3a",
+     "size": [
+      0.5,
+      0.12,
+      0.46
+     ],
+     "pos": [
+      0,
+      1.02,
+      0.02
+     ]
+    }
+   },
+   "variants": [
+    {
+     "if": {
+      "flag": "job_appeal_done"
+     },
+     "conversation": "mk_wf_pell_done"
+    },
+    {
+     "if": {
+      "flag": "job_appeal_taken",
+      "not_flag": "job_appeal_form_got"
+     },
+     "conversation": "mk_wf_pell_form"
+    },
+    {
+     "if": {
+      "flag": "job_appeal_form_got"
+     },
+     "conversation": "mk_wf_pell_go"
+    },
+    {
+     "conversation": "mk_wf_pell"
+    }
+   ]
+  },
+  "mk_wf_late_cook": {
+   "room": "market_wharf",
+   "speaker": "crowd_late_cook",
+   "bark_radius_m": 4.5,
+   "barks": [
+    "Noodles! Same as Pop's! Don't tell Pop!",
+    "Better view! Worse broth! ...Kidding!"
+   ],
+   "look": {
+    "body": "#c9763a",
+    "head": "#d6b48a",
+    "accessory": {
+     "shape": "box",
+     "color": "#f2e8d0",
+     "size": [
+      0.5,
+      0.12,
+      0.46
+     ],
+     "pos": [
+      0,
+      1.05,
+      0.02
+     ]
+    }
+   },
+   "variants": [
+    {
+     "conversation": "mk_wf_late_cook"
+    }
+   ]
+  },
+  "mk_wf_fisher": {
+   "room": "market_wharf",
+   "speaker": "crowd_fisher",
+   "bark_radius_m": 4.0,
+   "barks": [
+    "Any minute now.",
+    "That was a bite. ...That was wind.",
+    "He's down there. I can feel it."
+   ],
+   "look": {
+    "body": "#4a6a8a",
+    "head": "#c9a67e",
+    "accessory": {
+     "shape": "box",
+     "color": "#7a6a3a",
+     "size": [
+      0.5,
+      0.12,
+      0.46
+     ],
+     "pos": [
+      0,
+      1.0,
+      0.02
+     ]
+    }
+   },
+   "variants": [
+    {
+     "conversation": "mk_wf_fisher"
+    }
+   ]
+  },
+  "mk_gt_grunt_a": {
+   "room": "market_gate",
+   "speaker": "crowd_gate_grunt_a",
+   "look": {
+    "body": "#4a5a7a",
+    "head": "#c9a67e",
+    "model": "res://art/placeholder/enemies/signals_grunt/enm_signals_grunt.glb",
+    "radius": 0.4,
+    "height": 1.4
+   },
+   "variants": [
+    {
+     "if": {
+      "flag": "job_main_taken",
+      "not_flag": "gate_pass_seen"
+     },
+     "scene": "gate_pass"
+    },
+    {
+     "if": {
+      "flag": "job_main_taken"
+     },
+     "conversation": "mk_gt_grunt_a_open"
+    },
+    {
+     "conversation": "mk_gt_grunt_a"
+    }
+   ]
+  },
+  "mk_gt_grunt_b": {
+   "room": "market_gate",
+   "speaker": "crowd_gate_grunt_b",
+   "look": {
+    "body": "#4a5a7a",
+    "head": "#c9a67e",
+    "model": "res://art/placeholder/enemies/signals_grunt/enm_signals_grunt.glb",
+    "radius": 0.4,
+    "height": 1.4
+   },
+   "variants": [
+    {
+     "conversation": "mk_gt_grunt_b"
+    }
+   ]
+  },
+  "mk_gt_line_a": {
+   "room": "market_gate",
+   "speaker": "crowd_line_a",
+   "look": {
+    "body": "#9a7a5a",
+    "head": "#d6b48a",
+    "accessory": {
+     "shape": "sphere",
+     "color": "#c8b0d0",
+     "size": [
+      0.1
+     ],
+     "pos": [
+      0.25,
+      0.7,
+      0.1
+     ]
+    }
+   },
+   "variants": [
+    {
+     "conversation": "mk_gt_line_a"
+    }
+   ]
+  },
+  "mk_gt_line_b": {
+   "room": "market_gate",
+   "speaker": "crowd_line_b",
+   "look": {
+    "body": "#5a8a7a",
+    "head": "#e0c2a4",
+    "accessory": {
+     "shape": "sphere",
+     "color": "#e8a838",
+     "size": [
+      0.1
+     ],
+     "pos": [
+      0.25,
+      0.7,
+      0.1
+     ]
+    }
+   },
+   "variants": [
+    {
+     "conversation": "mk_gt_line_b"
+    }
+   ]
+  },
+  "mk_gt_line_c": {
+   "room": "market_gate",
+   "speaker": "crowd_line_c",
+   "look": {
+    "body": "#8a5a7a",
+    "head": "#c9a67e",
+    "accessory": {
+     "shape": "sphere",
+     "color": "#35d6c4",
+     "size": [
+      0.1
+     ],
+     "pos": [
+      0.25,
+      0.7,
+      0.1
+     ]
+    }
+   },
+   "variants": [
+    {
+     "conversation": "mk_gt_line_c"
+    }
+   ]
+  },
+  "mk_dp_dispatcher": {
+   "room": "market_dispatch",
+   "speaker": "crowd_dispatcher",
+   "look": {
+    "body": "#3d5f8a",
+    "head": "#e0c2a4",
+    "accessory": {
+     "shape": "box",
+     "color": "#2d4f7a",
+     "size": [
+      0.5,
+      0.12,
+      0.46
+     ],
+     "pos": [
+      0,
+      1.02,
+      0.02
+     ]
+    }
+   },
+   "variants": [
+    {
+     "if": {
+      "flag": "kasp_beaten"
+     },
+     "conversation": "mk_dp_dispatcher_done"
+    },
+    {
+     "if": {
+      "flag": "job_main_taken"
+     },
+     "conversation": "mk_dp_dispatcher_taken"
+    },
+    {
+     "conversation": "mk_dp_dispatcher"
+    }
+   ]
+  },
+  "mk_dp_sleeper": {
+   "room": "market_dispatch",
+   "speaker": "crowd_sleeping_courier",
+   "look": {
+    "body": "#7a7f5a",
+    "head": "#d6b48a",
+    "scale": 0.9
+   },
+   "variants": [
+    {
+     "conversation": "mk_dp_sleeper"
+    }
+   ]
+  },
+  "mk_cs_keeper": {
+   "room": "market_corner",
+   "speaker": "crowd_shopkeeper",
+   "look": {
+    "body": "#5a8a6a",
+    "head": "#d6b48a",
+    "accessory": {
+     "shape": "box",
+     "color": "#f2e8d0",
+     "size": [
+      0.5,
+      0.12,
+      0.46
+     ],
+     "pos": [
+      0,
+      1.0,
+      0.02
+     ]
+    }
+   },
+   "variants": [
+    {
+     "conversation": "mk_cs_keeper"
+    }
+   ]
+  },
+  "mk_cs_clerk": {
+   "room": "market_corner",
+   "speaker": "crowd_clerk",
+   "look": {
+    "body": "#3a4a6a",
+    "head": "#c9a67e",
+    "model": "res://art/placeholder/enemies/signals_grunt/enm_signals_grunt.glb",
+    "radius": 0.4,
+    "height": 1.4
+   },
+   "variants": [
+    {
+     "conversation": "mk_cs_clerk"
+    }
+   ]
+  },
+  "mk_fg_otis": {
+   "room": "market_forge",
+   "speaker": "otis",
+   "look": {
+    "body": "#6a5a4a",
+    "head": "#d6b48a",
+    "model": "res://art/placeholder/characters/otis/chr_otis.glb",
+    "radius": 0.5,
+    "height": 1.3
+   },
+   "variants": [
+    {
+     "if": {
+      "flag": "market_party"
+     },
+     "conversation": "mk_fg_otis_party"
+    },
+    {
+     "if": {
+      "flag": "job_main_taken",
+      "not_flag": "kasp_beaten"
+     },
+     "conversation": "mk_fg_otis_taken"
+    },
+    {
+     "conversation": "mk_fg_otis"
+    }
+   ]
+  },
+  "mk_rp_mox": {
+   "room": "market_repair",
+   "speaker": "mox",
+   "look": {
+    "body": "#2a6a6a",
+    "head": "#d6b48a",
+    "model": "res://art/placeholder/characters/mox/chr_mox.glb",
+    "radius": 0.4,
+    "height": 1.3
+   },
+   "variants": [
+    {
+     "if": {
+      "flag": "market_party"
+     },
+     "conversation": "mk_rp_mox_party"
+    },
+    {
+     "if": {
+      "not_flag": "mox_deck_given"
+     },
+     "scene": "mox_deck"
+    },
+    {
+     "conversation": "mk_rp_mox"
+    }
+   ]
+  },
+  "mk_ar_owner": {
+   "room": "market_arcade",
+   "speaker": "crowd_arcade_owner",
+   "bark_radius_m": 4.5,
+   "barks": [
+    "Turn it UP!",
+    "Don't touch the claw!",
+    "Credits! Get your credits!"
+   ],
+   "look": {
+    "body": "#aa5a8a",
+    "head": "#d6b48a",
+    "accessory": {
+     "shape": "box",
+     "color": "#35d6c4",
+     "size": [
+      0.5,
+      0.12,
+      0.46
+     ],
+     "pos": [
+      0,
+      1.0,
+      0.02
+     ]
+    }
+   },
+   "variants": [
+    {
+     "conversation": "mk_ar_owner"
+    }
+   ]
+  },
+  "mk_ar_kid_a": {
+   "room": "market_arcade",
+   "speaker": "crowd_arcade_kid_a",
+   "bark_radius_m": 3.5,
+   "barks": [
+    "Beep beep beeeep!",
+    "Beeeeep! (That was a win.)"
+   ],
+   "look": {
+    "body": "#5a7aaa",
+    "head": "#c9a67e",
+    "accessory": {
+     "shape": "box",
+     "color": "#e8a838",
+     "size": [
+      0.5,
+      0.12,
+      0.46
+     ],
+     "pos": [
+      0,
+      0.95,
+      0.02
+     ]
+    }
+   },
+   "variants": [
+    {
+     "conversation": "mk_ar_kid_a"
+    }
+   ]
+  },
+  "mk_ar_kid_b": {
+   "room": "market_arcade",
+   "speaker": "crowd_arcade_kid_b",
+   "look": {
+    "body": "#aa5a7a",
+    "head": "#e0c2a4",
+    "accessory": {
+     "shape": "sphere",
+     "color": "#35d6c4",
+     "size": [
+      0.1
+     ],
+     "pos": [
+      0,
+      1.0,
+      0
+     ]
+    }
+   },
+   "variants": [
+    {
+     "conversation": "mk_ar_kid_b"
+    }
+   ]
+  },
+  "mk_ar_kid_c": {
+   "room": "market_arcade",
+   "speaker": "crowd_arcade_kid_c",
+   "bark_radius_m": 3.5,
+   "barks": [
+    "BEEP BEEP BEEP!",
+    "Last level! LAST LEVEL!"
+   ],
+   "look": {
+    "body": "#6a8a5a",
+    "head": "#d6b48a",
+    "accessory": {
+     "shape": "box",
+     "color": "#c8322a",
+     "size": [
+      0.5,
+      0.12,
+      0.46
+     ],
+     "pos": [
+      0,
+      0.95,
+      0.02
+     ]
+    }
+   },
+   "variants": [
+    {
+     "conversation": "mk_ar_kid_c"
+    }
+   ]
+  },
+  "mk_ar_zed": {
+   "room": "market_arcade",
+   "speaker": "crowd_zed",
+   "bark_radius_m": 3.5,
+   "barks": [
+    "One point. Always one point.",
+    "Next time. Next time."
+   ],
+   "look": {
+    "body": "#2a2a35",
+    "head": "#c9a67e",
+    "accessory": {
+     "shape": "box",
+     "color": "#e8a838",
+     "size": [
+      0.5,
+      0.12,
+      0.46
+     ],
+     "pos": [
+      0,
+      1.0,
+      0.02
+     ]
+    }
+   },
+   "variants": [
+    {
+     "conversation": "mk_ar_zed"
+    }
+   ]
+  }
+ },
+ "spots": {
+  "mk_sq_screen": {
+   "room": "market_square",
+   "kind": "examine",
+   "variants": [
+    {
+     "if": {
+      "flag": "market_party"
+     },
+     "conversation": "mk_sq_screen_party"
+    },
+    {
+     "conversation": "mk_sq_screen"
+    }
+   ]
+  },
+  "mk_sq_phone_rack": {
+   "room": "market_square",
+   "kind": "examine",
+   "variants": [
+    {
+     "conversation": "mk_sq_phone_rack"
+    }
+   ]
+  },
+  "mk_sq_window_ledge": {
+   "room": "market_square",
+   "kind": "examine",
+   "variants": [
+    {
+     "if": {
+      "flag": "job_charge_done"
+     },
+     "conversation": "mk_sq_window_ledge_done"
+    },
+    {
+     "if": {
+      "flag": "job_charge_taken",
+      "item": "side_job_parcel"
+     },
+     "scene": "charge_delivery"
+    },
+    {
+     "conversation": "mk_sq_window_ledge"
+    }
+   ],
+   "reach": 1.2
+  },
+  "mk_sq_tarp_pole": {
+   "room": "market_square",
+   "kind": "examine",
+   "variants": [
+    {
+     "conversation": "mk_sq_tarp_pole"
+    }
+   ]
+  },
+  "mk_sq_bets_board": {
+   "room": "market_square",
+   "kind": "examine",
+   "variants": [
+    {
+     "if": {
+      "flag": "market_party"
+     },
+     "conversation": "mk_sq_bets_party"
+    },
+    {
+     "conversation": "mk_sq_bets_board"
+    }
+   ]
+  },
+  "mk_sq_memo_board": {
+   "room": "market_square",
+   "kind": "examine",
+   "variants": [
+    {
+     "if": {
+      "flag": "market_party"
+     },
+     "conversation": "mk_sq_memo_party"
+    },
+    {
+     "conversation": "mk_sq_memo_board"
+    }
+   ]
+  },
+  "mk_wf_screen": {
+   "room": "market_wharf",
+   "kind": "examine",
+   "variants": [
+    {
+     "conversation": "mk_wf_screen"
+    }
+   ]
+  },
+  "mk_wf_tide_board": {
+   "room": "market_wharf",
+   "kind": "examine",
+   "variants": [
+    {
+     "conversation": "mk_wf_tide_board"
+    }
+   ]
+  },
+  "mk_wf_crane": {
+   "room": "market_wharf",
+   "kind": "examine",
+   "variants": [
+    {
+     "conversation": "mk_wf_crane"
+    }
+   ]
+  },
+  "mk_wf_results": {
+   "room": "market_wharf",
+   "kind": "examine",
+   "variants": [
+    {
+     "conversation": "mk_wf_results"
+    }
+   ]
+  },
+  "mk_gt_appeals_slot": {
+   "room": "market_gate",
+   "kind": "open",
+   "variants": [
+    {
+     "if": {
+      "flag": "job_appeal_done"
+     },
+     "conversation": "mk_gt_appeals_done"
+    },
+    {
+     "if": {
+      "flag": "job_appeal_form_got",
+      "item": "side_job_parcel"
+     },
+     "scene": "appeal_market"
+    },
+    {
+     "conversation": "mk_gt_appeals_slot"
+    }
+   ],
+   "reach": 1.3
+  },
+  "mk_gt_poster": {
+   "room": "market_gate",
+   "kind": "examine",
+   "variants": [
+    {
+     "if": {
+      "flag": "market_party"
+     },
+     "conversation": "mk_gt_poster_party"
+    },
+    {
+     "conversation": "mk_gt_poster"
+    }
+   ]
+  },
+  "mk_hd_stickers": {
+   "room": "market_hideout",
+   "kind": "examine",
+   "variants": [
+    {
+     "conversation": "mk_hd_stickers"
+    }
+   ]
+  },
+  "mk_hd_photo": {
+   "room": "market_hideout",
+   "kind": "examine",
+   "variants": [
+    {
+     "conversation": "mk_hd_photo"
+    }
+   ]
+  },
+  "mk_hd_charts": {
+   "room": "market_hideout",
+   "kind": "examine",
+   "variants": [
+    {
+     "conversation": "mk_hd_charts"
+    }
+   ]
+  },
+  "mk_hd_parcel": {
+   "room": "market_hideout",
+   "kind": "examine",
+   "variants": [
+    {
+     "conversation": "mk_hd_parcel"
+    }
+   ]
+  },
+  "mk_rp_scratch": {
+   "room": "market_repair",
+   "kind": "examine",
+   "variants": [
+    {
+     "conversation": "mk_rp_scratch"
+    }
+   ]
+  },
+  "mk_fg_bridge_lamp": {
+   "room": "market_forge",
+   "kind": "examine",
+   "variants": [
+    {
+     "conversation": "mk_fg_bridge_lamp"
+    }
+   ]
+  },
+  "mk_ar_scores": {
+   "room": "market_arcade",
+   "kind": "examine",
+   "variants": [
+    {
+     "conversation": "mk_ar_scores"
+    }
+   ]
+  },
+  "mk_dp_board": {
+   "room": "market_dispatch",
+   "kind": "examine",
+   "variants": [
+    {
+     "conversation": "mk_dp_board"
+    }
+   ],
+   "reach": 1.5
+  },
+  "jk_j1_screen": {
+   "room": "junk_j1",
+   "kind": "examine",
+   "variants": [
+    {
+     "conversation": "jk_j1_screen"
+    }
+   ]
+  },
+  "jk_j1_memo": {
+   "room": "junk_j1",
+   "kind": "examine",
+   "variants": [
+    {
+     "conversation": "jk_j1_memo"
+    }
+   ]
+  }
+ },
+ "hack_targets": {
+  "_about": "VS-19, World hack targets (Gameplay Programmer). One entry per node in a room scene that carries `target_id` (HackDoor, HackTerminal, HackCrane, DroneLine, HackLoader in scripts/slice/targets/). Common keys: room, kind, accepts (zap / emp / overclock / interact), lockable, sticky (true: the `flag` stays set after a retry, a reload and a save; ActionRoom.sticky_ids reads `flag` and each crane job's `flag`), flag (GameState flag set when done; a `Door` placement with requires.flag opens by it), aim_height_m, reach_m. Per kind: fuse door - slab {size, offset} or door_path, open_s, also_flags; terminal - message [lines], scene, also_flags, once; crane - jobs [{id, flag, path [[x,y,z]...] world metres, speed_mps, cargo {size} or cargo_path, smash {radius_m, group}}] done in order, each by one Overclock (10 s) or several; drone line - enemy, interval_s, first_after_s, max_alive, total_max, emp_stops_s, zaps_needed, node_pos, spawn_offset; loader - flag (same as the robot room's wake_flag). Coordinates are the map's metres (origin at the room's NW floor corner, +x east, +z south) and the Level Designer checks them against the scenes (VS-20). Level Designer (VS-20): the crane's bridge path now lands the girder across the pit rims (x 44.5 to 56.5, rims at 46 and 55), the vault path ends at the vault wall (72.4, 20), and the two fuse doors carry their slabs (offsets are local to the fuse box).",
+  "hack_j1_door": {
+   "room": "junk_j1",
+   "kind": "fuse_door",
+   "accepts": [
+    "zap"
+   ],
+   "lockable": true,
+   "sticky": true,
+   "flag": "hack_j1_door_open",
+   "aim_height_m": 0.9,
+   "slab": {
+    "size": [
+     0.6,
+     5.0,
+     5.0
+    ],
+    "offset": [
+     9.6,
+     -5.0,
+     10.0
+    ]
+   }
+  },
+  "term_j2_gate": {
+   "room": "junk_j2",
+   "kind": "terminal",
+   "accepts": [
+    "interact"
+   ],
+   "sticky": true,
+   "flag": "term_j2_gate_open",
+   "message": [
+    "The gate unlatches."
+   ],
+   "reach_m": 2.0
+  },
+  "crane_j3": {
+   "room": "junk_j3",
+   "kind": "crane",
+   "accepts": [
+    "overclock"
+   ],
+   "lockable": true,
+   "sticky": true,
+   "flag": "crane_j3_done",
+   "aim_height_m": 1.2,
+   "jobs": [
+    {
+     "id": "bridge",
+     "flag": "hack_j3_bridge_placed",
+     "speed_mps": 4.0,
+     "cargo": {
+      "size": [
+       12.0,
+       0.6,
+       3.0
+      ]
+     },
+     "path": [
+      [
+       36.0,
+       0.3,
+       40.0
+      ],
+      [
+       36.0,
+       8.0,
+       40.0
+      ],
+      [
+       50.5,
+       8.0,
+       40.0
+      ],
+      [
+       50.5,
+       0.3,
+       40.0
+      ]
+     ]
+    },
+    {
+     "id": "vault",
+     "flag": "hack_j3_vault_wall_hit",
+     "speed_mps": 5.0,
+     "cargo": {
+      "size": [
+       6.0,
+       2.6,
+       2.6
+      ]
+     },
+     "path": [
+      [
+       60.0,
+       0.3,
+       44.0
+      ],
+      [
+       60.0,
+       6.0,
+       44.0
+      ],
+      [
+       70.0,
+       6.0,
+       26.0
+      ],
+      [
+       71.0,
+       2.0,
+       21.0
+      ]
+     ],
+     "smash": {
+      "radius_m": 4.0,
+      "group": "crane_breakable"
+     }
+    }
+   ]
+  },
+  "dline_j3": {
+   "room": "junk_j3",
+   "kind": "drone_line",
+   "accepts": [
+    "emp"
+   ],
+   "sticky": true,
+   "flag": "dline_j3_dead",
+   "enemy": "signals_drone",
+   "interval_s": 6.0,
+   "first_after_s": 5.0,
+   "max_alive": 2,
+   "emp_stops_s": 8.0,
+   "zaps_needed": 2,
+   "node_pos": [
+    10.0,
+    5.0,
+    6.0
+   ],
+   "aim_height_m": 1.0
+  },
+  "hack_j3_vault": {
+   "room": "junk_j3",
+   "kind": "fuse_door",
+   "accepts": [
+    "zap"
+   ],
+   "sticky": true,
+   "flag": "hack_j3_vault_open",
+   "slab": {
+    "size": [
+     3.0,
+     3.0,
+     0.4
+    ],
+    "offset": [
+     0.0,
+     -1.0,
+     2.0
+    ]
+   }
+  },
+  "loader_j4": {
+   "room": "junk_j4",
+   "kind": "loader",
+   "accepts": [
+    "interact"
+   ],
+   "sticky": true,
+   "flag": "loader_awake",
+   "reach_m": 3.0
+  }
+ }
+}

@@ -1,0 +1,2222 @@
+[gd_scene load_steps=256 format=3]
+
+[ext_resource type="Shader" path="res://shaders/ps2_lit_crisp.gdshader" id="1_r"]
+[ext_resource type="Texture2D" path="res://art/final/textures/city/tiles_seamless/floor_rust_plate_quad.png" id="2_r"]
+[ext_resource type="Shader" path="res://shaders/ps2_lit.gdshader" id="3_r"]
+[ext_resource type="Texture2D" path="res://art/final/textures/city/tiles_seamless/rust_riveted_plates_tall.png" id="4_r"]
+[ext_resource type="Texture2D" path="res://art/final/textures/city/tiles_seamless/rust_streaked_plate_tall.png" id="5_r"]
+[ext_resource type="Texture2D" path="res://art/final/textures/city/tiles_seamless/steel_plate_riveted_grey.png" id="6_r"]
+[ext_resource type="Texture2D" path="res://art/final/textures/city/tiles/floor_hazard_stripe_yellow_band.png" id="7_r"]
+[ext_resource type="Texture2D" path="res://art/final/textures/city/tiles/wall_screen_green_terminal.png" id="8_r"]
+[ext_resource type="PackedScene" path="res://scenes/props/scene_spot.tscn" id="9_r"]
+[ext_resource type="PackedScene" path="res://art/placeholder/robots/props/prop_car_block.glb" id="10_r"]
+[ext_resource type="PackedScene" path="res://scenes/props/crate.tscn" id="11_r"]
+[ext_resource type="PackedScene" path="res://scenes/props/pickup.tscn" id="12_r"]
+[ext_resource type="PackedScene" path="res://art/placeholder/robots/props/prop_crate_large.glb" id="13_r"]
+[ext_resource type="Script" path="res://scripts/slice/targets/hack_door.gd" id="14_r"]
+[ext_resource type="PackedScene" path="res://scenes/props/door.tscn" id="15_r"]
+
+[sub_resource type="Environment" id="Environment_1"]
+background_mode = 1
+background_color = Color(0.09, 0.1, 0.13, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.55, 0.58, 0.72, 1)
+ambient_light_energy = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_2"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("2_r")
+shader_parameter/uv_scale = Vector2(32.0, 22.0)
+shader_parameter/uv_offset = Vector2(0.0, 0.0)
+shader_parameter/albedo_tint = Color(1.26, 1.2240000000000002, 1.296, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_3"]
+size = Vector2(64, 44)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_4"]
+size = Vector3(64, 0.2, 44)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_5"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("2_r")
+shader_parameter/uv_scale = Vector2(3.0, 3.0)
+shader_parameter/uv_offset = Vector2(-3.0, 9.5)
+shader_parameter/albedo_tint = Color(1.26, 1.2240000000000002, 1.296, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_6"]
+size = Vector2(6, 6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_7"]
+size = Vector3(6, 0.2, 6)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8"]
+shader = ExtResource("3_r")
+shader_parameter/albedo_tint = Color(0.256, 0.19440000000000002, 0.1632, 1)
+shader_parameter/use_orm = 0.0
+shader_parameter/roughness_base = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_9"]
+size = Vector3(6.0, 15.0, 2.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_10"]
+size = Vector3(6.0, 15.0, 2.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_11"]
+size = Vector3(6.0, 12.8, 2.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_12"]
+size = Vector3(6.0, 12.8, 2.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_13"]
+size = Vector3(6.0, 11.6, 2.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_14"]
+size = Vector3(6.0, 11.6, 2.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_15"]
+size = Vector3(6.0, 13.8, 2.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_16"]
+size = Vector3(6.0, 13.8, 2.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_17"]
+size = Vector3(6.0, 11.2, 2.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_18"]
+size = Vector3(6.0, 11.2, 2.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_19"]
+size = Vector3(6.0, 11.5, 2.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_20"]
+size = Vector3(6.0, 11.5, 2.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_21"]
+size = Vector3(6.0, 12.5, 2.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_22"]
+size = Vector3(6.0, 12.5, 2.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_23"]
+size = Vector3(4.0, 11.4, 2.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_24"]
+size = Vector3(4.0, 11.4, 2.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_25"]
+size = Vector3(6.0, 13.1, 2.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_26"]
+size = Vector3(6.0, 13.1, 2.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_27"]
+size = Vector3(6.0, 12.3, 2.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_28"]
+size = Vector3(6.0, 12.3, 2.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_29"]
+size = Vector3(6.0, 14.4, 4.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_30"]
+size = Vector3(6.0, 14.4, 4.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_31"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("4_r")
+shader_parameter/uv_scale = Vector2(3.0, 3.6)
+shader_parameter/uv_offset = Vector2(24.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_32"]
+size = Vector2(6.0, 14.4)
+orientation = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_33"]
+size = Vector3(6.0, 11.5, 4.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_34"]
+size = Vector3(6.0, 11.5, 4.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_35"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("5_r")
+shader_parameter/uv_scale = Vector2(3.0, 2.875)
+shader_parameter/uv_offset = Vector2(18.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_36"]
+size = Vector2(6.0, 11.5)
+orientation = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_37"]
+size = Vector3(6.0, 13.4, 4.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_38"]
+size = Vector3(6.0, 13.4, 4.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_39"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("4_r")
+shader_parameter/uv_scale = Vector2(3.0, 3.35)
+shader_parameter/uv_offset = Vector2(15.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_40"]
+size = Vector2(6.0, 13.4)
+orientation = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_41"]
+size = Vector3(6.0, 12.3, 4.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_42"]
+size = Vector3(6.0, 12.3, 4.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_43"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("5_r")
+shader_parameter/uv_scale = Vector2(3.0, 3.075)
+shader_parameter/uv_offset = Vector2(12.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_44"]
+size = Vector2(6.0, 12.3)
+orientation = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_45"]
+size = Vector3(6.0, 11.8, 4.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_46"]
+size = Vector3(6.0, 11.8, 4.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_47"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("6_r")
+shader_parameter/uv_scale = Vector2(3.0, 5.9)
+shader_parameter/uv_offset = Vector2(30.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_48"]
+size = Vector2(6.0, 11.8)
+orientation = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_49"]
+size = Vector3(6.0, 14.0, 4.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_50"]
+size = Vector3(6.0, 14.0, 4.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_51"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("5_r")
+shader_parameter/uv_scale = Vector2(3.0, 3.5)
+shader_parameter/uv_offset = Vector2(21.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_52"]
+size = Vector2(6.0, 14.0)
+orientation = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_53"]
+size = Vector3(6.0, 13.5, 4.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_54"]
+size = Vector3(6.0, 13.5, 4.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_55"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("5_r")
+shader_parameter/uv_scale = Vector2(3.0, 3.375)
+shader_parameter/uv_offset = Vector2(9.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_56"]
+size = Vector2(6.0, 13.5)
+orientation = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_57"]
+size = Vector3(6.0, 12.6, 4.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_58"]
+size = Vector3(6.0, 12.6, 4.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_59"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("5_r")
+shader_parameter/uv_scale = Vector2(3.0, 3.15)
+shader_parameter/uv_offset = Vector2(27.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_60"]
+size = Vector2(6.0, 12.6)
+orientation = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_61"]
+size = Vector3(6.0, 14.6, 6.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_62"]
+size = Vector3(6.0, 14.6, 6.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_63"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("6_r")
+shader_parameter/uv_scale = Vector2(3.0, 7.3)
+shader_parameter/uv_offset = Vector2(-2.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_64"]
+size = Vector2(6.0, 14.6)
+orientation = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_65"]
+size = Vector3(4.0, 14.6, 6.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_66"]
+size = Vector3(4.0, 14.6, 6.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_67"]
+size = Vector3(2.0, 11.8, 2.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_68"]
+size = Vector3(2.0, 11.8, 2.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_69"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("5_r")
+shader_parameter/uv_scale = Vector2(1.0, 2.95)
+shader_parameter/uv_offset = Vector2(0.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_70"]
+size = Vector2(2.0, 11.8)
+orientation = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_71"]
+size = Vector3(6.0, 14.3, 6.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_72"]
+size = Vector3(6.0, 14.3, 6.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_73"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("4_r")
+shader_parameter/uv_scale = Vector2(3.0, 3.575)
+shader_parameter/uv_offset = Vector2(1.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_74"]
+size = Vector2(6.0, 14.3)
+orientation = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_75"]
+size = Vector3(4.0, 13.6, 6.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_76"]
+size = Vector3(4.0, 13.6, 6.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_77"]
+size = Vector3(2.0, 11.3, 6.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_78"]
+size = Vector3(2.0, 11.3, 6.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_79"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("5_r")
+shader_parameter/uv_scale = Vector2(3.0, 2.825)
+shader_parameter/uv_offset = Vector2(1.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_80"]
+size = Vector2(6.0, 11.3)
+orientation = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_81"]
+size = Vector3(6.0, 12.9, 6.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_82"]
+size = Vector3(6.0, 12.9, 6.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_83"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("4_r")
+shader_parameter/uv_scale = Vector2(3.0, 3.225)
+shader_parameter/uv_offset = Vector2(0.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_84"]
+size = Vector2(6.0, 12.9)
+orientation = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_85"]
+size = Vector3(4.0, 13.3, 6.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_86"]
+size = Vector3(4.0, 13.3, 6.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_87"]
+size = Vector3(6.0, 12.1, 6.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_88"]
+size = Vector3(6.0, 12.1, 6.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_89"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("5_r")
+shader_parameter/uv_scale = Vector2(3.0, 3.025)
+shader_parameter/uv_offset = Vector2(6.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_90"]
+size = Vector2(6.0, 12.1)
+orientation = 2
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_91"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("5_r")
+shader_parameter/uv_scale = Vector2(3.0, 3.025)
+shader_parameter/uv_offset = Vector2(4.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_92"]
+size = Vector3(6.0, 12.7, 6.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_93"]
+size = Vector3(6.0, 12.7, 6.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_94"]
+size = Vector3(6.0, 11.9, 6.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_95"]
+size = Vector3(6.0, 11.9, 6.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_96"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("5_r")
+shader_parameter/uv_scale = Vector2(3.0, 2.975)
+shader_parameter/uv_offset = Vector2(3.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_97"]
+size = Vector2(6.0, 11.9)
+orientation = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_98"]
+size = Vector3(2.0, 14.0, 6.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_99"]
+size = Vector3(2.0, 14.0, 6.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_100"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("4_r")
+shader_parameter/uv_scale = Vector2(3.0, 3.5)
+shader_parameter/uv_offset = Vector2(4.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_101"]
+size = Vector3(6.0, 14.2, 2.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_102"]
+size = Vector3(6.0, 14.2, 2.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_103"]
+size = Vector3(6.0, 11.9, 4.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_104"]
+size = Vector3(6.0, 11.9, 4.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_105"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("4_r")
+shader_parameter/uv_scale = Vector2(3.0, 2.975)
+shader_parameter/uv_offset = Vector2(-3.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_106"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("4_r")
+shader_parameter/uv_scale = Vector2(2.0, 2.975)
+shader_parameter/uv_offset = Vector2(7.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_107"]
+size = Vector2(4.0, 11.9)
+orientation = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_108"]
+size = Vector3(6.0, 13.6, 6.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_109"]
+size = Vector3(6.0, 13.6, 6.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_110"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("5_r")
+shader_parameter/uv_scale = Vector2(3.0, 3.4)
+shader_parameter/uv_offset = Vector2(7.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_111"]
+size = Vector2(6.0, 13.6)
+orientation = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_112"]
+size = Vector3(2.0, 14.4, 6.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_113"]
+size = Vector3(2.0, 14.4, 6.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_114"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("5_r")
+shader_parameter/uv_scale = Vector2(1.0, 3.6)
+shader_parameter/uv_offset = Vector2(32.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_115"]
+size = Vector2(2.0, 14.4)
+orientation = 2
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_116"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("5_r")
+shader_parameter/uv_scale = Vector2(3.0, 3.6)
+shader_parameter/uv_offset = Vector2(7.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_117"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("5_r")
+shader_parameter/uv_scale = Vector2(3.0, 3.575)
+shader_parameter/uv_offset = Vector2(33.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_118"]
+size = Vector3(4.0, 13.9, 6.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_119"]
+size = Vector3(4.0, 13.9, 6.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_120"]
+size = Vector3(2.0, 12.3, 4.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_121"]
+size = Vector3(2.0, 12.3, 4.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_122"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("6_r")
+shader_parameter/uv_scale = Vector2(2.0, 6.15)
+shader_parameter/uv_offset = Vector2(10.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_123"]
+size = Vector2(4.0, 12.3)
+orientation = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_124"]
+size = Vector3(6.0, 14.5, 6.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_125"]
+size = Vector3(6.0, 14.5, 6.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_126"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("5_r")
+shader_parameter/uv_scale = Vector2(3.0, 3.625)
+shader_parameter/uv_offset = Vector2(10.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_127"]
+size = Vector2(6.0, 14.5)
+orientation = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_128"]
+size = Vector3(4.0, 14.2, 6.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_129"]
+size = Vector3(4.0, 14.2, 6.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_130"]
+size = Vector3(2.0, 12.8, 2.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_131"]
+size = Vector3(2.0, 12.8, 2.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_132"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("4_r")
+shader_parameter/uv_scale = Vector2(1.0, 3.2)
+shader_parameter/uv_offset = Vector2(32.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_133"]
+size = Vector2(2.0, 12.8)
+orientation = 2
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_134"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("4_r")
+shader_parameter/uv_scale = Vector2(1.0, 3.2)
+shader_parameter/uv_offset = Vector2(12.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_135"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("6_r")
+shader_parameter/uv_scale = Vector2(3.0, 6.15)
+shader_parameter/uv_offset = Vector2(33.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_136"]
+size = Vector3(4.0, 12.4, 4.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_137"]
+size = Vector3(4.0, 12.4, 4.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_138"]
+size = Vector3(6.0, 12.9, 4.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_139"]
+size = Vector3(6.0, 12.9, 4.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_140"]
+size = Vector3(12.0, 13.4, 6.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_141"]
+size = Vector3(12.0, 13.4, 6.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_142"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("6_r")
+shader_parameter/uv_scale = Vector2(6.0, 6.7)
+shader_parameter/uv_offset = Vector2(-6.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_143"]
+size = Vector2(12.0, 13.4)
+orientation = 2
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_144"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("6_r")
+shader_parameter/uv_scale = Vector2(3.0, 6.7)
+shader_parameter/uv_offset = Vector2(13.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_145"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("5_r")
+shader_parameter/uv_scale = Vector2(3.0, 3.6)
+shader_parameter/uv_offset = Vector2(13.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_146"]
+size = Vector3(4.0, 12.9, 2.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_147"]
+size = Vector3(4.0, 12.9, 2.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_148"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("6_r")
+shader_parameter/uv_scale = Vector2(3.0, 5.6)
+shader_parameter/uv_offset = Vector2(0.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_149"]
+size = Vector2(6.0, 11.2)
+orientation = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_150"]
+size = Vector3(6.0, 14.1, 2.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_151"]
+size = Vector3(6.0, 14.1, 2.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_152"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("6_r")
+shader_parameter/uv_scale = Vector2(3.0, 7.05)
+shader_parameter/uv_offset = Vector2(3.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_153"]
+size = Vector2(6.0, 14.1)
+orientation = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_154"]
+size = Vector3(6.0, 13.9, 2.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_155"]
+size = Vector3(6.0, 13.9, 2.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_156"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("6_r")
+shader_parameter/uv_scale = Vector2(3.0, 6.95)
+shader_parameter/uv_offset = Vector2(6.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_157"]
+size = Vector2(6.0, 13.9)
+orientation = 2
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_158"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("6_r")
+shader_parameter/uv_scale = Vector2(1.0, 6.95)
+shader_parameter/uv_offset = Vector2(15.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_159"]
+size = Vector2(2.0, 13.9)
+orientation = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_160"]
+size = Vector3(6.0, 12.8, 4.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_161"]
+size = Vector3(6.0, 12.8, 4.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_162"]
+size = Vector3(6.0, 11.1, 6.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_163"]
+size = Vector3(6.0, 11.1, 6.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_164"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("5_r")
+shader_parameter/uv_scale = Vector2(3.0, 2.775)
+shader_parameter/uv_offset = Vector2(16.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_165"]
+size = Vector2(6.0, 11.1)
+orientation = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_166"]
+size = Vector3(2.0, 13.3, 6.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_167"]
+size = Vector3(2.0, 13.3, 6.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_168"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("6_r")
+shader_parameter/uv_scale = Vector2(3.0, 6.65)
+shader_parameter/uv_offset = Vector2(16.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_169"]
+size = Vector2(6.0, 13.3)
+orientation = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_170"]
+size = Vector3(4.0, 14.4, 6.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_171"]
+size = Vector3(4.0, 14.4, 6.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_172"]
+size = Vector3(2.0, 11.6, 6.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_173"]
+size = Vector3(2.0, 11.6, 6.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_174"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("6_r")
+shader_parameter/uv_scale = Vector2(3.0, 5.8)
+shader_parameter/uv_offset = Vector2(19.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_175"]
+size = Vector2(6.0, 11.6)
+orientation = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_176"]
+size = Vector3(4.0, 11.4, 6.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_177"]
+size = Vector3(4.0, 11.4, 6.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_178"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("6_r")
+shader_parameter/uv_scale = Vector2(3.0, 6.8)
+shader_parameter/uv_offset = Vector2(19.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_179"]
+size = Vector3(6.0, 14.8, 6.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_180"]
+size = Vector3(6.0, 14.8, 6.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_181"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("6_r")
+shader_parameter/uv_scale = Vector2(3.0, 7.4)
+shader_parameter/uv_offset = Vector2(24.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_182"]
+size = Vector2(6.0, 14.8)
+orientation = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_183"]
+size = Vector3(6.0, 12.3, 6.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_184"]
+size = Vector3(6.0, 12.3, 6.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_185"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("6_r")
+shader_parameter/uv_scale = Vector2(3.0, 6.15)
+shader_parameter/uv_offset = Vector2(27.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_186"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("4_r")
+shader_parameter/uv_scale = Vector2(3.0, 3.025)
+shader_parameter/uv_offset = Vector2(9.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_187"]
+size = Vector3(4.0, 13.7, 6.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_188"]
+size = Vector3(4.0, 13.7, 6.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_189"]
+size = Vector3(6.0, 13.1, 6.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_190"]
+size = Vector3(6.0, 13.1, 6.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_191"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("6_r")
+shader_parameter/uv_scale = Vector2(3.0, 6.55)
+shader_parameter/uv_offset = Vector2(30.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_192"]
+size = Vector2(6.0, 13.1)
+orientation = 2
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_193"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("5_r")
+shader_parameter/uv_scale = Vector2(3.0, 3.225)
+shader_parameter/uv_offset = Vector2(15.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_194"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("6_r")
+shader_parameter/uv_scale = Vector2(3.0, 6.35)
+shader_parameter/uv_offset = Vector2(21.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_195"]
+size = Vector2(6.0, 12.7)
+orientation = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_196"]
+size = Vector3(6.0, 13.9, 6.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_197"]
+size = Vector3(6.0, 13.9, 6.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_198"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("4_r")
+shader_parameter/uv_scale = Vector2(3.0, 3.475)
+shader_parameter/uv_offset = Vector2(18.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_199"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("4_r")
+shader_parameter/uv_scale = Vector2(3.0, 3.175)
+shader_parameter/uv_offset = Vector2(12.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.72, 0.68, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_200"]
+size = Vector3(6.0, 12.8, 6.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_201"]
+size = Vector3(6.0, 12.8, 6.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_202"]
+shader = ExtResource("1_r")
+shader_parameter/albedo_texture = ExtResource("7_r")
+shader_parameter/uv_scale = Vector2(5, 1)
+shader_parameter/uv_offset = Vector2(0.0, 0.0)
+shader_parameter/albedo_tint = Color(0.8, 0.8, 0.8, 1)
+shader_parameter/use_orm = 0.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_203"]
+size = Vector3(10, 0.24, 7)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_204"]
+shader = ExtResource("3_r")
+shader_parameter/albedo_tint = Color(0.3, 0.32, 0.36, 1)
+shader_parameter/use_orm = 0.0
+shader_parameter/roughness_base = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_205"]
+size = Vector3(0.25, 4.0, 0.25)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_206"]
+size = Vector3(0.25, 4.0, 0.25)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_207"]
+shader = ExtResource("3_r")
+shader_parameter/albedo_tint = Color(0.15, 0.17, 0.2, 1)
+shader_parameter/use_orm = 0.0
+shader_parameter/roughness_base = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_208"]
+size = Vector3(3.2, 1.6, 0.2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_209"]
+shading_mode = 0
+albedo_texture = ExtResource("8_r")
+texture_filter = 0
+albedo_color = Color(1.0, 1.0, 1.0, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_210"]
+size = Vector2(3.0, 1.4)
+orientation = 2
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_211"]
+shader = ExtResource("3_r")
+shader_parameter/albedo_tint = Color(0.78, 0.78, 0.72, 1)
+shader_parameter/use_orm = 0.0
+shader_parameter/roughness_base = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_212"]
+size = Vector3(2.0, 1.2, 0.1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_213"]
+size = Vector3(2.0, 1.4, 4.5)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_214"]
+shader = ExtResource("3_r")
+shader_parameter/albedo_tint = Color(0.35, 0.3, 0.3, 1)
+shader_parameter/use_orm = 0.0
+shader_parameter/roughness_base = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_215"]
+size = Vector3(4.5, 0.4, 2.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_216"]
+size = Vector3(4.5, 1.8, 2.0)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_217"]
+shading_mode = 0
+albedo_color = Color(0.95, 0.95, 0.85, 1)
+emission_enabled = true
+emission = Color(0.95, 0.95, 0.85, 1)
+emission_energy_multiplier = 0.7
+
+[sub_resource type="BoxMesh" id="BoxMesh_218"]
+size = Vector3(0.4, 0.5, 0.04)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_219"]
+shader = ExtResource("3_r")
+shader_parameter/albedo_tint = Color(0.8, 0.5, 0.35, 1)
+shader_parameter/use_orm = 0.0
+shader_parameter/roughness_base = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_220"]
+size = Vector3(0.9, 0.9, 0.9)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_221"]
+size = Vector3(0.9, 0.9, 0.9)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_222"]
+shader = ExtResource("3_r")
+shader_parameter/albedo_tint = Color(0.35, 0.3, 0.27, 1)
+shader_parameter/use_orm = 0.0
+shader_parameter/roughness_base = 0.85
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_223"]
+top_radius = 0.35
+bottom_radius = 0.35
+height = 0.9
+radial_segments = 12
+rings = 1
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_224"]
+radius = 0.35
+height = 0.9
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_225"]
+shading_mode = 0
+albedo_color = Color(1.0, 0.5, 0.15, 1)
+emission_enabled = true
+emission = Color(1.0, 0.5, 0.15, 1)
+emission_energy_multiplier = 1.8
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_226"]
+top_radius = 0.28
+bottom_radius = 0.28
+height = 0.12
+radial_segments = 12
+rings = 1
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_227"]
+size = Vector3(2.05, 2.05, 2.07)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_228"]
+shader = ExtResource("3_r")
+shader_parameter/albedo_tint = Color(0.3, 0.33, 0.38, 1)
+shader_parameter/use_orm = 0.0
+shader_parameter/roughness_base = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_229"]
+size = Vector3(0.7, 5.0, 0.7)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_230"]
+size = Vector3(0.7, 5.0, 0.7)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_231"]
+shader = ExtResource("3_r")
+shader_parameter/albedo_tint = Color(0.05, 0.06, 0.09, 1)
+shader_parameter/use_orm = 0.0
+shader_parameter/roughness_base = 0.85
+
+[sub_resource type="SphereMesh" id="SphereMesh_232"]
+radius = 22.0
+height = 44.0
+radial_segments = 10
+rings = 5
+
+[sub_resource type="BoxMesh" id="BoxMesh_233"]
+size = Vector3(30.0, 14.0, 24.0)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_234"]
+shading_mode = 0
+albedo_color = Color(1.0, 0.45, 0.1, 1)
+emission_enabled = true
+emission = Color(1.0, 0.45, 0.1, 1)
+emission_energy_multiplier = 0.6
+
+[sub_resource type="BoxMesh" id="BoxMesh_235"]
+size = Vector3(18.0, 2.0, 1.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_236"]
+shader = ExtResource("3_r")
+shader_parameter/albedo_tint = Color(0.06, 0.07, 0.1, 1)
+shader_parameter/use_orm = 0.0
+shader_parameter/roughness_base = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_237"]
+size = Vector3(24, 36, 10)
+
+[sub_resource type="BoxMesh" id="BoxMesh_238"]
+size = Vector3(30, 46, 10)
+
+[sub_resource type="BoxMesh" id="BoxMesh_239"]
+size = Vector3(20, 30, 10)
+
+[sub_resource type="BoxMesh" id="BoxMesh_240"]
+size = Vector3(30, 40, 10)
+
+[node name="JunkJ1" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_1")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+light_color = Color(1.0, 0.78, 0.55, 1)
+light_energy = 1.4
+shadow_enabled = true
+directional_shadow_max_distance = 70.0
+transform = Transform3D(-0.9737, 0.0462, -0.2231, -0.2279, -0.1975, 0.9534, 0.0000, 0.9792, 0.2029, 14.5, 40, 22.0)
+
+[node name="Fill" type="DirectionalLight3D" parent="."]
+light_color = Color(0.7, 0.8, 1, 1)
+light_energy = 1.4
+transform = Transform3D(-0.9540, 0.0788, 0.2893, 0.2998, 0.2509, 0.9204, 0.0000, 0.9648, -0.2630, 14.5, 40, 22.0)
+
+[node name="Collision" type="StaticBody3D" parent="."]
+
+[node name="Floor0" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 32.0, 0, 22.0)
+mesh = SubResource("PlaneMesh_3")
+surface_material_override/0 = SubResource("ShaderMaterial_2")
+
+[node name="FloorShape0" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 32.0, -0.1, 22.0)
+shape = SubResource("BoxShape3D_4")
+
+[node name="Floor1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, -3.0, 0, 22.0)
+mesh = SubResource("PlaneMesh_6")
+surface_material_override/0 = SubResource("ShaderMaterial_5")
+
+[node name="FloorShape1" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, -3.0, -0.1, 22.0)
+shape = SubResource("BoxShape3D_7")
+
+[node name="Spawns" type="Node3D" parent="."]
+
+[node name="Cliffs" type="Node3D" parent="."]
+
+[node name="Cliff0" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 57.0, 7.5, -5.0)
+mesh = SubResource("BoxMesh_9")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff0Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 57.0, 7.5, -5.0)
+shape = SubResource("BoxShape3D_10")
+
+[node name="Cliff1" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 21.0, 6.4, -5.0)
+mesh = SubResource("BoxMesh_11")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff1Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 21.0, 6.4, -5.0)
+shape = SubResource("BoxShape3D_12")
+
+[node name="Cliff2" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 33.0, 5.8, -5.0)
+mesh = SubResource("BoxMesh_13")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff2Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 33.0, 5.8, -5.0)
+shape = SubResource("BoxShape3D_14")
+
+[node name="Cliff3" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 27.0, 6.9, -5.0)
+mesh = SubResource("BoxMesh_15")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff3Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 27.0, 6.9, -5.0)
+shape = SubResource("BoxShape3D_16")
+
+[node name="Cliff4" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 51.0, 5.6, -5.0)
+mesh = SubResource("BoxMesh_17")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff4Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 51.0, 5.6, -5.0)
+shape = SubResource("BoxShape3D_18")
+
+[node name="Cliff5" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 63.0, 5.75, -5.0)
+mesh = SubResource("BoxMesh_19")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff5Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 63.0, 5.75, -5.0)
+shape = SubResource("BoxShape3D_20")
+
+[node name="Cliff6" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 45.0, 6.25, -5.0)
+mesh = SubResource("BoxMesh_21")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff6Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 45.0, 6.25, -5.0)
+shape = SubResource("BoxShape3D_22")
+
+[node name="Cliff7" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 68.0, 5.7, -5.0)
+mesh = SubResource("BoxMesh_23")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff7Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 68.0, 5.7, -5.0)
+shape = SubResource("BoxShape3D_24")
+
+[node name="Cliff8" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 39.0, 6.55, -5.0)
+mesh = SubResource("BoxMesh_25")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff8Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 39.0, 6.55, -5.0)
+shape = SubResource("BoxShape3D_26")
+
+[node name="Cliff9" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 15.0, 6.15, -5.0)
+mesh = SubResource("BoxMesh_27")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff9Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 15.0, 6.15, -5.0)
+shape = SubResource("BoxShape3D_28")
+
+[node name="Cliff10" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 51.0, 7.2, -2.0)
+mesh = SubResource("BoxMesh_29")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff10Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 51.0, 7.2, -2.0)
+shape = SubResource("BoxShape3D_30")
+
+[node name="Cliff10FaceS" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 51.0, 7.2, 0.02)
+mesh = SubResource("PlaneMesh_32")
+surface_material_override/0 = SubResource("ShaderMaterial_31")
+
+[node name="Cliff11" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 39.0, 5.75, -2.0)
+mesh = SubResource("BoxMesh_33")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff11Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 39.0, 5.75, -2.0)
+shape = SubResource("BoxShape3D_34")
+
+[node name="Cliff11FaceS" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 39.0, 5.75, 0.02)
+mesh = SubResource("PlaneMesh_36")
+surface_material_override/0 = SubResource("ShaderMaterial_35")
+
+[node name="Cliff12" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 33.0, 6.7, -2.0)
+mesh = SubResource("BoxMesh_37")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff12Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 33.0, 6.7, -2.0)
+shape = SubResource("BoxShape3D_38")
+
+[node name="Cliff12FaceS" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 33.0, 6.7, 0.02)
+mesh = SubResource("PlaneMesh_40")
+surface_material_override/0 = SubResource("ShaderMaterial_39")
+
+[node name="Cliff13" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 27.0, 6.15, -2.0)
+mesh = SubResource("BoxMesh_41")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff13Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 27.0, 6.15, -2.0)
+shape = SubResource("BoxShape3D_42")
+
+[node name="Cliff13FaceS" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 27.0, 6.15, 0.02)
+mesh = SubResource("PlaneMesh_44")
+surface_material_override/0 = SubResource("ShaderMaterial_43")
+
+[node name="Cliff14" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 63.0, 5.9, -2.0)
+mesh = SubResource("BoxMesh_45")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff14Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 63.0, 5.9, -2.0)
+shape = SubResource("BoxShape3D_46")
+
+[node name="Cliff14FaceS" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 63.0, 5.9, 0.02)
+mesh = SubResource("PlaneMesh_48")
+surface_material_override/0 = SubResource("ShaderMaterial_47")
+
+[node name="Cliff15" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 45.0, 7.0, -2.0)
+mesh = SubResource("BoxMesh_49")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff15Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 45.0, 7.0, -2.0)
+shape = SubResource("BoxShape3D_50")
+
+[node name="Cliff15FaceS" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 45.0, 7.0, 0.02)
+mesh = SubResource("PlaneMesh_52")
+surface_material_override/0 = SubResource("ShaderMaterial_51")
+
+[node name="Cliff16" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 21.0, 6.75, -2.0)
+mesh = SubResource("BoxMesh_53")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff16Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 21.0, 6.75, -2.0)
+shape = SubResource("BoxShape3D_54")
+
+[node name="Cliff16FaceS" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 21.0, 6.75, 0.02)
+mesh = SubResource("PlaneMesh_56")
+surface_material_override/0 = SubResource("ShaderMaterial_55")
+
+[node name="Cliff17" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 57.0, 6.3, -2.0)
+mesh = SubResource("BoxMesh_57")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff17Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 57.0, 6.3, -2.0)
+shape = SubResource("BoxShape3D_58")
+
+[node name="Cliff17FaceS" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 57.0, 6.3, 0.02)
+mesh = SubResource("PlaneMesh_60")
+surface_material_override/0 = SubResource("ShaderMaterial_59")
+
+[node name="Cliff18" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 15.0, 7.3, -1.0)
+mesh = SubResource("BoxMesh_61")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff18Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 15.0, 7.3, -1.0)
+shape = SubResource("BoxShape3D_62")
+
+[node name="Cliff18FaceE" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(0.0000, 0, 1.0000, 0, 1, 0, -1.0000, 0, 0.0000, 18.02, 7.3, -1.0)
+mesh = SubResource("PlaneMesh_64")
+surface_material_override/0 = SubResource("ShaderMaterial_63")
+
+[node name="Cliff19" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 68.0, 7.3, -1.0)
+mesh = SubResource("BoxMesh_65")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff19Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 68.0, 7.3, -1.0)
+shape = SubResource("BoxShape3D_66")
+
+[node name="Cliff20" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 65.0, 5.9, 1.0)
+mesh = SubResource("BoxMesh_67")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff20Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 65.0, 5.9, 1.0)
+shape = SubResource("BoxShape3D_68")
+
+[node name="Cliff20FaceW" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(0.0000, 0, -1.0000, 0, 1, 0, 1.0000, 0, 0.0000, 63.98, 5.9, 1.0)
+mesh = SubResource("PlaneMesh_70")
+surface_material_override/0 = SubResource("ShaderMaterial_69")
+
+[node name="Cliff21" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 15.0, 7.15, 5.0)
+mesh = SubResource("BoxMesh_71")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff21Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 15.0, 7.15, 5.0)
+shape = SubResource("BoxShape3D_72")
+
+[node name="Cliff21FaceE" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(0.0000, 0, 1.0000, 0, 1, 0, -1.0000, 0, 0.0000, 18.02, 7.15, 5.0)
+mesh = SubResource("PlaneMesh_74")
+surface_material_override/0 = SubResource("ShaderMaterial_73")
+
+[node name="Cliff22" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 68.0, 6.8, 5.0)
+mesh = SubResource("BoxMesh_75")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff22Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 68.0, 6.8, 5.0)
+shape = SubResource("BoxShape3D_76")
+
+[node name="Cliff23" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 65.0, 5.65, 5.0)
+mesh = SubResource("BoxMesh_77")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff23Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 65.0, 5.65, 5.0)
+shape = SubResource("BoxShape3D_78")
+
+[node name="Cliff23FaceW" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(0.0000, 0, -1.0000, 0, 1, 0, 1.0000, 0, 0.0000, 63.98, 5.65, 5.0)
+mesh = SubResource("PlaneMesh_80")
+surface_material_override/0 = SubResource("ShaderMaterial_79")
+
+[node name="Cliff24" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 3.0, 6.45, 11.0)
+mesh = SubResource("BoxMesh_81")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff24Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 3.0, 6.45, 11.0)
+shape = SubResource("BoxShape3D_82")
+
+[node name="Cliff24FaceS" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 3.0, 6.45, 14.02)
+mesh = SubResource("PlaneMesh_84")
+surface_material_override/0 = SubResource("ShaderMaterial_83")
+
+[node name="Cliff25" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 68.0, 6.65, 11.0)
+mesh = SubResource("BoxMesh_85")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff25Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 68.0, 6.65, 11.0)
+shape = SubResource("BoxShape3D_86")
+
+[node name="Cliff26" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 15.0, 6.05, 11.0)
+mesh = SubResource("BoxMesh_87")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff26Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 15.0, 6.05, 11.0)
+shape = SubResource("BoxShape3D_88")
+
+[node name="Cliff26FaceS" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 15.0, 6.05, 14.02)
+mesh = SubResource("PlaneMesh_90")
+surface_material_override/0 = SubResource("ShaderMaterial_89")
+
+[node name="Cliff26FaceE" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(0.0000, 0, 1.0000, 0, 1, 0, -1.0000, 0, 0.0000, 18.02, 6.05, 11.0)
+mesh = SubResource("PlaneMesh_90")
+surface_material_override/0 = SubResource("ShaderMaterial_91")
+
+[node name="Cliff27" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, -3.0, 6.35, 11.0)
+mesh = SubResource("BoxMesh_92")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff27Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, -3.0, 6.35, 11.0)
+shape = SubResource("BoxShape3D_93")
+
+[node name="Cliff28" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 9.0, 5.95, 11.0)
+mesh = SubResource("BoxMesh_94")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff28Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 9.0, 5.95, 11.0)
+shape = SubResource("BoxShape3D_95")
+
+[node name="Cliff28FaceS" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 9.0, 5.95, 14.02)
+mesh = SubResource("PlaneMesh_97")
+surface_material_override/0 = SubResource("ShaderMaterial_96")
+
+[node name="Cliff29" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 65.0, 7.0, 11.0)
+mesh = SubResource("BoxMesh_98")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff29Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 65.0, 7.0, 11.0)
+shape = SubResource("BoxShape3D_99")
+
+[node name="Cliff29FaceW" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(0.0000, 0, -1.0000, 0, 1, 0, 1.0000, 0, 0.0000, 63.98, 7.0, 11.0)
+mesh = SubResource("PlaneMesh_52")
+surface_material_override/0 = SubResource("ShaderMaterial_100")
+
+[node name="Cliff30" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, -9.0, 7.1, 13.0)
+mesh = SubResource("BoxMesh_101")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff30Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, -9.0, 7.1, 13.0)
+shape = SubResource("BoxShape3D_102")
+
+[node name="Cliff31" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, -3.0, 5.95, 16.0)
+mesh = SubResource("BoxMesh_103")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff31Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, -3.0, 5.95, 16.0)
+shape = SubResource("BoxShape3D_104")
+
+[node name="Cliff31FaceS" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, -3.0, 5.95, 18.02)
+mesh = SubResource("PlaneMesh_97")
+surface_material_override/0 = SubResource("ShaderMaterial_105")
+
+[node name="Cliff31FaceE" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(0.0000, 0, 1.0000, 0, 1, 0, -1.0000, 0, 0.0000, 0.02, 5.95, 16.0)
+mesh = SubResource("PlaneMesh_107")
+surface_material_override/0 = SubResource("ShaderMaterial_106")
+
+[node name="Cliff32" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, -9.0, 6.8, 17.0)
+mesh = SubResource("BoxMesh_108")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff32Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, -9.0, 6.8, 17.0)
+shape = SubResource("BoxShape3D_109")
+
+[node name="Cliff32FaceE" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(0.0000, 0, 1.0000, 0, 1, 0, -1.0000, 0, 0.0000, -5.98, 6.8, 17.0)
+mesh = SubResource("PlaneMesh_111")
+surface_material_override/0 = SubResource("ShaderMaterial_110")
+
+[node name="Cliff33" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 65.0, 7.2, 17.0)
+mesh = SubResource("BoxMesh_112")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff33Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 65.0, 7.2, 17.0)
+shape = SubResource("BoxShape3D_113")
+
+[node name="Cliff33FaceS" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 65.0, 7.2, 20.02)
+mesh = SubResource("PlaneMesh_115")
+surface_material_override/0 = SubResource("ShaderMaterial_114")
+
+[node name="Cliff33FaceW" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(0.0000, 0, -1.0000, 0, 1, 0, 1.0000, 0, 0.0000, 63.98, 7.2, 17.0)
+mesh = SubResource("PlaneMesh_32")
+surface_material_override/0 = SubResource("ShaderMaterial_116")
+
+[node name="Cliff34" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 69.0, 7.15, 17.0)
+mesh = SubResource("BoxMesh_71")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff34Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 69.0, 7.15, 17.0)
+shape = SubResource("BoxShape3D_72")
+
+[node name="Cliff34FaceS" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 69.0, 7.15, 20.02)
+mesh = SubResource("PlaneMesh_74")
+surface_material_override/0 = SubResource("ShaderMaterial_117")
+
+[node name="Cliff35" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 74.0, 6.95, 17.0)
+mesh = SubResource("BoxMesh_118")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff35Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 74.0, 6.95, 17.0)
+shape = SubResource("BoxShape3D_119")
+
+[node name="Cliff36" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 71.0, 6.15, 22.0)
+mesh = SubResource("BoxMesh_120")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff36Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 71.0, 6.15, 22.0)
+shape = SubResource("BoxShape3D_121")
+
+[node name="Cliff36FaceW" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(0.0000, 0, -1.0000, 0, 1, 0, 1.0000, 0, 0.0000, 69.98, 6.15, 22.0)
+mesh = SubResource("PlaneMesh_123")
+surface_material_override/0 = SubResource("ShaderMaterial_122")
+
+[node name="Cliff37" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, -9.0, 7.25, 23.0)
+mesh = SubResource("BoxMesh_124")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff37Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, -9.0, 7.25, 23.0)
+shape = SubResource("BoxShape3D_125")
+
+[node name="Cliff37FaceE" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(0.0000, 0, 1.0000, 0, 1, 0, -1.0000, 0, 0.0000, -5.98, 7.25, 23.0)
+mesh = SubResource("PlaneMesh_127")
+surface_material_override/0 = SubResource("ShaderMaterial_126")
+
+[node name="Cliff38" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 74.0, 7.1, 23.0)
+mesh = SubResource("BoxMesh_128")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff38Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 74.0, 7.1, 23.0)
+shape = SubResource("BoxShape3D_129")
+
+[node name="Cliff39" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 65.0, 6.4, 25.0)
+mesh = SubResource("BoxMesh_130")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff39Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 65.0, 6.4, 25.0)
+shape = SubResource("BoxShape3D_131")
+
+[node name="Cliff39FaceN" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(-1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, -1.0000, 65.0, 6.4, 23.98)
+mesh = SubResource("PlaneMesh_133")
+surface_material_override/0 = SubResource("ShaderMaterial_132")
+
+[node name="Cliff39FaceW" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(0.0000, 0, -1.0000, 0, 1, 0, 1.0000, 0, 0.0000, 63.98, 6.4, 25.0)
+mesh = SubResource("PlaneMesh_133")
+surface_material_override/0 = SubResource("ShaderMaterial_134")
+
+[node name="Cliff40" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 69.0, 6.15, 25.0)
+mesh = SubResource("BoxMesh_27")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff40Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 69.0, 6.15, 25.0)
+shape = SubResource("BoxShape3D_28")
+
+[node name="Cliff40FaceN" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(-1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, -1.0000, 69.0, 6.15, 23.98)
+mesh = SubResource("PlaneMesh_44")
+surface_material_override/0 = SubResource("ShaderMaterial_135")
+
+[node name="Cliff41" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 74.0, 6.2, 28.0)
+mesh = SubResource("BoxMesh_136")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff41Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 74.0, 6.2, 28.0)
+shape = SubResource("BoxShape3D_137")
+
+[node name="Cliff42" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 69.0, 6.45, 28.0)
+mesh = SubResource("BoxMesh_138")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff42Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 69.0, 6.45, 28.0)
+shape = SubResource("BoxShape3D_139")
+
+[node name="Cliff43" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, -6.0, 6.7, 29.0)
+mesh = SubResource("BoxMesh_140")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff43Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, -6.0, 6.7, 29.0)
+shape = SubResource("BoxShape3D_141")
+
+[node name="Cliff43FaceN" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(-1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, -1.0000, -6.0, 6.7, 25.98)
+mesh = SubResource("PlaneMesh_143")
+surface_material_override/0 = SubResource("ShaderMaterial_142")
+
+[node name="Cliff43FaceE" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(0.0000, 0, 1.0000, 0, 1, 0, -1.0000, 0, 0.0000, 0.02, 6.7, 29.0)
+mesh = SubResource("PlaneMesh_40")
+surface_material_override/0 = SubResource("ShaderMaterial_144")
+
+[node name="Cliff44" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 65.0, 7.2, 29.0)
+mesh = SubResource("BoxMesh_112")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff44Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 65.0, 7.2, 29.0)
+shape = SubResource("BoxShape3D_113")
+
+[node name="Cliff44FaceW" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(0.0000, 0, -1.0000, 0, 1, 0, 1.0000, 0, 0.0000, 63.98, 7.2, 29.0)
+mesh = SubResource("PlaneMesh_32")
+surface_material_override/0 = SubResource("ShaderMaterial_145")
+
+[node name="Cliff45" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 68.0, 6.45, 31.0)
+mesh = SubResource("BoxMesh_146")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff45Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 68.0, 6.45, 31.0)
+shape = SubResource("BoxShape3D_147")
+
+[node name="Cliff46" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 3.0, 5.6, 31.0)
+mesh = SubResource("BoxMesh_17")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff46Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 3.0, 5.6, 31.0)
+shape = SubResource("BoxShape3D_18")
+
+[node name="Cliff46FaceN" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(-1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, -1.0000, 3.0, 5.6, 29.98)
+mesh = SubResource("PlaneMesh_149")
+surface_material_override/0 = SubResource("ShaderMaterial_148")
+
+[node name="Cliff47" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 9.0, 7.05, 31.0)
+mesh = SubResource("BoxMesh_150")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff47Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 9.0, 7.05, 31.0)
+shape = SubResource("BoxShape3D_151")
+
+[node name="Cliff47FaceN" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(-1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, -1.0000, 9.0, 7.05, 29.98)
+mesh = SubResource("PlaneMesh_153")
+surface_material_override/0 = SubResource("ShaderMaterial_152")
+
+[node name="Cliff48" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 15.0, 6.95, 31.0)
+mesh = SubResource("BoxMesh_154")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff48Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 15.0, 6.95, 31.0)
+shape = SubResource("BoxShape3D_155")
+
+[node name="Cliff48FaceN" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(-1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, -1.0000, 15.0, 6.95, 29.98)
+mesh = SubResource("PlaneMesh_157")
+surface_material_override/0 = SubResource("ShaderMaterial_156")
+
+[node name="Cliff48FaceE" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(0.0000, 0, 1.0000, 0, 1, 0, -1.0000, 0, 0.0000, 18.02, 6.95, 31.0)
+mesh = SubResource("PlaneMesh_159")
+surface_material_override/0 = SubResource("ShaderMaterial_158")
+
+[node name="Cliff49" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 3.0, 6.45, 34.0)
+mesh = SubResource("BoxMesh_138")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff49Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 3.0, 6.45, 34.0)
+shape = SubResource("BoxShape3D_139")
+
+[node name="Cliff50" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, -3.0, 6.4, 34.0)
+mesh = SubResource("BoxMesh_160")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff50Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, -3.0, 6.4, 34.0)
+shape = SubResource("BoxShape3D_161")
+
+[node name="Cliff51" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 9.0, 5.95, 34.0)
+mesh = SubResource("BoxMesh_103")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff51Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 9.0, 5.95, 34.0)
+shape = SubResource("BoxShape3D_104")
+
+[node name="Cliff52" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 15.0, 5.55, 35.0)
+mesh = SubResource("BoxMesh_162")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff52Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 15.0, 5.55, 35.0)
+shape = SubResource("BoxShape3D_163")
+
+[node name="Cliff52FaceE" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(0.0000, 0, 1.0000, 0, 1, 0, -1.0000, 0, 0.0000, 18.02, 5.55, 35.0)
+mesh = SubResource("PlaneMesh_165")
+surface_material_override/0 = SubResource("ShaderMaterial_164")
+
+[node name="Cliff53" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 65.0, 6.65, 35.0)
+mesh = SubResource("BoxMesh_166")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff53Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 65.0, 6.65, 35.0)
+shape = SubResource("BoxShape3D_167")
+
+[node name="Cliff53FaceW" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(0.0000, 0, -1.0000, 0, 1, 0, 1.0000, 0, 0.0000, 63.98, 6.65, 35.0)
+mesh = SubResource("PlaneMesh_169")
+surface_material_override/0 = SubResource("ShaderMaterial_168")
+
+[node name="Cliff54" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 68.0, 7.2, 35.0)
+mesh = SubResource("BoxMesh_170")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff54Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 68.0, 7.2, 35.0)
+shape = SubResource("BoxShape3D_171")
+
+[node name="Cliff55" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 65.0, 5.8, 41.0)
+mesh = SubResource("BoxMesh_172")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff55Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 65.0, 5.8, 41.0)
+shape = SubResource("BoxShape3D_173")
+
+[node name="Cliff55FaceW" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(0.0000, 0, -1.0000, 0, 1, 0, 1.0000, 0, 0.0000, 63.98, 5.8, 41.0)
+mesh = SubResource("PlaneMesh_175")
+surface_material_override/0 = SubResource("ShaderMaterial_174")
+
+[node name="Cliff56" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 68.0, 5.7, 41.0)
+mesh = SubResource("BoxMesh_176")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff56Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 68.0, 5.7, 41.0)
+shape = SubResource("BoxShape3D_177")
+
+[node name="Cliff57" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 15.0, 6.8, 41.0)
+mesh = SubResource("BoxMesh_108")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff57Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 15.0, 6.8, 41.0)
+shape = SubResource("BoxShape3D_109")
+
+[node name="Cliff57FaceE" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(0.0000, 0, 1.0000, 0, 1, 0, -1.0000, 0, 0.0000, 18.02, 6.8, 41.0)
+mesh = SubResource("PlaneMesh_111")
+surface_material_override/0 = SubResource("ShaderMaterial_178")
+
+[node name="Cliff58" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 51.0, 7.4, 47.0)
+mesh = SubResource("BoxMesh_179")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff58Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 51.0, 7.4, 47.0)
+shape = SubResource("BoxShape3D_180")
+
+[node name="Cliff58FaceN" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(-1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, -1.0000, 51.0, 7.4, 43.98)
+mesh = SubResource("PlaneMesh_182")
+surface_material_override/0 = SubResource("ShaderMaterial_181")
+
+[node name="Cliff59" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 57.0, 6.15, 47.0)
+mesh = SubResource("BoxMesh_183")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff59Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 57.0, 6.15, 47.0)
+shape = SubResource("BoxShape3D_184")
+
+[node name="Cliff59FaceN" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(-1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, -1.0000, 57.0, 6.15, 43.98)
+mesh = SubResource("PlaneMesh_44")
+surface_material_override/0 = SubResource("ShaderMaterial_185")
+
+[node name="Cliff60" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 21.0, 6.05, 47.0)
+mesh = SubResource("BoxMesh_87")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff60Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 21.0, 6.05, 47.0)
+shape = SubResource("BoxShape3D_88")
+
+[node name="Cliff60FaceN" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(-1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, -1.0000, 21.0, 6.05, 43.98)
+mesh = SubResource("PlaneMesh_90")
+surface_material_override/0 = SubResource("ShaderMaterial_186")
+
+[node name="Cliff61" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 68.0, 6.85, 47.0)
+mesh = SubResource("BoxMesh_187")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff61Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 68.0, 6.85, 47.0)
+shape = SubResource("BoxShape3D_188")
+
+[node name="Cliff62" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 63.0, 6.55, 47.0)
+mesh = SubResource("BoxMesh_189")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff62Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 63.0, 6.55, 47.0)
+shape = SubResource("BoxShape3D_190")
+
+[node name="Cliff62FaceN" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(-1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, -1.0000, 63.0, 6.55, 43.98)
+mesh = SubResource("PlaneMesh_192")
+surface_material_override/0 = SubResource("ShaderMaterial_191")
+
+[node name="Cliff63" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 33.0, 6.45, 47.0)
+mesh = SubResource("BoxMesh_81")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff63Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 33.0, 6.45, 47.0)
+shape = SubResource("BoxShape3D_82")
+
+[node name="Cliff63FaceN" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(-1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, -1.0000, 33.0, 6.45, 43.98)
+mesh = SubResource("PlaneMesh_84")
+surface_material_override/0 = SubResource("ShaderMaterial_193")
+
+[node name="Cliff64" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 45.0, 6.35, 47.0)
+mesh = SubResource("BoxMesh_92")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff64Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 45.0, 6.35, 47.0)
+shape = SubResource("BoxShape3D_93")
+
+[node name="Cliff64FaceN" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(-1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, -1.0000, 45.0, 6.35, 43.98)
+mesh = SubResource("PlaneMesh_195")
+surface_material_override/0 = SubResource("ShaderMaterial_194")
+
+[node name="Cliff65" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 39.0, 6.95, 47.0)
+mesh = SubResource("BoxMesh_196")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff65Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 39.0, 6.95, 47.0)
+shape = SubResource("BoxShape3D_197")
+
+[node name="Cliff65FaceN" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(-1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, -1.0000, 39.0, 6.95, 43.98)
+mesh = SubResource("PlaneMesh_157")
+surface_material_override/0 = SubResource("ShaderMaterial_198")
+
+[node name="Cliff66" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 27.0, 6.35, 47.0)
+mesh = SubResource("BoxMesh_92")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff66Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 27.0, 6.35, 47.0)
+shape = SubResource("BoxShape3D_93")
+
+[node name="Cliff66FaceN" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(-1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, -1.0000, 27.0, 6.35, 43.98)
+mesh = SubResource("PlaneMesh_195")
+surface_material_override/0 = SubResource("ShaderMaterial_199")
+
+[node name="Cliff67" type="MeshInstance3D" parent="Cliffs"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 15.0, 6.4, 47.0)
+mesh = SubResource("BoxMesh_200")
+surface_material_override/0 = SubResource("ShaderMaterial_8")
+
+[node name="Cliff67Shape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 15.0, 6.4, 47.0)
+shape = SubResource("BoxShape3D_201")
+
+[node name="Weighbridge" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 9, 0.12, 22)
+mesh = SubResource("BoxMesh_203")
+surface_material_override/0 = SubResource("ShaderMaterial_202")
+
+[node name="ScreenPole" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 16.5, 2.0, 17.0)
+mesh = SubResource("BoxMesh_205")
+surface_material_override/0 = SubResource("ShaderMaterial_204")
+
+[node name="ScreenPoleShape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 16.5, 2.0, 17.0)
+shape = SubResource("BoxShape3D_206")
+
+[node name="ScreenFrame" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 16.5, 4.4, 17.0)
+mesh = SubResource("BoxMesh_208")
+surface_material_override/0 = SubResource("ShaderMaterial_207")
+
+[node name="ScreenPicture" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 16.5, 4.4, 17.12)
+mesh = SubResource("PlaneMesh_210")
+surface_material_override/0 = SubResource("StandardMaterial3D_209")
+
+[node name="ScreenText" type="Label3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 16.5, 3.4, 17.14)
+text = "SIGNALS YARD 9: QUIET PLEASE"
+pixel_size = 0.012
+font_size = 30
+outline_size = 8
+modulate = Color(0.7, 1.0, 0.7, 1)
+texture_filter = 0
+
+[node name="MemoSign" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 12.5, 1.5, 29.2)
+mesh = SubResource("BoxMesh_212")
+surface_material_override/0 = SubResource("ShaderMaterial_211")
+
+[node name="MemoText" type="Label3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 12.5, 1.5, 29.28)
+text = "KASP: NOISE IS A CHOICE"
+pixel_size = 0.008
+font_size = 26
+outline_size = 8
+modulate = Color(0.1, 0.1, 0.1, 1)
+texture_filter = 0
+
+[node name="ScreenSpot" parent="." instance=ExtResource("9_r")]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 16.5, 0.0, 19.5)
+placement_id = "jk_j1_screen"
+
+[node name="MemoSpot" parent="." instance=ExtResource("9_r")]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 12.5, 0.0, 27.8)
+placement_id = "jk_j1_memo"
+
+[node name="StackCarA" parent="." instance=ExtResource("10_r")]
+transform = Transform3D(0.0000, 0, 1.0000, 0, 1.0000, 0, -1.0000, 0, 0.0000, 6.0, 0.0, 18.0)
+
+[node name="StackCarAShape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(0.0000, 0, 1.0000, 0, 1, 0, -1.0000, 0, 0.0000, 6.0, 0.7, 18.0)
+shape = SubResource("BoxShape3D_213")
+
+[node name="StackTop" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 6.0, 1.8, 18.0)
+mesh = SubResource("BoxMesh_215")
+surface_material_override/0 = SubResource("ShaderMaterial_214")
+
+[node name="StackShape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 6.0, 0.9, 18.0)
+shape = SubResource("BoxShape3D_216")
+
+[node name="ChalkLantern" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 3.4, 1.0, 16.2)
+mesh = SubResource("BoxMesh_218")
+surface_material_override/0 = SubResource("StandardMaterial3D_217")
+
+[node name="HopCrate" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 8.5, 0.45, 20.0)
+mesh = SubResource("BoxMesh_220")
+surface_material_override/0 = SubResource("ShaderMaterial_219")
+
+[node name="HopCrateShape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 8.5, 0.45, 20.0)
+shape = SubResource("BoxShape3D_221")
+
+[node name="Stash" parent="." instance=ExtResource("11_r")]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 6.0, 1.8, 18.0)
+placement_id = "jk_j1_stash"
+
+[node name="GlintA" parent="." instance=ExtResource("12_r")]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 11.0, 0.0, 20.0)
+placement_id = "jk_j1_glint_a"
+
+[node name="GlintB" parent="." instance=ExtResource("12_r")]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 14.0, 0.0, 25.0)
+placement_id = "jk_j1_glint_b"
+
+[node name="BurnBarrel" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 36.0, 0.45, 22.0)
+mesh = SubResource("CylinderMesh_223")
+surface_material_override/0 = SubResource("ShaderMaterial_222")
+
+[node name="BurnBarrelShape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 36.0, 0.45, 22.0)
+shape = SubResource("CylinderShape3D_224")
+
+[node name="BurnBarrelFire" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 36.0, 0.95, 22.0)
+mesh = SubResource("CylinderMesh_226")
+surface_material_override/0 = SubResource("StandardMaterial3D_225")
+
+[node name="BurnBarrelLight" type="OmniLight3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 36.0, 1.8, 22.0)
+light_color = Color(1.0, 0.55, 0.2, 1)
+light_energy = 3.5200000000000005
+omni_range = 9.0
+
+[node name="PoundCarA" parent="." instance=ExtResource("10_r")]
+transform = Transform3D(0.9397, 0, 0.3420, 0, 1.0000, 0, -0.3420, 0, 0.9397, 28.0, 0.0, 8.0)
+
+[node name="PoundCarAShape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(0.9397, 0, 0.3420, 0, 1, 0, -0.3420, 0, 0.9397, 28.0, 0.7, 8.0)
+shape = SubResource("BoxShape3D_213")
+
+[node name="PoundCarB" parent="." instance=ExtResource("10_r")]
+transform = Transform3D(0.9659, 0, -0.2588, 0, 1.0000, 0, 0.2588, 0, 0.9659, 24.0, 0.0, 38.0)
+
+[node name="PoundCarBShape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(0.9659, 0, -0.2588, 0, 1, 0, 0.2588, 0, 0.9659, 24.0, 0.7, 38.0)
+shape = SubResource("BoxShape3D_213")
+
+[node name="PoundCrate" parent="." instance=ExtResource("13_r")]
+transform = Transform3D(0.9659, 0, 0.2588, 0, 1.0000, 0, -0.2588, 0, 0.9659, 58.0, 0.0, 36.0)
+
+[node name="PoundCrateShape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(0.9659, 0, 0.2588, 0, 1, 0, -0.2588, 0, 0.9659, 58.0, 1.025, 36.0)
+shape = SubResource("BoxShape3D_227")
+
+[node name="FusePylon" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 54.0, 2.5, 12.0)
+mesh = SubResource("BoxMesh_229")
+surface_material_override/0 = SubResource("ShaderMaterial_228")
+
+[node name="FusePylonShape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 54.0, 2.5, 12.0)
+shape = SubResource("BoxShape3D_230")
+
+[node name="hack_j1_door" type="Node3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 54.0, 5.0, 12.0)
+script = ExtResource("14_r")
+target_id = &"hack_j1_door"
+
+[node name="DoorWest" parent="." instance=ExtResource("15_r")]
+transform = Transform3D(0.0000, 0, 1.0000, 0, 1, 0, -1.0000, 0, 0.0000, 0.0, 0, 22.0)
+placement_id = "jk_j1_to_market"
+
+[node name="DoorEast" parent="." instance=ExtResource("15_r")]
+transform = Transform3D(0.0000, 0, -1.0000, 0, 1, 0, 1.0000, 0, 0.0000, 63.0, 0, 22.0)
+placement_id = "jk_j1_to_j2"
+
+[node name="ColossusHead" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 150.0, 60.0, -40.0)
+mesh = SubResource("SphereMesh_232")
+surface_material_override/0 = SubResource("ShaderMaterial_231")
+
+[node name="ColossusJaw" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 150.0, 40.0, -40.0)
+mesh = SubResource("BoxMesh_233")
+surface_material_override/0 = SubResource("ShaderMaterial_231")
+
+[node name="ColossusEyes" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 135.0, 62.0, -28.0)
+mesh = SubResource("BoxMesh_235")
+surface_material_override/0 = SubResource("StandardMaterial3D_234")
+
+[node name="Skyline0" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 10, 18.0, -40)
+mesh = SubResource("BoxMesh_237")
+surface_material_override/0 = SubResource("ShaderMaterial_236")
+
+[node name="Skyline1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 60, 23.0, -50)
+mesh = SubResource("BoxMesh_238")
+surface_material_override/0 = SubResource("ShaderMaterial_236")
+
+[node name="Skyline2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, -40, 15.0, 60)
+mesh = SubResource("BoxMesh_239")
+surface_material_override/0 = SubResource("ShaderMaterial_236")
+
+[node name="Skyline3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 90, 20.0, 80)
+mesh = SubResource("BoxMesh_240")
+surface_material_override/0 = SubResource("ShaderMaterial_236")
+
+[node name="GateLamp" type="OmniLight3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 3.0, 4.0, 22.0)
+light_color = Color(1.0, 0.8, 0.5, 1)
+light_energy = 3.2
+omni_range = 12.0
+
+[node name="FuseTeal" type="OmniLight3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 54.0, 5.5, 13.0)
+light_color = Color(0.3, 1.0, 0.9, 1)
+light_energy = 2.2399999999999998
+omni_range = 7.0
+
+[node name="Encounters" type="Node3D" parent="."]
+
+[node name="Fixtures" type="Node3D" parent="."]
+
+[node name="enc_j1_pair" type="Node3D" parent="Encounters"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 36.0, 0.0, 22.0)
+metadata/kind = "regular"
+metadata/range_m = 8.0
+metadata/trigger = "notice"
+
+[node name="w1_grunt_0" type="Marker3D" parent="Encounters/enc_j1_pair"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, -2.0, 0.1, -2.0)
+metadata/enemy = "grunt"
+metadata/count = 1
+metadata/spread_m = 0.0
+metadata/wave = "w1"
+metadata/entrance = ""
+
+[node name="w1_grunt_1" type="Marker3D" parent="Encounters/enc_j1_pair"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 2.0, 0.1, 2.0)
+metadata/enemy = "grunt"
+metadata/count = 1
+metadata/spread_m = 0.0
+metadata/wave = "w1"
+metadata/entrance = ""
+
+[node name="Barks" type="Node3D" parent="."]
+
+[node name="bark_j1_arrive" type="Marker3D" parent="Barks"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 8.0, 1.0, 22.0)
+metadata/radius_m = 6.0
+
+[node name="bark_j1_lockon" type="Marker3D" parent="Barks"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 28.0, 1.0, 22.0)
+metadata/radius_m = 9.0
+
+[node name="bark_j1_zap" type="Marker3D" parent="Barks"]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 50.0, 1.0, 14.0)
+metadata/radius_m = 12.0
+
+[node name="from_market" type="Marker3D" parent="Spawns"]
+transform = Transform3D(0.0000, 0, 1.0000, 0, 1, 0, -1.0000, 0, 0.0000, 2.0, 0.0, 22.0)
+
+[node name="from_j2" type="Marker3D" parent="Spawns"]
+transform = Transform3D(0.0000, 0, -1.0000, 0, 1, 0, 1.0000, 0, 0.0000, 60.0, 0.0, 22.0)

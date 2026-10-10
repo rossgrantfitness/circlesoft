@@ -1,0 +1,98 @@
+class_name PlayerMotion
+extends RefCounted
+## Pure movement math for Red. No nodes, so tests can check it directly.
+
+const ANIM_IDLE: StringName = &"idle"
+const ANIM_WALK: StringName = &"walk"
+const ANIM_RUN: StringName = &"run"
+const ANIM_JUMP: StringName = &"jump"
+const ANIM_FALL: StringName = &"fall"
+const ANIM_LAND: StringName = &"land"
+## The clip names every Red model must have (the model contract). The game looks clips up by these
+## names only; it never touches a specific bone.
+const CLIP_NAMES: Array[StringName] = [ANIM_IDLE, ANIM_WALK, ANIM_RUN, ANIM_JUMP, ANIM_FALL, ANIM_LAND]
+const MIN_FLAT_LENGTH: float = 0.001
+
+
+## Flat (ground-plane) forward and right of a camera. Looking straight down falls back to the
+## camera's up axis so "up on the stick" still means "toward the top of the screen".
+static func flat_forward(cam_basis: Basis) -> Vector3:
+	var forward: Vector3 = Vector3(-cam_basis.z.x, 0.0, -cam_basis.z.z)
+	if forward.length() < MIN_FLAT_LENGTH:
+		forward = Vector3(cam_basis.y.x, 0.0, cam_basis.y.z)
+	return forward.normalized()
+
+
+static func flat_right(cam_basis: Basis) -> Vector3:
+	var forward: Vector3 = flat_forward(cam_basis)
+	return Vector3(-forward.z, 0.0, forward.x)
+
+
+## World direction (unit length, or zero for no input) for a stick vector as read by
+## Input.get_vector(left, right, up, down): x right, y down.
+static func camera_relative_direction(stick: Vector2, cam_basis: Basis) -> Vector3:
+	if stick.length() < MIN_FLAT_LENGTH:
+		return Vector3.ZERO
+	var world: Vector3 = flat_right(cam_basis) * stick.x + flat_forward(cam_basis) * -stick.y
+	return world.normalized()
+
+
+## Red runs only while the run button is held and she is actually moving; otherwise she walks.
+static func is_running(stick: Vector2, run_held: bool) -> bool:
+	return run_held and stick.length() >= MIN_FLAT_LENGTH
+
+
+static func target_speed(stick: Vector2, run_held: bool, walk_speed: float, run_speed: float) -> float:
+	if stick.length() < MIN_FLAT_LENGTH:
+		return 0.0
+	return run_speed if is_running(stick, run_held) else walk_speed
+
+
+## Launch speed that reaches `height` after `rise_time` seconds under constant gravity.
+static func jump_speed(height: float, rise_time: float) -> float:
+	return 2.0 * height / maxf(rise_time, MIN_FLAT_LENGTH)
+
+
+## The (rising) gravity that goes with jump_speed.
+static func jump_gravity(height: float, rise_time: float) -> float:
+	var t: float = maxf(rise_time, MIN_FLAT_LENGTH)
+	return 2.0 * height / (t * t)
+
+
+## Yaw (radians, around Y) that turns a model facing +Z toward `direction`.
+static func yaw_for_direction(direction: Vector3) -> float:
+	return atan2(direction.x, direction.z)
+
+
+## Turns `current_yaw` toward `wanted_yaw` by at most rate_deg * delta, taking the short way round.
+static func turn_toward(current_yaw: float, wanted_yaw: float, rate_deg: float, delta: float) -> float:
+	var difference: float = wrapf(wanted_yaw - current_yaw, -PI, PI)
+	var step: float = deg_to_rad(rate_deg) * delta
+	return current_yaw + clampf(difference, -step, step)
+
+
+static func animation_for(moving: bool, running: bool) -> StringName:
+	if not moving:
+		return ANIM_IDLE
+	return ANIM_RUN if running else ANIM_WALK
+
+
+## Animation names to try, best first, while in the air. A model without jump/fall clips falls
+## back to the run (moving) or idle pose.
+static func air_animation_candidates(rising: bool, moving: bool) -> Array[StringName]:
+	return [ANIM_JUMP if rising else ANIM_FALL, ANIM_RUN if moving else ANIM_IDLE]
+
+
+## True while the land squash should play: she touched down a moment ago (time left on the clip),
+## is on the ground and is standing still. Moving on cuts it short so run and walk never stutter.
+static func is_landing(land_time_left: float, airborne: bool, moving: bool) -> bool:
+	return land_time_left > 0.0 and not airborne and not moving
+
+
+## Clip names in CLIP_NAMES that the AnimationPlayer does not have (empty = the model is complete).
+static func missing_clips(player: AnimationPlayer) -> Array[StringName]:
+	var missing: Array[StringName] = []
+	for clip: StringName in CLIP_NAMES:
+		if player == null or not player.has_animation(clip):
+			missing.append(clip)
+	return missing

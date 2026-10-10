@@ -1,0 +1,65 @@
+{
+  "_about": "Lamp Square's twelve window lamps (docs/maps/harrow_landing.md). Each is its own light switch: lit when its 'lit_if' condition holds (an empty one is always lit). Start of the game: 6 lit (win_01, 04, 06, 08, 10, 12), 6 dark. On the walk home (beat b3) the scenes relight_win_02 / 07 / 11 set win_02_lit / win_07_lit / win_11_lit as Red crosses the square; win_03 lights when job_dark_window_done is set.",
+  "windows": {
+    "win_01": {
+      "lit_if": {},
+      "note": "lit all night"
+    },
+    "win_02": {
+      "lit_if": {
+        "flag": "win_02_lit"
+      },
+      "note": "dark until the walk home (beat b3), lit by the relight scene"
+    },
+    "win_03": {
+      "lit_if": {
+        "flag": "job_dark_window_done"
+      },
+      "note": "the window above the store: lit by the side job"
+    },
+    "win_04": {
+      "lit_if": {},
+      "note": "lit all night"
+    },
+    "win_05": {
+      "lit_if": {
+        "flag": "win_05_lit"
+      },
+      "note": "stays dark"
+    },
+    "win_06": {
+      "lit_if": {},
+      "note": "lit all night"
+    },
+    "win_07": {
+      "lit_if": {
+        "flag": "win_07_lit"
+      },
+      "note": "dark until the walk home (beat b3), lit by the relight scene"
+    },
+    "win_08": {
+      "lit_if": {},
+      "note": "lit all night"
+    },
+    "win_09": {
+      "lit_if": {
+        "flag": "win_09_lit"
+      },
+      "note": "stays dark"
+    },
+    "win_10": {
+      "lit_if": {},
+      "note": "Red's own window: always lit"
+    },
+    "win_11": {
+      "lit_if": {
+        "flag": "win_11_lit"
+      },
+      "note": "dark until the walk home (beat b3), lit by the relight scene"
+    },
+    "win_12": {
+      "lit_if": {},
+      "note": "lit all night"
+    }
+  }
+}

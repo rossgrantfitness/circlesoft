@@ -1,0 +1,522 @@
+{
+ "_about": "Retarget of the free Quaternius Universal Animation Library (CC0) onto the small robot blockout (task CS-21). Read by scripts/tools/retarget_ual.py. Same bone names and clip names as red_ross_v1_rigged_ual.glb, so the same controller drives it. Written by scripts/tools/make_robots.py from retarget_red.json (the size-dependent numbers are Red's times 3.68); edit and rerun retarget_ual.py robot_small.",
+ "target": "art/placeholder/robots/robot_small.glb",
+ "output": "art/placeholder/robots/robot_small_ual.glb",
+ "clip_keys": "data/animation/robot_small_clip_keys.json",
+ "clip_keys_about": "Key poses of Red's clips: where the strike lands (contact_s) and the poses the move data snaps to. 30 fps for Quaternius clips (retarget_ual.py), 15 fps stepped for the TA's hand-posed stand-ins. Use these seconds as clip_s in moves.json anim.keys.",
+ "sources": {
+  "UAL1": "art/placeholder/animations/quaternius_ual/UAL1_Standard.glb",
+  "UAL2": "art/placeholder/animations/quaternius_ual/UAL2_Standard.glb"
+ },
+ "fps": 30,
+ "hips": {
+  "target": "hips",
+  "source": "pelvis",
+  "scale": 1.5089
+ },
+ "ground": {
+  "scale": 1.5089,
+  "target_points": [
+   {
+    "bone": "foot_l",
+    "offset": [
+     0.0,
+     -0.1877,
+     -0.3496
+    ]
+   },
+   {
+    "bone": "foot_l",
+    "offset": [
+     0.0,
+     -0.1877,
+     0.5705
+    ]
+   },
+   {
+    "bone": "foot_r",
+    "offset": [
+     0.0,
+     -0.1877,
+     -0.3496
+    ]
+   },
+   {
+    "bone": "foot_r",
+    "offset": [
+     0.0,
+     -0.1877,
+     0.5705
+    ]
+   },
+   {
+    "bone": "hips",
+    "offset": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "lift": 0.184
+   },
+   {
+    "bone": "chest",
+    "offset": [
+     0.0,
+     0.0736,
+     0.0
+    ],
+    "lift": 0.2576
+   },
+   {
+    "bone": "head",
+    "offset": [
+     0.0,
+     0.368,
+     0.0
+    ],
+    "lift": 0.4416
+   },
+   {
+    "bone": "hand_l",
+    "offset": [
+     0.0,
+     -0.1104,
+     0.0
+    ],
+    "lift": 0.1472
+   },
+   {
+    "bone": "hand_r",
+    "offset": [
+     0.0,
+     -0.1104,
+     0.0
+    ],
+    "lift": 0.1472
+   }
+  ],
+  "source_points": [
+   {
+    "bone": "foot_l",
+    "offset": [
+     0,
+     -0.104,
+     -0.045
+    ]
+   },
+   {
+    "bone": "ball_l",
+    "offset": [
+     0,
+     -0.015,
+     0.0
+    ]
+   },
+   {
+    "bone": "ball_l",
+    "offset": [
+     0,
+     -0.015,
+     0.079
+    ]
+   },
+   {
+    "bone": "foot_r",
+    "offset": [
+     0,
+     -0.104,
+     -0.045
+    ]
+   },
+   {
+    "bone": "ball_r",
+    "offset": [
+     0,
+     -0.015,
+     0.0
+    ]
+   },
+   {
+    "bone": "ball_r",
+    "offset": [
+     0,
+     -0.015,
+     0.079
+    ]
+   },
+   {
+    "bone": "pelvis",
+    "offset": [
+     0,
+     0,
+     0
+    ],
+    "lift": 0.045
+   },
+   {
+    "bone": "spine_03",
+    "offset": [
+     0,
+     0.03,
+     0
+    ],
+    "lift": 0.07
+   },
+   {
+    "bone": "Head",
+    "offset": [
+     0,
+     0.08,
+     0
+    ],
+    "lift": 0.1
+   },
+   {
+    "bone": "hand_l",
+    "offset": [
+     0,
+     -0.04,
+     0
+    ],
+    "lift": 0.04
+   },
+   {
+    "bone": "hand_r",
+    "offset": [
+     0,
+     -0.04,
+     0
+    ],
+    "lift": 0.04
+   }
+  ],
+  "_about": "Contact points for the ground lock: [bone, offset in the rest world frame, lift]. Soles have lift 0, body points a radius. The source's ball bone is used for the toe so a sprint's toe-off does not sink through the floor. Robot copy: offsets and lifts are Red's times the robot's size; the heel and toe are this robot's own foot."
+ },
+ "bones": [
+  {
+   "target": "hips",
+   "source": "pelvis"
+  },
+  {
+   "target": "spine",
+   "source": "spine_02"
+  },
+  {
+   "target": "chest",
+   "source": "spine_03"
+  },
+  {
+   "target": "neck",
+   "source": "neck_01"
+  },
+  {
+   "target": "head",
+   "source": "Head"
+  },
+  {
+   "target": "shoulder_{s}",
+   "source": "clavicle_{s}"
+  },
+  {
+   "target": "upper_arm_{s}",
+   "source": "upperarm_{s}",
+   "t_dir": "forearm_{s}",
+   "to": [
+    1,
+    0,
+    0
+   ]
+  },
+  {
+   "target": "forearm_{s}",
+   "source": "lowerarm_{s}",
+   "t_dir": "hand_{s}",
+   "to": [
+    1,
+    0,
+    0
+   ]
+  },
+  {
+   "target": "hand_l",
+   "source": "hand_l",
+   "t_dir": "parent",
+   "to": [
+    1,
+    0,
+    0
+   ]
+  },
+  {
+   "target": "hand_r",
+   "source": "hand_r",
+   "t_dir": "parent",
+   "to": [
+    -1,
+    0,
+    0
+   ],
+   "blade_socket": "weapon_socket",
+   "blade_dir_in_source_rest": [
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "target": "thigh_{s}",
+   "source": "thigh_{s}"
+  },
+  {
+   "target": "shin_{s}",
+   "source": "calf_{s}"
+  },
+  {
+   "target": "foot_{s}",
+   "source": "foot_{s}"
+  }
+ ],
+ "clips": [
+  {
+   "name": "idle",
+   "source": "UAL1:Sword_Idle",
+   "loop": true,
+   "note": "Sword_Idle: ready stance, sword held up in the right fist"
+  },
+  {
+   "name": "walk",
+   "source": "UAL1:Walk_Loop",
+   "loop": true
+  },
+  {
+   "name": "run",
+   "source": "UAL1:Sprint_Loop",
+   "loop": true
+  },
+  {
+   "name": "jump_up",
+   "source": "UAL1:Jump_Start",
+   "from_s": 0.1,
+   "to_s": 0.6,
+   "ground": "free",
+   "note": "takeoff stretch, arms swing up; holds the last pose"
+  },
+  {
+   "name": "fall",
+   "source": "UAL1:Jump_Loop",
+   "loop": true,
+   "ground": "free"
+  },
+  {
+   "name": "land",
+   "source": "UAL1:Jump_Land",
+   "from_s": 0.0,
+   "to_s": 0.7
+  },
+  {
+   "name": "dash",
+   "source": "UAL2:Sword_Dash",
+   "from_s": 0.38,
+   "to_s": 1.1
+  },
+  {
+   "name": "light_1",
+   "parts": [
+    {
+     "source": "UAL2:Sword_Regular_A"
+    },
+    {
+     "source": "UAL2:Sword_Regular_A_Rec",
+     "to_s": 0.5
+    }
+   ],
+   "contact_src_s": 0.25
+  },
+  {
+   "name": "light_2",
+   "parts": [
+    {
+     "source": "UAL2:Sword_Regular_B"
+    },
+    {
+     "source": "UAL2:Sword_Regular_B_Rec",
+     "to_s": 0.5
+    }
+   ],
+   "contact_src_s": 0.25
+  },
+  {
+   "name": "light_3",
+   "source": "UAL2:Sword_Regular_C",
+   "from_s": 0.45,
+   "to_s": 1.5,
+   "contact_src_s": 0.65
+  },
+  {
+   "name": "heavy",
+   "source": "UAL2:Sword_Heavy_Combo",
+   "from_s": 2.1,
+   "to_s": 3.7,
+   "contact_src_s": 2.62
+  },
+  {
+   "name": "launcher",
+   "source": "UAL1:Sword_Attack",
+   "from_s": 0.6,
+   "to_s": 1.5,
+   "contact_src_s": 0.85
+  },
+  {
+   "name": "parry",
+   "source": "UAL2:Sword_Block",
+   "from_s": 0.0,
+   "to_s": 1.0,
+   "contact_src_s": 0.2
+  },
+  {
+   "name": "hurt",
+   "source": "UAL1:Hit_Chest",
+   "contact_src_s": 0.1
+  },
+  {
+   "name": "knockdown",
+   "source": "UAL2:Hit_Knockback",
+   "contact_src_s": 0.3
+  },
+  {
+   "name": "getup",
+   "source": "UAL2:LayToIdle"
+  },
+  {
+   "name": "hack_zap",
+   "parts": [
+    {
+     "source": "UAL1:Spell_Simple_Enter"
+    },
+    {
+     "source": "UAL1:Spell_Simple_Shoot"
+    }
+   ],
+   "contact_src_s": 0.43,
+   "note": "Zap Drone cast: left hand raised and pushed out (UAL1 Spell_Simple_Enter then Spell_Simple_Shoot); the drone leaves the open hand at the contact. The sword hand stays low."
+  },
+  {
+   "name": "hack_emp",
+   "source": "UAL2:NinjaJump_Land",
+   "from_s": 0.0,
+   "to_s": 1.1,
+   "contact_src_s": 0.2,
+   "note": "EMP cast: a crouch with a hand on the floor (UAL2 NinjaJump_Land), the pulse rings out from the slam, then she stands up."
+  },
+  {
+   "name": "hack_overclock",
+   "source": "UAL2:Consume",
+   "from_s": 0.0,
+   "to_s": 1.33,
+   "contact_src_s": 0.4,
+   "note": "Overclock cast: left hand reaches out palm up and holds (UAL2 Consume), the link takes hold at the contact."
+  },
+  {
+   "name": "hack_reboot",
+   "source": "UAL2:LayToIdle",
+   "from_s": 0.4,
+   "to_s": 1.53,
+   "contact_src_s": 0.95,
+   "note": "Reboot cast: the second half of the get-up (UAL2 LayToIdle), crouch to standing; the heal pops as she rises."
+  },
+  {
+   "name": "air_1",
+   "source": "UAL2:Sword_Regular_A",
+   "ground": "free",
+   "contact_src_s": 0.25,
+   "note": "stand-in: Red's air_1 is hand-posed; the robot uses the light_1 swing"
+  },
+  {
+   "name": "air_2",
+   "source": "UAL2:Sword_Regular_B",
+   "ground": "free",
+   "contact_src_s": 0.25,
+   "note": "stand-in: the light_2 swing"
+  },
+  {
+   "name": "air_3",
+   "source": "UAL2:Sword_Regular_C",
+   "from_s": 0.45,
+   "to_s": 1.5,
+   "ground": "free",
+   "contact_src_s": 0.65,
+   "note": "stand-in: the light_3 swing"
+  },
+  {
+   "name": "parry_success",
+   "source": "UAL2:Sword_Block",
+   "from_s": 0.2,
+   "to_s": 1.0,
+   "note": "stand-in: the block, held"
+  }
+ ],
+ "keep_standins": [],
+ "proxies": {
+  "_about": "Rough body shapes used only by --report to count frames where an arm goes through the head or the torso (the chibi proportions cause this). Head sphere, torso ellipsoid (x,z half sizes) between two bones, arm segments [from bone, to bone, start fraction].",
+  "head": {
+   "bone": "head",
+   "center_offset": [
+    0.0,
+    0.368,
+    0.0
+   ],
+   "radius": 0.5668
+  },
+  "torso": {
+   "from": "hips",
+   "to": "neck",
+   "half_width": 0.5741,
+   "half_depth": 0.4416
+  },
+  "arm_radius": 0.1675,
+  "arm_segments": [
+   [
+    "upper_arm_l",
+    "forearm_l",
+    0.5
+   ],
+   [
+    "forearm_l",
+    "hand_l"
+   ],
+   [
+    "hand_l",
+    "prop_socket"
+   ],
+   [
+    "upper_arm_r",
+    "forearm_r",
+    0.5
+   ],
+   [
+    "forearm_r",
+    "hand_r"
+   ],
+   [
+    "hand_r",
+    "weapon_socket"
+   ]
+  ]
+ },
+ "importer_loops": [
+  "idle",
+  "walk",
+  "run",
+  "fall",
+  "battle_ready",
+  "climb",
+  "launched",
+  "stagger"
+ ],
+ "_importer_loops_about": "Clip names that scripts/tools/psx_post_import.gd (LOOPING_CLIPS) loops whatever the file says; the key data lists them as loops.",
+ "robot": {
+  "height_m": 3.5,
+  "unit": 3.6803,
+  "_about": "unit = the robot's size in Red's metres (she is 0.951 m tall)"
+ }
+}

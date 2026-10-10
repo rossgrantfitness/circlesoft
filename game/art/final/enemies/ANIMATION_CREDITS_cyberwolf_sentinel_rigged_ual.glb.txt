@@ -1,0 +1,9 @@
+cyberwolf_sentinel_rigged_ual.glb : animation credits and license
+
+Animations in this file come from the Universal Animation Library 1 and 2 (Standard) by Quaternius, CC0 1.0 (public domain),
+https://quaternius.itch.io/universal-animation-library and https://quaternius.itch.io/universal-animation-library-2
+No credit is required; it is given anyway. License texts: art/placeholder/animations/quaternius_ual/LICENSE_UAL1.txt and LICENSE_UAL2.txt.
+
+They were retargeted onto the Cyberwolf Sentinel offline (bone names kept) by scripts/tools/retarget_ual.py from the settings in
+data/animation/retarget_*.json. The mesh, skeleton and textures are the rigged copy beside this file; the clips are placeholders
+(Ross, 2026-10-08: everything is placeholder for now). No animation in this file was authored by hand or by code (the stagger, launched and block_hold clips hold a pose or ping-pong a slice of a library clip; retreat and dodge_back are library clips played backwards; strafe_l and strafe_r are the walk with the hips and legs turned).

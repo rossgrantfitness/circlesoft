@@ -1,0 +1,39 @@
+{
+ "_about": "THROWAWAY graybox rooms that prove ActionRoom (VS-5): a town hub, a yard with enemies, a vault checkpoint, joined by doors. Same shape as slice/rooms.json (the Level Designer's file). Tests point SceneRouter.rooms_id here. Generated scenes: scripts/tools/make_graybox_rooms.py. Not used by the game.",
+ "fade": {"out_s": 0.0, "in_s": 0.0, "steps": 8},
+ "start_room": "gb_hub",
+ "rooms": {
+  "gb_hub": {
+   "name": "Graybox Hub", "scene": "res://scenes/slice/graybox/gb_hub.tscn", "kind": "town", "camera": "diorama",
+   "combat": false, "look_profile": "grim_ps2", "form": "red", "robots": "", "checkpoint": false, "autosave": true,
+   "music": "", "spawns": ["start", "from_yard"], "default_spawn": "start"
+  },
+  "gb_yard": {
+   "name": "Graybox Yard", "scene": "res://scenes/slice/graybox/gb_yard.tscn", "kind": "dungeon", "camera": "orbit",
+   "combat": true, "look_profile": "grim_ps2", "form": "red", "robots": "", "checkpoint": false, "autosave": false,
+   "music": "", "spawns": ["from_hub", "from_vault"], "default_spawn": "from_hub",
+   "enemies": [{"enemy": "grunt", "pos": [6.0, 0.1, 0.0]}, {"enemy": "grunt", "pos": [-6.0, 0.1, -2.0]}]
+  },
+  "gb_vault": {
+   "name": "Graybox Vault", "scene": "res://scenes/slice/graybox/gb_vault.tscn", "kind": "dungeon", "camera": "orbit",
+   "combat": true, "look_profile": "grim_ps2", "form": "red", "robots": "", "checkpoint": true, "autosave": true,
+   "music": "", "spawns": ["from_yard"], "default_spawn": "from_yard",
+   "enemies": [{"enemy": "grunt", "pos": [0.0, 0.1, -3.0]}]
+  },
+  "gb_loader": {
+   "name": "Graybox Loader Bay (VS-21)", "scene": "res://scenes/slice/graybox/gb_yard.tscn", "kind": "dungeon", "camera": "orbit",
+   "combat": true, "look_profile": "grim_ps2", "form": "red", "robots": "gb_loader", "checkpoint": true, "autosave": false,
+   "music": "", "spawns": ["from_hub", "from_vault"], "default_spawn": "from_hub"
+  },
+  "gb_arena": {
+   "name": "Graybox Arena (VS-30)", "scene": "res://scenes/slice/graybox/gb_yard.tscn", "kind": "arena", "camera": "orbit",
+   "combat": true, "look_profile": "grim_ps2", "form": "red", "robots": "gb_arena", "checkpoint": true, "autosave": false,
+   "music": "", "spawns": ["from_hub", "from_vault"], "default_spawn": "from_hub"
+  },
+  "gb_cab": {
+   "name": "Graybox Loader Run (VS-21)", "scene": "res://scenes/slice/graybox/gb_yard.tscn", "kind": "dungeon", "camera": "orbit",
+   "combat": true, "look_profile": "grim_ps2", "form": "small", "robots": "gb_cab", "checkpoint": true, "autosave": false,
+   "music": "", "spawns": ["from_hub", "from_vault"], "default_spawn": "from_hub"
+  }
+ }
+}

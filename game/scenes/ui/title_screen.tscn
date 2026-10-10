@@ -1,0 +1,103 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/title_screen.gd" id="1_title"]
+[ext_resource type="Script" path="res://scripts/ui/title_backdrop.gd" id="2_backdrop"]
+[ext_resource type="Script" path="res://scripts/ui/ui_window.gd" id="3_window"]
+[ext_resource type="Script" path="res://scripts/ui/menu_cursor.gd" id="4_cursor"]
+[ext_resource type="Script" path="res://scripts/ui/dither_fade.gd" id="5_fade"]
+
+[node name="TitleScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_title")
+
+[node name="Letterbox" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.0784314, 0.0705882, 0.121569, 1)
+
+[node name="Display" type="TextureRect" parent="."]
+texture_filter = 1
+layout_mode = 0
+offset_right = 384.0
+offset_bottom = 216.0
+mouse_filter = 2
+expand_mode = 1
+
+[node name="PixelViewport" type="SubViewport" parent="."]
+disable_3d = true
+gui_disable_input = true
+canvas_item_default_texture_filter = 0
+size = Vector2i(384, 216)
+render_target_update_mode = 4
+
+[node name="Stage" type="Control" parent="PixelViewport"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 384.0
+offset_bottom = 216.0
+mouse_filter = 2
+
+[node name="Backdrop" type="Control" parent="PixelViewport/Stage"]
+layout_mode = 0
+offset_right = 384.0
+offset_bottom = 216.0
+mouse_filter = 2
+script = ExtResource("2_backdrop")
+
+[node name="TitlePrefix" type="Label" parent="PixelViewport/Stage"]
+layout_mode = 0
+mouse_filter = 2
+
+[node name="TitleLit" type="Label" parent="PixelViewport/Stage"]
+layout_mode = 0
+mouse_filter = 2
+
+[node name="DemoTag" type="ColorRect" parent="PixelViewport/Stage"]
+layout_mode = 0
+mouse_filter = 2
+
+[node name="DemoLabel" type="Label" parent="PixelViewport/Stage/DemoTag"]
+layout_mode = 0
+mouse_filter = 2
+
+[node name="PressStart" type="Label" parent="PixelViewport/Stage"]
+layout_mode = 0
+mouse_filter = 2
+
+[node name="Credit" type="Label" parent="PixelViewport/Stage"]
+layout_mode = 0
+mouse_filter = 2
+
+[node name="Version" type="Label" parent="PixelViewport/Stage"]
+layout_mode = 0
+mouse_filter = 2
+
+[node name="MenuWindow" type="Control" parent="PixelViewport/Stage"]
+layout_mode = 0
+mouse_filter = 2
+script = ExtResource("3_window")
+
+[node name="Cursor" type="Control" parent="PixelViewport/Stage/MenuWindow"]
+layout_mode = 0
+mouse_filter = 2
+script = ExtResource("4_cursor")
+
+[node name="Fade" type="Control" parent="PixelViewport/Stage"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("5_fade")

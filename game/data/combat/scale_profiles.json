@@ -1,0 +1,143 @@
+{
+  "version": 1,
+  "_note": "Scale profiles for the giant-robot scale-up test (CS-21; Ross 2026-10-09: 'I want to board myself a lagaan sized giant robo THEN a gurren lagann sized giant robo, we can use the exact same character controller, but I want to feel a sense of scaling up'). ONE controller (ActionPlayer) drives all three forms; a form is only a set of numbers. Starting values come from docs/pivot/robot_scale_test.md section 5 and are guesses for Ross to retune by playing. Read by scripts/combat/scale/scale_profile.gd. Metres, seconds, degrees. A missing key means 'leave Red's own number alone', so the 'red' form is nearly empty on purpose: Red is whatever the feel panel says.",
+  "start_form": "red",
+
+  "forms": {
+    "red": {
+      "label": "Red",
+      "_dash_note": "Red has no knobs block on purpose: her dash charges, recharge and chain gap come from the F12 panel (feel.json dash_charges, dash_recharge_s, dash_chain_gap_s). The robots below carry their own.",
+      "height_m": 0.95,
+      "model": "",
+      "camera": {"distance_m": 4.5, "min_distance_m": 0.8, "pivot_height_m": 0.8, "fov_deg": 62.0, "pitch_offset_deg": 0.0, "near_m": 0.1, "far_m": 400.0, "shake_mult": 1.0, "shake_cap_m": 0.25},
+      "world": {"fog_near_m": 30.0, "fog_far_m": 150.0, "env_fog_density": 0.012, "shadow_max_distance_m": 30.0},
+      "audio": {"pitch": 1.0, "lowpass_hz": 0.0},
+      "enter_blend_s": 1.2,
+      "lock_range_mult": 1.0
+    },
+
+    "small": {
+      "label": "Loader robot (3.5 m)",
+      "height_m": 3.5,
+      "model": "res://art/placeholder/robots/robot_small_ual.glb",
+      "sword_scale": 3.68,
+      "hp_max": 480,
+      "armored": true,
+      "ignore_bodies": false,
+      "body": {"radius_m": 1.0, "height_m": 3.2},
+      "knobs": {"run_speed_mps": 9.0, "jump_height_m": 3.0, "gravity_scale": 0.8, "dash_distance_m": 8.0, "dash_time_ms": 380, "dash_iframes_ms": 220, "dash_charges": 3, "dash_recharge_s": 3.0, "dash_chain_gap_s": 0.2},
+      "move": {"ground_accel_mps2": 40.0, "ground_decel_mps2": 50.0, "air_accel_mps2": 14.0, "turn_rate_deg_per_s": 480.0, "walk_speed_mps": 2.4},
+      "jump": {"rise_time_s": 0.5, "fall_gravity_mult": 1.35, "max_fall_mps": 40.0},
+      "anim": {"clip_keys": "res://data/animation/robot_small_clip_keys.json", "playback_scale_min": 0.4, "playback_scale_max": 2.0, "walk_below_mps": 3.4},
+      "idle_speed": 0.9,
+      "attack": {"time_scale": 0.85, "hitbox_scale": 3.68, "hitbox_lift_scale": 2.2, "hitbox_reach_scale": 3.0, "lunge_mult": 2.5, "magnet_mult": 3.68, "damage_mult": 4.0, "knockback_mult": 2.5, "hit_stop_mult": 1.3, "stop_short_m": 2.5},
+      "stomp_radius_m": 0.0,
+      "camera": {"distance_m": 12.0, "min_distance_m": 5.0, "pivot_height_m": 1.9, "fov_deg": 60.0, "pitch_offset_deg": 0.0, "near_m": 0.3, "far_m": 1200.0, "shake_mult": 1.5, "shake_cap_m": 0.5},
+      "world": {"fog_near_m": 60.0, "fog_far_m": 300.0, "env_fog_density": 0.006, "shadow_max_distance_m": 120.0},
+      "audio": {"pitch": 0.75, "lowpass_hz": 0.0},
+      "fx_set": "small",
+      "step_sound": "combat_land",
+      "land_sound": "combat_hit_heavy",
+      "land_min_air_s": 0.25,
+      "enter_blend_s": 1.3,
+      "lock_range_mult": 3.0
+    },
+
+    "huge": {
+      "label": "Colossus (50 m)",
+      "height_m": 50.0,
+      "model": "res://art/placeholder/robots/robot_huge_ual.glb",
+      "sword_scale": 52.6,
+      "hp_max": 6000,
+      "armored": true,
+      "ignore_bodies": true,
+      "body": {"radius_m": 11.0, "height_m": 46.0},
+      "knobs": {"run_speed_mps": 17.0, "jump_height_m": 12.0, "gravity_scale": 1.0, "dash_distance_m": 40.0, "dash_time_ms": 800, "dash_iframes_ms": 400, "dash_charges": 2, "dash_recharge_s": 5.0, "dash_chain_gap_s": 0.35},
+      "move": {"ground_accel_mps2": 10.0, "ground_decel_mps2": 14.0, "air_accel_mps2": 4.0, "turn_rate_deg_per_s": 70.0, "walk_speed_mps": 14.0},
+      "jump": {"rise_time_s": 1.1, "fall_gravity_mult": 1.35, "max_fall_mps": 70.0},
+      "anim": {"clip_keys": "res://data/animation/robot_huge_clip_keys.json", "playback_scale_min": 0.2, "playback_scale_max": 1.2, "walk_below_mps": 999.0},
+      "idle_speed": 0.6,
+      "attack": {"time_scale": 0.45, "hitbox_scale": 52.6, "hitbox_lift_scale": 20.0, "hitbox_reach_scale": 20.0, "lunge_mult": 12.0, "magnet_mult": 20.0, "damage_mult": 40.0, "knockback_mult": 8.0, "hit_stop_mult": 1.5, "stop_short_m": 25.0},
+      "stomp_radius_m": 11.0,
+      "slam_radius_mult": 2.2,
+      "camera": {"distance_m": 75.0, "min_distance_m": 30.0, "pivot_height_m": 26.0, "fov_deg": 56.0, "pitch_offset_deg": 8.0, "near_m": 2.0, "far_m": 5000.0, "shake_mult": 5.0, "shake_cap_m": 3.0},
+      "world": {"fog_near_m": 300.0, "fog_far_m": 1500.0, "env_fog_density": 0.0012, "shadow_max_distance_m": 700.0},
+      "audio": {"pitch": 0.4, "lowpass_hz": 4500.0},
+      "fx_set": "huge",
+      "step_sound": "combat_brute_slam",
+      "land_sound": "combat_brute_slam",
+      "land_min_air_s": 0.4,
+      "enter_blend_s": 1.5,
+      "lock_range_mult": 14.0
+    }
+  },
+
+  "views": {
+    "_note": "Camera looks used mid-sequence (not forms). Same fields as a form's camera block; yaw_offset_deg swings the camera round the player (here to see the loader go into the bay from the side).",
+    "dock_lift": {"distance_m": 44.0, "min_distance_m": 15.0, "pivot_height_m": 3.0, "fov_deg": 54.0, "pitch_offset_deg": 10.0, "yaw_offset_deg": -14.0, "near_m": 1.5, "far_m": 4000.0, "shake_mult": 3.0, "shake_cap_m": 1.5}
+  },
+
+  "steps": {
+    "_note": "Footfalls. A footstep is the moment a foot plants in the walk or run clip (seconds at playback 1.0, left then right; data/combat/fx.json scale_sets.<set>.footfalls_s). The shake and dust ids come from fx.json scale_sets. min_speed_mps: below it she is standing, not stepping.",
+    "min_speed_mps": 0.6,
+    "dash_dust": true
+  },
+
+  "sequences": {
+    "_note": "Boarding and docking timelines (seconds). phases are [name, from_s, to_s]; control_at_s is when the player gets the controls back; The dock numbers are the Technical Artist's (robot_scale_test.md section 3): approach 0-1.0, doors 1.0-1.6, hop 1.6-2.8, snap 2.8-3.0, lock 3.0-3.6, power-up 3.6-4.5. Undock is the same in reverse.",
+    "board": {
+      "phases": [["step", 0.0, 0.35], ["hatch_open", 0.35, 0.8], ["climb", 0.8, 1.7], ["hatch_close", 1.7, 2.1], ["power_up", 2.1, 3.0]],
+      "control_at_s": 2.8,
+      "swap_at_s": 2.1,
+      "climb_height_m": 1.2
+    },
+    "disembark": {
+      "phases": [["power_down", 0.0, 0.4], ["hatch_open", 0.4, 0.8], ["climb", 0.8, 1.6], ["hatch_close", 1.6, 2.0]],
+      "control_at_s": 1.7,
+      "climb_height_m": 1.2
+    },
+    "dock": {
+      "phases": [["approach", 0.0, 1.0], ["doors", 1.0, 1.6], ["hop", 1.6, 2.8], ["snap", 2.8, 3.0], ["lock", 3.0, 3.6], ["power_up", 3.6, 4.5]],
+      "control_at_s": 4.3,
+      "swap_at_s": 3.6,
+      "hop_height_m": 6.0,
+      "hit_stop_s": 0.08,
+      "door_open_deg": 100.0,
+      "camera_cues": [
+        {"at_s": 1.6, "view": "dock_lift", "blend_s": 1.2, "world": "huge", "world_blend_s": 2.0}
+      ]
+    },
+    "undock": {
+      "phases": [["power_down", 0.0, 0.6], ["doors", 0.6, 1.2], ["hop", 1.2, 2.4], ["doors_close", 2.4, 3.0]],
+      "control_at_s": 2.8,
+      "swap_at_s": 2.4,
+      "hop_height_m": 6.0,
+      "door_open_deg": 100.0,
+      "camera_cues": [
+        {"at_s": 0.0, "view": "dock_lift", "blend_s": 1.0},
+        {"at_s": 2.2, "view": "small", "blend_s": 1.2, "world": "small", "world_blend_s": 1.5}
+      ]
+    },
+    "hatch_open_deg": -100.0
+  },
+
+  "boarding": {
+    "_note": "How Red gets into the loader: walk into the ring at the boarding point (or press interact, E, within interact_radius_m). After climbing out she must step out of the ring once before it will take her again. dock_trigger_m: how close the loader must get to the colossus's dock_approach point for the docking to start by itself. disembark is the Q button (pad: left stick click).",
+    "enter_radius_m": 1.15,
+    "interact_radius_m": 2.6,
+    "dock_trigger_m": 3.5,
+    "disembark_action": "disembark",
+    "disembark_max_speed_mps": 1.5,
+    "disembark_buffer_s": 2.0,
+    "ring_color": "#4fd8ff"
+  },
+
+  "audio": {
+    "_note": "Sounds for the sequences, from data/audio/sfx.json (placeholders until the Audio Designer delivers docs/audio_requests.md 'Robots').",
+    "doors": "combat_hit_light",
+    "snap": "combat_hit_heavy",
+    "lock": "combat_brute_slam",
+    "power_up": "combat_lights_on_activate",
+    "hatch": "combat_dash"
+  }
+}

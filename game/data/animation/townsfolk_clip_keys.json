@@ -1,0 +1,55 @@
+{
+ "_about": "Key poses of the clips: where the strike lands (contact_s) and the poses the move data snaps to. 30 fps, baked by retarget_ual.py from the free Quaternius clips (CC0). Use these seconds as clip_s in moves.json anim.keys.",
+ "fps": 30,
+ "clips": {
+  "idle": {
+   "length_s": 2.5,
+   "loop": true,
+   "source": "UAL1:Idle_Loop",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 75,
+     "clip_s": 2.5
+    }
+   ],
+   "note": "standing about"
+  },
+  "talk": {
+   "length_s": 2.9333,
+   "loop": true,
+   "source": "UAL1:Idle_Talking_Loop",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 88,
+     "clip_s": 2.9333
+    }
+   ],
+   "note": "talking with small hand gestures (stands still; the speech bubble plays over it)"
+  },
+  "walk": {
+   "length_s": 1.3333,
+   "loop": true,
+   "source": "UAL1:Walk_Loop",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 40,
+     "clip_s": 1.3333
+    }
+   ],
+   "note": "an easy stroll; play at ground speed / stride_mps (scripts/combat/locomotion_speed.gd)",
+   "stride_mps": 0.4
+  }
+ }
+}

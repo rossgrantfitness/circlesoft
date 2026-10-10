@@ -1,0 +1,11 @@
+{
+  "_about": "Fights you can start in the test room. Each enemy standing in the room has a fight id. 'encounter' is the id in data/battle/encounters.json, 'challenge' is the conversation that plays when Red talks to it (it ends in a Fight? choice), 'yes' is the conversation the Fight! choice leads to (the fight starts when it ends), 'no' is the other answer. A win removes that enemy until the room is loaded again (a flag called defeated_<fight id>); running away leaves it there.",
+  "respawn_on_room_load": true,
+  "defeated_flag_prefix": "defeated_",
+  "fights": {
+    "grunt": {"encounter": "grunt_pair", "challenge": "challenge_grunt", "yes": "challenge_grunt_yes", "no": "challenge_grunt_no"},
+    "drone": {"encounter": "drone_flock", "challenge": "challenge_drone", "yes": "challenge_drone_yes", "no": "challenge_drone_no"},
+    "squad": {"encounter": "squad_four", "challenge": "challenge_squad", "yes": "challenge_squad_yes", "no": "challenge_squad_no"},
+    "tough": {"encounter": "ambush_no_exit", "challenge": "challenge_tough", "yes": "challenge_tough_yes", "no": "challenge_tough_no"}
+  }
+}

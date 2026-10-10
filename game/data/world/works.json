@@ -1,0 +1,79 @@
+{
+  "_about": "The Spillway and the jammer works (M4-1 rooms, M4-2 puzzles). Tuning, locks and the little messages of the works' props; where things stand is in the room scenes (scripts/tools/make_works_rooms.py) and what is in each crate / which enemy / which door is in placements.json. Messages are PLACEHOLDER lines in the grim tone (docs/tone_guide.md); the Writer replaces them in M6-2. Keys: cards = Kasp's Access Card (a key item that is counted, never used up). gates = card gates that are not doors (the switch cage): 'need' cards open it for good. lever = the power lever in the Power Room. lift = the freight cage lift: it only works once the lever flag is set; 'stops' are room ids, 'labels' what the menu calls them. push_crate = the Cable Mill crate: pushed in 'step' metre hops along 'dir' until it reaches 'stop' (x, z) and snaps, then Red can climb from its top to the ledge ('climb_end' is where she lands, relative to the crate's top). bells = the Bell Gallery tune (bell ids, in the order to ring them) and its messages.",
+  "cards": {
+    "item": "kasp_access_card",
+    "locked": "SIGNALS ACCESS ONLY.\nCards: {have} of {need}."
+  },
+  "gates": {
+    "tg_cage_gate": {
+      "need": 2,
+      "unlocked": "The reader blinks green. Kasp's face on\nthe card looks smug about it.",
+      "locked": "SIGNALS ACCESS ONLY.\nCards: {have} of {need}."
+    }
+  },
+  "lever": {
+    "flag": "lift_powered",
+    "reach": 1.2,
+    "thrown": [
+      "The lever clunks down. The old generator coughs, then catches.",
+      "Lights come on up the whole plant, floor after floor. Somewhere above, a lift starts to hum."
+    ],
+    "already": "The lever is down. The generator hums like it's been waiting years to."
+  },
+  "lift": {
+    "flag": "lift_powered",
+    "reach": 1.4,
+    "spawn": "from_lift",
+    "stops": ["tower_sump", "tower_generator", "tower_jammer_deck"],
+    "labels": {
+      "tower_sump": "Down to the Sump",
+      "tower_generator": "The Power Room",
+      "tower_jammer_deck": "Up to the Drone Line"
+    },
+    "title": "Freight lift",
+    "stay": "Stay here",
+    "no_power": {
+      "tower_sump": "The cage is chained shut. A tag on it reads: NO POWER.",
+      "default": "No power."
+    },
+    "window": {"x": 112, "y": 62, "w": 160, "h": 76},
+    "row_height": 16,
+    "first_row_y": 18,
+    "arm_frames": 3
+  },
+  "push_crate": {
+    "tc_push_crate": {
+      "flag": "t1_crate_placed",
+      "dir": [-1, 0],
+      "step": 1.0,
+      "stop": [3.45, 3.0],
+      "reach": 1.3,
+      "align": 0.6,
+      "climb_end": [-1.2, 0.9, 0.0],
+      "pushed": "The crate scrapes west.",
+      "placed": "It bumps the ledge and sits there, square. Close enough to climb.",
+      "wrong_side": "Push it from the east side, along the floor."
+    }
+  },
+  "bells": {
+    "flag": "bells_solved",
+    "tune": ["middle", "little", "big", "tiny", "middle"],
+    "sizes": {"big": 0.9, "middle": 0.7, "little": 0.5, "tiny": 0.35},
+    "napkin_item": "bell_tune_napkin",
+    "reach": 1.2,
+    "sour": "CLANG. A sour note. The tune starts over.",
+    "sour_no_napkin": "CLANG. A sour note. The tune starts over.",
+    "mox_hint": "There's gotta be a tune for these. Somebody wrote it down. Somebody who sits by a gate, ringing.",
+    "ring": {"big": "BONG.", "middle": "Bong.", "little": "Ting.", "tiny": "...ting."},
+    "solved": [
+      "The last bell rings out, and the whole gallery hums with it.",
+      "Under your feet, a hatch in the floor clicks open."
+    ],
+    "after": "The bells hang quiet. For a second, so does everything else."
+  },
+  "warp": {
+    "rooms": ["road_mast_road", "road_mast_foot", "tower_sump", "tower_cable_hall", "tower_bell_gallery", "tower_generator", "tower_jammer_deck", "tower_landing", "tower_roof"],
+    "next_key": "bracketright",
+    "prev_key": "bracketleft"
+  }
+}

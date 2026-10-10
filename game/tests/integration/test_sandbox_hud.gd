@@ -1,0 +1,607 @@
+extends TestCase
+## The sandbox HUD (CS-15): it reacts to every signal in docs/pivot/combat_api.md 4.6 that it uses, from
+## a stub that emits them (tests/fixtures/ui/fake_combat_sandbox.gd): Red's HP, small enemy bars,
+## damage numbers, parry / Lamp Flare / stagger pop-ups in the stencil lettering, the Noise meter and
+## rank pop-ups, Lights On, the lock-on reticle, the camera tag, and the pause menu with the controls card.
+
+const HUD_SCENE: String = "res://scenes/ui/sandbox/sandbox_hud.tscn"
+const STEP: float = 0.0833
+
+var _audio: FakeAudio = null
+var _sandbox: FakeCombatSandbox = null
+var _hud: SandboxHud = null
+
+
+func _setup() -> void:
+	_audio = FakeAudio.new()
+	_sandbox = FakeCombatSandbox.new()
+	_sandbox.add_enemy(&"grunt_1", Vector2(320, 180))
+	_hud = (load(HUD_SCENE) as PackedScene).instantiate() as SandboxHud
+	_hud.manual_ticks = true
+	_hud.animations_enabled = false
+	_hud.listen_input = false
+	_hud.auto_quit = false
+	_hud.relocate_to_window = false
+	_hud.audio.target = _audio
+	add_to_root(_hud)
+	_hud.get_pause_menu().pause_game = false
+	_hud.get_feel_panel().pause_game = false
+	_hud.bind(_sandbox)
+
+
+func after_each() -> void:
+	SandboxPauseGate.clear(tree)
+	if _sandbox != null:
+		if is_instance_valid(_hud) and _hud.is_inside_tree():
+			_hud.unbind()
+		_sandbox.free_nodes()
+
+
+func _numbers() -> Array[SandboxFloater]:
+	return _hud.get_floaters()
+
+
+# ---- the hack button ----
+
+func test_the_hack_button_shows_its_call_out() -> void:
+	_setup()
+	_sandbox.player.hack_pressed.emit({"text": "Hack: coming later", "callout_ms": 1200.0})
+	assert_eq(_hud.get_callouts(), ["Hack: coming later"] as Array[String])
+
+
+# ---- HP ----
+
+func test_red_hp_starts_from_the_registered_fighter_and_follows_the_signal() -> void:
+	_setup()
+	assert_eq(_hud.get_hp(), 120)
+	assert_eq(_hud.get_hp_max(), 120)
+	_sandbox.director.hp_changed.emit(&"red", 80, 120)
+	assert_eq(_hud.get_hp(), 80)
+	_sandbox.director.hp_changed.emit(&"red", 120, 120)
+	assert_eq(_hud.get_hp(), 120, "healed")
+
+
+func test_enemies_get_a_small_bar_only_while_hurt() -> void:
+	_setup()
+	_sandbox.director.hp_changed.emit(&"grunt_1", 30, 40)
+	assert_eq(_hud.get_enemy_bar_ids(), ["grunt_1"] as Array[String])
+	_sandbox.director.hp_changed.emit(&"grunt_1", 40, 40)
+	assert_eq(_hud.get_enemy_bar_ids().size(), 0, "full health: no bar")
+	_sandbox.director.hp_changed.emit(&"grunt_1", 10, 40)
+	_sandbox.director.actor_died.emit(&"grunt_1")
+	assert_eq(_hud.get_enemy_bar_ids().size(), 0, "dead: no bar")
+
+
+func test_an_enemy_bar_fades_away_by_itself() -> void:
+	_setup()
+	_sandbox.director.hp_changed.emit(&"grunt_1", 30, 40)
+	_hud.tick(float(SandboxUiData.ui("hud.enemy_bar.show_s", 3.0)) + float(SandboxUiData.ui("hud.enemy_bar.fade_s", 0.5)) + 0.1)
+	assert_eq(_hud.get_enemy_bar_ids().size(), 0)
+
+
+func test_red_is_not_given_an_enemy_bar() -> void:
+	_setup()
+	_sandbox.director.hp_changed.emit(&"red", 50, 120)
+	assert_eq(_hud.get_enemy_bar_ids().size(), 0)
+
+
+# ---- damage numbers ----
+
+func test_a_hit_floats_a_damage_number_over_the_target_in_ui_units() -> void:
+	_setup()
+	_sandbox.director.hit_landed.emit({"attacker": &"red", "target": &"grunt_1", "outcome": "hit", "damage": 12})
+	var numbers: Array[SandboxFloater] = _numbers()
+	assert_eq(numbers.size(), 1)
+	assert_eq(numbers[0].text, "12")
+	var scale: Vector2 = _hud.world_scale()
+	assert_almost_eq(scale.x, 0.6, 0.001, "640 wide picture onto the 384 wide UI")
+	assert_almost_eq(numbers[0].position.x, 320.0 * scale.x, 8.0)
+	assert_lt(numbers[0].position.y, 180.0 * scale.y, "it sits above the target")
+
+
+func test_no_number_for_a_miss_an_evade_or_zero_damage() -> void:
+	_setup()
+	_sandbox.director.hit_landed.emit({"target": &"grunt_1", "outcome": "evaded", "damage": 9})
+	_sandbox.director.hit_landed.emit({"target": &"grunt_1", "outcome": "ignored", "damage": 9})
+	_sandbox.director.hit_landed.emit({"target": &"red", "outcome": "perfect_parry", "damage": 0})
+	assert_eq(_numbers().size(), 0)
+
+
+func test_damage_numbers_are_white_and_damage_to_red_is_not() -> void:
+	_setup()
+	_sandbox.director.hit_landed.emit({"target": &"grunt_1", "outcome": "hit", "damage": 5})
+	_sandbox.director.hit_landed.emit({"target": &"red", "outcome": "hit", "damage": 7})
+	var numbers: Array[SandboxFloater] = _numbers()
+	assert_eq(numbers[0].tint, SandboxStyle.color("text"))
+	assert_eq(SandboxStyle.color("text"), Color.html("#FFFFFF"), "white text")
+	assert_ne(numbers[1].tint, numbers[0].tint)
+
+
+func test_numbers_on_one_target_stack_up_instead_of_overlapping() -> void:
+	_setup()
+	for i: int in 3:
+		_sandbox.director.hit_landed.emit({"target": &"grunt_1", "outcome": "hit", "damage": 3 + i})
+	var numbers: Array[SandboxFloater] = _numbers()
+	assert_lt(numbers[2].position.y, numbers[0].position.y, "later hits sit higher")
+
+
+func test_numbers_rise_fade_and_are_freed() -> void:
+	_setup()
+	_sandbox.director.hit_landed.emit({"target": &"grunt_1", "outcome": "hit", "damage": 3})
+	var number: SandboxFloater = _numbers()[0]
+	assert_eq(number.alpha(), 1.0)
+	_hud.tick(number.life_s() * 0.5)
+	assert_gt(number.rise_px(), 0.0, "it rose")
+	_hud.tick(number.life_s())
+	assert_eq(_numbers().size(), 0, "gone when its time is up")
+
+
+func test_a_hit_with_no_known_position_still_shows_in_the_middle() -> void:
+	_setup()
+	_sandbox.director.hit_landed.emit({"target": &"ghost", "outcome": "hit", "damage": 4})
+	var number: SandboxFloater = _numbers()[0]
+	assert_true(number.position.x > 100.0 and number.position.x < 300.0)
+
+
+func test_no_big_lettering_is_built_for_events() -> void:
+	var source: String = FileAccess.get_file_as_string("res://scripts/ui/sandbox/sandbox_hud.gd") + FileAccess.get_file_as_string("res://scripts/ui/sandbox/sandbox_popups.gd")
+	assert_false(source.contains("BattlePopup"), "events are small text now, not the stencil lettering")
+
+
+# ---- parry, Lamp Flare, stagger: small call-outs ----
+
+func test_each_parry_rating_has_its_own_words() -> void:
+	_setup()
+	var cases: Dictionary = {"nice": "Guard!", "rad": "Parry!", "totally_rad": "Perfect Parry!", "miss": "Missed"}
+	for rating: String in cases:
+		_sandbox.director.parry_judged.emit({"attacker": &"grunt_1", "rating": rating, "outcome": "parried", "delta_ms": 10})
+		assert_eq(_hud.get_callouts()[0], cases[rating], rating)
+
+
+func test_a_perfect_dodge_calls_out_lamp_flare() -> void:
+	_setup()
+	_sandbox.director.perfect_dodge.emit({"attacker": &"grunt_1", "move_id": &"swipe"})
+	assert_eq(_hud.get_callouts()[0], SandboxUiData.text("popups.lamp_flare"))
+	_sandbox.director.flare_started.emit({"source": "dodge", "duration_s": 2.5, "enemy_scale": 0.25})
+	assert_eq(_hud.get_callouts().size(), 1, "the flare that follows a dodge does not call out a second one")
+	assert_true(_hud.is_flaring())
+
+
+func test_a_parry_flare_calls_out_lamp_flare_itself() -> void:
+	_setup()
+	_sandbox.director.flare_started.emit({"source": "parry", "duration_s": 2.5, "enemy_scale": 0.25})
+	assert_eq(_hud.get_callouts(), [SandboxUiData.text("popups.lamp_flare")] as Array[String])
+
+
+func test_at_most_two_call_outs_show_newest_first_and_they_fade_away() -> void:
+	_setup()
+	_sandbox.director.parry_judged.emit({"rating": "nice"})
+	_sandbox.director.parry_judged.emit({"rating": "rad"})
+	_sandbox.director.perfect_dodge.emit({})
+	assert_eq(_hud.get_callouts().size(), 2)
+	assert_eq(_hud.get_callouts()[0], "Lamp Flare!")
+	assert_eq(_hud.get_callouts()[1], "Parry!")
+	_hud.tick(3.0)
+	assert_eq(_hud.get_callouts().size(), 0)
+
+
+func test_the_flare_timer_runs_down_and_ends() -> void:
+	_setup()
+	_sandbox.director.flare_started.emit({"source": "dodge", "duration_s": 2.0})
+	_hud.tick(1.0)
+	assert_true(_hud.is_flaring())
+	_sandbox.director.flare_ended.emit()
+	assert_false(_hud.is_flaring())
+
+
+func test_a_stagger_is_called_out() -> void:
+	_setup()
+	_sandbox.director.stagger.emit({"target": &"grunt_1", "by": "parry"})
+	assert_eq(_hud.get_callouts()[0], "Staggered!")
+	_sandbox.director.stagger.emit({"target": &"grunt_1", "by": "poise"})
+	assert_eq(_hud.get_callouts()[0], "Poise Break!")
+
+
+# ---- Noise and Lights On ----
+
+func test_the_noise_meter_follows_the_signal() -> void:
+	_setup()
+	_sandbox.director.noise_changed.emit(240.0, 0.4, &"nice", "Nice!")
+	var noise: Dictionary = _hud.get_noise()
+	assert_almost_eq(float(noise["points"]), 240.0, 0.01)
+	assert_almost_eq(float(noise["fill"]), 0.4, 0.001)
+	assert_eq(noise["rank_name"], "Nice!")
+
+
+func test_a_rank_up_calls_out_the_rank_name_and_plays_its_sound() -> void:
+	_setup()
+	_sandbox.director.noise_rank_changed.emit(&"rad", "Rad!", true)
+	assert_eq(_hud.get_callouts()[0], "Rad!")
+	assert_has(_audio.sfx_ids, "combat_noise_rank_up")
+
+
+func test_a_rank_down_is_quiet() -> void:
+	_setup()
+	_sandbox.director.noise_rank_changed.emit(&"nice", "Nice!", false)
+	assert_eq(_hud.get_callouts().size(), 0)
+	assert_does_not_have(_audio.sfx_ids, "combat_noise_rank_up")
+
+
+func test_an_unknown_rank_still_gets_a_call_out() -> void:
+	_setup()
+	_sandbox.director.noise_rank_changed.emit(&"mystery_rank", "Whoa!", true)
+	assert_eq(_hud.get_callouts()[0], "Whoa!")
+
+
+func test_lights_on_shows_and_runs_down() -> void:
+	_setup()
+	assert_false(_hud.is_lights_on())
+	_sandbox.director.lights_on_changed.emit(true, 8.0)
+	assert_true(_hud.is_lights_on())
+	_hud.tick(2.0)
+	assert_true(_hud.is_lights_on())
+	_sandbox.director.lights_on_changed.emit(false, 0.0)
+	assert_false(_hud.is_lights_on())
+
+
+# ---- lock-on and camera ----
+
+func test_the_reticle_follows_the_lock_target_and_plays_its_sound() -> void:
+	_setup()
+	var target: CombatActor = _sandbox.director.get_actor(&"grunt_1")
+	_sandbox.lock_on.target_changed.emit(target)
+	assert_eq(_hud.get_lock_id(), "grunt_1")
+	assert_has(_audio.sfx_ids, "combat_lock_on")
+	assert_true(_hud.position_of("grunt_1", &"center").is_finite())
+	_sandbox.lock_on.target_changed.emit(null)
+	assert_eq(_hud.get_lock_id(), "")
+
+
+func test_letting_go_does_not_play_the_lock_sound() -> void:
+	_setup()
+	_sandbox.lock_on.target_changed.emit(null)
+	assert_does_not_have(_audio.sfx_ids, "combat_lock_on")
+
+
+func test_a_dead_lock_target_clears_the_reticle() -> void:
+	_setup()
+	_sandbox.lock_on.target_changed.emit(_sandbox.director.get_actor(&"grunt_1"))
+	_sandbox.director.actor_died.emit(&"grunt_1")
+	assert_eq(_hud.get_lock_id(), "")
+
+
+func test_the_camera_tag_follows_the_mode() -> void:
+	_setup()
+	assert_eq(_hud.get_camera_text(), SandboxUiData.text("hud.camera_orbit"))
+	_sandbox.camera.mode_changed.emit(1)
+	assert_eq(_hud.get_camera_text(), SandboxUiData.text("hud.camera_diorama"))
+	assert_eq(_hud.get_pause_menu().get_card().camera_mode_text, SandboxUiData.text("hud.camera_diorama"), "the card shows it too")
+
+
+# ---- the whole thing draws ----
+
+func test_everything_draws_with_every_state_on() -> void:
+	_setup()
+	_sandbox.director.hp_changed.emit(&"red", 20, 120)
+	_sandbox.director.hp_changed.emit(&"grunt_1", 10, 40)
+	_sandbox.director.noise_changed.emit(900.0, 1.0, &"rad", "Rad!")
+	_sandbox.director.lights_on_changed.emit(true, 8.0)
+	_sandbox.director.flare_started.emit({"source": "dodge", "duration_s": 2.5})
+	_sandbox.lock_on.target_changed.emit(_sandbox.director.get_actor(&"grunt_1"))
+	_sandbox.director.hit_landed.emit({"target": &"grunt_1", "outcome": "hit", "damage": 14})
+	for i: int in 3:
+		_hud.tick(0.1)
+		await tree.process_frame
+	assert_eq(_hud.get_hp(), 20)
+
+
+func test_unbinding_disconnects_everything() -> void:
+	_setup()
+	_hud.unbind()
+	_sandbox.director.hp_changed.emit(&"red", 5, 120)
+	assert_eq(_hud.get_hp(), 120, "no longer listening")
+
+
+# ---- the pause menu ----
+
+func test_the_pause_menu_opens_and_lists_its_four_rows() -> void:
+	_setup()
+	var pause: SandboxPause = _hud.get_pause_menu()
+	assert_false(pause.is_open())
+	_hud.open_pause()
+	assert_true(pause.is_open())
+	assert_true(_hud.is_menu_open())
+	var ids: Array[String] = []
+	for i: int in SandboxPause.ITEM_IDS.size():
+		ids.append(pause.get_item_id(i))
+	assert_eq(ids, ["resume", "reset", "controls", "quit"] as Array[String])
+	for id: String in ids:
+		assert_ne(SandboxUiData.text("pause.%s" % id), "", "%s has words" % id)
+
+
+func test_resume_closes_it() -> void:
+	_setup()
+	var pause: SandboxPause = _hud.get_pause_menu()
+	_hud.open_pause()
+	pause.handle_command(MenuInput.Cmd.CONFIRM)
+	assert_false(pause.is_open(), "the first row is Resume")
+
+
+func test_cancel_closes_it() -> void:
+	_setup()
+	_hud.open_pause()
+	_hud.get_pause_menu().handle_command(MenuInput.Cmd.CANCEL)
+	assert_false(_hud.get_pause_menu().is_open())
+
+
+func test_reset_arena_asks_the_sandbox_and_closes_the_menu() -> void:
+	_setup()
+	var pause: SandboxPause = _hud.get_pause_menu()
+	var asked: Array[bool] = []
+	_hud.reset_requested.connect(func() -> void: asked.append(true))
+	_hud.open_pause()
+	pause.handle_command(MenuInput.Cmd.DOWN)
+	assert_eq(pause.get_item_id(pause.get_cursor_index()), "reset")
+	pause.handle_command(MenuInput.Cmd.CONFIRM)
+	assert_eq(_sandbox.reset_calls, 1)
+	assert_eq(asked.size(), 1)
+	assert_false(pause.is_open())
+
+
+func test_a_reset_clears_leftover_pop_ups_and_bars() -> void:
+	_setup()
+	_sandbox.director.hp_changed.emit(&"grunt_1", 10, 40)
+	_sandbox.director.hit_landed.emit({"target": &"grunt_1", "outcome": "hit", "damage": 3})
+	_hud.open_pause()
+	_hud.get_pause_menu().handle_command(MenuInput.Cmd.DOWN)
+	_hud.get_pause_menu().handle_command(MenuInput.Cmd.CONFIRM)
+	assert_eq(_hud.get_enemy_bar_ids().size(), 0)
+	assert_eq(_hud.get_floaters().size() + _hud.get_callouts().size(), 0)
+
+
+func test_quit_says_so_without_closing_the_test_runner() -> void:
+	_setup()
+	var quits: Array[bool] = []
+	_hud.quit_requested.connect(func() -> void: quits.append(true))
+	_hud.open_pause()
+	for i: int in 3:
+		_hud.get_pause_menu().handle_command(MenuInput.Cmd.DOWN)
+	_hud.get_pause_menu().handle_command(MenuInput.Cmd.CONFIRM)
+	assert_eq(quits.size(), 1)
+
+
+func test_the_cursor_wraps() -> void:
+	_setup()
+	var pause: SandboxPause = _hud.get_pause_menu()
+	_hud.open_pause()
+	pause.handle_command(MenuInput.Cmd.UP)
+	assert_eq(pause.get_item_id(pause.get_cursor_index()), "quit")
+	pause.handle_command(MenuInput.Cmd.DOWN)
+	assert_eq(pause.get_item_id(pause.get_cursor_index()), "resume")
+
+
+func test_the_mouse_hovers_and_clicks_a_row() -> void:
+	_setup()
+	var pause: SandboxPause = _hud.get_pause_menu()
+	_hud.open_pause()
+	var layout: Dictionary = SandboxUiData.ui("pause", {})
+	var rect: Rect2 = pause._row_rect(1)
+	var move: InputEventMouseMotion = InputEventMouseMotion.new()
+	move.position = rect.get_center()
+	pause.handle_event(move)
+	assert_eq(pause.get_cursor_index(), 1)
+	var click: InputEventMouseButton = InputEventMouseButton.new()
+	click.button_index = MOUSE_BUTTON_LEFT
+	click.pressed = true
+	click.position = rect.get_center()
+	pause.handle_event(click)
+	assert_eq(_sandbox.reset_calls, 1, "clicking Reset arena resets")
+	assert_gt(float(layout["w"]), 0.0)
+
+
+func test_controls_opens_the_card_with_every_button_and_cancel_comes_back() -> void:
+	_setup()
+	var pause: SandboxPause = _hud.get_pause_menu()
+	_hud.open_pause()
+	pause.handle_command(MenuInput.Cmd.DOWN)
+	pause.handle_command(MenuInput.Cmd.DOWN)
+	pause.handle_command(MenuInput.Cmd.CONFIRM)
+	var card: ControlsCard = pause.get_card()
+	assert_true(card.is_open())
+	assert_true(pause.is_sub_page_open())
+	card.handle_command(MenuInput.Cmd.CANCEL)
+	assert_false(card.is_open())
+	assert_true(pause.is_open(), "back at the pause menu")
+
+
+func test_the_card_lists_every_row_from_the_contract_table() -> void:
+	_setup()
+	var card: ControlsCard = _hud.get_pause_menu().get_card()
+	var labels: Array[String] = []
+	for row: Dictionary in card.get_rows():
+		labels.append(str(row["label"]))
+		assert_ne(str(row["key"]), "", "%s has a keyboard button" % row["label"])
+		assert_ne(str(row["pad"]), "", "%s has a controller button" % row["label"])
+	for need: String in ["Move", "Camera", "Jump", "Attack", "Hack", "Dash", "Parry", "Lock on", "Camera style", "Feel knobs", "Pause"]:
+		assert_has(labels, need)
+
+
+func test_the_card_shows_the_real_bindings() -> void:
+	_setup()
+	var rows: Dictionary = {}
+	for row: Dictionary in _hud.get_pause_menu().get_card().get_rows():
+		rows[row["action"]] = row
+	assert_true(str(rows["light"]["key"]).contains("J"), "light is on J")
+	assert_true(str(rows["light"]["pad"]).contains("Square"), "and the pad's square button")
+	assert_true(str(rows["parry"]["pad"]).contains("L1"))
+	assert_true(str(rows["feel_panel"]["key"]).contains("F12"))
+	assert_eq(rows["move"]["key"], "W A S D / Arrows", "fixed rows use the written words")
+
+
+func test_confirm_on_the_card_opens_the_remap_page() -> void:
+	_setup()
+	var pause: SandboxPause = _hud.get_pause_menu()
+	_hud.open_pause()
+	pause.handle_command(MenuInput.Cmd.DOWN)
+	pause.handle_command(MenuInput.Cmd.DOWN)
+	pause.handle_command(MenuInput.Cmd.CONFIRM)
+	pause.get_card().handle_command(MenuInput.Cmd.CONFIRM)
+	var config_screen: ConfigScreen = pause.get_config_screen()
+	assert_not_null(config_screen)
+	assert_true(config_screen.is_open())
+	assert_eq(config_screen.get_state(), ConfigScreen.State.CONTROLS, "it is the Controls page")
+	config_screen.close()
+	assert_true(pause.get_card().is_open(), "closing the page returns to the card")
+
+
+func test_the_hint_line_follows_the_last_device_used() -> void:
+	_setup()
+	assert_eq(_hud.get_hint_text(), SandboxUiData.text("hud.hint_keys"))
+	var pad: InputEventJoypadButton = InputEventJoypadButton.new()
+	pad.button_index = JOY_BUTTON_A
+	pad.pressed = true
+	_hud._input(pad)
+	assert_eq(_hud.get_hint_text(), SandboxUiData.text("hud.hint_pad"))
+
+
+func test_the_feel_panel_is_bound_to_the_directors_knobs() -> void:
+	_setup()
+	var panel: FeelPanel = _hud.get_feel_panel()
+	assert_gt(panel.get_knob_list().size(), 0)
+	panel.open_panel()
+	panel.focus_knob("shake_scale")
+	panel.handle_command(MenuInput.Cmd.RIGHT)
+	assert_almost_eq(_sandbox.director.feel.get_f("shake_scale"), 1.05, 0.0001)
+
+
+# ---- crisp text: the HUD draws at the window's own resolution ----
+
+func test_in_the_game_the_hud_moves_to_a_window_layer_with_a_whole_number_scale() -> void:
+	var sandbox: FakeCombatSandbox = FakeCombatSandbox.new()
+	var hud: SandboxHud = (load(HUD_SCENE) as PackedScene).instantiate() as SandboxHud
+	hud.manual_ticks = true
+	hud.listen_input = false
+	add_to_root(hud)
+	hud.bind(sandbox)
+	await tree.process_frame
+	await tree.process_frame
+	assert_true(hud.get_parent() is CanvasLayer, "moved onto its own layer on the window")
+	var factor: float = hud.scale.x
+	assert_eq(factor, roundf(factor), "a whole-number scale, so pixel fonts stay crisp")
+	assert_ge(factor, 1.0)
+	assert_eq(hud.scale.x, hud.scale.y)
+	var window: Vector2 = Vector2(tree.root.size)
+	assert_le(absf(hud.ui_size().x * factor - window.x), factor, "the UI covers the window")
+	assert_le(absf(hud.ui_size().y * factor - window.y), factor)
+	sandbox.director.hp_changed.emit(&"red", 33, 120)
+	assert_eq(hud.get_hp(), 33, "the bindings survive the move")
+	var layer: Node = hud.get_parent()
+	hud.get_parent().remove_child(hud)
+	hud.free()
+	sandbox.free_nodes()
+	if is_instance_valid(layer):
+		layer.free()
+
+
+func test_the_corner_pieces_sit_in_the_corners_of_a_larger_ui() -> void:
+	_setup()
+	_hud.size = Vector2(640, 360)
+	_hud._place_corners()
+	var ref: Vector2 = Vector2(SandboxStyle.REFERENCE_SIZE)
+	assert_eq(_hud.get_node("TopLeft").position, Vector2.ZERO)
+	assert_eq(_hud.get_node("TopRight").position, Vector2(640.0 - ref.x, 0.0))
+	assert_eq(_hud.get_node("BottomLeft").position, Vector2(0.0, 360.0 - ref.y))
+	assert_eq(_hud.get_node("BottomRight").position, Vector2(640.0 - ref.x, 360.0 - ref.y))
+
+
+func test_menus_center_themselves_in_a_larger_ui() -> void:
+	_setup()
+	_hud.size = Vector2(640, 360)
+	_hud.get_feel_panel()._fit()
+	var offset: Vector2 = SandboxStyle.center_offset(_hud.get_feel_panel())
+	assert_eq(offset, Vector2(128, 72))
+	assert_eq(_hud.get_feel_panel().get_node("Overlay").position, offset)
+	assert_eq(_hud.get_feel_panel().size, Vector2(640, 360), "the dim covers the whole UI")
+
+
+# ---- the dash charge pips (Ross 2026-10-09, dash on charges) ----
+
+func _show_charges(charges: DashCharges) -> void:
+	_sandbox.player.dash_charges = charges.snapshot()
+	_hud.tick(STEP)
+
+
+func test_the_pips_show_every_charge_when_she_is_full() -> void:
+	_setup()
+	var charges: DashCharges = DashCharges.create(int(FeelKnobs.load_defaults().get_f("dash_charges")))
+	_show_charges(charges)
+	var fills: Array[float] = _hud.get_dash_pip_fills()
+	assert_eq(fills.size(), charges.max_count, "one pip per charge she can hold")
+	for fill: float in fills:
+		assert_almost_eq(fill, 1.0, 0.0001)
+
+
+func test_spent_pips_go_dark_from_the_right_and_the_refilling_one_shows_its_progress() -> void:
+	_setup()
+	var recharge: float = FeelKnobs.load_defaults().get_f("dash_recharge_s")
+	var charges: DashCharges = DashCharges.create(int(FeelKnobs.load_defaults().get_f("dash_charges")))
+	charges.spend()
+	charges.spend()
+	charges.tick(recharge * 0.5, recharge)
+	_show_charges(charges)
+	var fills: Array[float] = _hud.get_dash_pip_fills()
+	var held: int = charges.count
+	for i: int in fills.size():
+		if i < held:
+			assert_almost_eq(fills[i], 1.0, 0.0001, "pip %d is a charge" % i)
+		elif i == held:
+			assert_almost_eq(fills[i], 0.5, 0.01, "the next pip is half refilled")
+		else:
+			assert_almost_eq(fills[i], 0.0, 0.0001, "pip %d is spent" % i)
+
+
+func test_a_refilling_pip_grows_each_tick_and_fills_when_the_charge_lands() -> void:
+	_setup()
+	var recharge: float = FeelKnobs.load_defaults().get_f("dash_recharge_s")
+	var charges: DashCharges = DashCharges.create(int(FeelKnobs.load_defaults().get_f("dash_charges")))
+	charges.spend()
+	var last: float = -1.0
+	for i: int in 5:
+		charges.tick(recharge * 0.15, recharge)
+		_show_charges(charges)
+		var fills: Array[float] = _hud.get_dash_pip_fills()
+		assert_gt(fills[charges.count], last, "the spent pip is filling")
+		last = fills[charges.count]
+	charges.tick(recharge, recharge)
+	_show_charges(charges)
+	var after: Array[float] = _hud.get_dash_pip_fills()
+	assert_almost_eq(after[after.size() - 1], 1.0, 0.0001, "and it is full once the charge is back")
+
+
+func test_the_count_of_the_hud_matches_the_player_snapshot() -> void:
+	_setup()
+	var charges: DashCharges = DashCharges.create(4)
+	charges.spend()
+	_show_charges(charges)
+	var info: Dictionary = _hud.get_dash_charges()
+	assert_eq(int(info["count"]), 3)
+	assert_eq(int(info["max"]), 4)
+	assert_eq(_hud.get_dash_pip_fills().size(), 4, "the pip row follows the max, which follows the F12 knob")
+
+
+func test_a_refused_dash_flashes_the_pips_for_a_moment() -> void:
+	_setup()
+	_show_charges(DashCharges.create(5))
+	assert_false(_hud.is_dash_denied())
+	_sandbox.player.dash_refused.emit()
+	assert_true(_hud.is_dash_denied())
+	for i: int in 8:
+		_hud.tick(STEP)
+	assert_false(_hud.is_dash_denied(), "the flash is short")
+
+
+func test_no_pips_without_a_player_to_ask() -> void:
+	_setup()
+	_sandbox.player.dash_charges = {}
+	_hud.tick(STEP)
+	assert_eq(_hud.get_dash_pip_fills().size(), 0)

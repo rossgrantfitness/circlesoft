@@ -1,0 +1,45 @@
+{
+ "_about": "VS-30, the boss phase change (docs/slice/boss_design.md 'Transition', docs/maps/kasp_arena.md step 5), Gameplay Programmer. Starting guesses; the Combat Designer and Ross tune by playing. All times in seconds. `markers` are the names of Node3D / Marker3D nodes the arena scene must have (anywhere under the room); `ring_road` is a node whose Node3D children, in order, are the loader's waypoints (or markers ring_road_1, ring_road_2 ...). If a marker is missing the step still runs from sensible fallbacks. Red cannot be hurt from the start of kasp_escape to the end of the dock.",
+ "version": 1,
+ "invulnerable": true,
+ "markers": {
+  "rig_start": "hushmaster_start",
+  "kasp_target": "kasp_escape_target",
+  "mech_start": "mech_start",
+  "cranes": ["crane_a", "crane_b", "crane_c"],
+  "cage_crane": "crane_b",
+  "gate": "stockade_e_gate",
+  "loader": "loader_parked",
+  "ring_road": "ring_road",
+  "cradle": "colossus_cradle",
+  "dock_pos": "colossus_dock_pos",
+  "dock_approach": "dock_approach"
+ },
+ "kasp_escape": {
+  "seat_offset_m": [4.0, 2.5, -3.0],
+  "throw_s": 0.8,
+  "throw_land_offset_m": [2.0, 0.0, -2.0],
+  "run_s": 1.7,
+  "lift_s": 1.5,
+  "lift_height_m": 45.0,
+  "memo": {"speaker": "kasp", "text": "Noted. Escalating."}
+ },
+ "mech_assemble": {
+  "duration_s": 8.0,
+  "pours_at_s": [0.0, 0.8, 1.6],
+  "shake": "land_small",
+  "placeholder_size_m": [26.0, 40.0, 18.0],
+  "bark": {"speaker": "vela", "text": "Get to the loader."}
+ },
+ "board_loader": {
+  "snap_loader_if_farther_m": 0.75
+ },
+ "drive": {
+  "speed_mps": 11.0,
+  "colossus_step_s": 3.5,
+  "min_s": 3.0
+ },
+ "dock": {
+  "start_timeout_s": 3.0
+ }
+}

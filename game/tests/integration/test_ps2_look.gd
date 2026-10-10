@@ -1,0 +1,265 @@
+extends TestCase
+## The early-PS2 look (scripts/core/ps2_look.gd, data/world/look_profiles.json "grim_ps2", shaders/ps2_lit*.gdshader,
+## docs/pivot/combat_api.md section 6). The old game's profiles must stay exactly as they were.
+
+const SCREEN_SCENE: String = "res://scenes/core/psx_screen.tscn"
+const GRUNT: String = "res://art/placeholder/enemies/sandbox_grunt/enm_sandbox_grunt.glb"
+const WOLF: String = "res://art/final/enemies/cyberwolf_sentinel_rigged.glb"
+const SWORD: String = "res://art/final/weapons/sword_katana_cyan.glb"
+const PS2: String = "grim_ps2"
+
+
+func after_each() -> void:
+	LookProfiles.reset()
+	PsxLook.reset_effects()
+	super.after_each()
+
+
+func _profile() -> Dictionary:
+	return LookProfiles.profile(PS2)
+
+
+# ---- the data ----
+
+func test_the_profile_exists_and_the_old_profiles_have_no_ps2_blocks() -> void:
+	assert_true(LookProfiles.has_profile(PS2))
+	assert_eq(LookProfiles.default_id(), "grim", "nothing makes grim_ps2 the default")
+	for old: String in ["classic", "grim"]:
+		for key: String in ["screen", "shadows", "glow", "texture_filter", "retro_wobble"]:
+			assert_false(LookProfiles.profile(old).has(key), "%s has no %s block" % [old, key])
+	assert_almost_eq(LookProfiles.number("grim", "grade.desat", 0.0), 0.75, 0.0001, "grim's own grade is unchanged")
+	assert_almost_eq(LookProfiles.number("grim", "grade.gamma", 0.0), 1.1, 0.0001)
+	assert_almost_eq(LookProfiles.number("grim", "grade.tint_amount", 0.0), 0.6, 0.0001)
+
+
+func test_the_grade_is_ross_s_lighter_b_filter() -> void:
+	assert_almost_eq(LookProfiles.number(PS2, "grade.desat", 0.0), 0.35, 0.0001)
+	assert_almost_eq(LookProfiles.number(PS2, "grade.tint_amount", 0.0), 0.3, 0.0001)
+	assert_almost_eq(LookProfiles.number(PS2, "grade.gamma", 0.0), 1.0, 0.0001)
+	for key: String in ["accent_keep", "crush", "vignette", "gain"]:
+		assert_almost_eq(LookProfiles.number(PS2, "grade." + key, -1.0), LookProfiles.number("grim", "grade." + key, -2.0), 0.0001, key + " as in grim")
+
+
+func test_the_picture_is_clean_no_grain_no_dither_no_blur() -> void:
+	# Ross, 2026-10-09: "no need to make them so grainy blurry". Native resolution, no grain, no dither, no smearing filter.
+	var profile: Dictionary = _profile()
+	assert_eq(str(profile["screen"]["resolution"]), "native", "the full window resolution is the default")
+	assert_false(bool(profile["screen"]["smooth_scale"]), "no smooth scale-up filter")
+	assert_eq(float(profile["grade"]["grain"]), 0.0, "no film grain")
+	assert_eq(float(profile["post"]["dither_amount"]), 0.0, "no dither")
+	assert_false(bool(profile["dither"]["enabled"]))
+	assert_false(bool(profile["color_depth"]["enabled"]))
+	assert_ge(int(profile["post"]["color_levels"]), 256, "full colour, no banding")
+	assert_eq(float(LookProfiles.grade_parameters(PS2)["grade_grain"]), 0.0, "what the post shader gets")
+	assert_eq(float(LookProfiles.grade_parameters(PS2)["dither_amount"]), 0.0)
+	var glow: Dictionary = profile["glow"]
+	assert_le(float(glow["intensity"]), 0.7, "a light glow, nothing hazy")
+	assert_eq(float(glow["bloom"]), 0.0)
+	var levels: Array = glow["levels"]
+	for index: int in range(2, levels.size()):
+		assert_eq(float(levels[index]), 0.0, "glow level %d is a wide haze: off" % (index + 1))
+	assert_gt(float(levels[0]) + float(levels[1]), 0.0, "but the tight levels keep the neon halo")
+	assert_ne(str(profile["antialiasing"]["msaa_3d"]), "off", "MSAA smooths edges without blur")
+	assert_false(profile.has("dof") or profile.has("motion_blur"))
+	var viewport: SubViewport = SubViewport.new()
+	own(viewport)
+	Ps2Look.apply_antialiasing(viewport, profile)
+	assert_eq(viewport.msaa_3d, Viewport.MSAA_4X)
+	assert_eq(viewport.screen_space_aa, Viewport.SCREEN_SPACE_AA_DISABLED, "FXAA smears")
+	assert_false(viewport.use_taa, "TAA smears")
+	Ps2Look.apply_antialiasing(viewport, {})
+	assert_eq(viewport.msaa_3d, Viewport.MSAA_DISABLED, "an old profile has no AA")
+
+
+func test_the_ps2_blocks() -> void:
+	var profile: Dictionary = _profile()
+	assert_true(Ps2Look.is_ps2_profile(profile))
+	var wanted: String = str(profile["screen"]["resolution"])
+	assert_true(wanted == Ps2Look.NATIVE or Ps2Look.resolution_of(wanted) != Vector2i.ZERO, "native or a listed size")
+	assert_eq(float(profile["retro_wobble"]["jitter"]), 0.0)
+	assert_eq(float(profile["retro_wobble"]["affine"]), 0.0)
+	assert_false(bool(profile["dither"]["enabled"]))
+	assert_false(bool(profile["color_depth"]["enabled"]))
+	assert_true(bool(profile["shadows"]["enabled"]))
+	assert_ge(float(profile["shadows"]["max_distance_m"]), 40.0, "shadows reach across the whole arena (no short-distance limit for authenticity)")
+	assert_true(bool(profile["glow"]["enabled"]))
+	assert_false(bool(profile["characters"]["dull"]), "Ross's art is never repainted")
+	assert_gt(float(profile["characters"]["rim_strength"]), 0.0, "the edge light is kept")
+	assert_lt(float(profile["characters"]["rim_strength"]), 1.0, "and stays 'not too bright'")
+
+
+func test_texture_filtering_is_data_per_group() -> void:
+	var profile: Dictionary = _profile()
+	assert_eq(Ps2Look.filter_for(profile, "city_tiles"), "nearest", "Ross, 2026-10-08: nearest for now")
+	for group: String in ["characters", "weapons", "enemies"]:
+		assert_eq(Ps2Look.filter_for(profile, group), "smooth", group)
+	assert_eq(Ps2Look.filter_for(profile, "no_such_group"), "smooth", "unknown groups use the default")
+	var flipped: Dictionary = profile.duplicate(true)
+	flipped["texture_filter"]["city_tiles"] = "smooth"
+	assert_eq(Ps2Look.filter_for(flipped, "city_tiles"), "smooth", "one data edit flips it")
+	assert_eq(Ps2Look.shader_path_for(profile, "city_tiles"), "res://shaders/ps2_lit_crisp.gdshader")
+	assert_eq(Ps2Look.shader_path_for(profile, "weapons"), "res://shaders/ps2_lit.gdshader")
+	assert_eq(Ps2Look.group_for_path("res://art/final/weapons/sword_machete.glb"), "weapons")
+	assert_eq(Ps2Look.group_for_path("res://art/final/enemies/x.glb"), "enemies")
+	assert_eq(Ps2Look.group_for_path("res://art/final/characters/red/x.glb"), "characters")
+	assert_eq(Ps2Look.group_for_path("res://art/placeholder/enemies/x.glb"), "placeholders")
+
+
+func test_a_listed_size_stays_a_data_option_and_the_old_default_stays_384x216() -> void:
+	assert_eq(Ps2Look.resolution_of("640x360"), Vector2i(640, 360))
+	assert_eq(Ps2Look.resolution_of("nonsense"), Vector2i.ZERO)
+	assert_eq(str(DataDB.get_value("world/psx_look", "default_resolution", "")), "384x216")
+
+
+# ---- environment and light ----
+
+func test_glow_and_shadow_settings_land_on_the_nodes() -> void:
+	var environment: Environment = Environment.new()
+	Ps2Look.apply_environment(environment, _profile())
+	assert_true(environment.glow_enabled)
+	assert_almost_eq(environment.glow_hdr_threshold, float(_profile()["glow"]["hdr_threshold"]), 0.0001)
+	assert_eq(environment.glow_blend_mode, Environment.GLOW_BLEND_MODE_SCREEN)
+	var off: Environment = Environment.new()
+	off.glow_enabled = true
+	Ps2Look.apply_environment(off, {"glow": {"enabled": false}})
+	assert_false(off.glow_enabled)
+	var light: DirectionalLight3D = DirectionalLight3D.new()
+	own(light)
+	Ps2Look.apply_shadows(light, _profile())
+	assert_true(light.shadow_enabled)
+	assert_almost_eq(light.directional_shadow_max_distance, float(_profile()["shadows"]["max_distance_m"]), 0.001)
+	assert_eq(light.directional_shadow_mode, DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS, "stable cascades")
+	assert_true(light.directional_shadow_blend_splits, "no visible seams between cascades")
+	var camera: Camera3D = Camera3D.new()
+	own(camera)
+	Ps2Look.apply_camera(camera, _profile())
+	assert_ge(camera.far, 300.0, "a long draw distance")
+
+
+func test_fog_is_a_light_haze_that_never_hides_distance() -> void:
+	var fog: Dictionary = _profile()["fog"]
+	assert_ge(float(fog["near_m"]), 25.0, "nothing in the 44 m arena is fogged to speak of")
+	assert_ge(float(fog["far_m"]), 100.0)
+	# what the sandbox's room look turns it into (its own 12 m / 24 m scaled by the profile)
+	assert_ge(12.0 * float(fog["near_mul"]), 25.0)
+	assert_ge(24.0 * float(fog["far_mul"]), 100.0)
+	for path: String in ["res://shaders/ps2_lit.gdshader", "res://shaders/ps2_lit_crisp.gdshader"]:
+		assert_true((load(path) as Shader).code.contains("fog_disabled"), "the profile's fog is the only fog on PS2 materials: " + path)
+
+
+# ---- the screen and the switch back ----
+
+func test_the_node_switches_the_screen_and_the_effects_and_puts_them_back() -> void:
+	var screen: PsxScreen = (load(SCREEN_SCENE) as PackedScene).instantiate() as PsxScreen
+	add_to_root(screen)
+	var holder: Node3D = Node3D.new()
+	screen.get_world_root().add_child(holder)
+	var world_environment: WorldEnvironment = WorldEnvironment.new()
+	world_environment.name = "WorldEnvironment"
+	world_environment.environment = Environment.new()
+	holder.add_child(world_environment)
+	var key: DirectionalLight3D = DirectionalLight3D.new()
+	holder.add_child(key)
+	var look: Ps2Look = Ps2Look.new()
+	holder.add_child(look)
+	assert_eq(screen.get_resolution(), Vector2i(384, 216), "an old profile: nothing changes")
+	assert_false(look.is_applied())
+	LookProfiles.set_forced(PS2)
+	assert_true(look.is_applied())
+	var screen_block: Dictionary = _profile()["screen"]
+	if str(screen_block["resolution"]) == Ps2Look.NATIVE:
+		assert_true(screen.is_native(), "the full window resolution")
+		assert_eq(screen.get_resolution(), screen.native_size())
+		assert_eq(screen.get_world_viewport().size, screen.native_size())
+	else:
+		assert_eq(screen.get_resolution(), Ps2Look.resolution_of(str(screen_block["resolution"])))
+	var wanted_filter: int = CanvasItem.TEXTURE_FILTER_LINEAR if bool(screen_block["smooth_scale"]) else CanvasItem.TEXTURE_FILTER_NEAREST
+	assert_eq(screen.get_display().texture_filter, wanted_filter, "the scale-up filter from data")
+	assert_eq(screen.get_world_viewport().msaa_3d, Viewport.MSAA_4X, "MSAA on the world picture")
+	assert_false(PsxLook.is_effect_on(PsxLook.Effect.JITTER), "vertex jitter off")
+	assert_false(PsxLook.is_effect_on(PsxLook.Effect.WARP), "affine warp off")
+	assert_false(PsxLook.is_effect_on(PsxLook.Effect.DITHER))
+	assert_false(PsxLook.is_effect_on(PsxLook.Effect.COLOR_DEPTH))
+	assert_true(world_environment.environment.glow_enabled)
+	assert_true(key.shadow_enabled)
+	LookProfiles.set_forced("grim")
+	assert_false(look.is_applied())
+	assert_eq(screen.get_resolution(), Vector2i(384, 216), "back to the old game's picture")
+	assert_false(screen.is_native())
+	assert_eq(screen.get_world_viewport().msaa_3d, Viewport.MSAA_DISABLED, "no AA on the old picture")
+	assert_eq(screen.get_display().texture_filter, CanvasItem.TEXTURE_FILTER_NEAREST)
+	assert_true(PsxLook.is_effect_on(PsxLook.Effect.JITTER))
+	assert_true(PsxLook.is_effect_on(PsxLook.Effect.WARP))
+	assert_true(PsxLook.is_effect_on(PsxLook.Effect.COLOR_DEPTH))
+	assert_false(world_environment.environment.glow_enabled, "glow back to what the scene had")
+	assert_false(key.shadow_enabled)
+
+
+# ---- shaders and materials ----
+
+func test_the_shaders_compile_and_make_material_picks_by_group() -> void:
+	for path: String in ["res://shaders/ps2_lit.gdshader", "res://shaders/ps2_lit_crisp.gdshader", "res://shaders/sword_trail.gdshader"]:
+		var shader: Shader = load(path) as Shader
+		assert_not_null(shader, path)
+		assert_gt(shader.code.length(), 100)
+	var image: Image = Image.create(8, 8, false, Image.FORMAT_RGBA8)
+	var texture: ImageTexture = ImageTexture.create_from_image(image)
+	assert_eq(Ps2Look.make_material(texture, "characters", _profile()).shader.resource_path, "res://shaders/ps2_lit.gdshader")
+	assert_eq(Ps2Look.make_material(texture, "city_tiles", _profile()).shader.resource_path, "res://shaders/ps2_lit_crisp.gdshader")
+	var material: ShaderMaterial = Ps2Look.make_material(texture, "characters", _profile(), Color(0.5, 0.5, 0.5))
+	assert_eq(material.get_shader_parameter("albedo_texture"), texture)
+	assert_eq(material.get_shader_parameter("albedo_tint"), Color(0.5, 0.5, 0.5))
+
+
+func test_the_importer_gives_final_art_the_ps2_material_with_mipmaps() -> void:
+	var image: Image = Image.create(64, 64, false, Image.FORMAT_RGBA8)
+	var standard: StandardMaterial3D = StandardMaterial3D.new()
+	standard.albedo_texture = ImageTexture.create_from_image(image)
+	standard.roughness_texture = ImageTexture.create_from_image(image)
+	standard.albedo_color = Color(0.9, 0.8, 0.7)
+	var material: ShaderMaterial = load("res://scripts/tools/psx_post_import.gd").call("make_ps2_material", standard)
+	assert_eq(material.shader.resource_path, "res://shaders/ps2_lit.gdshader")
+	assert_true((material.get_shader_parameter("albedo_texture") as Texture2D).get_image().has_mipmaps(), "mipmaps for the smooth sampler")
+	assert_not_null(material.get_shader_parameter("orm_texture"))
+	assert_eq(material.get_shader_parameter("albedo_tint"), Color(0.9, 0.8, 0.7))
+	# and the old importer path is untouched
+	var old: ShaderMaterial = load("res://scripts/tools/psx_post_import.gd").call("make_psx_material", standard)
+	assert_eq(old.shader.resource_path, "res://shaders/psx_lit.gdshader")
+
+
+func test_upgrading_a_placeholder_keeps_its_texture_and_goes_crisp() -> void:
+	var model: Node3D = (load(GRUNT) as PackedScene).instantiate() as Node3D
+	own(model)
+	var before: Texture2D = null
+	for node: Node in model.find_children("*", "MeshInstance3D", true, false):
+		before = ((node as MeshInstance3D).mesh.surface_get_material(0) as ShaderMaterial).get_shader_parameter("albedo_texture")
+		break
+	Ps2Look.upgrade_model(model, GRUNT, _profile())
+	for node: Node in model.find_children("*", "MeshInstance3D", true, false):
+		var mi: MeshInstance3D = node as MeshInstance3D
+		var upgraded: ShaderMaterial = mi.get_surface_override_material(0) as ShaderMaterial
+		assert_eq(upgraded.shader.resource_path, "res://shaders/ps2_lit_crisp.gdshader", "placeholders stay crisp pixels")
+		assert_eq(upgraded.get_shader_parameter("albedo_texture"), before, "same texture")
+		assert_eq((mi.mesh.surface_get_material(0) as ShaderMaterial).shader.resource_path, "res://shaders/psx_lit.gdshader", "the shared mesh material is not edited")
+		break
+
+
+func test_swords_get_a_neon_pick_and_characters_get_the_edge_light() -> void:
+	var sword: Node3D = (load(SWORD) as PackedScene).instantiate() as Node3D
+	own(sword)
+	Ps2Look.upgrade_model(sword, SWORD, _profile())
+	var found: bool = false
+	for node: Node in sword.find_children("*", "MeshInstance3D", true, false):
+		var material: ShaderMaterial = (node as MeshInstance3D).get_surface_override_material(0) as ShaderMaterial
+		assert_gt(float(material.get_shader_parameter("emissive_pick")), 0.3, "the blade's glow lines can bloom")
+		found = true
+	assert_true(found)
+	LookProfiles.apply(PS2)
+	var wolf: Node3D = (load(WOLF) as PackedScene).instantiate() as Node3D
+	own(wolf)
+	LookProfiles.dress_model(wolf, WOLF, "enemy")
+	for node: Node in wolf.find_children("*", "MeshInstance3D", true, false):
+		var material: ShaderMaterial = (node as MeshInstance3D).get_surface_override_material(0) as ShaderMaterial
+		assert_not_null(material, "dressed")
+		assert_almost_eq(float(material.get_shader_parameter("rim_strength")), 0.5, 0.001, "the cool enemy edge light from the profile")
+		assert_eq(material.shader.resource_path, "res://shaders/ps2_lit.gdshader", "dressing keeps the PS2 shader")

@@ -1,0 +1,19 @@
+{
+	"bag": {
+		"ration_bar": 2,
+		"smelling_salts": 1,
+		"camp_stove": 1,
+		"canned_coffee": 4
+	},
+	"flags": {
+		"otis_met": true,
+		"defeated_grunt": true
+	},
+	"party": ["red", "otis", "mox"],
+	"credits": 120,
+	"member_state": {
+		"red": {"level": 4, "xp": 200, "hp": 33, "hp_max": 46, "juice": 2, "juice_max": 14},
+		"otis": {"level": 3, "xp": 90, "hp": 61, "hp_max": 66, "juice": 5, "juice_max": 10},
+		"mox": {"level": 3, "xp": 85, "hp": 30, "hp_max": 34, "juice": 14, "juice_max": 16}
+	}
+}

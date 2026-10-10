@@ -1,0 +1,16 @@
+{
+ "_about": "The Forge's stock (market_forge), swords and gear. PLACEHOLDER stock copied from Scrap & Dent so the counter works; the Combat Designer replaces it with Ross's six swords (VS-44, Level 2).",
+ "id": "market_forge",
+ "name": "Otis's Forge",
+ "kind": "gear",
+ "greeting": "Friend! Everything here has been hit with a hammer. Some of it twice. Sorry, anvil.",
+ "stock": [
+  "rebar_blade",
+  "rivet_hammer",
+  "pipe_wrench",
+  "padded_work_vest",
+  "hi_vis_vest",
+  "oven_mitts",
+  "sore_loser_patch"
+ ]
+}

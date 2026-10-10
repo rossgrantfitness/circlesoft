@@ -1,0 +1,8 @@
+{
+  "_about": "Conversations for the save lamp (M3-9). lamp_check_thumbs is the last beat of the lamp check: Red gives the sky a thumbs-up (a gesture pop-up, never a text box). The lamp's own hook conversation 'lamp_check' is an empty list that the lamp registers with the room's runner at run time (the interact button needs a conversation to start); it is not stored here because the data tests require every stored conversation to have lines.",
+  "conversations": {
+    "lamp_check_thumbs": [
+      {"speaker": "red", "gesture": "thumbs_up"}
+    ]
+  }
+}

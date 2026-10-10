@@ -1,0 +1,321 @@
+{
+  "_about": "Party and enemy skills. timeline_ms: windup (the tell), impact (first effect), end. presses: type tap / hold_release / string cues (cue_ms from action start; hold_release also needs hold_by_ms, the latest the button may go down). Each press is an attack press (party skills) or a block press (enemy skills). effects run at at_ms; an effect with press: N uses that press's rating (on_rating, else formulas.rating_power for attacks, or timing_windows.block_reduction for blocks). contact: melee / ranged (only melee hits can be Paybacked). Targets: one_enemy, all_enemies, one_ally, all_allies, self (what the player picks); effect targets: primary, random_other_enemy, all_enemies, all_allies, self.",
+  "skills": [
+    {
+      "id": "red_attack", "name": "Slash", "user": "red", "kind": "attack", "learn_level": 1, "juice_cost": 0,
+      "target": "one_enemy", "contact": "melee", "anim": "red_slash", "show_name": false,
+      "timeline_ms": {"windup": 250, "impact": 450, "end": 800},
+      "presses": [{"type": "tap", "cue_ms": 450, "window": "standard"}],
+      "effects": [{"at_ms": 450, "kind": "damage", "stat": "attack", "power": 1.0, "press": 0, "target": "primary"}]
+    },
+    {
+      "id": "otis_attack", "name": "Hammer", "user": "otis", "kind": "attack", "learn_level": 1, "juice_cost": 0,
+      "target": "one_enemy", "contact": "melee", "anim": "otis_hammer", "show_name": false,
+      "timeline_ms": {"windup": 350, "impact": 550, "end": 950},
+      "presses": [{"type": "tap", "cue_ms": 550, "window": "standard"}],
+      "effects": [{"at_ms": 550, "kind": "damage", "stat": "attack", "power": 1.0, "press": 0, "target": "primary"}]
+    },
+    {
+      "id": "mox_attack", "name": "Wrench Bonk", "user": "mox", "kind": "attack", "learn_level": 1, "juice_cost": 0,
+      "target": "one_enemy", "contact": "melee", "anim": "mox_bonk", "show_name": false,
+      "timeline_ms": {"windup": 300, "impact": 500, "end": 900},
+      "presses": [{"type": "tap", "cue_ms": 500, "window": "standard"}],
+      "effects": [{"at_ms": 500, "kind": "damage", "stat": "attack", "power": 1.0, "press": 0, "target": "primary"}]
+    },
+
+    {
+      "id": "porch_light", "name": "Porch Light", "user": "red", "kind": "skill", "learn_level": 1, "juice_cost": 8,
+      "target": "one_enemy", "contact": "melee", "anim": "porch_light", "show_name": true,
+      "desc": "Tap as the lamp flares to blind them (Wobbly), then hold and let go at the top of the spin for a big slash.",
+      "timeline_ms": {"windup": 250, "impact": 550, "end": 2100},
+      "presses": [
+        {"type": "tap", "cue_ms": 550, "window": "standard"},
+        {"type": "hold_release", "hold_by_ms": 1000, "cue_ms": 1450, "window": "standard"}
+      ],
+      "effects": [
+        {"at_ms": 550, "kind": "damage", "stat": "heart", "power": 0.5, "press": 0, "target": "primary",
+         "on_rating": {
+           "miss": {"power_mult": 1.0},
+           "nice": {"power_mult": 1.1, "statuses": [{"id": "wobbly", "chance": 0.6}]},
+           "rad": {"power_mult": 1.25, "statuses": [{"id": "wobbly", "chance": 0.85}]},
+           "totally_rad": {"power_mult": 1.4, "statuses": [{"id": "wobbly", "chance": 1.0}]}}},
+        {"at_ms": 1500, "kind": "damage", "stat": "attack", "power": 1.4, "press": 1, "target": "primary",
+         "on_rating": {
+           "miss": {"power_mult": 1.0},
+           "nice": {"power_mult": 1.1},
+           "rad": {"power_mult": 1.25},
+           "totally_rad": {"power_mult": 1.5}}}
+      ]
+    },
+    {
+      "id": "double_swing", "name": "Double Swing", "user": "red", "kind": "skill", "learn_level": 1, "juice_cost": 4,
+      "target": "one_enemy", "contact": "melee", "anim": "double_swing", "show_name": true,
+      "desc": "Two quick swings. One tap per flash.",
+      "timeline_ms": {"windup": 200, "impact": 450, "end": 1200},
+      "presses": [
+        {"type": "string", "cue_ms": 450, "window": "standard"},
+        {"type": "string", "cue_ms": 800, "window": "standard"}
+      ],
+      "effects": [
+        {"at_ms": 450, "kind": "damage", "stat": "attack", "power": 0.7, "press": 0, "target": "primary"},
+        {"at_ms": 800, "kind": "damage", "stat": "attack", "power": 0.7, "press": 1, "target": "primary"}
+      ]
+    },
+    {
+      "id": "sunrise_slash", "name": "Sunrise Slash", "user": "red", "kind": "skill", "learn_level": 4, "juice_cost": 6,
+      "target": "one_enemy", "contact": "melee", "anim": "sunrise_slash", "show_name": true,
+      "desc": "Hold, then let go as the sun clears the blade. One big hit.",
+      "timeline_ms": {"windup": 300, "impact": 1100, "end": 1600},
+      "presses": [{"type": "hold_release", "hold_by_ms": 700, "cue_ms": 1100, "window": "standard"}],
+      "effects": [
+        {"at_ms": 1100, "kind": "damage", "stat": "attack", "power": 2.0, "press": 0, "target": "primary",
+         "on_rating": {"miss": {"power_mult": 1.0}, "nice": {"power_mult": 1.1}, "rad": {"power_mult": 1.25}, "totally_rad": {"power_mult": 1.4}}}
+      ]
+    },
+
+    {
+      "id": "heave_ho", "name": "Heave-Ho", "user": "otis", "kind": "skill", "learn_level": 1, "juice_cost": 8,
+      "target": "one_enemy", "contact": "melee", "anim": "heave_ho", "show_name": true,
+      "desc": "Hold while he lifts, let go at the top to slam it onto a second enemy. A perfect release stuns them.",
+      "part_mult": 2.0,
+      "timeline_ms": {"windup": 400, "impact": 1250, "end": 1700},
+      "presses": [{"type": "hold_release", "hold_by_ms": 700, "cue_ms": 1200, "window": "standard"}],
+      "effects": [
+        {"at_ms": 1250, "kind": "damage", "stat": "attack", "power": 1.2, "press": 0, "target": "primary",
+         "on_rating": {
+           "miss": {"power_mult": 1.0},
+           "nice": {"power_mult": 1.1},
+           "rad": {"power_mult": 1.25},
+           "totally_rad": {"power_mult": 1.45, "statuses": [{"id": "stunned", "chance": 1.0}]}}},
+        {"at_ms": 1250, "kind": "damage", "stat": "attack", "power": 1.2, "press": 0, "target": "random_other_enemy",
+         "on_rating": {
+           "miss": {"power_mult": 0.4},
+           "nice": {"power_mult": 0.6},
+           "rad": {"power_mult": 0.8},
+           "totally_rad": {"power_mult": 1.0, "statuses": [{"id": "stunned", "chance": 1.0}]}}}
+      ]
+    },
+    {
+      "id": "door_slam", "name": "Door Slam", "user": "otis", "kind": "skill", "learn_level": 1, "juice_cost": 3,
+      "target": "one_enemy", "contact": "melee", "anim": "door_slam", "show_name": true,
+      "desc": "Shield bash with the cargo door. Sorry, friend.",
+      "timeline_ms": {"windup": 350, "impact": 650, "end": 1100},
+      "presses": [{"type": "tap", "cue_ms": 650, "window": "standard"}],
+      "effects": [{"at_ms": 650, "kind": "damage", "stat": "attack", "power": 1.4, "press": 0, "target": "primary"}]
+    },
+    {
+      "id": "cough_drop", "name": "Cough Drop", "user": "otis", "kind": "skill", "learn_level": 4, "juice_cost": 4,
+      "target": "one_ally", "contact": "ranged", "anim": "cough_drop", "show_name": true,
+      "desc": "Tuck a cough drop in a friend's pocket. Heals a little. Tap on the flash for more.",
+      "timeline_ms": {"windup": 300, "impact": 700, "end": 1100},
+      "presses": [{"type": "tap", "cue_ms": 700, "window": "standard"}],
+      "effects": [{"at_ms": 700, "kind": "heal", "stat": "heart", "power": 4.5, "press": 0, "target": "primary"}]
+    },
+
+    {
+      "id": "patent_pending", "name": "Patent Pending", "user": "mox", "kind": "skill", "learn_level": 1, "juice_cost": 10,
+      "target": "one_enemy", "contact": "ranged", "anim": "patent_pending", "show_name": true,
+      "desc": "A gadget wheel spins over Mox's head. Tap to stop it: better timing, better gadget. TOTALLY RAD always lands the amazing one.",
+      "timeline_ms": {"windup": 300, "impact": 1250, "end": 2100},
+      "presses": [{"type": "tap", "cue_ms": 1200, "window": "standard"}],
+      "effects": [
+        {"at_ms": 1250, "kind": "wheel", "press": 0, "tiers": {
+          "miss": [
+            {"id": "fizzle", "name": "Fizzle", "weight": 1, "effects": [{"kind": "damage", "stat": "heart", "power": 0.6, "target": "primary"}]},
+            {"id": "tuesday_bonk", "name": "Tuesday Bonks It", "weight": 1, "effects": [{"kind": "damage", "stat": "heart", "power": 0.8, "target": "primary"}]}
+          ],
+          "nice": [
+            {"id": "zappy_thing", "name": "Zappy Thing", "weight": 1, "effects": [{"kind": "damage", "stat": "heart", "power": 1.4, "target": "primary"}]},
+            {"id": "sticky_foam", "name": "Sticky Foam", "weight": 1, "effects": [{"kind": "damage", "stat": "heart", "power": 0.8, "target": "primary", "statuses": [{"id": "wobbly", "chance": 0.8}]}]}
+          ],
+          "rad": [
+            {"id": "heat_lamp_cannon", "name": "Heat Lamp Cannon", "weight": 1, "effects": [{"kind": "damage", "stat": "heart", "power": 0.8, "target": "all_enemies"}]},
+            {"id": "mega_magnet", "name": "Mega Magnet", "weight": 1, "effects": [{"kind": "damage", "stat": "heart", "power": 1.8, "target": "primary"}]},
+            {"id": "soup_dispenser", "name": "Warm Soup Dispenser", "weight": 1, "effects": [{"kind": "heal", "stat": "heart", "power": 2.5, "target": "all_allies"}]}
+          ],
+          "totally_rad": [
+            {"id": "mox_o_matic", "name": "The Mox-O-Matic 9000", "weight": 1, "effects": [
+              {"kind": "damage", "stat": "heart", "power": 1.6, "target": "all_enemies"},
+              {"kind": "heal", "stat": "heart", "power": 1.5, "target": "all_allies"}]}
+          ]
+        }}
+      ]
+    },
+    {
+      "id": "pocket_sparkler", "name": "Pocket Sparkler", "user": "mox", "kind": "skill", "learn_level": 1, "juice_cost": 5,
+      "target": "all_enemies", "contact": "ranged", "anim": "pocket_sparkler", "show_name": true,
+      "desc": "Hold until the light goes green, then let go. A small explosion on everybody.",
+      "timeline_ms": {"windup": 300, "impact": 1100, "end": 1600},
+      "presses": [{"type": "hold_release", "hold_by_ms": 650, "cue_ms": 1050, "window": "standard"}],
+      "effects": [
+        {"at_ms": 1100, "kind": "damage", "stat": "heart", "power": 0.7, "press": 0, "target": "primary",
+         "on_rating": {"miss": {"power_mult": 1.0}, "nice": {"power_mult": 1.1}, "rad": {"power_mult": 1.25}, "totally_rad": {"power_mult": 1.4}}}
+      ]
+    },
+    {
+      "id": "duct_tape", "name": "Duct Tape", "user": "mox", "kind": "skill", "learn_level": 4, "juice_cost": 4,
+      "target": "one_ally", "contact": "ranged", "anim": "duct_tape", "show_name": true,
+      "desc": "A quick patch-up. MOX WUZ HERE.",
+      "timeline_ms": {"windup": 300, "impact": 700, "end": 1100},
+      "presses": [{"type": "tap", "cue_ms": 700, "window": "standard"}],
+      "effects": [{"at_ms": 700, "kind": "heal", "stat": "heart", "power": 3.2, "press": 0, "target": "primary"}]
+    },
+
+    {
+      "id": "grunt_bonk", "name": "Clipboard Slam", "user": "signals_grunt", "kind": "enemy", "juice_cost": 0,
+      "target": "one_enemy", "contact": "melee", "anim": "grunt_clipboard_raise", "show_name": false,
+      "tell": "Raises the clipboard overhead, then brings it down.",
+      "timeline_ms": {"windup": 650, "impact": 900, "end": 1300},
+      "presses": [{"type": "tap", "cue_ms": 900, "window": "block"}],
+      "effects": [{"at_ms": 900, "kind": "damage", "stat": "attack", "power": 1.0, "press": 0, "target": "primary"}]
+    },
+    {
+      "id": "grunt_write_ticket", "name": "Noise Ticket", "user": "signals_grunt", "kind": "enemy", "juice_cost": 0,
+      "target": "one_enemy", "contact": "ranged", "anim": "grunt_write_ticket", "show_name": true,
+      "tell": "Licks the pencil, scribbles, tears off the slip.",
+      "timeline_ms": {"windup": 700, "impact": 1000, "end": 1500},
+      "presses": [{"type": "tap", "cue_ms": 1000, "window": "block"}],
+      "effects": [{"at_ms": 1000, "kind": "damage", "stat": "attack", "power": 0.4, "press": 0, "target": "primary", "statuses": [{"id": "noise_ticket", "chance": 0.7}]}]
+    },
+    {
+      "id": "whistle_smack", "name": "Whistle Smack", "user": "whistle_blower", "kind": "enemy", "juice_cost": 0,
+      "target": "one_enemy", "contact": "melee", "anim": "whistle_smack", "show_name": false,
+      "tell": "Spins the lanyard, whistle swinging out wide.",
+      "timeline_ms": {"windup": 700, "impact": 950, "end": 1400},
+      "presses": [{"type": "tap", "cue_ms": 950, "window": "block"}],
+      "effects": [{"at_ms": 950, "kind": "damage", "stat": "attack", "power": 1.2, "press": 0, "target": "primary"}]
+    },
+    {
+      "id": "whistle_blast", "name": "Ear-Splitting Whistle", "user": "whistle_blower", "kind": "enemy", "juice_cost": 0,
+      "target": "one_enemy", "contact": "ranged", "anim": "whistle_blast", "show_name": true,
+      "tell": "Takes a huge breath, cheeks puffed, whistle raised.",
+      "timeline_ms": {"windup": 800, "impact": 1100, "end": 1600},
+      "presses": [{"type": "tap", "cue_ms": 1100, "window": "block"}],
+      "effects": [{"at_ms": 1100, "kind": "damage", "stat": "attack", "power": 0.4, "press": 0, "target": "primary", "statuses": [{"id": "wobbly", "chance": 0.7}]}]
+    },
+    {
+      "id": "drone_zap", "name": "Static Zap", "user": "signals_drone", "kind": "enemy", "juice_cost": 0,
+      "target": "one_enemy", "contact": "ranged", "anim": "drone_zap", "show_name": false,
+      "tell": "Antenna crackles blue, then points.",
+      "timeline_ms": {"windup": 500, "impact": 800, "end": 1200},
+      "presses": [{"type": "tap", "cue_ms": 800, "window": "block"}],
+      "effects": [{"at_ms": 800, "kind": "damage", "stat": "attack", "power": 0.9, "press": 0, "target": "primary", "statuses": [{"id": "burnt_toast", "chance": 0.3}]}]
+    },
+    {
+      "id": "drone_twin_zap", "name": "Twin Zap", "user": "signals_drone", "kind": "enemy", "juice_cost": 0,
+      "target": "one_enemy", "contact": "ranged", "anim": "drone_twin_zap", "show_name": true,
+      "tell": "Two antennas flash, one after the other.",
+      "timeline_ms": {"windup": 500, "impact": 800, "end": 1500},
+      "presses": [
+        {"type": "string", "cue_ms": 800, "window": "block"},
+        {"type": "string", "cue_ms": 1100, "window": "block"}
+      ],
+      "effects": [
+        {"at_ms": 800, "kind": "damage", "stat": "attack", "power": 0.55, "press": 0, "target": "primary"},
+        {"at_ms": 1100, "kind": "damage", "stat": "attack", "power": 0.55, "press": 1, "target": "primary"}
+      ]
+    },
+    {
+      "id": "drone_dive", "name": "Dive Bomb", "user": "signals_drone", "kind": "enemy", "juice_cost": 0,
+      "target": "one_enemy", "contact": "melee", "anim": "drone_dive", "show_name": true,
+      "tell": "Climbs high, wobbles, then drops.",
+      "timeline_ms": {"windup": 800, "impact": 1100, "end": 1600},
+      "presses": [{"type": "tap", "cue_ms": 1100, "window": "block"}],
+      "effects": [{"at_ms": 1100, "kind": "damage", "stat": "attack", "power": 1.4, "press": 0, "target": "primary"}]
+    },
+    {
+      "id": "buzz_sting", "name": "Buzz Sting", "user": "buzzkill_drone", "kind": "enemy", "juice_cost": 0,
+      "target": "one_enemy", "contact": "ranged", "anim": "buzz_sting", "show_name": false,
+      "tell": "Whines up in pitch, tail light blinks red.",
+      "timeline_ms": {"windup": 450, "impact": 700, "end": 1100},
+      "presses": [{"type": "tap", "cue_ms": 700, "window": "block"}],
+      "effects": [{"at_ms": 700, "kind": "damage", "stat": "attack", "power": 1.0, "press": 0, "target": "primary", "statuses": [{"id": "burnt_toast", "chance": 0.4}]}]
+    },
+    {
+      "id": "buzz_pile_on", "name": "Pile-On Buzz", "user": "buzzkill_drone", "kind": "enemy", "juice_cost": 0,
+      "target": "one_enemy", "contact": "ranged", "anim": "buzz_pile_on", "show_name": true,
+      "tell": "Spins in a circle, three lights blinking in turn.",
+      "timeline_ms": {"windup": 450, "impact": 700, "end": 1600},
+      "presses": [
+        {"type": "string", "cue_ms": 700, "window": "block"},
+        {"type": "string", "cue_ms": 950, "window": "block"},
+        {"type": "string", "cue_ms": 1200, "window": "block"}
+      ],
+      "effects": [
+        {"at_ms": 700, "kind": "damage", "stat": "attack", "power": 0.5, "press": 0, "target": "primary"},
+        {"at_ms": 950, "kind": "damage", "stat": "attack", "power": 0.5, "press": 1, "target": "primary"},
+        {"at_ms": 1200, "kind": "damage", "stat": "attack", "power": 0.5, "press": 2, "target": "primary"}
+      ]
+    },
+
+    {
+      "id": "kasp_leg_stomp", "name": "Hydraulic Knee", "user": "kasp_hushmaster", "kind": "enemy", "juice_cost": 0,
+      "target": "one_enemy", "contact": "melee", "anim": "kasp_leg_stomp", "show_name": true,
+      "tell": "A leg folds up with a hiss, then slams down.",
+      "timeline_ms": {"windup": 650, "impact": 1000, "end": 1500},
+      "presses": [{"type": "tap", "cue_ms": 1000, "window": "block"}],
+      "effects": [{"at_ms": 1000, "kind": "damage", "stat": "attack", "power": 1.0, "press": 0, "target": "primary"}]
+    },
+    {
+      "id": "kasp_leg_sweep", "name": "Leg Sweep", "user": "kasp_hushmaster", "kind": "enemy", "juice_cost": 0,
+      "target": "one_enemy", "contact": "melee", "anim": "kasp_leg_sweep", "show_name": true,
+      "tell": "Two legs swing out low, one after the other.",
+      "timeline_ms": {"windup": 600, "impact": 900, "end": 1700},
+      "presses": [{"type": "string", "cue_ms": 900, "window": "block"}, {"type": "string", "cue_ms": 1250, "window": "block"}],
+      "effects": [
+        {"at_ms": 900, "kind": "damage", "stat": "attack", "power": 0.65, "press": 0, "target": "primary"},
+        {"at_ms": 1250, "kind": "damage", "stat": "attack", "power": 0.65, "press": 1, "target": "primary"}
+      ]
+    },
+    {
+      "id": "kasp_quiet_hours", "name": "Quiet Hours", "user": "kasp_hushmaster", "kind": "enemy", "juice_cost": 0,
+      "target": "all_enemies", "contact": "ranged", "anim": "kasp_quiet_hours", "show_name": true, "cooldown_turns": 3,
+      "tell": "The dish whines up. Every flash in the room goes out of rhythm.",
+      "timeline_ms": {"windup": 1200, "impact": 1700, "end": 2400},
+      "presses": [],
+      "effects": [{"at_ms": 1700, "kind": "jam", "target": "all_allies"}]
+    },
+    {
+      "id": "kasp_dish_blast", "name": "Noise Violation", "user": "kasp_hushmaster", "kind": "enemy", "juice_cost": 0,
+      "target": "one_enemy", "contact": "ranged", "anim": "kasp_dish_blast", "show_name": true, "cooldown_turns": 4,
+      "scramble_immune": true, "telegraph": {"bangs": 2, "warning_sfx": "battle_hit_big", "push_in": true},
+      "tell": "The dish swings round and locks on. Everything goes quiet. This one is big.",
+      "timeline_ms": {"windup": 1700, "impact": 2300, "end": 2900},
+      "presses": [{"type": "tap", "cue_ms": 2300, "window": "block"}],
+      "effects": [{"at_ms": 2300, "kind": "damage", "stat": "attack", "power": 2.2, "press": 0, "target": "primary"}]
+    },
+    {
+      "id": "kasp_clipboard_smack", "name": "Clipboard Smack", "user": "kasp_hushmaster", "kind": "enemy", "juice_cost": 0,
+      "target": "one_enemy", "contact": "melee", "anim": "kasp_clipboard_smack", "show_name": true,
+      "tell": "Raises the clipboard like a gavel, then brings it down.",
+      "timeline_ms": {"windup": 600, "impact": 950, "end": 1400},
+      "presses": [{"type": "tap", "cue_ms": 950, "window": "block"}],
+      "effects": [{"at_ms": 950, "kind": "damage", "stat": "attack", "power": 1.15, "press": 0, "target": "primary"}]
+    },
+    {
+      "id": "kasp_whistle", "name": "Noise Violation (Whistle)", "user": "kasp_hushmaster", "kind": "enemy", "juice_cost": 0,
+      "target": "one_enemy", "contact": "ranged", "anim": "kasp_whistle", "show_name": true, "cooldown_turns": 2,
+      "tell": "Fills his chest and blows the whistle. Someone, somewhere, is in violation.",
+      "timeline_ms": {"windup": 800, "impact": 1100, "end": 1600},
+      "presses": [{"type": "tap", "cue_ms": 1100, "window": "block"}],
+      "effects": [{"at_ms": 1100, "kind": "damage", "stat": "attack", "power": 0.5, "press": 0, "target": "primary", "statuses": [{"id": "noise_ticket", "chance": 0.7}]}]
+    },
+    {
+      "id": "kasp_final_notice", "name": "Final Notice", "user": "kasp_hushmaster", "kind": "enemy", "juice_cost": 0,
+      "target": "one_enemy", "contact": "melee", "anim": "kasp_final_notice", "show_name": true, "cooldown_turns": 4,
+      "scramble_immune": true, "telegraph": {"bangs": 2, "warning_sfx": "battle_hit_big", "push_in": true},
+      "tell": "Tears three pink slips off the pad. Stamps each one. Slowly.",
+      "timeline_ms": {"windup": 1500, "impact": 2000, "end": 3000},
+      "presses": [
+        {"type": "string", "cue_ms": 2000, "window": "block"},
+        {"type": "string", "cue_ms": 2300, "window": "block"},
+        {"type": "string", "cue_ms": 2600, "window": "block"}
+      ],
+      "effects": [
+        {"at_ms": 2000, "kind": "damage", "stat": "attack", "power": 0.95, "press": 0, "target": "primary"},
+        {"at_ms": 2300, "kind": "damage", "stat": "attack", "power": 0.95, "press": 1, "target": "primary"},
+        {"at_ms": 2600, "kind": "damage", "stat": "attack", "power": 0.95, "press": 2, "target": "primary"}
+      ]
+    }
+  ]
+}

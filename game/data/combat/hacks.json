@@ -1,0 +1,115 @@
+{
+  "_about": "Red's four hacks (docs/slice/slice_tech_plan.md 4.1, docs/slice/hacks_design.md). The battery, what each hack costs, who it aims at and what it does. Times are ms of Red's combat clock, distances are metres. Every number is a starting guess that Ross tunes by playing; the 'hacks' group in feel.json scales the ones he is most likely to want to change. Cast timing (startup, recovery, cancels) lives in moves.json under the red set: hack_zap, hack_emp, hack_overclock, hack_reboot.",
+  "version": 1,
+  "battery": {
+    "capacity": 100,
+    "start": 50,
+    "gain": {"hit": 7, "blocked": 3, "armored": 4, "guard_broken": 10, "finisher_bonus": 6, "air_bonus": 2},
+    "gain_cap_per_s": 30,
+    "hack_hits_refill": false,
+    "spend_at": "cast_start",
+    "global_cooldown_ms": 250,
+    "_note": "Sword hits fill it (a Light string of three plus its finisher is about 27, so roughly one Zap Drone per string). 'blocked' = an enemy blocked the hit, 'armored' = it hit through armour, 'guard_broken' = it broke a guard. Hack hits never refill it (no free loop). start is the battery on a new game; doors carry the battery along."
+  },
+  "selection": {
+    "mode": "pick",
+    "order": ["zap_drone", "emp", "overclock", "reboot"],
+    "start_selected": "zap_drone",
+    "wrap": true,
+    "_note": "mode 'pick' is option A (pick, then fire: d-pad left/right, keys 1 to 4 or the wheel changes it, the hack button fires it). mode 'auto' is option C (the hack button picks, rules below). The feel knob hack_pick_mode overrides this. Both read the same hacks and the same costs."
+  },
+  "auto": {
+    "reboot_hold_ms": 450,
+    "if_nothing_affordable": "fizz",
+    "show_last_used": true,
+    "rules": [
+      {"id": "reboot_hold", "hack": "reboot", "when": {"held_ms_min": 450}, "if_short": "fizz",
+       "note": "Hold the hack button to reboot. Tapping never reboots, so the whole battery is never lost by accident. Not enough battery = a fizz and nothing is spent."},
+      {"id": "swarmed", "hack": "emp", "when": {"enemies_within_m": 3.5, "count_min": 4}, "if_short": "next",
+       "note": "Four or more close around Red: EMP wins even if a turret is in front. Getting out of the pile comes first."},
+      {"id": "locked_machine", "hack": "overclock", "when": {"lock_has_tag_any": ["turret", "robot", "drone"], "lock_hijackable": true}, "if_short": "next",
+       "note": "If she hard-locked something she can hijack, she meant it. Drones count here (she picked that drone on purpose); they do not count in the next rule."},
+      {"id": "machine_ahead", "hack": "overclock", "when": {"hijackable_in_cone": {"range_m": 10.0, "cone_deg": 60, "tags_any": ["turret", "robot"]}}, "if_short": "next",
+       "note": "A turret or robot is in front of her and nobody has locked on to something else: take it. Loose drones are zapped, not taken, unless locked."},
+      {"id": "crowd", "hack": "emp", "when": {"enemies_within_m": 4.5, "count_min": 3}, "if_short": "next",
+       "note": "Three enemies close: EMP."},
+      {"id": "default", "hack": "zap_drone", "when": {}, "if_short": "fizz",
+       "note": "Everything else: Zap Drone at the lock or the soft target, straight ahead if there is none."}
+    ],
+    "_note": "Option C. Rules are read top to bottom; the first one whose 'when' is all true AND that Red can afford is the hack. 'if_short' says what a rule does when it matches but the battery is short: 'next' tries the next rule, 'fizz' fires nothing and spends nothing (the HUD shows the battery bar shake). 'when' keys: held_ms_min, enemies_within_m + count_min, lock_has_tag_any + lock_hijackable, hijackable_in_cone. A hijackable already held by Overclock never matches. Enemy 'tags' (drone, turret, robot, relay) come from enemies.json."
+  },
+  "hacks": {
+    "zap_drone": {
+      "name": "Zap Drone",
+      "icon": "hack_zap",
+      "role": "ranged damage",
+      "cost": 20,
+      "cooldown_ms": 500,
+      "cast_move": "hack_zap",
+      "air_ok": true,
+      "target": {"kind": "enemy", "use_lock": true, "soft_range_m": 14, "soft_cone_deg": 50, "no_target": "fire_forward"},
+      "effect": {
+        "type": "projectile",
+        "speed_mps": 20,
+        "max_m": 18,
+        "hits": 3,
+        "rehit_ms": 250,
+        "hit": {"damage": 12, "hitstun_ms": 300, "knockback_m": 0.4, "launch_mps": 0.0, "knockdown": false, "hit_stop_ms": 30, "poise_damage": 12, "style_points": 8, "spark": "slash", "shake": "light", "sfx": "hack_zap_hit",
+                "tag_mult": {"drone": 2.0, "turret": 1.5, "robot": 1.5, "relay": 3.0}}
+      },
+      "note": "A little drone Red throws that flies in a straight line and zips through up to three enemies. Cheap, quick to cast and safe at range; weak up close where a sword hit is free. Stuns nothing on its own. Hits any HackTarget in its path that accepts 'zap' (switches, relays). Cast in the air for a juggle filler."
+    },
+    "emp": {
+      "name": "EMP",
+      "icon": "hack_emp",
+      "role": "crowd control",
+      "cost": 40,
+      "cooldown_ms": 1200,
+      "cast_move": "hack_emp",
+      "air_ok": true,
+      "target": {"kind": "self"},
+      "effect": {
+        "type": "pulse",
+        "radius_m": 4.5,
+        "affects_team": "enemy",
+        "hit": {"damage": 4, "hitstun_ms": 420, "knockback_m": 3.0, "launch_mps": 0.0, "knockdown": false, "guard_break": true, "hit_stop_ms": 150, "poise_damage": 28, "style_points": 12, "spark": "heavy", "shake": "heavy", "sfx": "hack_emp_hit"},
+        "stun_ms": {"drone": 3000, "turret": 4000, "robot": 2500},
+        "bosses_ignore_stun": true
+      },
+      "note": "A ring of static around Red. Pushes everything about 3 m away, breaks guards, and knocks drones, turrets and robots out for 2.5 to 4 seconds (swords at will). Barely hurts; it is a panic button and an opener, not a damage move. Bosses are pushed but never stunned. Hits any HackTarget in the ring that accepts 'emp'. A hijacked ally is left alone."
+    },
+    "overclock": {
+      "name": "Overclock",
+      "icon": "hack_overclock",
+      "role": "hijack",
+      "cost": 50,
+      "cooldown_ms": 1500,
+      "cast_move": "hack_overclock",
+      "air_ok": false,
+      "target": {"kind": "hijackable", "use_lock": true, "soft_range_m": 12, "soft_cone_deg": 60, "no_target": "refuse"},
+      "effect": {
+        "type": "hijack",
+        "duration_s": 10.0,
+        "max_active": 1,
+        "recast": "refuse",
+        "end_stun_ms": 800,
+        "ally_damage_scale": 1.0
+      },
+      "note": "Take over one turret, drone or robot for ten seconds: it fights on Red's side, aims at the nearest enemy and its hits hurt enemies and boss parts. When time is up it goes back to its owners, dazed for under a second. Only one at a time; a second cast while one is running is refused. No target in range means no cast and no battery spent (the HUD says 'No signal'). Taking damage doesn't break the link. Bosses can't be taken."
+    },
+    "reboot": {
+      "name": "Reboot",
+      "icon": "hack_reboot",
+      "role": "heal",
+      "cost": "all",
+      "cooldown_ms": 3000,
+      "cast_move": "hack_reboot",
+      "air_ok": false,
+      "requires_full": true,
+      "min_frac_if_not_full": 0.5,
+      "target": {"kind": "self"},
+      "effect": {"type": "heal", "heal_frac": 0.5, "scale_with_charge": true, "iframes_ms": 600},
+      "note": "Red restarts her suit: heals half her health and is untouchable for 0.6 s while it runs. Spends the whole battery, and needs a full one, so the battery is her healing bar and the price of a heal is a full fight's worth of hits. With the feel knob 'Reboot needs a full battery' off it works from half a battery and heals in proportion (scale_with_charge)."
+    }
+  }
+}

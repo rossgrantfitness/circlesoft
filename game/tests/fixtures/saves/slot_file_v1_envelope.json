@@ -1,0 +1,13 @@
+{
+	"file_format": 1,
+	"slot": 2,
+	"saved_at": 1760000000.0,
+	"summary": {"place": "Test Room", "play_time_s": 0.0, "party": [{"id": "red", "level": 4}], "credits": 120, "hero_name": "Red"},
+	"game": {
+		"bag": {"ration_bar": 2},
+		"flags": {"otis_met": true},
+		"party": ["red", "otis", "mox"],
+		"credits": 120,
+		"member_state": {"red": {"level": 4, "xp": 200, "hp": 33, "hp_max": 46, "juice": 2, "juice_max": 14}}
+	}
+}

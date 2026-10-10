@@ -1,0 +1,352 @@
+{
+ "version": 1,
+ "_note": "The robot yard for the giant-robot scale test (CS-21): a big walled lot beside the combat arena, reached through a gate in the arena's east wall. Metres; x east, z south, y up; positions on the floor. Everything here is placeholder blockout (the Technical Artist's props and robots); Ross makes the final art. 'kinds' says what each prop is (model, size for its collider, health, dust when it collapses); 'props' places them by hand; 'city' fills the far end with buildings and cars from a seed (the same every run) so the colossus has something to walk through. Robots stomp whatever they walk into; the loader and Red have to hit things.",
+ "floor": {
+  "x_min": 21.0,
+  "x_max": 721.0,
+  "z_min": -320.0,
+  "z_max": 320.0,
+  "tile": "floor_plate_diamond_cross_a",
+  "tile_m": 6.0
+ },
+ "walls": {
+  "height_m": 100.0,
+  "thickness_m": 4.0,
+  "tile": "rust_panel_strips_riveted",
+  "tile_m": 8.0,
+  "west_x": 24.0
+ },
+ "gate": {
+  "center_z": 0.0,
+  "width_m": 8.0
+ },
+ "small_robot": {
+  "pos": [46.0, 0.0, 0.0],
+  "yaw_deg": 90.0
+ },
+ "huge_robot": {
+  "pos": [190.0, 0.0, 0.0],
+  "yaw_deg": -90.0
+ },
+ "lamps": {
+  "color": "#ff9a3c",
+  "energy": 2.2,
+  "range_m": 16.0,
+  "height_m": 6.2,
+  "arm_m": 1.5,
+  "max_lit": 6
+ },
+ "kinds": {
+  "crate_small": {
+   "model": "prop_crate_small",
+   "aabb_pos": [-0.41, 0.0, -0.41],
+   "aabb_size": [0.82, 0.82, 0.83],
+   "hp": 8,
+   "dust": "step_small"
+  },
+  "crate_large": {
+   "model": "prop_crate_large",
+   "aabb_pos": [-1.02, 0.0, -1.02],
+   "aabb_size": [2.05, 2.05, 2.07],
+   "hp": 18,
+   "dust": "step_small"
+  },
+  "container": {
+   "model": "prop_cargo_container",
+   "aabb_pos": [-1.29, 0.0, -3.05],
+   "aabb_size": [2.58, 2.62, 6.13],
+   "hp": 70,
+   "dust": "land_small"
+  },
+  "car": {
+   "model": "prop_car_block",
+   "aabb_pos": [-1.0, 0.0, -2.25],
+   "aabb_size": [2.0, 1.4, 4.5],
+   "hp": 50,
+   "dust": "land_small"
+  },
+  "lamp_post": {
+   "model": "prop_lamp_post",
+   "aabb_pos": [-0.33, 0.0, -0.33],
+   "aabb_size": [0.66, 6.76, 0.66],
+   "hp": 30,
+   "dust": "land_small"
+  },
+  "building_10m": {
+   "model": "prop_building_10m",
+   "aabb_pos": [-6.3, 0.0, -5.3],
+   "aabb_size": [12.6, 13.6, 10.72],
+   "hp": 150,
+   "dust": "step_huge"
+  },
+  "building_20m": {
+   "model": "prop_building_20m",
+   "aabb_pos": [-8.3, 0.0, -7.3],
+   "aabb_size": [16.6, 23.6, 14.72],
+   "hp": 320,
+   "dust": "step_huge"
+  },
+  "building_30m": {
+   "model": "prop_building_30m",
+   "aabb_pos": [-10.3, 0.0, -8.3],
+   "aabb_size": [20.6, 33.6, 16.72],
+   "hp": 520,
+   "dust": "step_huge"
+  },
+  "scrap_wall_3m": {
+   "model": "prop_scrap_wall_3m",
+   "aabb_pos": [-6.0, 0.0, -0.8],
+   "aabb_size": [12.0, 3.0, 1.6],
+   "hp": 60,
+   "min_hit_damage": 25,
+   "dust": "land_small",
+   "note": "VS-22: a LOADER-ONLY scrap wall. min_hit_damage: hits weaker than this (Red's sword, about 8 to 12) only clink; the loader's swing (x4) and a stomp break it."
+  },
+  "scrap_gate_12m": {
+   "model": "prop_scrap_gate_12m",
+   "aabb_pos": [-8.0, 0.0, -2.0],
+   "aabb_size": [16.0, 12.0, 4.0],
+   "hp": 400,
+   "min_hit_damage": 25,
+   "dust": "step_huge"
+  },
+  "container_stack": {
+   "model": "prop_container_stack",
+   "aabb_pos": [-1.29, 0.0, -3.05],
+   "aabb_size": [2.58, 7.86, 6.13],
+   "hp": 90,
+   "dust": "land_small"
+  }
+ },
+ "props": [
+  {
+   "kind": "crate_small",
+   "pos": [30, 0.0, -5],
+   "yaw_deg": 10
+  },
+  {
+   "kind": "crate_small",
+   "pos": [31.2, 0.0, -5.3],
+   "yaw_deg": -20
+  },
+  {
+   "kind": "crate_small",
+   "pos": [30.4, 0.0, -6.2],
+   "yaw_deg": 40
+  },
+  {
+   "kind": "crate_small",
+   "pos": [35, 0.0, 6.5],
+   "yaw_deg": 0
+  },
+  {
+   "kind": "crate_small",
+   "pos": [36.1, 0.0, 7.3],
+   "yaw_deg": 25
+  },
+  {
+   "kind": "crate_small",
+   "pos": [52, 0.0, 10],
+   "yaw_deg": -10
+  },
+  {
+   "kind": "crate_small",
+   "pos": [53.1, 0.0, 9.4],
+   "yaw_deg": 15
+  },
+  {
+   "kind": "crate_large",
+   "pos": [34, 0.0, -8.5],
+   "yaw_deg": 15
+  },
+  {
+   "kind": "crate_large",
+   "pos": [37, 0.0, -9.6],
+   "yaw_deg": -25
+  },
+  {
+   "kind": "crate_large",
+   "pos": [41, 0.0, 8.6],
+   "yaw_deg": 5
+  },
+  {
+   "kind": "crate_large",
+   "pos": [48, 0.0, -9],
+   "yaw_deg": 0
+  },
+  {
+   "kind": "container",
+   "pos": [58, 0.0, -14],
+   "yaw_deg": 90
+  },
+  {
+   "kind": "container",
+   "pos": [72, 0.0, 14],
+   "yaw_deg": 90
+  },
+  {
+   "kind": "container",
+   "pos": [100, 0.0, -17],
+   "yaw_deg": 90
+  },
+  {
+   "kind": "car",
+   "pos": [62, 0.0, 7],
+   "yaw_deg": 90
+  },
+  {
+   "kind": "car",
+   "pos": [80, 0.0, -8],
+   "yaw_deg": 80
+  },
+  {
+   "kind": "car",
+   "pos": [95, 0.0, 9],
+   "yaw_deg": 100
+  },
+  {
+   "kind": "car",
+   "pos": [88, 0.0, -13],
+   "yaw_deg": 90
+  },
+  {
+   "kind": "car",
+   "pos": [120, 0.0, 6],
+   "yaw_deg": 90
+  },
+  {
+   "kind": "car",
+   "pos": [135, 0.0, -9],
+   "yaw_deg": 95
+  },
+  {
+   "kind": "car",
+   "pos": [148, 0.0, 10],
+   "yaw_deg": 85
+  },
+  {
+   "kind": "lamp_post",
+   "pos": [40, 0.0, -10.5],
+   "yaw_deg": 0
+  },
+  {
+   "kind": "lamp_post",
+   "pos": [50, 0.0, 10.5],
+   "yaw_deg": 180
+  },
+  {
+   "kind": "lamp_post",
+   "pos": [70, 0.0, -10.5],
+   "yaw_deg": 0
+  },
+  {
+   "kind": "lamp_post",
+   "pos": [80, 0.0, 10.5],
+   "yaw_deg": 180
+  },
+  {
+   "kind": "lamp_post",
+   "pos": [100, 0.0, -10.5],
+   "yaw_deg": 0
+  },
+  {
+   "kind": "lamp_post",
+   "pos": [110, 0.0, 10.5],
+   "yaw_deg": 180
+  },
+  {
+   "kind": "lamp_post",
+   "pos": [130, 0.0, -10.5],
+   "yaw_deg": 0
+  },
+  {
+   "kind": "lamp_post",
+   "pos": [140, 0.0, 10.5],
+   "yaw_deg": 180
+  },
+  {
+   "kind": "lamp_post",
+   "pos": [160, 0.0, -10.5],
+   "yaw_deg": 0
+  },
+  {
+   "kind": "lamp_post",
+   "pos": [170, 0.0, 10.5],
+   "yaw_deg": 180
+  },
+  {
+   "kind": "lamp_post",
+   "pos": [215, 0.0, -10.5],
+   "yaw_deg": 0
+  },
+  {
+   "kind": "lamp_post",
+   "pos": [225, 0.0, 10.5],
+   "yaw_deg": 180
+  },
+  {
+   "kind": "lamp_post",
+   "pos": [245, 0.0, -10.5],
+   "yaw_deg": 0
+  },
+  {
+   "kind": "lamp_post",
+   "pos": [255, 0.0, 10.5],
+   "yaw_deg": 180
+  },
+  {
+   "kind": "building_10m",
+   "pos": [115, 0.0, -48],
+   "yaw_deg": 0
+  },
+  {
+   "kind": "building_20m",
+   "pos": [150, 0.0, -53],
+   "yaw_deg": 0
+  },
+  {
+   "kind": "building_30m",
+   "pos": [205, 0.0, -60],
+   "yaw_deg": 0
+  },
+  {
+   "kind": "building_20m",
+   "pos": [250, 0.0, -52],
+   "yaw_deg": 0
+  },
+  {
+   "kind": "building_10m",
+   "pos": [120, 0.0, 46],
+   "yaw_deg": 180
+  },
+  {
+   "kind": "building_30m",
+   "pos": [162, 0.0, 54],
+   "yaw_deg": 180
+  },
+  {
+   "kind": "building_20m",
+   "pos": [218, 0.0, 58],
+   "yaw_deg": 180
+  },
+  {
+   "kind": "building_10m",
+   "pos": [258, 0.0, 48],
+   "yaw_deg": 180
+  }
+ ],
+ "city": {
+  "seed": 11,
+  "x_range": [285.0, 700.0],
+  "z_range": [-285.0, 285.0],
+  "step": [60.0, 66.0],
+  "jitter": 12.0,
+  "skip_chance": 0.1,
+  "kinds": ["building_10m", "building_20m", "building_30m", "building_20m", "building_10m"],
+  "keep_out": [
+   [270.0, -34.0, 720.0, 34.0]
+  ],
+  "cars": 26,
+  "crates": 18
+ }
+}

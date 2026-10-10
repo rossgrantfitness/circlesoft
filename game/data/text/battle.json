@@ -1,0 +1,78 @@
+{
+  "_about": "Strings for the battle HUD. {braces} are filled in by the code. Battle command names: 12 characters max; pop-up lines: 32 characters max (docs/style_guide.md). {A} becomes the confirm button name from 'buttons'.",
+  "commands": {
+    "attack": {"label": "Attack", "hint": "A basic hit. Press on the flash."},
+    "skills": {"label": "Skills", "hint": "Special moves. They cost Juice."},
+    "items": {"label": "Items", "hint": "Heal, cure, revive or throw."},
+    "defend": {"label": "Defend", "hint": "Take less damage. Get some Juice."},
+    "run": {"label": "Run", "hint": "Try to get away."}
+  },
+  "reasons": {
+    "no_juice": "Not enough Juice.",
+    "noise_ticket": "Noise Ticket! No skills.",
+    "no_skills": "No skills yet.",
+    "no_items": "The bag is empty.",
+    "out_of_stock": "None left.",
+    "cant_run": "Can't run from this one!",
+    "cant_attack": "Can't attack right now.",
+    "unusable": "Can't use that now.",
+    "no_target": "No one to use that on."
+  },
+  "juice_cost": "{cost} Juice",
+  "item_count": "x{count}",
+  "targets": {
+    "all_enemies": "All enemies",
+    "all_allies": "The whole crew",
+    "pick": "Pick a target"
+  },
+  "labels": {"hp": "HP", "juice": "Juice", "next": "Next"},
+  "down_label": "Down for the Count",
+  "ratings": {
+    "nice": "Nice!",
+    "rad": "Rad!",
+    "totally_rad": "TOTALLY RAD!",
+    "blocked": "Blocked!",
+    "perfect_block": "Perfect Block!",
+    "payback": "Payback!"
+  },
+  "ko": "K.O.!",
+  "buttons": {"A": "A"},
+  "victory": {
+    "title": "Victory!",
+    "xp": "XP",
+    "credits": "Credits",
+    "drops": "Found",
+    "no_drops": "No drops",
+    "level_up": "{name} is now Lv {to}!",
+    "level_line": "Lv {from} to {to}",
+    "learned": "Learned {skill}!",
+    "prompt": "Press {A}"
+  },
+  "game_over": {
+    "title": "Game Over",
+    "sub": "Down, not out. Light the lamp. Go again.",
+    "retry": "Retry",
+    "title_screen": "Back to title"
+  },
+  "messages": {
+    "ran": "Got away safely!"
+  },
+  "stats": {
+    "hp": "HP",
+    "juice": "Juice",
+    "attack": "Atk",
+    "defense": "Def",
+    "heart": "Heart",
+    "speed": "Spd",
+    "luck": "Luck"
+  },
+  "statuses": {
+    "burnt_toast": "Burnt Toast",
+    "noise_ticket": "Noise Ticket",
+    "wobbly": "Wobbly",
+    "tangled": "Tangled",
+    "butterfingers": "Butterfingers",
+    "fired_up": "Fired Up",
+    "stunned": "Stunned"
+  }
+}

@@ -1,0 +1,521 @@
+{
+ "_about": "Retarget of the free Quaternius Universal Animation Library (CC0) onto the Cyberwolf Sentinel. Read by scripts/tools/retarget_ual.py (same tool as Red).",
+ "target": "art/final/enemies/cyberwolf_sentinel_rigged.glb",
+ "output": "art/final/enemies/cyberwolf_sentinel_rigged_ual.glb",
+ "clip_keys": "data/combat/wolf_clip_keys.json",
+ "clip_keys_about": "Key poses of the Cyberwolf Sentinel's clips: where the strike lands (contact_s) and the poses the move data snaps to (30 fps, retarget_ual.py). Use these seconds as clip_s in moves.json anim.keys.",
+ "sources": {
+  "UAL1": "art/placeholder/animations/quaternius_ual/UAL1_Standard.glb",
+  "UAL2": "art/placeholder/animations/quaternius_ual/UAL2_Standard.glb"
+ },
+ "fps": 30,
+ "hips": {
+  "target": "hips",
+  "source": "pelvis",
+  "scale": 0.512
+ },
+ "ground": {
+  "scale": 0.512,
+  "target_points": [
+   {
+    "bone": "foot_l",
+    "offset": [
+     0,
+     -0.063,
+     -0.084
+    ]
+   },
+   {
+    "bone": "foot_l",
+    "offset": [
+     0,
+     -0.063,
+     0.18
+    ]
+   },
+   {
+    "bone": "foot_r",
+    "offset": [
+     0,
+     -0.063,
+     -0.084
+    ]
+   },
+   {
+    "bone": "foot_r",
+    "offset": [
+     0,
+     -0.063,
+     0.18
+    ]
+   },
+   {
+    "bone": "hips",
+    "offset": [
+     0,
+     0,
+     0
+    ],
+    "lift": 0.08
+   },
+   {
+    "bone": "chest",
+    "offset": [
+     0,
+     0.03,
+     0
+    ],
+    "lift": 0.1
+   },
+   {
+    "bone": "head",
+    "offset": [
+     0,
+     0.1,
+     0
+    ],
+    "lift": 0.12
+   },
+   {
+    "bone": "hand_l",
+    "offset": [
+     0,
+     -0.04,
+     0
+    ],
+    "lift": 0.05
+   },
+   {
+    "bone": "hand_r",
+    "offset": [
+     0,
+     -0.04,
+     0
+    ],
+    "lift": 0.05
+   }
+  ],
+  "source_points": [
+   {
+    "bone": "foot_l",
+    "offset": [
+     0,
+     -0.104,
+     -0.045
+    ]
+   },
+   {
+    "bone": "ball_l",
+    "offset": [
+     0,
+     -0.015,
+     0.0
+    ]
+   },
+   {
+    "bone": "ball_l",
+    "offset": [
+     0,
+     -0.015,
+     0.079
+    ]
+   },
+   {
+    "bone": "foot_r",
+    "offset": [
+     0,
+     -0.104,
+     -0.045
+    ]
+   },
+   {
+    "bone": "ball_r",
+    "offset": [
+     0,
+     -0.015,
+     0.0
+    ]
+   },
+   {
+    "bone": "ball_r",
+    "offset": [
+     0,
+     -0.015,
+     0.079
+    ]
+   },
+   {
+    "bone": "pelvis",
+    "offset": [
+     0,
+     0,
+     0
+    ],
+    "lift": 0.045
+   },
+   {
+    "bone": "spine_03",
+    "offset": [
+     0,
+     0.03,
+     0
+    ],
+    "lift": 0.07
+   },
+   {
+    "bone": "Head",
+    "offset": [
+     0,
+     0.08,
+     0
+    ],
+    "lift": 0.1
+   },
+   {
+    "bone": "hand_l",
+    "offset": [
+     0,
+     -0.04,
+     0
+    ],
+    "lift": 0.04
+   },
+   {
+    "bone": "hand_r",
+    "offset": [
+     0,
+     -0.04,
+     0
+    ],
+    "lift": 0.04
+   }
+  ],
+  "_about": "Contact points for the ground lock: [bone, offset in the rest world frame, lift]. Soles have lift 0, body points a radius. The source's ball bone is used for the toe so a sprint's toe-off does not sink through the floor."
+ },
+ "bones": [
+  {
+   "target": "hips",
+   "source": "pelvis"
+  },
+  {
+   "target": "spine",
+   "source": "spine_02"
+  },
+  {
+   "target": "chest",
+   "source": "spine_03"
+  },
+  {
+   "target": "neck",
+   "source": "neck_01"
+  },
+  {
+   "target": "head",
+   "source": "Head"
+  },
+  {
+   "target": "shoulder_{s}",
+   "source": "clavicle_{s}"
+  },
+  {
+   "target": "upper_arm_{s}",
+   "source": "upperarm_{s}",
+   "t_dir": "forearm_{s}",
+   "to": [
+    1,
+    0,
+    0
+   ]
+  },
+  {
+   "target": "forearm_{s}",
+   "source": "lowerarm_{s}",
+   "t_dir": "hand_{s}",
+   "to": [
+    1,
+    0,
+    0
+   ]
+  },
+  {
+   "target": "hand_l",
+   "source": "hand_l",
+   "t_dir": "parent",
+   "to": [
+    1,
+    0,
+    0
+   ]
+  },
+  {
+   "target": "hand_r",
+   "source": "hand_r",
+   "t_dir": "parent",
+   "to": [
+    -1,
+    0,
+    0
+   ],
+   "blade_socket": "weapon_socket",
+   "blade_dir_in_source_rest": [
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "target": "thigh_{s}",
+   "source": "thigh_{s}"
+  },
+  {
+   "target": "shin_{s}",
+   "source": "calf_{s}"
+  },
+  {
+   "target": "foot_{s}",
+   "source": "foot_{s}"
+  }
+ ],
+ "clips": [
+  {
+   "name": "idle",
+   "source": "UAL1:Idle_Loop",
+   "loop": true,
+   "note": "Idle_Loop (Combat Designer's catalog in enemies.json behaviour.clips)"
+  },
+  {
+   "name": "notice",
+   "source": "UAL1:Sword_Idle",
+   "note": "Sword_Idle: the 'it has seen you' pose; plays once"
+  },
+  {
+   "name": "walk",
+   "source": "UAL1:Walk_Loop",
+   "loop": true
+  },
+  {
+   "name": "strafe",
+   "source": "UAL1:Walk_Loop",
+   "loop": true,
+   "note": "same clip as walk: the name the Combat Designer's moves.json uses (body turned to face Red). strafe_l / strafe_r below are the real side-steps"
+  },
+  {
+   "name": "strafe_l",
+   "parts": [
+    {
+     "source": "UAL1:Walk_Loop"
+    }
+   ],
+   "loop": true,
+   "yaw": {
+    "deg": 90
+   },
+   "note": "walk with the hips and legs turned 90 degrees to the wolf's left (+X); torso still faces forward"
+  },
+  {
+   "name": "strafe_r",
+   "parts": [
+    {
+     "source": "UAL1:Walk_Loop"
+    }
+   ],
+   "loop": true,
+   "yaw": {
+    "deg": -90
+   },
+   "note": "walk with the hips and legs turned 90 degrees to the right"
+  },
+  {
+   "name": "run",
+   "source": "UAL1:Jog_Fwd_Loop",
+   "loop": true,
+   "note": "the AI's 'approach'"
+  },
+  {
+   "name": "retreat",
+   "parts": [
+    {
+     "source": "UAL1:Jog_Fwd_Loop",
+     "reverse": true
+    }
+   ],
+   "loop": true,
+   "note": "Jog played backwards (no new motion)"
+  },
+  {
+   "name": "stalk",
+   "source": "UAL1:Crouch_Fwd_Loop",
+   "loop": true,
+   "note": "the AI's flank: low prowl"
+  },
+  {
+   "name": "flee",
+   "source": "UAL1:Sprint_Loop",
+   "loop": true
+  },
+  {
+   "name": "dodge_side",
+   "source": "UAL2:Sword_Dash",
+   "from_s": 0.0,
+   "to_s": 0.6,
+   "note": "Sword_Dash first 0.6 s: the quick sidestep-slash (stretched by the move data)"
+  },
+  {
+   "name": "dodge_back",
+   "parts": [
+    {
+     "source": "UAL1:Roll",
+     "reverse": true
+    }
+   ],
+   "note": "Roll played backwards: a backward roll, which matches the motion away from Red"
+  },
+  {
+   "name": "block_start",
+   "source": "UAL2:Sword_Block",
+   "from_s": 0.0,
+   "to_s": 0.3,
+   "note": "guard goes up"
+  },
+  {
+   "name": "block_hold",
+   "source": "UAL2:Idle_Shield_Loop",
+   "loop": true,
+   "note": "guard held: Idle_Shield_Loop"
+  },
+  {
+   "name": "block_impact",
+   "source": "UAL2:Shield_OneShot",
+   "contact_src_s": 0.1,
+   "note": "small shudder when a hit is blocked"
+  },
+  {
+   "name": "block_break",
+   "source": "UAL2:Idle_Shield_Break",
+   "contact_src_s": 0.1,
+   "note": "guard broken"
+  },
+  {
+   "name": "attack_windup",
+   "source": "UAL2:Zombie_Scratch",
+   "from_s": 0.0,
+   "to_s": 0.55,
+   "note": "arm cocked high behind the head: the telegraph; it ends where attack_swing begins"
+  },
+  {
+   "name": "attack_swing",
+   "source": "UAL2:Zombie_Scratch",
+   "from_s": 0.5,
+   "to_s": 1.4,
+   "contact_src_s": 0.6,
+   "note": "claw strike across, then recovery"
+  },
+  {
+   "name": "hurt",
+   "source": "UAL1:Hit_Chest",
+   "contact_src_s": 0.1,
+   "note": "flinch A"
+  },
+  {
+   "name": "hurt_head",
+   "source": "UAL1:Hit_Head",
+   "contact_src_s": 0.1,
+   "note": "flinch B"
+  },
+  {
+   "name": "stagger",
+   "parts": [
+    {
+     "source": "UAL1:Hit_Chest",
+     "speed": 0.6
+    }
+   ],
+   "hold_end_s": 2.0,
+   "note": "Hit_Chest slowed to 0.6x then the end pose held 2 s (the importer loops this name)"
+  },
+  {
+   "name": "launched",
+   "source": "UAL2:Hit_Knockback",
+   "from_s": 0.0,
+   "to_s": 0.15,
+   "hold_end_s": 2.8,
+   "note": "the knock-back's mid-air pose, held 2.8 s while juggled (the importer loops this name)"
+  },
+  {
+   "name": "knockdown",
+   "source": "UAL2:Hit_Knockback",
+   "from_s": 0.15,
+   "to_s": 0.83,
+   "contact_src_s": 0.3,
+   "note": "the fall onto the floor; ends lying down"
+  },
+  {
+   "name": "getup",
+   "source": "UAL2:LayToIdle"
+  },
+  {
+   "name": "death",
+   "source": "UAL1:Death01",
+   "note": "Death01; ends lying down"
+  }
+ ],
+ "keep_standins": [],
+ "proxies": {
+  "_about": "Rough body shapes used only by --report to count frames where an arm goes through the head or the torso (the chibi proportions cause this). Head sphere, torso ellipsoid (x,z half sizes) between two bones, arm segments [from bone, to bone, start fraction].",
+  "head": {
+   "bone": "head",
+   "center_offset": [
+    0,
+    0.1,
+    0
+   ],
+   "radius": 0.14
+  },
+  "torso": {
+   "from": "hips",
+   "to": "neck",
+   "half_width": 0.14,
+   "half_depth": 0.11
+  },
+  "arm_radius": 0.04,
+  "arm_segments": [
+   [
+    "upper_arm_l",
+    "forearm_l",
+    0.5
+   ],
+   [
+    "forearm_l",
+    "hand_l"
+   ],
+   [
+    "hand_l",
+    "prop_socket"
+   ],
+   [
+    "upper_arm_r",
+    "forearm_r",
+    0.5
+   ],
+   [
+    "forearm_r",
+    "hand_r"
+   ],
+   [
+    "hand_r",
+    "weapon_socket"
+   ]
+  ]
+ },
+ "importer_loops": [
+  "idle",
+  "walk",
+  "run",
+  "fall",
+  "battle_ready",
+  "climb",
+  "launched",
+  "stagger"
+ ],
+ "_importer_loops_about": "Clip names that scripts/tools/psx_post_import.gd (LOOPING_CLIPS) loops whatever the file says; the key data lists them as loops."
+}

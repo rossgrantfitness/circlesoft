@@ -1,0 +1,14 @@
+{
+  "_about": "Clutch timing. Half-widths in ms around the cue: Nice is about a quarter second wide in total, TOTALLY RAD about a tenth. Stats never change these; only the modifiers below do (Wide Windows setting, Defend, Butterfingers, Fired Up).",
+  "windows": {
+    "standard": {"nice_ms": 125, "rad_ms": 80, "totally_rad_ms": 50},
+    "block":    {"nice_ms": 125, "rad_ms": 80, "totally_rad_ms": 50}
+  },
+  "listen_before_ms": 400,
+  "parry": {"nice_ms": 320, "rad_ms": 200, "totally_rad_ms": 110, "listen_before_ms": 340, "block_reduction": {"nice": 0.6, "rad": 1.0, "totally_rad": 1.0}, "_about": "Action-combat parry (CS-7). One-sided: only a press BEFORE contact counts, so these are how early it may be. Scaled live by the parry_window_scale feel knob."},
+  "modifiers": {"wide_windows": 1.5, "defending_block": 1.25, "butterfingers": 0.75, "fired_up": 1.25},
+  "juice_gain": {"rad": 1, "totally_rad": 2},
+  "juice_gain_block": {"rad": 1, "totally_rad": 1},
+  "block_reduction": {"nice": 0.25, "rad": 0.5, "totally_rad": 1.0},
+  "payback_power": 0.8
+}

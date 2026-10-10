@@ -1,0 +1,517 @@
+[gd_scene load_steps=56 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/psx_room_look.gd" id="1_look"]
+[ext_resource type="Shader" path="res://shaders/psx_lit.gdshader" id="2_lit"]
+[ext_resource type="Shader" path="res://shaders/psx_unlit.gdshader" id="3_unlit"]
+[ext_resource type="Shader" path="res://shaders/psx_fade.gdshader" id="4_fade"]
+[ext_resource type="Texture2D" path="res://art/placeholder/textures/checker_64.png" id="5_tex64"]
+[ext_resource type="Texture2D" path="res://art/placeholder/textures/checker_128.png" id="8_tex128"]
+[ext_resource type="Texture2D" path="res://art/placeholder/textures/checker_256.png" id="6_tex256"]
+[ext_resource type="Texture2D" path="res://art/placeholder/textures/wall_128.png" id="7_wall"]
+[ext_resource type="Script" path="res://scripts/field/diorama_camera.gd" id="9_camera"]
+[ext_resource type="Script" path="res://scripts/field/camera_bounds.gd" id="10_bounds"]
+[ext_resource type="Script" path="res://scripts/field/field_room.gd" id="11_room"]
+[ext_resource type="PackedScene" path="res://scenes/actors/player.tscn" id="12_player"]
+[ext_resource type="PackedScene" path="res://scenes/actors/npc.tscn" id="13_npc"]
+[ext_resource type="Script" path="res://scripts/field/interactable.gd" id="14_interactable"]
+[ext_resource type="PackedScene" path="res://scenes/actors/field_enemy.tscn" id="15_enemy"]
+[ext_resource type="PackedScene" path="res://scenes/props/door.tscn" id="16_door"]
+[ext_resource type="Script" path="res://scripts/save/save_lamp.gd" id="16_savelamp"]
+[ext_resource type="Script" path="res://scripts/ui/shop/shop_counter.gd" id="17_shopcounter"]
+[ext_resource type="Script" path="res://scripts/field/grim_dressing.gd" id="18_grim"]
+
+[sub_resource type="Environment" id="Environment_room"]
+background_mode = 1
+background_color = Color(0.12156863, 0.14509805, 0.2509804, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.7, 0.7, 0.95, 1)
+
+[sub_resource type="ShaderMaterial" id="Mat_floor"]
+shader = ExtResource("2_lit")
+shader_parameter/albedo_texture = ExtResource("5_tex64")
+shader_parameter/uv_scale = Vector2(5, 4)
+shader_parameter/affine_amount = 0.3
+
+[sub_resource type="ShaderMaterial" id="Mat_wall"]
+shader = ExtResource("2_lit")
+shader_parameter/albedo_texture = ExtResource("7_wall")
+shader_parameter/uv_scale = Vector2(4.5, 0.75)
+shader_parameter/affine_amount = 0.3
+
+[sub_resource type="ShaderMaterial" id="Mat_wall_left"]
+shader = ExtResource("2_lit")
+shader_parameter/albedo_texture = ExtResource("7_wall")
+shader_parameter/uv_scale = Vector2(2, 0.75)
+shader_parameter/affine_amount = 0.3
+
+[sub_resource type="ShaderMaterial" id="Mat_warp_floor"]
+shader = ExtResource("2_lit")
+shader_parameter/albedo_texture = ExtResource("6_tex256")
+shader_parameter/uv_scale = Vector2(1, 1)
+shader_parameter/affine_amount = 1.0
+
+[sub_resource type="ShaderMaterial" id="Mat_pillar"]
+shader = ExtResource("4_fade")
+shader_parameter/albedo_texture = ExtResource("8_tex128")
+shader_parameter/uv_scale = Vector2(1, 4)
+shader_parameter/albedo_tint = Color(0.85, 0.65, 0.3, 1)
+
+[sub_resource type="ShaderMaterial" id="Mat_crate"]
+shader = ExtResource("2_lit")
+shader_parameter/albedo_texture = ExtResource("8_tex128")
+shader_parameter/albedo_tint = Color(0.8, 0.5, 0.35, 1)
+
+[sub_resource type="ShaderMaterial" id="Mat_lamp_post"]
+shader = ExtResource("2_lit")
+shader_parameter/albedo_texture = ExtResource("8_tex128")
+shader_parameter/uv_scale = Vector2(1, 3)
+shader_parameter/albedo_tint = Color(0.85, 0.64, 0.25, 1)
+
+[sub_resource type="ShaderMaterial" id="Mat_lamp_bulb"]
+shader = ExtResource("3_unlit")
+shader_parameter/albedo_texture = ExtResource("5_tex64")
+shader_parameter/uv_scale = Vector2(0.07, 0.07)
+shader_parameter/uv_offset = Vector2(0.02, 0.02)
+shader_parameter/albedo_tint = Color(1, 0.88, 0.54, 1)
+shader_parameter/emission_energy = 1.3
+
+[sub_resource type="ShaderMaterial" id="Mat_ledge"]
+shader = ExtResource("2_lit")
+shader_parameter/albedo_texture = ExtResource("8_tex128")
+shader_parameter/uv_scale = Vector2(2, 1)
+shader_parameter/albedo_tint = Color(0.45, 0.55, 0.75, 1)
+
+[sub_resource type="ShaderMaterial" id="Mat_platform"]
+shader = ExtResource("2_lit")
+shader_parameter/albedo_texture = ExtResource("8_tex128")
+shader_parameter/uv_scale = Vector2(1.5, 1)
+shader_parameter/albedo_tint = Color(0.5, 0.7, 0.6, 1)
+
+[sub_resource type="ShaderMaterial" id="Mat_reward"]
+shader = ExtResource("3_unlit")
+shader_parameter/albedo_texture = ExtResource("5_tex64")
+shader_parameter/uv_scale = Vector2(0.07, 0.07)
+shader_parameter/uv_offset = Vector2(0.02, 0.02)
+shader_parameter/albedo_tint = Color(1, 0.85, 0.3, 1)
+shader_parameter/emission_energy = 1.4
+
+[sub_resource type="PlaneMesh" id="Mesh_floor"]
+size = Vector2(10, 8)
+subdivide_width = 9
+subdivide_depth = 7
+
+[sub_resource type="PlaneMesh" id="Mesh_warp_floor"]
+size = Vector2(8, 8)
+
+[sub_resource type="PlaneMesh" id="Mesh_wall_back"]
+size = Vector2(18, 3)
+subdivide_width = 8
+orientation = 2
+
+[sub_resource type="PlaneMesh" id="Mesh_wall_left"]
+size = Vector2(8, 3)
+subdivide_width = 3
+orientation = 2
+
+[sub_resource type="BoxMesh" id="Mesh_pillar"]
+size = Vector3(0.8, 4, 0.8)
+
+[sub_resource type="BoxMesh" id="Mesh_crate"]
+size = Vector3(0.8, 0.8, 0.8)
+
+[sub_resource type="BoxMesh" id="Mesh_ledge"]
+size = Vector3(3, 0.7, 0.9)
+
+[sub_resource type="BoxMesh" id="Mesh_platform"]
+size = Vector3(2, 0.9, 1.6)
+
+[sub_resource type="BoxMesh" id="Mesh_reward"]
+size = Vector3(0.4, 0.4, 0.4)
+
+[sub_resource type="CylinderMesh" id="Mesh_lamp_post"]
+top_radius = 0.07
+bottom_radius = 0.1
+height = 2.2
+radial_segments = 6
+rings = 1
+
+[sub_resource type="SphereMesh" id="Mesh_lamp_bulb"]
+radius = 0.2
+height = 0.4
+radial_segments = 8
+rings = 4
+
+[sub_resource type="BoxShape3D" id="Box_floor"]
+size = Vector3(18, 0.2, 8)
+
+[sub_resource type="BoxShape3D" id="Box_wall_back"]
+size = Vector3(18, 3, 0.2)
+
+[sub_resource type="BoxShape3D" id="Box_wall_left"]
+size = Vector3(0.2, 3, 8)
+
+[sub_resource type="BoxShape3D" id="Box_wall_front"]
+size = Vector3(18, 3, 0.2)
+
+[sub_resource type="BoxShape3D" id="Box_wall_right"]
+size = Vector3(0.2, 3, 8)
+
+[sub_resource type="BoxShape3D" id="Box_pillar"]
+size = Vector3(0.8, 4, 0.8)
+
+[sub_resource type="BoxShape3D" id="Box_crate"]
+size = Vector3(0.8, 0.8, 0.8)
+
+[sub_resource type="BoxShape3D" id="Box_ledge"]
+size = Vector3(3, 0.7, 0.9)
+
+[sub_resource type="BoxShape3D" id="Box_platform"]
+size = Vector3(2, 0.9, 1.6)
+
+[sub_resource type="BoxShape3D" id="Box_reward"]
+size = Vector3(0.4, 0.4, 0.4)
+
+[sub_resource type="ShaderMaterial" id="Mat_sign"]
+shader = ExtResource("2_lit")
+shader_parameter/albedo_texture = ExtResource("8_tex128")
+shader_parameter/albedo_tint = Color(0.55, 0.4, 0.25, 1)
+
+[sub_resource type="ShaderMaterial" id="Mat_window"]
+shader = ExtResource("3_unlit")
+shader_parameter/albedo_texture = ExtResource("5_tex64")
+shader_parameter/uv_scale = Vector2(0.07, 0.07)
+shader_parameter/uv_offset = Vector2(0.02, 0.02)
+shader_parameter/albedo_tint = Color(0.45, 0.6, 0.85, 1)
+shader_parameter/emission_energy = 1.0
+
+[sub_resource type="BoxMesh" id="Mesh_sign"]
+size = Vector3(0.9, 0.5, 0.08)
+
+[sub_resource type="BoxMesh" id="Mesh_window"]
+size = Vector3(1.2, 0.9, 0.06)
+
+[node name="PsxTestRoom" type="Node3D"]
+script = ExtResource("11_room")
+player_scene = ExtResource("12_player")
+room_id = "test_room"
+party_follows = false
+
+[node name="RoomLook" type="Node" parent="."]
+script = ExtResource("1_look")
+fog_color = Color(0.12156863, 0.14509805, 0.2509804, 1)
+fog_near = 13.0
+fog_far = 20.0
+ambient_color = Color(0.7, 0.7, 0.95, 1)
+ambient_energy = 1.0
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_room")
+
+[node name="Floor" type="MeshInstance3D" parent="."]
+mesh = SubResource("Mesh_floor")
+surface_material_override/0 = SubResource("Mat_floor")
+
+[node name="WarpTestFloor" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 0, 0)
+mesh = SubResource("Mesh_warp_floor")
+surface_material_override/0 = SubResource("Mat_warp_floor")
+
+[node name="WallBack" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1.5, -4)
+mesh = SubResource("Mesh_wall_back")
+surface_material_override/0 = SubResource("Mat_wall")
+
+[node name="WallLeft" type="MeshInstance3D" parent="."]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -5, 1.5, 0)
+mesh = SubResource("Mesh_wall_left")
+surface_material_override/0 = SubResource("Mat_wall_left")
+
+[node name="Pillar" type="MeshInstance3D" parent="." groups=["fade_occluder"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, 2, 0.9)
+mesh = SubResource("Mesh_pillar")
+surface_material_override/0 = SubResource("Mat_pillar")
+
+[node name="CrateA" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.1, 0.4, -3.1)
+mesh = SubResource("Mesh_crate")
+surface_material_override/0 = SubResource("Mat_crate")
+
+[node name="CrateB" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.87, 0, 0.5, 0, 1, 0, -0.5, 0, 0.87, -3.2, 0.4, -3.2)
+mesh = SubResource("Mesh_crate")
+surface_material_override/0 = SubResource("Mat_crate")
+
+[node name="CrateC" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 0.4, -2.4)
+mesh = SubResource("Mesh_crate")
+surface_material_override/0 = SubResource("Mat_crate")
+
+[node name="LampPost" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.3, 1.1, -0.6)
+mesh = SubResource("Mesh_lamp_post")
+surface_material_override/0 = SubResource("Mat_lamp_post")
+
+[node name="LampBulb" type="MeshInstance3D" parent="LampPost"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 0)
+mesh = SubResource("Mesh_lamp_bulb")
+surface_material_override/0 = SubResource("Mat_lamp_bulb")
+
+[node name="LampLight" type="OmniLight3D" parent="LampPost"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 0.2)
+light_color = Color(1, 0.7019608, 0.2784314, 1)
+light_energy = 6.0
+omni_range = 8.0
+
+[node name="StackCrateA" type="MeshInstance3D" parent="." groups=["jumpable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, 0.4, -2.7)
+mesh = SubResource("Mesh_crate")
+surface_material_override/0 = SubResource("Mat_crate")
+
+[node name="StackCrateB" type="MeshInstance3D" parent="." groups=["jumpable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0.4, -2.7)
+mesh = SubResource("Mesh_crate")
+surface_material_override/0 = SubResource("Mat_crate")
+
+[node name="StackCrateC" type="MeshInstance3D" parent="." groups=["jumpable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 1.2, -2.7)
+mesh = SubResource("Mesh_crate")
+surface_material_override/0 = SubResource("Mat_crate")
+
+[node name="BackLedge" type="MeshInstance3D" parent="." groups=["jumpable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 0.35, -3.55)
+mesh = SubResource("Mesh_ledge")
+surface_material_override/0 = SubResource("Mat_ledge")
+
+[node name="WingPlatform" type="MeshInstance3D" parent="." groups=["jumpable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.8, 0.45, -1.0)
+mesh = SubResource("Mesh_platform")
+surface_material_override/0 = SubResource("Mat_platform")
+
+[node name="RewardCrate" type="MeshInstance3D" parent="." groups=["jumpable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.8, 1.1, -1.0)
+mesh = SubResource("Mesh_reward")
+surface_material_override/0 = SubResource("Mat_reward")
+
+[node name="Collision" type="StaticBody3D" parent="."]
+
+[node name="FloorShape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -0.1, 0)
+shape = SubResource("Box_floor")
+
+[node name="WallBackShape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1.5, -4.1)
+shape = SubResource("Box_wall_back")
+
+[node name="WallLeftShape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1, 1.5, 0)
+shape = SubResource("Box_wall_left")
+
+[node name="FrontBarrierShape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1.5, 4.1)
+shape = SubResource("Box_wall_front")
+
+[node name="RightBarrierShape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.1, 1.5, 0)
+shape = SubResource("Box_wall_right")
+
+[node name="PillarShape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, 2, 0.9)
+shape = SubResource("Box_pillar")
+
+[node name="StackCrateAShape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, 0.4, -2.7)
+shape = SubResource("Box_crate")
+
+[node name="StackCrateBShape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0.4, -2.7)
+shape = SubResource("Box_crate")
+
+[node name="StackCrateCShape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 1.2, -2.7)
+shape = SubResource("Box_crate")
+
+[node name="BackLedgeShape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 0.35, -3.55)
+shape = SubResource("Box_ledge")
+
+[node name="WingPlatformShape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.8, 0.45, -1.0)
+shape = SubResource("Box_platform")
+
+[node name="RewardCrateShape" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.8, 1.1, -1.0)
+shape = SubResource("Box_reward")
+
+[node name="PlayerSpawn" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 0.5)
+
+[node name="CameraBounds" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0)
+script = ExtResource("10_bounds")
+size = Vector3(13.8, 0, 5)
+
+[node name="CameraRig" type="Node3D" parent="."]
+script = ExtResource("9_camera")
+pitch_deg = 42.0
+yaw_deg = 35.0
+fov_deg = 30.0
+distance = 11.0
+
+[node name="WallSign" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, -2.0, 1.4, -3.95)
+mesh = SubResource("Mesh_sign")
+surface_material_override/0 = SubResource("Mat_sign")
+
+[node name="WallWindow" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 8.5, 1.4, -3.95)
+mesh = SubResource("Mesh_window")
+surface_material_override/0 = SubResource("Mat_window")
+
+[node name="Otis" parent="." instance=ExtResource("13_npc")]
+transform = Transform3D(0.3907, 0, 0.9205, 0, 1, 0, -0.9205, 0, 0.3907, 4.4, 0, 0.8)
+speaker_id = "otis"
+model_path = "res://art/placeholder/characters/otis/chr_otis.glb"
+collision_radius = 0.5
+collision_height = 1.3
+body_color = Color(0.75, 0.45, 0.22, 1)
+head_color = Color(0.9, 0.62, 0.38, 1)
+conversation = "otis_talk"
+after_flag = "otis_met"
+after_conversation = "otis_talk_again"
+set_flag_on_start = "otis_met"
+
+[node name="Mox" parent="." instance=ExtResource("13_npc")]
+transform = Transform3D(-0.3907, 0, -0.9205, 0, 1, 0, 0.9205, 0, -0.3907, 5.8, 0, 1.4)
+speaker_id = "mox"
+model_path = "res://art/placeholder/characters/mox/chr_mox.glb"
+collision_radius = 0.3
+collision_height = 1.2
+body_color = Color(1, 0.82, 0.35, 1)
+head_color = Color(1, 0.9, 0.62, 1)
+extra = 1
+extra_color = Color(0.45, 0.5, 0.58, 1)
+conversation = "mox_talk"
+after_flag = "mox_met"
+after_conversation = "mox_talk_again"
+set_flag_on_start = "mox_met"
+
+[node name="OldZero" parent="." instance=ExtResource("13_npc")]
+transform = Transform3D(-0.7314, 0, 0.6820, 0, 1, 0, -0.6820, 0, -0.7314, -2.4, 0, 2.0)
+speaker_id = "zero_old"
+model_path = "res://art/placeholder/characters/old_zero/npc_old_zero.glb"
+collision_radius = 0.3
+collision_height = 1.0
+body_color = Color(0.9, 0.78, 0.55, 1)
+head_color = Color(1, 0.88, 0.7, 1)
+extra = 2
+extra_color = Color(0.95, 0.8, 0.52, 1)
+conversation = "zero_talk"
+after_flag = "zero_gift"
+after_conversation = "zero_talk_again"
+
+[node name="PillarSpot" type="Node3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 2.2, 0, 0.9)
+script = ExtResource("14_interactable")
+kind = 1
+conversation = "examine_pillar"
+
+[node name="LampSpot" type="Node3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, -3.3, 0, -0.6)
+script = ExtResource("14_interactable")
+kind = 1
+conversation = "examine_lamp"
+
+[node name="CrateSpot" type="Node3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 1.1, 0, -2.7)
+script = ExtResource("14_interactable")
+kind = 1
+conversation = "examine_crate"
+
+[node name="SignSpot" type="Node3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, -2.0, 0, -3.5)
+script = ExtResource("14_interactable")
+kind = 1
+conversation = "examine_sign"
+
+[node name="WindowSpot" type="Node3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 8.5, 0, -3.4)
+script = ExtResource("14_interactable")
+kind = 1
+conversation = "examine_window"
+
+[node name="PrizeSpot" type="Node3D" parent="."]
+transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 10.8, 0.9, -1.0)
+script = ExtResource("14_interactable")
+kind = 2
+conversation = "examine_prize_crate"
+after_flag = "prize_crate_taken"
+after_conversation = "examine_prize_crate_again"
+after_kind = "examine"
+reach = 1.3
+
+[node name="GruntEnemy" parent="." instance=ExtResource("15_enemy")]
+transform = Transform3D(0.1305, 0, -0.9915, 0, 1, 0, 0.9915, 0, 0.1305, 6.6, 0, -0.5)
+speaker_id = "enemy_grunt"
+fight_id = "grunt"
+model_path = "res://art/placeholder/enemies/signals_grunt/enm_signals_grunt.glb"
+reach = 1.8
+
+[node name="DroneEnemy" parent="." instance=ExtResource("15_enemy")]
+transform = Transform3D(0.2195, 0, -0.9756, 0, 1, 0, 0.9756, 0, 0.2195, 3.0, 0, -0.4)
+speaker_id = "enemy_drone"
+fight_id = "drone"
+model_path = "res://art/placeholder/enemies/signals_drone/enm_signals_drone.glb"
+reach = 1.8
+
+[node name="SquadEnemy" parent="." instance=ExtResource("15_enemy")]
+transform = Transform3D(-0.1264, 0, -0.9920, 0, 1, 0, 0.9920, 0, -0.1264, 9.2, 0, 1.8)
+speaker_id = "enemy_squad"
+fight_id = "squad"
+model_path = "res://art/placeholder/enemies/grunt_variant/enm_grunt_variant.glb"
+reach = 1.8
+
+[node name="ToughEnemy" parent="." instance=ExtResource("15_enemy")]
+transform = Transform3D(0.8321, 0, 0.5547, 0, 1, 0, -0.5547, 0, 0.8321, -2.6, 0, -1.9)
+speaker_id = "enemy_tough"
+fight_id = "tough"
+model_path = "res://art/placeholder/enemies/drone_variant/enm_drone_variant.glb"
+reach = 1.8
+
+[node name="SaveLamp" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4, 0, -3.55)
+script = ExtResource("16_savelamp")
+room_id = "test_room"
+spawn_id = "LampSpawn"
+reach = 1.6
+
+[node name="LampSpawn" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4, 0, -2.7)
+
+[node name="GeneralCounter" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.4, 0, -2.6)
+script = ExtResource("17_shopcounter")
+shop_id = "test_general"
+reach = 1.6
+
+[node name="GearCounter" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 0, -2.6)
+script = ExtResource("17_shopcounter")
+shop_id = "test_gear"
+reach = 1.6
+
+[node name="Spawns" type="Node3D" parent="."]
+
+[node name="from_yard" type="Marker3D" parent="Spawns"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -3.8, 0, -1.4)
+
+[node name="DoorToYard" parent="." instance=ExtResource("16_door")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -5.0, 0, -1.4)
+placement_id = "test_room_to_yard"
+
+[node name="DoorToHarrow" parent="." instance=ExtResource("16_door")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -5.0, 0, 1.4)
+placement_id = "test_room_to_harrow"
+
+[node name="GrimDressing" type="Node3D" parent="."]
+script = ExtResource("18_grim")
+dressing_id = "test_room"

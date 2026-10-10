@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/debug/style_stage.gd" id="1_stage"]
+[ext_resource type="PackedScene" path="res://scenes/core/psx_screen.tscn" id="2_screen"]
+
+[node name="StyleStage" type="Node"]
+script = ExtResource("1_stage")
+
+[node name="PsxScreen" parent="." instance=ExtResource("2_screen")]

@@ -1,0 +1,18 @@
+{
+  "_about": "A gear shop: weapons, armor and charms. `stock` lists ids from data/items/equipment.json. The slice target is a real choice: the three shop weapons plus a pocketful of Ration Bars, but not every vest as well. Placeholder shop for the test room; the real Harrow shops arrive with M3-4.",
+  "id": "test_gear",
+  "name": "Rivet & Stitch",
+  "kind": "gear",
+  "greeting": "Looking for something sturdy? Everything here has been hit with a hammer.",
+  "stock": [
+    "rebar_blade",
+    "rivet_hammer",
+    "pipe_wrench",
+    "padded_work_vest",
+    "hi_vis_vest",
+    "lucky_bolt",
+    "earplugs",
+    "oven_mitts",
+    "sore_loser_patch"
+  ]
+}

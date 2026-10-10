@@ -1,0 +1,705 @@
+{
+ "_about": "Feel knobs (docs/pivot/combat_api.md 4.9). Starting guesses; Ross tunes them in the feel panel and sends the saved file back. Each owner edits only their own group: movement and camera and sandbox (Gameplay), combat and flare (Battle), fx (Technical Artist).",
+ "version": 1,
+ "knobs": [
+  {
+   "id": "hit_freeze_s",
+   "group": "hits",
+   "label": "Hit freeze length",
+   "type": "float",
+   "value": 0.25,
+   "min": 0.05,
+   "max": 0.3,
+   "step": 0.01,
+   "unit": "s",
+   "hint": "PLAYTEST ME. How long the game freezes when a hit lands. This is the freeze of the heaviest hits (heavy, finishers, launcher, guard break); light hits freeze about 40 percent of it. 0.25 is the big chunky try. If it feels sluggish, go down toward 0.10."
+  },
+  {
+   "id": "hit_flash_on",
+   "group": "hits",
+   "label": "White impact flash",
+   "type": "bool",
+   "value": true,
+   "hint": "The struck enemy, boss part or robot turns flat white for a split second as a hit lands. Off shows the plain hit."
+  },
+  {
+   "id": "hit_flash_red_on",
+   "group": "hits",
+   "label": "Flash Red when she is hit",
+   "type": "bool",
+   "value": false,
+   "hint": "Red turns flat white for a split second when an enemy hits her. Off by default."
+  },
+  {
+   "id": "run_speed_mps",
+   "group": "movement",
+   "label": "Run speed",
+   "type": "float",
+   "value": 6.0,
+   "min": 3.0,
+   "max": 10.0,
+   "step": 0.25,
+   "unit": "m/s"
+  },
+  {
+   "id": "jump_height_m",
+   "group": "movement",
+   "label": "Jump height",
+   "type": "float",
+   "value": 1.6,
+   "min": 0.8,
+   "max": 3.0,
+   "step": 0.1,
+   "unit": "m"
+  },
+  {
+   "id": "gravity_scale",
+   "group": "movement",
+   "label": "Gravity",
+   "type": "float",
+   "value": 1.0,
+   "min": 0.5,
+   "max": 2.0,
+   "step": 0.05,
+   "unit": "x"
+  },
+  {
+   "id": "dash_distance_m",
+   "group": "movement",
+   "label": "Dash distance",
+   "type": "float",
+   "value": 5.25,
+   "min": 2.0,
+   "max": 8.0,
+   "step": 0.25,
+   "unit": "m"
+  },
+  {
+   "id": "dash_time_ms",
+   "group": "movement",
+   "label": "Dash time",
+   "type": "int",
+   "value": 150,
+   "min": 80,
+   "max": 400,
+   "step": 10,
+   "unit": "ms"
+  },
+  {
+   "id": "dash_iframes_ms",
+   "group": "movement",
+   "label": "Dash invincibility",
+   "type": "int",
+   "value": 150,
+   "min": 0,
+   "max": 300,
+   "step": 10,
+   "unit": "ms"
+  },
+  {
+   "id": "air_dash_count",
+   "group": "movement",
+   "label": "Air dashes per jump",
+   "type": "int",
+   "value": 1,
+   "min": 0,
+   "max": 3,
+   "step": 1
+  },
+  {
+   "id": "dash_charges",
+   "group": "movement",
+   "label": "Dash charges",
+   "type": "int",
+   "value": 5,
+   "min": 1,
+   "max": 8,
+   "step": 1,
+   "hint": "How many dashes Red can chain before she runs dry (Ross: up to 5 in a row). Each dash spends one; the pips by her health show them. With none left the dash button only clicks."
+  },
+  {
+   "id": "dash_recharge_s",
+   "group": "movement",
+   "label": "Dash recharge",
+   "type": "float",
+   "value": 2.0,
+   "min": 0.5,
+   "max": 4.0,
+   "step": 0.1,
+   "unit": "s",
+   "hint": "Seconds for ONE spent charge to come back. They refill one at a time, and dashing again does not restart the timer."
+  },
+  {
+   "id": "dash_chain_gap_s",
+   "group": "movement",
+   "label": "Dash chain gap",
+   "type": "float",
+   "value": 0.12,
+   "min": 0.0,
+   "max": 0.4,
+   "step": 0.01,
+   "unit": "s",
+   "hint": "The small pause between the end of one dash and the start of the next when you chain them. A press made during a dash or the gap is remembered and fires the moment the gap ends."
+  },
+  {
+   "id": "cam_distance_m",
+   "group": "camera",
+   "label": "Camera distance",
+   "type": "float",
+   "value": 4.5,
+   "min": 2.5,
+   "max": 9.0,
+   "step": 0.25,
+   "unit": "m"
+  },
+  {
+   "id": "cam_sensitivity",
+   "group": "camera",
+   "label": "Camera sensitivity",
+   "type": "float",
+   "value": 1.0,
+   "min": 0.2,
+   "max": 3.0,
+   "step": 0.05,
+   "unit": "x"
+  },
+  {
+   "id": "hit_stop_scale",
+   "group": "combat",
+   "label": "Hit-stop length",
+   "type": "float",
+   "value": 1.0,
+   "min": 0.0,
+   "max": 3.0,
+   "step": 0.1,
+   "unit": "x"
+  },
+  {
+   "id": "juggle_float",
+   "group": "combat",
+   "label": "Juggle float",
+   "type": "float",
+   "value": 1.0,
+   "min": 0.0,
+   "max": 3.0,
+   "step": 0.1,
+   "unit": "x"
+  },
+  {
+   "id": "launch_height_scale",
+   "group": "combat",
+   "label": "Launch height",
+   "type": "float",
+   "value": 1.0,
+   "min": 0.3,
+   "max": 2.5,
+   "step": 0.05,
+   "unit": "x"
+  },
+  {
+   "id": "input_buffer_ms",
+   "group": "combat",
+   "label": "Input buffer",
+   "type": "int",
+   "value": 150,
+   "min": 0,
+   "max": 400,
+   "step": 10,
+   "unit": "ms"
+  },
+  {
+   "id": "parry_window_scale",
+   "group": "combat",
+   "label": "Parry window",
+   "type": "float",
+   "value": 1.0,
+   "min": 0.5,
+   "max": 3.0,
+   "step": 0.05,
+   "unit": "x"
+  },
+  {
+   "id": "enemy_damage_scale",
+   "group": "combat",
+   "label": "Damage you take",
+   "type": "float",
+   "value": 0.7,
+   "min": 0.0,
+   "max": 3.0,
+   "step": 0.1,
+   "unit": "x"
+  },
+  {
+   "id": "launcher_input",
+   "group": "combat",
+   "label": "Launcher button",
+   "type": "choice",
+   "value": "hold_heavy",
+   "options": [
+    "hold_heavy",
+    "back_heavy",
+    "string_end"
+   ]
+  },
+  {
+   "id": "lights_on_trigger",
+   "feature": "lights_on",
+   "group": "combat",
+   "label": "Lights On starts",
+   "type": "choice",
+   "value": "auto",
+   "options": [
+    "auto",
+    "chord"
+   ]
+  },
+  {
+   "id": "flare_duration_s",
+   "feature": "lamp_flare",
+   "group": "flare",
+   "label": "Lamp Flare length",
+   "type": "float",
+   "value": 2.5,
+   "min": 0.5,
+   "max": 6.0,
+   "step": 0.1,
+   "unit": "s"
+  },
+  {
+   "id": "flare_enemy_speed",
+   "feature": "lamp_flare",
+   "group": "flare",
+   "label": "Enemy speed in a flare",
+   "type": "float",
+   "value": 0.25,
+   "min": 0.05,
+   "max": 1.0,
+   "step": 0.05,
+   "unit": "x"
+  },
+  {
+   "id": "perfect_dodge_window_ms",
+   "group": "flare",
+   "label": "Perfect dodge window",
+   "type": "int",
+   "value": 120,
+   "min": 40,
+   "max": 300,
+   "step": 10,
+   "unit": "ms"
+  },
+  {
+   "id": "flare_glare_radius_m",
+   "feature": "lamp_flare",
+   "group": "flare",
+   "label": "Flare reach",
+   "type": "float",
+   "value": 12.0,
+   "min": 4.0,
+   "max": 40.0,
+   "step": 1.0,
+   "unit": "m"
+  },
+  {
+   "id": "flare_cooldown_s",
+   "feature": "lamp_flare",
+   "group": "flare",
+   "label": "Flare cooldown",
+   "type": "float",
+   "value": 3.0,
+   "min": 0.0,
+   "max": 10.0,
+   "step": 0.5,
+   "unit": "s"
+  },
+  {
+   "id": "flare_on_parry",
+   "feature": "lamp_flare",
+   "group": "flare",
+   "label": "Parry starts a flare",
+   "type": "choice",
+   "value": "rad_and_up",
+   "options": [
+    "rad_and_up",
+    "perfect_only",
+    "off"
+   ]
+  },
+  {
+   "id": "enemy_aggression",
+   "group": "enemies",
+   "label": "Enemy aggression",
+   "type": "float",
+   "value": 0.85,
+   "min": 0.25,
+   "max": 2.0,
+   "step": 0.05,
+   "unit": "x",
+   "hint": "How often enemies attack. Higher means shorter pauses between attacks."
+  },
+  {
+   "id": "enemy_max_attackers",
+   "group": "enemies",
+   "label": "Enemies attacking at once",
+   "type": "int",
+   "value": 2,
+   "min": 1,
+   "max": 4,
+   "step": 1,
+   "hint": "How many enemies may attack at the same moment. More is harder."
+  },
+  {
+   "id": "enemy_reaction_scale",
+   "group": "enemies",
+   "label": "Enemy reaction time",
+   "type": "float",
+   "value": 1.0,
+   "min": 0.5,
+   "max": 2.0,
+   "step": 0.05,
+   "unit": "x",
+   "hint": "How slowly enemies notice your swings before dodging or blocking. Higher is slower."
+  },
+  {
+   "id": "enemy_windup_scale",
+   "group": "enemies",
+   "label": "Attack wind-up length",
+   "type": "float",
+   "value": 1.25,
+   "min": 0.8,
+   "max": 2.0,
+   "step": 0.05,
+   "unit": "x",
+   "hint": "Longer wind-ups are easier to parry. Never shorter than the safe minimum."
+  },
+  {
+   "id": "enemy_dodge_scale",
+   "group": "enemies",
+   "label": "Enemy dodging",
+   "type": "float",
+   "value": 1.0,
+   "min": 0.0,
+   "max": 2.0,
+   "step": 0.05,
+   "unit": "x",
+   "hint": "How often agile enemies sidestep your attacks. 0 turns dodging off."
+  },
+  {
+   "id": "enemy_block_scale",
+   "group": "enemies",
+   "label": "Enemy blocking",
+   "type": "float",
+   "value": 1.0,
+   "min": 0.0,
+   "max": 2.0,
+   "step": 0.05,
+   "unit": "x",
+   "hint": "How often heavy enemies raise their guard. 0 turns blocking off."
+  },
+  {
+   "id": "enemy_spacing_scale",
+   "group": "enemies",
+   "label": "Enemy spacing",
+   "type": "float",
+   "value": 1.0,
+   "min": 0.6,
+   "max": 1.6,
+   "step": 0.05,
+   "unit": "x",
+   "hint": "How far enemies hold back while circling you. Lower packs them in close."
+  },
+  {
+   "id": "enemy_hp_scale",
+   "group": "enemies",
+   "label": "Enemy health",
+   "type": "float",
+   "value": 1.0,
+   "min": 0.5,
+   "max": 3.0,
+   "step": 0.1,
+   "unit": "x",
+   "hint": "Multiplies every enemy's health."
+  },
+  {
+   "id": "enemy_flee_on",
+   "group": "enemies",
+   "label": "Wounded enemies flee",
+   "type": "bool",
+   "value": true,
+   "hint": "Low-health Cyberwolves may run away. Off makes them fight to the end."
+  },
+  {
+   "id": "enemy_flank_on",
+   "group": "enemies",
+   "label": "Wounded enemies flank",
+   "type": "bool",
+   "value": true,
+   "hint": "Low-health Cyberwolves may circle round to your back."
+  },
+  {
+   "id": "enemy_enrage_on",
+   "group": "enemies",
+   "label": "Brute enrage",
+   "type": "bool",
+   "value": true,
+   "hint": "The Brute flies into a rage at low health: faster, hits more often, guards less."
+  },
+  {
+   "id": "hack_pick_mode",
+   "group": "hacks",
+   "label": "How a hack is picked",
+   "type": "choice",
+   "value": "pick_then_fire",
+   "options": [
+    "pick_then_fire",
+    "automatic"
+   ],
+   "hint": "Pick then fire: choose a hack with d-pad left/right (keys 1 to 4), then fire it. Automatic: the hack button picks for you by what is around Red; hold it to Reboot."
+  },
+  {
+   "id": "hack_gain_scale",
+   "group": "hacks",
+   "label": "Battery from sword hits",
+   "type": "float",
+   "value": 1.0,
+   "min": 0.25,
+   "max": 3.0,
+   "step": 0.05,
+   "unit": "x",
+   "hint": "How fast sword hits fill the hack battery. Higher means more hacks per fight."
+  },
+  {
+   "id": "hack_cost_scale",
+   "group": "hacks",
+   "label": "Hack cost",
+   "type": "float",
+   "value": 1.0,
+   "min": 0.25,
+   "max": 2.0,
+   "step": 0.05,
+   "unit": "x",
+   "hint": "Multiplies what every hack costs from the battery (Reboot always takes the whole battery). Lower means more casts."
+  },
+  {
+   "id": "hack_cooldown_scale",
+   "group": "hacks",
+   "label": "Hack cooldown",
+   "type": "float",
+   "value": 1.0,
+   "min": 0.0,
+   "max": 3.0,
+   "step": 0.1,
+   "unit": "x",
+   "hint": "Multiplies the wait before the same hack can be cast again. 0 turns cooldowns off."
+  },
+  {
+   "id": "hack_damage_scale",
+   "group": "hacks",
+   "label": "Hack damage",
+   "type": "float",
+   "value": 1.0,
+   "min": 0.25,
+   "max": 3.0,
+   "step": 0.05,
+   "unit": "x",
+   "hint": "Multiplies the damage of Zap Drone and EMP (and any damage a hijacked enemy does)."
+  },
+  {
+   "id": "zap_pierce",
+   "group": "hacks",
+   "label": "Zap Drone pierce",
+   "type": "int",
+   "value": 3,
+   "min": 1,
+   "max": 6,
+   "step": 1,
+   "hint": "How many enemies one Zap Drone can pass through before it is spent."
+  },
+  {
+   "id": "emp_radius_m",
+   "group": "hacks",
+   "label": "EMP radius",
+   "type": "float",
+   "value": 4.5,
+   "min": 2.5,
+   "max": 8.0,
+   "step": 0.25,
+   "unit": "m",
+   "hint": "How far the EMP ring reaches around Red."
+  },
+  {
+   "id": "emp_knockback_m",
+   "group": "hacks",
+   "label": "EMP push",
+   "type": "float",
+   "value": 3.0,
+   "min": 0.0,
+   "max": 6.0,
+   "step": 0.25,
+   "unit": "m",
+   "hint": "How far the EMP pushes enemies away from Red. 0 only stuns and breaks guards."
+  },
+  {
+   "id": "emp_stun_scale",
+   "group": "hacks",
+   "label": "EMP stun time",
+   "type": "float",
+   "value": 1.0,
+   "min": 0.25,
+   "max": 3.0,
+   "step": 0.05,
+   "unit": "x",
+   "hint": "Multiplies how long EMP knocks drones, turrets and robots out for (2.5 to 4 seconds at 1)."
+  },
+  {
+   "id": "overclock_duration_s",
+   "group": "hacks",
+   "label": "Overclock length",
+   "type": "float",
+   "value": 10.0,
+   "min": 4.0,
+   "max": 20.0,
+   "step": 0.5,
+   "unit": "s",
+   "hint": "How many seconds a hijacked turret, drone or robot fights for Red."
+  },
+  {
+   "id": "reboot_heal_pct",
+   "group": "hacks",
+   "label": "Reboot heal",
+   "type": "int",
+   "value": 50,
+   "min": 10,
+   "max": 100,
+   "step": 5,
+   "unit": "%",
+   "hint": "How much of Red's health a full Reboot restores."
+  },
+  {
+   "id": "reboot_needs_full",
+   "group": "hacks",
+   "label": "Reboot needs a full battery",
+   "type": "bool",
+   "value": true,
+   "hint": "On: Reboot only works with a full battery. Off: it works from half a battery and heals less the less you have."
+  },
+  {
+   "id": "hack_auto_reboot_hold_ms",
+   "group": "hacks",
+   "label": "Automatic: hold to Reboot",
+   "type": "int",
+   "value": 450,
+   "min": 200,
+   "max": 1000,
+   "step": 25,
+   "unit": "ms",
+   "hint": "Only in Automatic. How long you hold the hack button before it Reboots instead of picking an attack."
+  },
+  {
+   "id": "hack_auto_crowd_count",
+   "group": "hacks",
+   "label": "Automatic: crowd size for EMP",
+   "type": "int",
+   "value": 3,
+   "min": 2,
+   "max": 6,
+   "step": 1,
+   "hint": "Only in Automatic. How many enemies close to Red make the hack button fire EMP instead of Zap Drone."
+  },
+  {
+   "id": "hack_free_cast",
+   "group": "hacks",
+   "label": "Free hacks (testing)",
+   "type": "bool",
+   "value": false,
+   "hint": "Hacks cost nothing and the battery stays full. For trying every hack without earning it."
+  },
+  {
+   "id": "deck_slowmo",
+   "group": "hacks",
+   "label": "Slow time in the hack list",
+   "type": "bool",
+   "value": false,
+   "hint": "Slows the game while the hack list is open, so you can pick without rushing. Off: the game keeps running while you browse."
+  },
+  {
+   "id": "deck_slowmo_scale",
+   "group": "hacks",
+   "label": "Hack list slow-down",
+   "type": "float",
+   "value": 0.35,
+   "min": 0.1,
+   "max": 0.9,
+   "step": 0.05,
+   "hint": "How slow the game runs while the hack list is open (only when the switch above is on). Lower is slower."
+  },
+  {
+   "id": "shake_scale",
+   "group": "fx",
+   "label": "Screen shake",
+   "type": "float",
+   "value": 1.0,
+   "min": 0.0,
+   "max": 2.0,
+   "step": 0.05,
+   "unit": "x"
+  },
+  {
+   "id": "trails_on",
+   "group": "fx",
+   "label": "Sword trails",
+   "type": "bool",
+   "value": true
+  },
+  {
+   "id": "enemies_attack",
+   "group": "sandbox",
+   "label": "Enemies attack",
+   "type": "bool",
+   "value": true
+  },
+  {
+   "id": "show_hitboxes",
+   "group": "sandbox",
+   "label": "Show hitboxes",
+   "type": "bool",
+   "value": false
+  },
+  {
+   "id": "heap_damage_scale",
+   "group": "boss",
+   "label": "Heap damage",
+   "type": "float",
+   "value": 1.0,
+   "min": 0.25,
+   "max": 3.0,
+   "step": 0.05,
+   "unit": "x",
+   "hint": "Multiplies what the Heap's attacks do to the colossus. Lower is more forgiving."
+  },
+  {
+   "id": "heap_plate_hp_scale",
+   "group": "boss",
+   "label": "Heap plate health",
+   "type": "float",
+   "value": 1.0,
+   "min": 0.25,
+   "max": 3.0,
+   "step": 0.05,
+   "unit": "x",
+   "hint": "Multiplies the armour plates' health (read when the Heap is built). Lower means a shorter plate phase."
+  },
+  {
+   "id": "heap_gap_scale",
+   "group": "boss",
+   "label": "Heap pause between attacks",
+   "type": "float",
+   "value": 1.0,
+   "min": 0.4,
+   "max": 2.5,
+   "step": 0.05,
+   "unit": "x",
+   "hint": "Multiplies the pause between the Heap's attacks. Higher gives more time to hit the open plate."
+  }
+ ]
+}

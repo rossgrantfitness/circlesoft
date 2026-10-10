@@ -1,0 +1,18 @@
+{
+  "_about": "The words the hacks put on screen through Red's call-out line (the sandbox HUD shows them; the slice HUD has its own hack panel). {name} is the hack's name, {cost} what it costs, {have} what the battery holds, {left} what is left after a cast. Owner: Combat Designer for the wording, Combat Programmer for the keys. An empty line is never shown (so a mashed button says nothing while a cast is already on its way).",
+  "callout_ms": 1200,
+  "cast": "{name}  (battery {left})",
+  "selected": "Hack: {name}  (costs {cost})",
+  "refused": {
+    "battery": "Battery low: {name} needs {cost}, you have {have}",
+    "not_full": "{name} needs a full battery",
+    "no_signal": "No signal",
+    "locked": "Hacks jammed",
+    "air": "{name}: ground only",
+    "cooldown": "{name} is cooling down",
+    "global": "",
+    "overclock": "Already hijacking",
+    "target_lost": "Signal lost",
+    "unknown": ""
+  }
+}

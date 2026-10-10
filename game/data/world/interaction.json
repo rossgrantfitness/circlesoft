@@ -1,0 +1,20 @@
+{
+  "_about": "One-button interaction (E / Z / B): how Red picks what to use, and how the NPC placeholders behave. Distances are world units (Red is 1 unit tall).",
+  "reach": 1.5,
+  "max_height_diff": 0.6,
+  "front_min_dot": 0.2,
+  "always_in_reach_distance": 0.8,
+  "prompt": {
+    "head_height": 1.35,
+    "gap_px": 3,
+    "bob_px": 1,
+    "bob_period_s": 0.6,
+    "pop_scales": [0.5, 1.15, 1.0],
+    "pop_step_s": 0.05
+  },
+  "npc": {
+    "turn_rate_deg_per_s": 540.0,
+    "bob_height": 0.03,
+    "bob_period_s": 2.4
+  }
+}

@@ -1,0 +1,332 @@
+extends TestCase
+## Ross's Red, rigged (scripts/tools/rig_red.py) and animated with the free Quaternius clips (scripts/tools/retarget_ual.py):
+## the model contract in docs/pivot/combat_api.md section 5. Checks the file the game loads (red_ross_v1_rigged_ual.glb: the
+## TA's rig and mesh plus the retargeted clips); Ross's original (red_ross_v1.glb) is never touched. A missing OPTIONAL clip
+## is listed, not failed, because the procedural fallbacks cover it. The pipeline's own checks are in test_ual_retarget.gd.
+
+const RED_PATH: String = "res://art/final/characters/red/red_ross_v1_rigged_ual.glb"
+const TRIANGLES: int = 1614                # Ross's mesh, unchanged by rigging
+const TRIANGLE_CAP: int = 5000
+const MAX_TEXTURE_PX: int = 512
+const HEIGHT_M: float = 0.951
+const REQUIRED_BONES: Array[String] = ["root", "hips", "spine", "chest", "neck", "head", "upper_arm_l", "forearm_l", "hand_l",
+		"upper_arm_r", "forearm_r", "hand_r", "thigh_l", "shin_l", "foot_l", "thigh_r", "shin_r", "foot_r", "weapon_socket"]
+const OPTIONAL_BONES: Array[String] = ["ear_l", "ear_l_2", "ear_r", "ear_r_2", "tail", "prop_socket", "head_gear", "back", "lamp_socket",
+		"shoulder_l", "shoulder_r"]
+const REQUIRED_CLIPS: Array[String] = ["idle", "run", "jump_up", "fall", "land", "dash", "light_1", "light_2", "light_3", "heavy",
+		"launcher", "air_1", "air_2", "air_3", "parry", "hurt", "knockdown", "hack_zap", "hack_emp", "hack_overclock", "hack_reboot"]
+const OPTIONAL_CLIPS: Array[String] = ["walk", "parry_success", "getup"]
+## air_dash has no free clip that fits: the game plays `dash` instead (contract section 5), so it is allowed to be absent
+const ABSENT_ON_PURPOSE: Array[String] = ["air_dash"]
+const LOOPING: Array[String] = ["idle", "run", "fall", "walk"]
+## the hand-posed stand-ins kept where no free clip fits: stepped 15 fps, as the TA made them
+const STAND_INS: Array[String] = ["air_1", "air_2", "air_3", "parry_success"]
+## clips whose strike lands on a contact frame (contact_s in data/combat/red_clip_keys.json)
+const STRIKES: Array[String] = ["light_1", "light_2", "light_3", "heavy", "launcher"]
+const MAX_CLIP_S: float = 2.6
+## Red's four hack casts (VS-10): free Quaternius clips, no hitbox, so no strike test; the cast moves in moves.json name them
+const HACK_CLIPS: Array[String] = ["hack_zap", "hack_emp", "hack_overclock", "hack_reboot"]
+
+
+func _red() -> Node3D:
+	var packed: PackedScene = load(RED_PATH) as PackedScene
+	assert_not_null(packed, "red_ross_v1_rigged_ual.glb should import (godot --headless --path game --import)")
+	var model: Node3D = packed.instantiate() as Node3D
+	own(model)
+	return model
+
+
+func _skeleton(model: Node) -> Skeleton3D:
+	var found: Array[Node] = model.find_children("*", "Skeleton3D", true, false)
+	assert_eq(found.size(), 1, "one Skeleton3D")
+	return found[0] as Skeleton3D
+
+
+func _player(model: Node) -> AnimationPlayer:
+	var found: Array[Node] = model.find_children("*", "AnimationPlayer", true, false)
+	assert_eq(found.size(), 1, "one AnimationPlayer")
+	return found[0] as AnimationPlayer
+
+
+func _meshes(model: Node) -> Array[MeshInstance3D]:
+	var out: Array[MeshInstance3D] = []
+	for node: Node in model.find_children("*", "MeshInstance3D", true, false):
+		out.append(node as MeshInstance3D)
+	return out
+
+
+func _most_keys(animation: Animation) -> int:
+	var most: int = 0
+	for track: int in animation.get_track_count():
+		most = maxi(most, animation.track_get_key_count(track))
+	return most
+
+
+func test_has_every_required_bone_and_the_optional_ones() -> void:
+	var skeleton: Skeleton3D = _skeleton(_red())
+	for bone: String in REQUIRED_BONES:
+		assert_ge(skeleton.find_bone(bone), 0, "bone " + bone)
+	for bone: String in OPTIONAL_BONES:
+		assert_ge(skeleton.find_bone(bone), 0, "this rig carries the optional bone " + bone)
+	assert_ge(skeleton.get_bone_count(), 25)
+
+
+func test_the_weapon_socket_is_under_the_right_hand_with_y_along_the_blade() -> void:
+	var skeleton: Skeleton3D = _skeleton(_red())
+	var socket: int = skeleton.find_bone("weapon_socket")
+	assert_eq(skeleton.get_bone_name(skeleton.get_bone_parent(socket)), "hand_r", "weapon_socket hangs from hand_r")
+	var rest: Transform3D = skeleton.get_bone_global_rest(socket)
+	assert_gt(rest.basis.y.y, 0.4, "the blade points up")
+	assert_gt(rest.basis.y.z, 0.2, "and forward (+Z)")
+	assert_lt(rest.origin.x, -0.2, "the right hand is on the -X side")
+	assert_gt(rest.origin.y, 0.25, "the fist is at hip height or above")
+	assert_lt(rest.origin.y, 0.6)
+
+
+func test_faces_plus_z_with_the_origin_at_the_feet_and_her_height_kept() -> void:
+	var model: Node3D = _red()
+	var skeleton: Skeleton3D = _skeleton(model)
+	var low: float = INF
+	var high: float = -INF
+	for mesh_instance: MeshInstance3D in _meshes(model):
+		var box: AABB = mesh_instance.get_aabb()
+		low = minf(low, box.position.y)
+		high = maxf(high, box.end.y)
+	assert_almost_eq(low, 0.0, 0.01, "feet on the floor")
+	assert_almost_eq(high - low, HEIGHT_M, 0.02, "Ross's height, 0.95 m, kept")
+	# the tail sits behind her, the toes in front: both prove +Z is forward
+	var tail: Vector3 = skeleton.get_bone_global_rest(skeleton.find_bone("tail")).origin
+	var hips: Vector3 = skeleton.get_bone_global_rest(skeleton.find_bone("hips")).origin
+	assert_lt(tail.z, hips.z - 0.05, "the tail is behind her (-Z)")
+	var foot: int = skeleton.find_bone("foot_l")
+	var foot_tip: Vector3 = skeleton.get_bone_global_rest(foot).origin + skeleton.get_bone_global_rest(foot).basis.y * skeleton.get_bone_rest(foot).origin.length()
+	assert_gt(skeleton.get_bone_global_rest(foot).basis.y.z, 0.5, "the feet point forward (+Z)")
+	assert_almost_eq(hips.x, 0.0, 0.01, "centred on x")
+	assert_almost_eq(foot_tip.y, 0.0, 0.1)
+
+
+func test_every_required_clip_exists_and_the_optional_ones_are_listed() -> void:
+	var player: AnimationPlayer = _player(_red())
+	var missing_optional: Array[String] = []
+	for clip: String in REQUIRED_CLIPS:
+		assert_true(player.has_animation(clip), "clip " + clip)
+	for clip: String in OPTIONAL_CLIPS:
+		if not player.has_animation(clip):
+			missing_optional.append(clip)
+	assert_eq(missing_optional.size(), 0, "optional clips missing: %s" % [missing_optional])
+
+
+func _look_interpolation() -> int:
+	var file: FileAccess = FileAccess.open("res://data/animation/import_look.json", FileAccess.READ)
+	var look: Dictionary = JSON.parse_string(file.get_as_text()) as Dictionary
+	return Animation.INTERPOLATION_NEAREST if str(look.get("interpolation", "linear")) == "nearest" else Animation.INTERPOLATION_LINEAR
+
+
+func test_clips_are_named_short_loop_right_and_are_baked_poses() -> void:
+	var player: AnimationPlayer = _player(_red())
+	for clip: String in REQUIRED_CLIPS + OPTIONAL_CLIPS:
+		var animation: Animation = player.get_animation(clip)
+		assert_not_null(animation, clip)
+		assert_le(animation.length, MAX_CLIP_S, clip + " stays short")
+		assert_gt(animation.length, 0.2, clip + " is not a single pose")
+		var looped: bool = LOOPING.has(clip)
+		assert_eq(animation.loop_mode == Animation.LOOP_LINEAR, looped, clip + (" loops" if looped else " plays once"))
+		# the retargeted clips play the way data/animation/import_look.json says; the hand-posed stand-ins stay stepped
+		var expected: int = Animation.INTERPOLATION_NEAREST if STAND_INS.has(clip) else _look_interpolation()
+		for track: int in animation.get_track_count():
+			assert_eq(animation.track_get_interpolation_type(track), expected, "%s track %d playback look" % [clip, track])
+		# a baked clip has a key for most frames (30 fps; the stand-ins have a handful of key poses)
+		var keys: int = _most_keys(animation)
+		assert_ge(keys, 5, clip + " has several key poses")
+		assert_le(keys, 90, clip + " is not a long mocap clip")
+	for clip: String in ABSENT_ON_PURPOSE:
+		assert_false(player.has_animation(clip), clip + " is played as `dash` (no free clip fits)")
+
+
+func _rotation_at(animation: Animation, bone: String, time: float) -> Quaternion:
+	for track: int in animation.get_track_count():
+		if animation.track_get_type(track) == Animation.TYPE_ROTATION_3D and str(animation.track_get_path(track)).ends_with(":" + bone):
+			return animation.rotation_track_interpolate(track, time)
+	fail("no rotation track for " + bone)
+	return Quaternion.IDENTITY
+
+
+func _clip_keys() -> Dictionary:
+	var file: FileAccess = FileAccess.open("res://data/combat/red_clip_keys.json", FileAccess.READ)
+	return (JSON.parse_string(file.get_as_text()) as Dictionary)["clips"]
+
+
+func test_attack_clips_have_a_contact_frame_and_the_strike_pose_arrives_there() -> void:
+	# every strike clip carries contact_s (the frame the blade is fastest); the move data snaps the clip there at the hit
+	# (docs/pivot/combat_api.md section 3, anim.keys), so wind-up, strike and follow-through must be different poses
+	var animations: AnimationPlayer = _player(_red())
+	var clips: Dictionary = _clip_keys()
+	var moves: Dictionary = (JSON.parse_string(FileAccess.get_file_as_string("res://data/combat/moves.json")) as Dictionary)["sets"]["red"]["moves"]
+	for clip: String in STRIKES:
+		var entry: Dictionary = clips[clip]
+		assert_true(entry.has("contact_s"), clip + " has a contact frame")
+		assert_true(entry.has("contact_frame"), clip + " has a contact frame number")
+		var contact: float = float(entry["contact_s"])
+		var animation: Animation = animations.get_animation(clip)
+		assert_gt(contact, 0.05, clip + " has a wind-up")
+		assert_lt(contact, animation.length - 0.1, clip + " has a follow-through")
+		var wind_up: Quaternion = _rotation_at(animation, "upper_arm_r", 0.0)
+		var strike: Quaternion = _rotation_at(animation, "upper_arm_r", contact)
+		var follow: Quaternion = _rotation_at(animation, "upper_arm_r", minf(contact + 0.2, animation.length))
+		assert_gt(wind_up.angle_to(strike), 0.25, clip + ": the strike pose is not the wind-up pose")
+		assert_gt(strike.angle_to(follow), 0.15, clip + ": the follow-through is not the strike pose")
+		# the move's key at its hit time lands on this contact frame
+		var move: Dictionary = moves.get(clip, {})
+		if move.is_empty():
+			continue
+		var found: bool = false
+		for key: Dictionary in (move["anim"] as Dictionary)["keys"]:
+			if int(key["at_ms"]) == int(move["startup_ms"]):
+				found = true
+				assert_almost_eq(float(key["clip_s"]), contact, 1.0 / 30.0, clip + ": the key at the hit is the contact frame")
+		assert_true(found, clip + ": the move data has a pose key at its hit time")
+
+
+func test_the_four_hack_clips_have_a_release_frame_and_the_cast_moves_snap_to_it() -> void:
+	# the hack moves have no blade, so contact_s is the release frame (drone leaves the hand, pulse rings out, link takes hold, heal
+	# pops); sync_move_keys.py puts it on the move's startup_ms, exactly like a strike
+	var animations: AnimationPlayer = _player(_red())
+	var clips: Dictionary = _clip_keys()
+	var moves: Dictionary = (JSON.parse_string(FileAccess.get_file_as_string("res://data/combat/moves.json")) as Dictionary)["sets"]["red"]["moves"]
+	for clip: String in HACK_CLIPS:
+		assert_true(animations.has_animation(clip), clip + " is in the file")
+		var entry: Dictionary = clips[clip]
+		assert_true(str(entry["source"]).contains("UAL"), clip + " comes from the free pack (no clip authored)")
+		assert_true(entry.has("contact_s") and entry.has("contact_frame"), clip + " has a release frame")
+		assert_lt(float(entry["contact_s"]), animations.get_animation(clip).length - 0.1, clip + " has a follow-through")
+		var move: Dictionary = moves[clip]
+		assert_eq(str((move["anim"] as Dictionary)["clip"]), clip, clip + ": the cast move plays its own clip")
+		var found: bool = false
+		for key: Dictionary in (move["anim"] as Dictionary)["keys"]:
+			if int(key["at_ms"]) == int(move["startup_ms"]):
+				found = true
+				assert_almost_eq(float(key["clip_s"]), float(entry["contact_s"]), 1.0 / 30.0, clip + ": the key at the cast is the release frame")
+		assert_true(found, clip + ": the move data has a pose key at its cast time")
+
+
+func _pose_at(model: Node3D, clip: String, seconds: float) -> Skeleton3D:
+	var skeleton: Skeleton3D = _skeleton(model)
+	var player: AnimationPlayer = _player(model)
+	player.stop()
+	player.play(clip)
+	player.seek(seconds, true)
+	player.pause()
+	skeleton.force_update_all_bone_transforms()
+	return skeleton
+
+
+func test_the_hack_clips_read_differently_and_keep_the_sword_hand_down_for_the_hand_casts() -> void:
+	var clips: Dictionary = _clip_keys()
+	var idle: Skeleton3D = _pose_at(_red(), "idle", 0.5)
+	var idle_head: float = idle.get_bone_global_pose(idle.find_bone("head")).origin.y
+	var reach: Dictionary = {}
+	var head_y: Dictionary = {}
+	for clip: String in HACK_CLIPS:
+		var skeleton: Skeleton3D = _pose_at(_red(), clip, float(clips[clip]["contact_s"]))
+		reach[clip] = skeleton.get_bone_global_pose(skeleton.find_bone("hand_l")).origin
+		head_y[clip] = skeleton.get_bone_global_pose(skeleton.find_bone("head")).origin.y
+		assert_true(float(head_y[clip]) > 0.15 and float(head_y[clip]) < 1.2, "%s: head at a sane height at the release (%.2f)" % [clip, head_y[clip]])
+	# Zap and Overclock are hand casts: the left hand is out in front at the release
+	assert_gt(float(reach["hack_zap"].z), 0.12, "Zap: the left hand is pushed out in front")
+	assert_gt(float(reach["hack_overclock"].z), 0.12, "Overclock: the left hand reaches out in front")
+	# EMP and Reboot are body casts: she is crouched, so the head is lower than at idle
+	for clip: String in ["hack_emp", "hack_reboot"]:
+		assert_lt(float(head_y[clip]), idle_head - 0.1, "%s: crouched at the release (head %.3f, idle %.3f)" % [clip, head_y[clip], idle_head])
+
+
+func test_stand_ins_that_are_kept_are_listed_as_stand_ins_and_still_play() -> void:
+	var animations: AnimationPlayer = _player(_red())
+	var clips: Dictionary = _clip_keys()
+	for clip: String in ["air_1", "air_2", "air_3", "parry_success"]:
+		assert_true(animations.has_animation(clip), clip + " is still in the file")
+		assert_true(str(clips[clip]["source"]).contains("stand-in"), clip + " is recorded as a stand-in (no free clip fits)")
+
+
+func test_triangles_textures_and_influences() -> void:
+	var model: Node3D = _red()
+	var total: int = 0
+	for mesh_instance: MeshInstance3D in _meshes(model):
+		for surface: int in mesh_instance.mesh.get_surface_count():
+			var arrays: Array = mesh_instance.mesh.surface_get_arrays(surface)
+			total += (arrays[Mesh.ARRAY_INDEX] as PackedInt32Array).size() / 3
+			var bones: PackedInt32Array = arrays[Mesh.ARRAY_BONES]
+			var weights: PackedFloat32Array = arrays[Mesh.ARRAY_WEIGHTS]
+			assert_ge(bones.size(), 4, "the mesh is skinned")
+			var per_vertex: int = bones.size() / (arrays[Mesh.ARRAY_VERTEX] as PackedVector3Array).size()
+			assert_le(per_vertex, 4, "at most 4 influences per vertex")
+			for vertex: int in range(0, weights.size() / per_vertex, 37):
+				var sum: float = 0.0
+				for slot: int in per_vertex:
+					sum += weights[vertex * per_vertex + slot]
+				assert_almost_eq(sum, 1.0, 0.02, "weights add up to one")
+			var material: ShaderMaterial = mesh_instance.mesh.surface_get_material(surface) as ShaderMaterial
+			assert_not_null(material, "a PS2 ShaderMaterial")
+			if material != null:
+				assert_eq(material.shader.resource_path, "res://shaders/ps2_lit.gdshader", "Ross's final art gets the PS2 shader")
+				var albedo: Texture2D = material.get_shader_parameter("albedo_texture") as Texture2D
+				assert_not_null(albedo)
+				assert_le(albedo.get_width(), MAX_TEXTURE_PX, "512 px for the early-PS2 target")
+				var orm: Texture2D = material.get_shader_parameter("orm_texture") as Texture2D
+				assert_not_null(orm, "the metallic-roughness map is kept")
+	assert_eq(total, TRIANGLES, "Ross's 1,614 triangles, unchanged")
+	assert_le(total, TRIANGLE_CAP)
+
+
+func test_ears_and_tail_have_their_own_weights_so_they_can_swing() -> void:
+	var model: Node3D = _red()
+	var skeleton: Skeleton3D = _skeleton(model)
+	var wanted: Dictionary = {}
+	for bone: String in ["ear_l_2", "ear_r_2", "tail"]:
+		wanted[skeleton.find_bone(bone)] = 0
+	for mesh_instance: MeshInstance3D in _meshes(model):
+		var arrays: Array = mesh_instance.mesh.surface_get_arrays(0)
+		var bones: PackedInt32Array = arrays[Mesh.ARRAY_BONES]
+		var weights: PackedFloat32Array = arrays[Mesh.ARRAY_WEIGHTS]
+		for index: int in bones.size():
+			if wanted.has(bones[index]) and weights[index] > 0.5:
+				wanted[bones[index]] += 1
+	for bone: int in wanted:
+		assert_gt(float(wanted[bone]), 5.0, "vertices follow " + skeleton.get_bone_name(bone))
+
+
+func test_the_face_is_its_own_surface_for_swappable_faces_later() -> void:
+	# Ross approved swappable faces for later: only the surface exists now, nothing swaps yet.
+	var meshes: Array[MeshInstance3D] = _meshes(_red())
+	assert_eq(meshes.size(), 1)
+	var mesh: Mesh = meshes[0].mesh
+	assert_eq(mesh.get_surface_count(), 2, "body and face")
+	var face: ShaderMaterial = mesh.surface_get_material(1) as ShaderMaterial
+	assert_not_null(face)
+	assert_eq(face.resource_name, "red_ross_face", "the face material is named so a later system can find it")
+	var face_tris: int = (mesh.surface_get_arrays(1)[Mesh.ARRAY_INDEX] as PackedInt32Array).size() / 3
+	assert_gt(face_tris, 20, "the face has triangles")
+	assert_lt(face_tris, 200, "and is only the face")
+
+
+func test_the_bone_map_maps_every_humanoid_bone_that_exists() -> void:
+	# the plan: retarget the free Quaternius Universal Animation Library onto this skeleton (Godot SkeletonProfileHumanoid)
+	var map: BoneMap = load("res://art/final/characters/red/red_ross_bone_map.tres") as BoneMap
+	assert_not_null(map, "red_ross_bone_map.tres (made by scripts/tools/make_bone_maps.gd)")
+	var skeleton: Skeleton3D = _skeleton(_red())
+	var profile: SkeletonProfile = map.profile
+	assert_not_null(profile)
+	var mapped: int = 0
+	for index: int in profile.bone_size:
+		var humanoid: StringName = profile.get_bone_name(index)
+		var ours: StringName = map.get_skeleton_bone_name(humanoid)
+		if ours == &"":
+			continue
+		mapped += 1
+		assert_ge(skeleton.find_bone(ours), 0, "%s -> %s exists" % [humanoid, ours])
+	assert_ge(mapped, 20, "root, hips, spine, chest, neck, head and both arms and legs")
+	for humanoid: String in ["Hips", "Spine", "Chest", "Neck", "Head", "LeftUpperArm", "RightUpperArm", "LeftHand", "RightHand", "LeftFoot", "RightFoot"]:
+		assert_ne(map.get_skeleton_bone_name(humanoid), &"", humanoid + " is mapped")
+	# the parent chain matches the humanoid profile's (hips -> spine -> chest -> neck -> head; chest -> shoulder -> arm)
+	for pair: Array in [["spine", "hips"], ["chest", "spine"], ["neck", "chest"], ["head", "neck"], ["shoulder_l", "chest"],
+			["upper_arm_l", "shoulder_l"], ["forearm_l", "upper_arm_l"], ["hand_l", "forearm_l"], ["thigh_r", "hips"], ["shin_r", "thigh_r"], ["foot_r", "shin_r"]]:
+		assert_eq(skeleton.get_bone_name(skeleton.get_bone_parent(skeleton.find_bone(pair[0]))), pair[1], "%s hangs from %s" % pair)

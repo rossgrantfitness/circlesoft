@@ -1,0 +1,91 @@
+{
+  "title": "LIGHTS LEFT ON",
+  "title_lit_word": "ON",
+  "demo_tag": "DEMO",
+  "press_start": "Press Start",
+  "credit": "a Circlesoft game",
+  "version": "v0.3.0",
+  "menu": [
+    {
+      "id": "new_game",
+      "label": "New Game"
+    },
+    {
+      "id": "continue",
+      "label": "Continue"
+    },
+    {
+      "id": "config",
+      "label": "Config"
+    },
+    {
+      "id": "battle_test",
+      "label": "Battle Test",
+      "dev": true
+    },
+    {
+      "id": "quit",
+      "label": "Quit"
+    }
+  ],
+  "battle_test": {
+    "title": "Battle Test",
+    "hint": "Pick a fight",
+    "tiers": {
+      "tutorial": "Tutorial",
+      "regular": "Regular",
+      "tough": "Tough"
+    }
+  },
+  "dev_items": true,
+  "_about": "Strings for the title screen. menu items marked dev are shown only while dev_items is true (Battle Test). 'continue' is greyed out until a save exists.",
+  "name_entry": {
+    "title": "Name the Hero",
+    "hint": "Pick or type. Cancel deletes. Enter is OK.",
+    "default_name": "Red",
+    "max_length": 8,
+    "allowed": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 -'.",
+    "rows": [
+      "ABCDEFGHIJKLM",
+      "NOPQRSTUVWXYZ",
+      "abcdefghijklm",
+      "nopqrstuvwxyz",
+      "0123456789-'."
+    ],
+    "actions": [
+      {
+        "id": "space",
+        "label": "Space"
+      },
+      {
+        "id": "delete",
+        "label": "Delete"
+      },
+      {
+        "id": "default",
+        "label": "Default"
+      },
+      {
+        "id": "ok",
+        "label": "OK"
+      }
+    ],
+    "window": {
+      "x": 48,
+      "y": 18,
+      "w": 288,
+      "h": 180
+    },
+    "slots": {
+      "y": 28,
+      "w": 18,
+      "h": 20
+    },
+    "grid": {
+      "top": 58,
+      "cell_w": 20,
+      "cell_h": 16,
+      "action_gap": 4
+    }
+  }
+}

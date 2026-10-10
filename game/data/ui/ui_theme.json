@@ -1,0 +1,92 @@
+{
+  "_note": "UI colors come from docs/style_guide.md (Master palette and UI table). Fonts: see art/final/ui/fonts. All sizes are in internal pixels (384x216).",
+  "palette": {
+    "ink": "#14121F",
+    "night": "#1F2540",
+    "dusk": "#3A3566",
+    "chalk": "#EDEAD8",
+    "lamp_amber": "#FFB347",
+    "lamp_glow": "#FFE08A",
+    "brass": "#D9A441",
+    "slate": "#5B6573",
+    "slate_light": "#8D97A5",
+    "signals_blue": "#6F8BA8",
+    "window_fill": "#1B1A33",
+    "window_hatch": "#232246",
+    "text": "#EDEAD8",
+    "text_dim": "#7C7A8E",
+    "text_highlight": "#FFB347"
+  },
+  "fonts": {
+    "_note": "One face for everything (Nunito, variable weight, SIL OFL 1.1): grayscale-antialiased and drawn at whole pixels into the 384x216 stage, so it looks soft and pixelated like a low-res console menu. Every text gets the 1px drop shadow from text_shadow. weight is the font's wght axis.",
+    "menu": {"path": "res://art/final/ui/fonts/Nunito-VariableFont_wght.ttf", "size": 12, "weight": 800},
+    "body": {"path": "res://art/final/ui/fonts/Nunito-VariableFont_wght.ttf", "size": 12, "weight": 800},
+    "dialogue": {"path": "res://art/final/ui/fonts/Nunito-VariableFont_wght.ttf", "size": 12, "weight": 800},
+    "tag": {"path": "res://art/final/ui/fonts/Nunito-VariableFont_wght.ttf", "size": 10, "weight": 900},
+    "title": {"path": "res://art/final/ui/fonts/Nunito-VariableFont_wght.ttf", "size": 32, "weight": 900}
+  },
+  "text_shadow": {
+    "_note": "The reusable text style: every label and drawn string gets this drop shadow, down and right. on_light is used for dark text on the chalk speech bubble.",
+    "color": "#0B0A14",
+    "on_light": "#D3CDB7",
+    "offset_x": 1,
+    "offset_y": 1
+  },
+  "screen": {
+    "width": 384,
+    "height": 216,
+    "integer_scaling_min_fill": 0.8
+  },
+  "window": {
+    "chamfer": 5,
+    "border_outer": 2,
+    "border_inner": 1,
+    "hatch_period": 4,
+    "fill_alpha": 0.9,
+    "rivet_inset": 5,
+    "rivet_size": 2,
+    "open_steps": 4,
+    "open_thin_height": 3
+  },
+  "timing": {
+    "ui_step_s": 0.0833,
+    "fade_steps": 8,
+    "press_start_blink_s": 0.5,
+    "cursor_flicker_s": 0.25,
+    "cursor_bob_s": 0.4,
+    "lamp_flicker_step_s": 0.0833,
+    "lamp_flicker_seed": 7
+  },
+  "sfx": {
+    "tick": "menu_tick",
+    "confirm": "menu_confirm",
+    "back": "menu_back"
+  },
+  "cursor": {
+    "_note": "Placeholder flame-arrow, drawn from text rows. # = amber, o = glow, . = empty. Final art is requested in docs/art_requests.md.",
+    "frames": [
+      ["##..........", "####........", "######......", "########....", "##########..", "##ooo#######", "##########..", "########....", "######......", "####........", "##.........."],
+      ["##..........", "####........", "######......", "########....", "##ooo#####..", "############", "##ooo#####..", "########....", "######......", "####........", "##.........."]
+    ]
+  },
+  "title_screen": {
+    "title_y": 28,
+    "title_shadow_offset": 3,
+    "title_outline": 3,
+    "demo_tag_gap": 6,
+    "demo_tag_pad_x": 4,
+    "demo_tag_pad_y": 1,
+    "press_start_y": 150,
+    "credit_y": 197,
+    "margin": 8,
+    "menu_window": {"x": 120, "y": 92, "w": 144, "h": 100},
+    "config_window": {"x": 16, "y": 8, "w": 352, "h": 200},
+    "menu_item_first_y": 14,
+    "menu_item_step": 16,
+    "menu_item_x": 36,
+    "cursor_x": 14,
+    "star_count": 46,
+    "dust_count": 22,
+    "scene_seed": 1998
+  }
+}

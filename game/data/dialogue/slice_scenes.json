@@ -1,0 +1,76 @@
+{
+ "_about": "Words for the slice's staged scenes, Writer's placeholder pass (VS-31, 2026-10-09; final text at VS-37, Ross approves). The scenes themselves (triggers, flags, steps) are in slice/story_scenes.json: hideout_wake, mox_deck, gate_pass, kasp_wreck, ending_gate, ending_square, ending_home. Red is silent: she only gestures, or the narrator describes her. Vela has no body in the slice, so her lines show in the plain box. The ending's small payoff follows the Level Designer's recommended option (B with a dash of A: the screens go dark, the posters come down, Pop hands over a free bowl) plus the wolf wave of option C as one narrator beat; Ross picks, and a pick is a data edit.",
+ "conversations": {
+  "mk_hideout_wake": [
+   {"speaker": "vela", "text": "Good evening, Red. Logging you as awake."},
+   {"speaker": "red", "gesture": "ear_perk"},
+   {"speaker": "vela", "text": "Dispatch has a job, and the Signals are tightening the screws. Tap the deck first, so I can file where you are."}
+  ],
+  "mk_rp_deck": [
+   {"speaker": "mox", "text": "{face:boasting}Red! Perfect timing! The deck is done! Mostly! Forty percent! The IMPORTANT forty!"},
+   {"speaker": "mox", "text": "Don't say it. I know what you're thinking. 'Mox, you're a genius.' You're welcome!"},
+   {"speaker": "red", "gesture": "question"},
+   {"speaker": "mox", "text": "{face:sheepish}...Okay, maybe not. But you will. Look: four hacks. I labelled them."},
+   {"speaker": "mox", "text": "Zap Drone: pew. EMP: bzzzt. Overclock: you borrow someone else's gun. Reboot: you turn yourself off and on again. It heals. Do not ask."},
+   {"speaker": "mox", "text": "Sword hits charge the battery. So: hit things, hack things, hit things. Easy!"},
+   {"speaker": "mox", "text": "{face:panicking}...Is it supposed to smoke? Tuesday, is it supposed to SMOKE? AAAAA!"},
+   {"speaker": "mox", "text": "{face:focused}...Okay. Four seconds. Done. It is fine. That is how it sounds."},
+   {"speaker": "narrator", "text": "Mox clips the deck onto Red's wrist. It is warm. It hums. It is a little bit crooked."},
+   {"speaker": "red", "gesture": "thumbs_up"}
+  ],
+  "mk_gate_pass": [
+   {"speaker": "crowd_gate_grunt_a", "text": "Road's closed. Papers?"},
+   {"speaker": "narrator", "text": "Red holds up the Courier Pass."},
+   {"speaker": "crowd_gate_grunt_a", "text": "...Yard 9. Huh. Nobody has gone to Yard 9 on purpose in years."},
+   {"speaker": "crowd_gate_grunt_b", "text": "Stamp it, then. I will find the ink."},
+   {"speaker": "crowd_gate_grunt_a", "text": "Stamp, stamp. In triplicate. ...Fine, once. I am out of copies."},
+   {"speaker": "crowd_gate_grunt_b", "text": "Keep it down on the road, courier. The Sergeant is in a mood. He has been in a mood for eleven years."},
+   {"speaker": "narrator", "text": "The boom barrier rattles up. Past it, the road runs off toward the ore line and a yard full of other people's things."}
+  ],
+  "kasp_wreck": [
+   {"speaker": "narrator", "text": "Smoke. Scrap. Somewhere in the wreck, a cupholder is still in one piece."},
+   {"speaker": "kasp", "text": "{face:flustered}Pending... I am so very pending."},
+   {"speaker": "kasp", "text": "Eleven years. Eleven years, and it ends on a pile, by a courier."},
+   {"speaker": "red", "gesture": "shrug"},
+   {"speaker": "kasp", "text": "{face:smug}This will go in my report. Under 'weather'."},
+   {"speaker": "narrator", "text": "He tucks the clipboard under one arm and limps off into the smoke, filing as he goes."}
+  ],
+  "mk_end_gate": [
+   {"speaker": "crowd_gate_grunt_a", "text": "Courier. Papers? ...Never mind. I saw the walker from the booth. The big one."},
+   {"speaker": "crowd_gate_grunt_b", "text": "The Sergeant will want the paperwork on this."},
+   {"speaker": "crowd_gate_grunt_a", "text": "He is going to need a bigger form."},
+   {"speaker": "crowd_gate_grunt_b", "text": "...Lunch?"},
+   {"speaker": "crowd_gate_grunt_a", "text": "Lunch."},
+   {"speaker": "crowd_gate_grunt_b", "text": "Noise ticket, one wind chime, Form 12. ...Void. I lost the pen."},
+   {"speaker": "narrator", "text": "Behind them, a wind chime tinkles in the evidence line. Nobody ducks."}
+  ],
+  "mk_end_sq_intro": [
+   {"speaker": "narrator", "text": "Tarp Square was loud already. Now it is LOUDER. The screens go dark, the posters come down, and somebody finds the volume knob on the boombox."},
+   {"speaker": "crowd_pop", "text": "RED! There she is! BOWL'S ON THE HOUSE!"},
+   {"speaker": "narrator", "text": "A bowl lands in Red's hands. It is hot. It is enormous. Her ears go straight up."}
+  ],
+  "mk_end_sq_odds": [
+   {"speaker": "crowd_odds_man", "text": "I bet against you. Three rations."},
+   {"speaker": "crowd_odds_man", "text": "...I am a terrible bettor and a wonderful loser. Here."},
+   {"speaker": "narrator", "text": "He presses a handful of credits into Red's hand. He looks furious about it."}
+  ],
+  "mk_end_sq_legend": [
+   {"speaker": "crowd_shopper_c", "text": "Did you SEE it? Red beat a HUNDRED Signals wolves! With ONE ARM!"},
+   {"speaker": "red", "gesture": "head_shake"},
+   {"speaker": "narrator", "text": "Red holds up three fingers. Then two more. Then, after some thought, a flex."},
+   {"speaker": "crowd_shopper_c", "text": "Three! ...Three and two more! Five hundred, with a flex! Somebody write it down!"}
+  ],
+  "mk_end_sq_wolves": [
+   {"speaker": "narrator", "text": "The patrol comes through on the hour. The square goes quiet, from habit. Nobody ducks. One of the wolves lifts a hand, then pretends to scratch his ear."},
+   {"speaker": "narrator", "text": "The music is back before he finishes."}
+  ],
+  "mk_end_home": [
+   {"speaker": "vela", "text": "Entry for the record. Yard 9: concluded. Sergeant Kasp: pending."},
+   {"speaker": "vela", "text": "You nodded just now. I am logging that as 'You are welcome.' ...And as 'Thank you.' Both."},
+   {"speaker": "mox", "text": "{face:proud}RED! Welcome home! I made noodles! I... bought noodles! I stood NEAR noodles!"},
+   {"speaker": "narrator", "text": "Red taps the deck twice with a knuckle. Then she gives the neon sky a big thumbs-up, like somebody out there can see it."},
+   {"speaker": "red", "gesture": "thumbs_up"},
+   {"speaker": "vela", "text": "Goodnight, Red. Logging you as home."}
+  ]
+ }
+}

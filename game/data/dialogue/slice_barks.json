@@ -1,0 +1,167 @@
+{
+ "_about": "Radio and fight barks for the slice, Writer's placeholder pass (VS-31, 2026-10-09; final text at VS-37, Ross approves). Each conversation id IS the bark id the Level Designer and Combat Designer already named (bark_j1_arrive in docs/maps/junkyard.md, kasp_rig_intro and vela_rig_zap_relays in combat/bosses/hushmaster.json, kasp_mech_plate in junk_mech.json, and so on), so a trigger plays the conversation with that id. Most barks are ONE line; a few are two lines to be played back to back (Kasp's spec recitals). Speakers: vela (the voice in Red's ear: prim, exact, ex-Signals; she logs Red's nods as statements; the radio box shows her name from data/text/slice_ui.json) and kasp (an office manager who means every word; he recites the rig's specs mid-fight). Keep lines short: the radio box holds two or three short rows. 'bark_variants' lists the barks that have several alternatives: kasp_rig_quiet_hours (play the first one the first time the pulse comes, then cycle the rest) and kasp_mech_plate (one per plate, in order). NEW IDS the Writer added that no data names yet (use or ignore): bark_j2_overclock_idle (a hijacked turret with nothing to shoot, the gag in encounters.json hack_showcase), bark_arena_save (the arena gate terminal: 'last save before the Sergeant'), kasp_arena_reveal (the camera shot of Kasp in the seat), kasp_mech_assemble (the cranes pour scrap into the Heap), kasp_pa_j2, kasp_pa_j3, kasp_pa_j4 (Kasp over the yard loudspeaker as Red enters each room: optional). Please keep the spec recitals word for word until Ross approves the final text; the dish line in kasp_rig_quiet_hours is one the Creative Director has marked.",
+ "bark_variants": {
+  "kasp_rig_quiet_hours": ["kasp_rig_quiet_hours", "kasp_rig_quiet_hours_v2", "kasp_rig_quiet_hours_v3", "kasp_rig_quiet_hours_v4"],
+  "kasp_mech_plate": ["kasp_mech_plate", "kasp_mech_plate_v2", "kasp_mech_plate_v3", "kasp_mech_plate_v4"]
+ },
+ "conversations": {
+  "bark_j1_arrive": [
+   {"speaker": "vela", "text": "Yard 9. Everything they confiscate ends up here. Stay quiet. ...I know. I am logging it anyway."}
+  ],
+  "bark_j1_lockon": [
+   {"speaker": "vela", "text": "Wolves. Lock on, Red. It keeps your sword pointed at the right end."}
+  ],
+  "bark_j1_zap": [
+   {"speaker": "vela", "text": "That fuse box on the pylon feeds the door. Zap it. I am ninety percent sure. I rounded up."}
+  ],
+  "bark_j2_turret": [
+   {"speaker": "vela", "text": "Wall turret. Slow bursts, long gaps. Zap it, EMP it, or sprint. I will not write it up."}
+  ],
+  "bark_j2_overclock": [
+   {"speaker": "vela", "text": "That turret on the ledge. Overclock it, and it fights for you. Ten seconds. Make them count."}
+  ],
+  "bark_j2_overclock_idle": [
+   {"speaker": "vela", "text": "Overclocked, with nothing to shoot. It is firing at the chute. The chute has done nothing wrong."}
+  ],
+  "bark_j2_crane": [
+   {"speaker": "vela", "text": "There. The crane, up ahead. Whatever it is holding, we will want it moved. Keep climbing."}
+  ],
+  "bark_j3_pit": [
+   {"speaker": "vela", "text": "Nine metres of coolant. I have measured your jump, Red. Respectfully: no."}
+  ],
+  "bark_j3_crane": [
+   {"speaker": "vela", "text": "Crane controls, at the foot of its leg. Overclock them, and carry that girder over the pit."}
+  ],
+  "bark_j3_emp": [
+   {"speaker": "vela", "text": "Drones, from that dispenser. EMP buys you a pause. Zap the power node on the roof to end it."}
+  ],
+  "bark_j3_lastsave": [
+   {"speaker": "vela", "text": "Last chance to save, courier. Past this, there is no coming back this way."}
+  ],
+  "bark_j4_wrecks": [
+   {"speaker": "vela", "text": "Those are... large. Someone built something enormous here, once. Keep walking."}
+  ],
+  "bark_j4_stand": [
+   {"speaker": "vela", "text": "Shutters are down. Two heavies, three wolves, two turrets. The turrets can be borrowed."}
+  ],
+  "bark_j4_loader": [
+   {"speaker": "vela", "text": "That is a loader. Wake it up, Red. Press the button and climb in."}
+  ],
+  "bark_j4_smash": [
+   {"speaker": "vela", "text": "Straight ahead. That wall is scrap, and you are not. Smash it."}
+  ],
+  "bark_j5_start": [
+   {"speaker": "vela", "text": "Hacks are off while you drive. Fine. You have arms the size of buses now."}
+  ],
+  "bark_j5_smash": [
+   {"speaker": "vela", "text": "Cars, containers, walls. All fair game. I will file the paperwork later."}
+  ],
+  "bark_j5_gate": [
+   {"speaker": "vela", "text": "The big gate. Hit it until it stops being a gate."}
+  ],
+  "bark_arena_save": [
+   {"speaker": "vela", "text": "Last save before the Sergeant. Use it. He has a rig and a speech."}
+  ],
+  "kasp_pa_j2": [
+   {"speaker": "kasp", "text": "ATTENTION YARD 9: a courier has no appointment. Please remind her. Firmly."}
+  ],
+  "kasp_pa_j3": [
+   {"speaker": "kasp", "text": "ATTENTION YARD 9: the crane is not available. The crane has been reminded."}
+  ],
+  "kasp_pa_j4": [
+   {"speaker": "kasp", "text": "ALL UNITS: stop the courier. Quietly. Loudly. Whichever is faster."}
+  ],
+  "kasp_arena_reveal": [
+   {"speaker": "kasp", "text": "{face:smug}MEMO. Yard 9 is closed. You are in Yard 9. This is a clerical problem."},
+   {"speaker": "kasp", "text": "Sergeant Kasp, jammer division. I will be your obstacle this evening."}
+  ],
+  "kasp_rig_intro": [
+   {"speaker": "kasp", "text": "Eight legs. Hydraulic knees. Heated seat. Cupholder."},
+   {"speaker": "kasp", "text": "{face:shouting}You are about to be defeated by a cupholder, courier."}
+  ],
+  "kasp_rig_relay_1": [
+   {"speaker": "kasp", "text": "That relay was a four-hundred-credit part. I am deducting it from your pending."}
+  ],
+  "kasp_rig_pairs_2": [
+   {"speaker": "kasp", "text": "Four legs remain. You have two. I am still ahead on legs."}
+  ],
+  "kasp_rig_pairs_3": [
+   {"speaker": "kasp", "text": "{face:flustered}Two legs. That is within tolerance. I have decided it is within tolerance."}
+  ],
+  "kasp_rig_quiet_hours": [
+   {"speaker": "kasp", "text": "Item nine: receiver dish. Salvage-grade, genuine antique. Hears the call better than anything in the catalog."},
+   {"speaker": "kasp", "text": "Which I will now use to cancel it. Quiet Hours."}
+  ],
+  "kasp_rig_quiet_hours_v2": [
+   {"speaker": "kasp", "text": "Quiet Hours. Your second button is cancelled."}
+  ],
+  "kasp_rig_quiet_hours_v3": [
+   {"speaker": "kasp", "text": "Hacks are a noise. Noise is a violation."}
+  ],
+  "kasp_rig_quiet_hours_v4": [
+   {"speaker": "kasp", "text": "Effective now: please stop hearing things."}
+  ],
+  "kasp_rig_dish_broken": [
+   {"speaker": "kasp", "text": "{face:flustered}The DISH?! That was a genuine antique! It was the only one in the catalog!"}
+  ],
+  "kasp_rig_topple": [
+   {"speaker": "kasp", "text": "Rig status: horizontal. Filing a form."},
+   {"speaker": "kasp", "text": "This is not a fall. It is an unscheduled descent."}
+  ],
+  "kasp_rig_jack_in": [
+   {"speaker": "kasp", "text": "{face:shouting}What is that cable? The cable is not in the spec! THE CABLE IS NOT IN THE SPEC!"}
+  ],
+  "kasp_escape": [
+   {"speaker": "kasp", "text": "This is not a retreat. It is a scheduled relocation. CRANE! I have the form!"}
+  ],
+  "kasp_mech_assemble": [
+   {"speaker": "kasp", "text": "{face:shouting}YARD, ASSEMBLE. That is a work order. Scrap, report to Heap B."}
+  ],
+  "vela_get_to_loader": [
+   {"speaker": "vela", "text": "He is building something huge out of the yard. Get to the loader, Red. Run!"}
+  ],
+  "kasp_mech_intro": [
+   {"speaker": "kasp", "text": "The Heap. Forty metres. Specifications pending. Heated seat: salvaged. Cupholder: transferred."},
+   {"speaker": "kasp", "text": "Everything else is scrap. Which is, I am told, the point."}
+  ],
+  "kasp_mech_plate": [
+   {"speaker": "kasp", "text": "That plate was load-bearing. Everything is load-bearing. It is a mech."}
+  ],
+  "kasp_mech_plate_v2": [
+   {"speaker": "kasp", "text": "Two plates. TWO. I am filing a complaint with the yard."}
+  ],
+  "kasp_mech_plate_v3": [
+   {"speaker": "kasp", "text": "That is three. I have run out of plates to be insulted by."}
+  ],
+  "kasp_mech_plate_v4": [
+   {"speaker": "kasp", "text": "That was the last plate. I would like it noted that the cab is still heated."}
+  ],
+  "kasp_mech_core": [
+   {"speaker": "kasp", "text": "{face:flustered}The cab! Do you see the cab? That is the heated seat! Aim somewhere else!"}
+  ],
+  "kasp_mech_last_stand": [
+   {"speaker": "kasp", "text": "{face:shouting}Enough. This is a Priority One memo. ALL ARMS. SWING."}
+  ],
+  "kasp_mech_defeat": [
+   {"speaker": "kasp", "text": "I would like to dispute this outcome. In writing. In triplicate. Please hold."}
+  ],
+  "vela_rig_zap_relays": [
+   {"speaker": "vela", "text": "The relay boxes on the legs. Zap one, and that pair of legs folds. The sword only clinks."}
+  ],
+  "vela_rig_turret": [
+   {"speaker": "vela", "text": "Those gun pylons are powered down. Overclock one, and it will shoot the relays for you."}
+  ],
+  "vela_rig_emp_drones": [
+   {"speaker": "vela", "text": "Drones! EMP gets all three at once. Second button, Red."}
+  ],
+  "vela_rig_hit_dish": [
+   {"speaker": "vela", "text": "Quiet Hours! Hit the dish before your hacks lock! Zap it, or use the sword!"}
+  ],
+  "vela_mech_open_plate": [
+   {"speaker": "vela", "text": "Each attack opens an armour plate. Bait a swing, then hit the shoulder."}
+  ],
+  "vela_mech_jump_ring": [
+   {"speaker": "vela", "text": "That ring is coming across the ground. Jump it!"}
+  ]
+ }
+}

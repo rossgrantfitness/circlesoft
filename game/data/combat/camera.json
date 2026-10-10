@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "_note": "Camera numbers for the combat sandbox (docs/pivot/combat_api.md 4.8). Angles are degrees. Pitch is negative when the camera looks down. cam_distance_m and cam_sensitivity also exist as feel knobs and win over distance_m and the sensitivities here while the panel is in use.",
+  "orbit": {
+    "distance_m": 4.5,
+    "min_distance_m": 0.8,
+    "pivot_height_m": 0.8,
+    "start_pitch_deg": -14.0,
+    "pitch_min_deg": -60.0,
+    "pitch_max_deg": 25.0,
+    "fov_deg": 62.0,
+    "near": 0.1,
+    "far": 120.0,
+    "mouse_deg_per_px": 0.1,
+    "stick_deg_per_s": 190.0,
+    "stick_curve": 1.6,
+    "invert_x": false,
+    "invert_y": false,
+    "follow_lag_s": 0.07,
+    "recenter_delay_s": 1.4,
+    "recenter_deg_per_s": 95.0,
+    "recenter_min_speed_mps": 1.5,
+    "recenter_dead_deg": 35.0,
+    "collision_mask": 1,
+    "collision_margin_m": 0.3,
+    "look_rate": 45.0
+  },
+  "lock": {
+    "max_range_m": 16.0,
+    "break_range_m": 21.0,
+    "los_grace_s": 0.6,
+    "max_angle_deg": 110.0,
+    "angle_weight": 1.0,
+    "distance_weight": 0.6,
+    "frame_weight": 0.35,
+    "yaw_rate": 7.0,
+    "pitch_deg": -16.0,
+    "extra_distance_per_m": 0.25,
+    "max_extra_distance_m": 3.0,
+    "flick_threshold": 0.65,
+    "flick_cooldown_s": 0.3,
+    "mouse_flick_px": 45.0,
+    "los_height_m": 0.5,
+    "los_mask": 1
+  },
+  "diorama": {
+    "yaw_deg": 0.0,
+    "pitch_deg": -42.0,
+    "distance_m": 10.5,
+    "fov_deg": 32.0,
+    "near": 0.5,
+    "far": 90.0,
+    "pivot_height_m": 0.4,
+    "lag_s": 0.25,
+    "blend_s": 0.5
+  },
+  "shake_fallback": {
+    "light":  {"amplitude_m": 0.03, "duration_s": 0.12, "frequency_hz": 28.0},
+    "heavy":  {"amplitude_m": 0.07, "duration_s": 0.2,  "frequency_hz": 24.0},
+    "launch": {"amplitude_m": 0.09, "duration_s": 0.25, "frequency_hz": 22.0},
+    "slam":   {"amplitude_m": 0.14, "duration_s": 0.35, "frequency_hz": 18.0}
+  },
+  "magnet": {
+    "default_range_m": 3.5,
+    "default_cone_deg": 70.0,
+    "locked_target_max_range_m": 9.0
+  }
+}

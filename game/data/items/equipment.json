@@ -1,0 +1,31 @@
+{
+  "_about": "Weapons, armor and charms: ONE source of truth for gear. Fields: id, name, slot (weapon / armor / charm), type (icon family: sword, hammer, mace, vest, charm), icon, tint (hex recolor), desc (placeholder until M6-2), price (buy price; sells for half), stats ({stat: flat bonus} added to the growth-table stats), owner (weapons and character-only armor: only this party member may equip it; empty = anyone), weight (armor: light / heavy; heavy fits only the characters in heavy_armor_wearers), block_statuses (status ids the wearer cannot catch), perks ({payback_mult: 1.5} etc., read by the battle). Gear never changes Clutch timing. compare: how the up and down arrows (shops and the Equip menu) score a loadout: sum of stat bonuses times stat_weights (default 1), plus status_block_value per blocked status and perk_value per perk. starting_gear is what each fighter wears on a new game (also copied into party/party.json members).",
+  "slots": ["weapon", "armor", "charm"],
+  "heavy_armor_wearers": ["otis"],
+  "compare": {"stat_weights": {"hp": 0.25, "juice": 0.5}, "status_block_value": 2, "perk_value": 2},
+  "starting_gear": {
+    "red":  {"weapon": "scrap_sword", "armor": "quilted_lining", "charm": ""},
+    "otis": {"weapon": "dock_mallet", "armor": "lucky_coveralls", "charm": ""},
+    "mox":  {"weapon": "big_wrench", "armor": "too_many_pockets_vest", "charm": ""}
+  },
+  "gear": [
+    {"id": "scrap_sword", "name": "Scrap Sword", "slot": "weapon", "type": "sword", "icon": "sword", "tint": "#8A8F98", "desc": "Hammered out of a hull plate, grip wrapped in tape.", "price": 60, "owner": "red", "stats": {"attack": 3}},
+    {"id": "rebar_blade", "name": "Rebar Blade", "slot": "weapon", "type": "sword", "icon": "sword", "tint": "#B5532E", "desc": "Heavier, hits harder.", "price": 380, "owner": "red", "stats": {"attack": 7}},
+    {"id": "bread_knife", "name": "Bread Knife, Extremely Large", "slot": "weapon", "type": "sword", "icon": "sword", "tint": "#E8DDB8", "desc": "A little Luck. Nobody asks where it came from.", "price": 300, "owner": "red", "stats": {"attack": 5, "luck": 3}},
+    {"id": "dock_mallet", "name": "Dock Mallet", "slot": "weapon", "type": "hammer", "icon": "hammer", "tint": "#8A6B3E", "desc": "Drives pilings. Also doors.", "price": 60, "owner": "otis", "stats": {"attack": 3}},
+    {"id": "rivet_hammer", "name": "Rivet Hammer", "slot": "weapon", "type": "hammer", "icon": "hammer", "tint": "#C8322A", "desc": "Louder, and it shows.", "price": 360, "owner": "otis", "stats": {"attack": 7}},
+    {"id": "big_wrench", "name": "Big Wrench", "slot": "weapon", "type": "mace", "icon": "mace", "tint": "#8A8F98", "desc": "Nearly as tall as he is, with a weight welded on the end.", "price": 50, "owner": "mox", "stats": {"attack": 2}},
+    {"id": "pipe_wrench", "name": "Pipe Wrench, Slightly Bent", "slot": "weapon", "type": "mace", "icon": "mace", "tint": "#C9A23A", "desc": "It's supposed to be like that.", "price": 340, "owner": "mox", "stats": {"attack": 5}},
+
+    {"id": "quilted_lining", "name": "Quilted Lining", "slot": "armor", "type": "vest", "icon": "vest", "tint": "#C8322A", "desc": "Sewn inside Mom's jacket.", "price": 80, "owner": "red", "weight": "light", "stats": {"defense": 2, "hp": 4}},
+    {"id": "lucky_coveralls", "name": "Lucky Coveralls", "slot": "armor", "type": "vest", "icon": "vest", "tint": "#E0782B", "desc": "Never been washed, never been beaten.", "price": 140, "owner": "", "weight": "heavy", "stats": {"defense": 4, "hp": 8}},
+    {"id": "too_many_pockets_vest", "name": "Too-Many-Pockets Vest", "slot": "armor", "type": "vest", "icon": "vest", "tint": "#C9A23A", "desc": "Every pocket has a gadget in it. Some are even his.", "price": 80, "owner": "mox", "weight": "light", "stats": {"defense": 2, "hp": 4}},
+    {"id": "padded_work_vest", "name": "Padded Work Vest", "slot": "armor", "type": "vest", "icon": "vest", "tint": "#7FA3C9", "desc": "Fits anyone. Mostly.", "price": 220, "owner": "", "weight": "light", "stats": {"defense": 3, "hp": 6}},
+    {"id": "hi_vis_vest", "name": "Hi-Vis Vest", "slot": "armor", "type": "vest", "icon": "vest", "tint": "#E8E84A", "desc": "They see you coming. Somehow that helps.", "price": 260, "owner": "", "weight": "light", "stats": {"defense": 3, "luck": 2}},
+
+    {"id": "lucky_bolt", "name": "Lucky Bolt", "slot": "charm", "type": "charm", "icon": "charm", "tint": "#C9A23A", "desc": "A little Luck. It's a bolt.", "price": 150, "owner": "", "stats": {"luck": 4}},
+    {"id": "earplugs", "name": "Earplugs", "slot": "charm", "type": "charm", "icon": "charm", "tint": "#E8683A", "desc": "Protects against Noise Tickets.", "price": 180, "owner": "", "block_statuses": ["noise_ticket"]},
+    {"id": "oven_mitts", "name": "Oven Mitts", "slot": "charm", "type": "charm", "icon": "charm", "tint": "#C8322A", "desc": "Protects against Burnt Toast.", "price": 180, "owner": "", "block_statuses": ["burnt_toast"]},
+    {"id": "sore_loser_patch", "name": "Sore Loser Patch", "slot": "charm", "type": "charm", "icon": "charm", "tint": "#7A3E9D", "desc": "Payback hits harder. Don't ask what it's for.", "price": 240, "owner": "", "perks": {"payback_mult": 1.5}}
+  ]
+}

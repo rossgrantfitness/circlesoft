@@ -1,0 +1,308 @@
+{
+ "_about": "Night market words, Writer's placeholder pass (VS-31, 2026-10-09). Final text comes at VS-37; Ross approves final words (Dialogue & writing is Level 0). Same ids the Level Designer's slice/placements.json already points at, plus a few new ids for story-state variants (_taken: the main job is taken; _party: the walk home after the boss, flag market_party). Tone: loud and cheerful market (Ross F96); the Signals patrol is the only hush, and even that is a little funny. Red is silent: she only ever gestures (speaker red, gesture) or is described by the narrator. Speakers: crowd_* ids are townsfolk in the plain box; otis and mox are the two named speakers here. Scene words (hideout wake, the Mox deck handover, the Gate 4 pass, the ending walk home) are in slice_scenes.json; fight and radio lines in slice_barks.json; ambient one-liners are in slice/placements.json (barks).",
+ "conversations": {
+  "mk_sq_pop": [
+   {"speaker": "crowd_pop", "text": "RED! Little bean! Sit, sit, the broth is loud tonight!"},
+   {"speaker": "crowd_pop", "text": "I feed everyone. The block, the kids, the patrol. ...Especially the patrol. They tip in silence."}
+  ],
+  "mk_sq_pop_taken": [
+   {"speaker": "crowd_pop", "text": "Yard 9? Then you eat first. Rule of the cart: nobody gets scrapped on an empty bowl."},
+   {"speaker": "crowd_pop", "text": "Sit. Slurp. Go be brave."}
+  ],
+  "mk_sq_pop_party": [
+   {"speaker": "crowd_pop", "text": "RED! BOWL'S ON THE HOUSE! Pop has never said that sentence! Pop is saying it twice!"},
+   {"speaker": "crowd_pop", "text": "Slurp as LOUD as you like. Nobody is writing it up tonight."}
+  ],
+  "mk_sq_dumpling": [
+   {"speaker": "crowd_dumpling_cook", "text": "Sample? It is a little cold. ...Mm. Asleep. Sorry. Sample?"},
+   {"speaker": "crowd_dumpling_cook", "text": "These are my best. I think. I was dreaming when I folded them."}
+  ],
+  "mk_sq_tape": [
+   {"speaker": "crowd_tape_keeper", "text": "Scrap wire by the foot! Tape by the mood! What is yours today?"},
+   {"speaker": "crowd_tape_keeper", "text": "Mine is 'sticky.' Yours looks like 'urgent.' That is the red tape. Fits you."}
+  ],
+  "mk_sq_odds": [
+   {"speaker": "crowd_odds_man", "text": "Will the screen glitch before ten? Two rations says yes."},
+   {"speaker": "crowd_odds_man", "text": "I am right most days. It has ruined my social life."}
+  ],
+  "mk_sq_odds_taken": [
+   {"speaker": "crowd_odds_man", "text": "Yard 9, is it? I would bet on you. ...Nobody will take the other side."},
+   {"speaker": "crowd_odds_man", "text": "That is the trouble with being right. Nobody plays with me."}
+  ],
+  "mk_sq_odds_party": [
+   {"speaker": "crowd_odds_man", "text": "I lost three rations on you and I have never been happier. Do not tell my pride."}
+  ],
+  "mk_sq_neighbor": [
+   {"speaker": "crowd_neighbor", "text": "You were out at all hours again! I bake at three. We are not so different."},
+   {"speaker": "crowd_neighbor", "text": "Bring me a speaker and I will bake to it. ...Not THAT loud."}
+  ],
+  "mk_sq_ume": [
+   {"speaker": "crowd_grandma_ume", "text": "Phones, five minutes a bar. Do not touch the cords."},
+   {"speaker": "crowd_grandma_ume", "text": "I said do not touch the cords!"},
+   {"speaker": "crowd_grandma_ume", "text": "...Not you, Red. You can touch them. Gently. Like a sleeping noodle."}
+  ],
+  "mk_sq_ume_party": [
+   {"speaker": "crowd_grandma_ume", "text": "Free charging tonight! Every phone on the line! Hands OFF the cords, though."},
+   {"speaker": "crowd_grandma_ume", "text": "...Fine. One cord. Gently."}
+  ],
+  "mk_sq_shopper_a": [
+   {"speaker": "crowd_shopper_a", "text": "Four for the price of three! Get in, get in!"},
+   {"speaker": "crowd_shopper_a", "text": "...Is that a good deal? I stopped checking."}
+  ],
+  "mk_sq_shopper_b": [
+   {"speaker": "crowd_shopper_b", "text": "The screen is looking at us again. Pretend to browse."},
+   {"speaker": "crowd_shopper_b", "text": "...Ooh. A mug."}
+  ],
+  "mk_sq_shopper_c": [
+   {"speaker": "crowd_shopper_c", "text": "New headphones! Turned all the way up! Do not tell Mom."},
+   {"speaker": "crowd_shopper_c", "text": "WHAT? ...I SAID DO NOT TELL MOM!"}
+  ],
+  "mk_sq_shopper_d": [
+   {"speaker": "crowd_shopper_d", "text": "Wind chimes are back on the poles this week. Hear that? That is the good stuff."},
+   {"speaker": "crowd_shopper_d", "text": "Shh. Listen. ...There. Almost a song."}
+  ],
+  "mk_sq_wolf_a": [
+   {"speaker": "crowd_patrol_wolf_a", "text": "..."},
+   {"speaker": "crowd_patrol_wolf_a", "text": "Move along."},
+   {"speaker": "crowd_patrol_wolf_a", "text": "(sniffs toward Pop's cart) ...Move along."}
+  ],
+  "mk_sq_wolf_a_party": [
+   {"speaker": "crowd_patrol_wolf_a", "text": "(a very small wave, then a cough) ...Move along. Kindly."}
+  ],
+  "mk_sq_wolf_b": [
+   {"speaker": "crowd_patrol_wolf_b", "text": "Keep it down, courier."},
+   {"speaker": "crowd_patrol_wolf_b", "text": "Eyes front. Boots quiet. ...Whose dumplings are those?"}
+  ],
+  "mk_sq_wolf_b_party": [
+   {"speaker": "crowd_patrol_wolf_b", "text": "...Nice walker. Do not tell anyone I said so."}
+  ],
+  "mk_wf_juno": [
+   {"speaker": "crowd_juno", "text": "Watch the track! Tuesday-class drones only. ...Mine crashes. Always the green one."},
+   {"speaker": "crowd_juno", "text": "It is not the drone. It is the pilot. ...It is the drone."}
+  ],
+  "mk_wf_kid_a": [
+   {"speaker": "crowd_drone_kid_a", "text": "Do not tell the patrol it is a race. It is a... delivery rehearsal."},
+   {"speaker": "crowd_drone_kid_a", "text": "We deliver nothing. Very fast."}
+  ],
+  "mk_wf_kid_b": [
+   {"speaker": "crowd_drone_kid_b", "text": "Go go go! It is turning! It is... not turning!"}
+  ],
+  "mk_wf_judge": [
+   {"speaker": "crowd_race_judge", "text": "(through the megaphone) FIRST PLACE: BLUE. SECOND PLACE: RED. THIRD PLACE: A SEAGULL, SOMEHOW."},
+   {"speaker": "crowd_race_judge", "text": "(through the megaphone) THE GREEN ONE HAS CRASHED. AGAIN. WE LOVE IT."}
+  ],
+  "mk_wf_pell": [
+   {"speaker": "crowd_pell", "text": "Hello, courier! Papers are my hobby. Ask me about papers, I dare you."},
+   {"speaker": "crowd_pell", "text": "No? Everybody says no. ...I will be here. With the papers."}
+  ],
+  "mk_wf_pell_form": [
+   {"speaker": "crowd_pell", "text": "An Appeal Form! Signals hands out the tickets and never mentions the forms. You have to know somebody."},
+   {"speaker": "crowd_pell", "text": "Drop it in the APPEALS slot at Gate 4. In triplicate. Well, once. It is a start.", "give_item": "side_job_parcel", "set_flag": "job_appeal_form_got"}
+  ],
+  "mk_wf_pell_go": [
+   {"speaker": "crowd_pell", "text": "Booth slot, Gate 4. Do not fold it. They hate it when you fold it."}
+  ],
+  "mk_wf_pell_done": [
+   {"speaker": "crowd_pell", "text": "Filed. They said my appeal is important to them. ...Nobody has said that to me in years."}
+  ],
+  "mk_wf_late_cook": [
+   {"speaker": "crowd_late_cook", "text": "Pop's cousin. Same menu. Better view."},
+   {"speaker": "crowd_late_cook", "text": "Worse broth. Do not tell Pop."}
+  ],
+  "mk_wf_fisher": [
+   {"speaker": "crowd_fisher", "text": "Something bit. ...Once. Last Tuesday."},
+   {"speaker": "crowd_fisher", "text": "It was my own boot. But a bite is a bite."}
+  ],
+  "mk_gt_grunt_a": [
+   {"speaker": "crowd_gate_grunt_a", "text": "Road's closed. Papers?"},
+   {"speaker": "crowd_gate_grunt_a", "text": "No papers, no boom. That is the whole job. I like it. It is simple."}
+  ],
+  "mk_gt_grunt_a_open": [
+   {"speaker": "crowd_gate_grunt_a", "text": "Pass is in order. Stamp, stamp. Boom's up."},
+   {"speaker": "crowd_gate_grunt_a", "text": "Keep it down on the road. The Sergeant is in a mood."}
+  ],
+  "mk_gt_grunt_b": [
+   {"speaker": "crowd_gate_grunt_b", "text": "Noise ticket. One wind chime. Form 12."},
+   {"speaker": "crowd_gate_grunt_b", "text": "I did not write the rules. I write the tickets."},
+   {"speaker": "crowd_gate_grunt_b", "text": "...It is a nice chime, though."}
+  ],
+  "mk_gt_line_a": [
+   {"speaker": "crowd_line_a", "text": "It's only a wind chime. One little wind chime."},
+   {"speaker": "crowd_line_a", "text": "My nan made it. It sounds like her laughing. They will melt it down for a whistle."}
+  ],
+  "mk_gt_line_b": [
+   {"speaker": "crowd_line_b", "text": "Third week in this line."},
+   {"speaker": "crowd_line_b", "text": "I know every crack in this floor. That one is Gerald."}
+  ],
+  "mk_gt_line_c": [
+   {"speaker": "crowd_line_c", "text": "Do not make eye contact with the searchlight."},
+   {"speaker": "crowd_line_c", "text": "It can tell. It is very sensitive."}
+  ],
+  "mk_dp_sleeper": [
+   {"speaker": "crowd_sleeping_courier", "text": "...zzz..."},
+   {"speaker": "crowd_sleeping_courier", "text": "...five more minutes... the parcel can wait..."}
+  ],
+  "mk_dp_dispatcher": [
+   {"speaker": "crowd_dispatcher", "text": "Job board is on the wall, Red. The big one is Yard 9: the Signals scrapyard behind the ore line."},
+   {"speaker": "crowd_dispatcher", "text": "Everything they confiscate ends up there. Radios. Bells. Chimes. ...Not that I am saying anything. I dispatch. That is all."},
+   {"speaker": "crowd_dispatcher", "text": "Take it or do not. The deadline is already angry."}
+  ],
+  "mk_dp_dispatcher_taken": [
+   {"speaker": "crowd_dispatcher", "text": "Yard 9. Pass is stamped. Gate 4, then the road. Keep it down out there."},
+   {"speaker": "crowd_dispatcher", "text": "And bring everyone back. ...Including you. Especially you. Red? Red?"},
+   {"speaker": "narrator", "text": "Red already has her goggles down. She left a sentence ago."}
+  ],
+  "mk_dp_dispatcher_done": [
+   {"speaker": "crowd_dispatcher", "text": "Stamped DONE. ...Everyone is talking about it. Loudly."},
+   {"speaker": "crowd_dispatcher", "text": "Nobody has ever been this loud in my office. I have allowed it. Once."}
+  ],
+  "mk_dp_board": [
+   {"speaker": "narrator", "text": "The job board. Curling slips, ring-stained, some stamped twice. One has a tiny drawing of a sword in the margin."}
+  ],
+  "mk_cs_keeper": [
+   {"speaker": "crowd_shopkeeper", "text": "Everything you need, nothing you want. The usual?"},
+   {"speaker": "crowd_shopkeeper", "text": "Two canned coffees and the face of someone who needs three. Counter's yours."}
+  ],
+  "mk_cs_clerk": [
+   {"speaker": "crowd_clerk", "text": "Antacids. Do not look at the badge. I am just a guy."},
+   {"speaker": "crowd_clerk", "text": "Quota is eleven tickets a day. I have written ten. All to the same bench. It never argues."}
+  ],
+  "mk_fg_otis": [
+   {"speaker": "otis", "text": "{face:calm}Friend! Welcome. Mind the anvil. ...{face:apologetic}Sorry, anvil."},
+   {"speaker": "otis", "text": "Swords are on the wall. Ask, and I will tinker."},
+   {"speaker": "otis", "text": "That blade of yours has seen things. ...You look happier than it does."}
+  ],
+  "mk_fg_otis_taken": [
+   {"speaker": "otis", "text": "Yard 9? I used to haul from there. Mind the cranes, friend. They do not mean it, but they swing."},
+   {"speaker": "otis", "text": "{face:worried}Come back by dark. I count heads, you know. I will leave a space."}
+  ],
+  "mk_fg_otis_party": [
+   {"speaker": "otis", "text": "{face:laughing}I heard that walker from here, friend. Whole forge rang."},
+   {"speaker": "otis", "text": "{face:calm}Let me count you. One. Good. One is perfect."}
+  ],
+  "mk_rp_mox": [
+   {"speaker": "mox", "text": "{face:boasting}Red! The deck is a hundred percent... {face:sheepish}forty percent finished. Tuesday, say hi. ...Tuesday?"},
+   {"speaker": "mox", "text": "She is up there somewhere. She is very shy. ...She is the ceiling fan. No. No, that is the ceiling fan."}
+  ],
+  "mk_rp_mox_party": [
+   {"speaker": "mox", "text": "{face:proud}RED! I watched it from the roof! The big robot! That was FORTY PERCENT MY IDEA!"},
+   {"speaker": "mox", "text": "Okay, ten. Ten percent. ...Fifteen, if you count the tape."}
+  ],
+  "mk_ar_owner": [
+   {"speaker": "crowd_arcade_owner", "text": "Turn it up! Every machine has a different beep. Do not touch the claw. The claw knows."},
+   {"speaker": "crowd_arcade_owner", "text": "A credit is a coin. Fun is free. ...Fun is also a coin. I lied."}
+  ],
+  "mk_ar_kid_a": [
+   {"speaker": "crowd_arcade_kid_a", "text": "Beep. Beep beep. Beeeep. (That was a win.)"}
+  ],
+  "mk_ar_kid_b": [
+   {"speaker": "crowd_arcade_kid_b", "text": "Zed is one point behind the champ. One! I have been watching all week."},
+   {"speaker": "crowd_arcade_kid_b", "text": "I will help him. By sitting very close."}
+  ],
+  "mk_ar_kid_c": [
+   {"speaker": "crowd_arcade_kid_c", "text": "Beep beep BEEP! I am on the last level!"},
+   {"speaker": "crowd_arcade_kid_c", "text": "It loops. The last level loops."}
+  ],
+  "mk_ar_zed": [
+   {"speaker": "crowd_zed", "text": "Nine thousand nine hundred eighty-nine. ...You are at nine nine nine zero? One point. Always one point."},
+   {"speaker": "crowd_zed", "text": "I could beat you. I am just working up to it."}
+  ],
+  "mk_ar_scores": [
+   {"speaker": "sign", "text": "HIGH SCORES: RED 9990. ZED 9989. A third line has been scratched out."}
+  ],
+  "mk_sq_screen": [
+   {"speaker": "sign", "text": "THE ADMIRAL SPEAKS: A QUIET MOON IS A SAFE MOON."},
+   {"speaker": "sign", "text": "MEMO (scrolling): QUIET HOURS ARE EVERY HOUR. THIS INCLUDES LUNCH. - SGT. KASP"},
+   {"speaker": "narrator", "text": "Three kids by the pole do the Admiral's salute. Slightly wrong. On purpose."}
+  ],
+  "mk_sq_screen_party": [
+   {"speaker": "narrator", "text": "The screen is dark. Someone has taped a drawing over it: two long ears and a sword far too big. Underneath, in crayon: THANKS."}
+  ],
+  "mk_sq_phone_rack": [
+   {"speaker": "narrator", "text": "A washing line of phones, all charging off Grandma Ume's window. Cords swing like vines. Every phone has a name on tape."},
+   {"speaker": "narrator", "text": "One is labelled DEFINITELY NOT MOX'S. It is ringing."}
+  ],
+  "mk_sq_window_ledge": [
+   {"speaker": "narrator", "text": "Ume's window. A ledge under it, two crates to climb. The sill is warm."}
+  ],
+  "mk_sq_window_ledge_done": [
+   {"speaker": "narrator", "text": "The phones are all charged. Somebody inside is humming along."}
+  ],
+  "mk_sq_tarp_pole": [
+   {"speaker": "narrator", "text": "The pole holds the tarps and a tangle of string lights. Somebody taped a tiny flag to it. The flag says PLEASE. Nobody knows what for."}
+  ],
+  "mk_sq_bets_board": [
+   {"speaker": "sign", "text": "BETS: Will the screen glitch before ten? / Will Pop run out of broth? / Will the patrol smile? (odds: never)"},
+   {"speaker": "sign", "text": "NEW: Will the courier come back from Yard 9? (odds: nobody will say)"}
+  ],
+  "mk_sq_bets_party": [
+   {"speaker": "sign", "text": "BETS: PAID OUT, in angry capitals. Below, smaller: Will the patrol wave? ...They did. Pay up, Gerald."}
+  ],
+  "mk_sq_memo_board": [
+   {"speaker": "sign", "text": "MEMO. Noise is a choice. Choose less. - K."},
+   {"speaker": "sign", "text": "MEMO. Productivity at the docks is down 4%. Coughing is up 11%. I have drawn my own conclusions. - K."},
+   {"speaker": "sign", "text": "MEMO. A wind chime is a bell, and a bell is a receiver in a hat. All three are confiscated. - K."}
+  ],
+  "mk_sq_memo_party": [
+   {"speaker": "narrator", "text": "Kasp's memo board is empty. One pin is left. Somebody has pinned a noodle coupon to it."}
+  ],
+  "mk_wf_screen": [
+   {"speaker": "narrator", "text": "The Admiral's face with a sticker moustache. Somebody added eyebrows. Somebody else added a monocle."}
+  ],
+  "mk_wf_tide_board": [
+   {"speaker": "sign", "text": "TIDE: in. Then out. Then in. Then, we think, out."}
+  ],
+  "mk_wf_crane": [
+   {"speaker": "narrator", "text": "A crane, standing very still. Somebody hung a laundry line off the arm. The laundry is waving."}
+  ],
+  "mk_wf_results": [
+   {"speaker": "sign", "text": "RACE RESULTS: 1st Tuesday-class (blue). 2nd Tuesday-class (red). Green: crashed, again. Green: forgiven."}
+  ],
+  "mk_gt_appeals_slot": [
+   {"speaker": "narrator", "text": "APPEALS. A slot in the booth. A recorded voice: 'Your appeal is important to us.' There is nothing to drop in it yet."}
+  ],
+  "mk_gt_appeals_done": [
+   {"speaker": "narrator", "text": "The slot hums. A recorded voice: 'Your appeal is important to us.' It almost sounds sincere."}
+  ],
+  "mk_gt_poster": [
+   {"speaker": "sign", "text": "QUIET HOURS SAVE LIVES."},
+   {"speaker": "sign", "text": "MEMO. Yard 9 is closed to the public. This includes couriers. This includes ones with passes. The pass is a formality. - K."},
+   {"speaker": "narrator", "text": "Someone chalked a moustache on Kasp's face. Someone else added a second, to be safe."}
+  ],
+  "mk_gt_poster_party": [
+   {"speaker": "sign", "text": "QUIET HOURS SAVE LIVES (CLOSED FOR REPAIRS)."},
+   {"speaker": "narrator", "text": "The poster has been taken down. The moustache is still there. On the wall. In chalk. It looks lonely."}
+  ],
+  "mk_hd_stickers": [
+   {"speaker": "narrator", "text": "One sticker per delivery. The wall is nearly full. The newest one is a very small sword."}
+  ],
+  "mk_hd_photo": [
+   {"speaker": "narrator", "text": "Mom, young, grinning, in a flight jacket. Written on the back: 'Fly loud.'"}
+  ],
+  "mk_hd_charts": [
+   {"speaker": "narrator", "text": "Mom's old flight charts. The lines go somewhere you can no longer fly."}
+  ],
+  "mk_hd_parcel": [
+   {"speaker": "narrator", "text": "A parcel marked 'MOX WUZ HERE'. Heavy. Ticks faintly. You leave it."}
+  ],
+  "mk_rp_scratch": [
+   {"speaker": "narrator", "text": "Scratched into the counter: MOX WUZ HERE. Underneath, smaller: 'and Tuesday.'"}
+  ],
+  "mk_fg_bridge_lamp": [
+   {"speaker": "narrator", "text": "A rusty ship's bridge light, bolted to the end of the counter. Otis polishes it when he thinks nobody is looking."},
+   {"speaker": "otis", "text": "Came off a hull I hauled for the Navy. ...Somebody had left it on."}
+  ],
+  "mk_charge_drop": [
+   {"speaker": "narrator", "text": "You set the battery brick on the sill. A phone on the line blinks awake. A hand snatches the brick inside."}
+  ],
+  "mk_charge_reward": [
+   {"speaker": "crowd_grandma_ume", "text": "Do not touch the cords! ...Thank you, Red. There is something on the sill. Take it before I change my mind."}
+  ],
+  "mk_appeal_drop": [
+   {"speaker": "narrator", "text": "You slide the form into the APPEALS slot. It is eaten. A recorded voice: 'Your appeal is important to us.'"}
+  ],
+  "mk_appeal_paid": [
+   {"speaker": "narrator", "text": "A note slides out of the slot: 'FILED. PAYMENT ATTACHED. - P.' Two rations and some credits follow, a little damp."}
+  ]
+ }
+}

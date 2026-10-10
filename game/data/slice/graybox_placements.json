@@ -1,0 +1,65 @@
+{
+ "_about": "THROWAWAY doors for the graybox rooms (slice/graybox_rooms.json). Laid over world/placements by Placements.extra_ids; the real slice doors go in slice/placements.json (Level Designer). Also a vendor who barks and the job board spot.",
+ "doors": {
+  "gb_hub_to_yard": {
+   "room": "gb_hub",
+   "to_room": "gb_yard",
+   "to_spawn": "from_hub",
+   "label": "Yard"
+  },
+  "gb_yard_to_hub": {
+   "room": "gb_yard",
+   "to_room": "gb_hub",
+   "to_spawn": "from_yard",
+   "label": "Hub"
+  },
+  "gb_yard_to_vault": {
+   "room": "gb_yard",
+   "to_room": "gb_vault",
+   "to_spawn": "from_yard",
+   "label": "Vault"
+  },
+  "gb_vault_to_yard": {
+   "room": "gb_vault",
+   "to_room": "gb_yard",
+   "to_spawn": "from_vault",
+   "label": "Yard"
+  }
+ },
+ "npcs": {
+  "gb_vendor": {
+   "room": "gb_hub",
+   "speaker": "crowd_bettor",
+   "look": {
+    "body": "#8a6f4a",
+    "head": "#d6b48a"
+   },
+   "bark_radius_m": 3.5,
+   "barks": [
+    "Fresh scrap noodles!",
+    "Two creds a bowl.",
+    "Mind the cables, kid."
+   ],
+   "bark_cooldown_s": 6.0,
+   "variants": [
+    {
+     "conversation": "gb_vendor_talk"
+    }
+   ]
+  }
+ },
+ "spots": {
+  "gb_board": {
+   "room": "gb_hub",
+   "kind": "examine",
+   "reach": 1.8
+  }
+ },
+ "targets": {
+  "gb_fuse": {
+   "room": "gb_yard",
+   "sticky": true,
+   "flag": "gb_fuse_open"
+  }
+ }
+}

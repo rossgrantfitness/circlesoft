@@ -1,0 +1,211 @@
+{
+ "_about": "Night market switches and cosmetic routines (docs/maps/night_market.md). Ross answered the four layout decisions on 2026-10-09: a LOUD, cheerful market from the start (the passing patrol is the only hush); the repair shop in the old dock office with Otis moving to the Forge; one way after the loader wakes; the colossus visible in phase 1. Each is one line here so flipping it later is a data edit. Others read it: Audio Designer (market_tone, ambience, hush), Gameplay Programmers (town life, VS-43), the junkyard and arena generators (one_way_after_loader, colossus_in_phase_1).",
+ "switches": {
+  "market_tone": {
+   "value": "loud",
+   "options": [
+    "loud",
+    "whisper"
+   ],
+   "decision": "Ross 2026-10-09: B, loud and cheerful from the start; the Signals patrol is the only hush. (The older whisper-market option, Quiet Hours muffling the town, is not built.)",
+   "affects": "audio, ambience, ambient bark volume; no geometry"
+  },
+  "repair_shop": {
+   "value": "dock_office",
+   "options": [
+    "dock_office",
+    "new_room"
+   ],
+   "decision": "Ross 2026-10-09: A, the repair shop is the old dock-office room (market_repair, off the Wharf), Otis moves to the Forge, hatch from the hideout.",
+   "affects": "rooms and placements (B would add a room to make_market_rooms.py and rooms.json)"
+  },
+  "one_way_after_loader": {
+   "value": true,
+   "decision": "Ross 2026-10-09: A, one way from the loader onward (junkyard map).",
+   "affects": "junkyard generator only"
+  },
+  "colossus_in_phase_1": {
+   "value": "visible",
+   "options": [
+    "visible",
+    "hidden"
+   ],
+   "decision": "Ross 2026-10-09: A, the dormant colossus is visible from the first frame of the arena.",
+   "affects": "arena generator only"
+  }
+ },
+ "flags": {
+  "job_main_taken": "main job taken; Courier Pass given; opens Gate 4's barrier",
+  "job_charge_done": "side job 1 done",
+  "job_appeal_done": "side job 2 done",
+  "patrol_hush": "set for 15 s while the Signals patrol is within 8 m of an NPC (people duck and go quiet; music ducks)",
+  "kasp_beaten": "slice boss beaten (main job done)",
+  "market_party": "set after the boss: the small payoff for a market that is already loud (see ending_payoff)"
+ },
+ "patrol": {
+  "_about": "Cosmetic Signals patrol in Tarp Square, the only hush in a loud market: two wolves walk this loop on the hour at 1.2 m/s (a short pass of about 15 s). Scenery, not enemies (no combat in town). Waypoints are [x, z] in room metres. Until the town-life work (VS-43) they stand at their idle spots (mk_sq_wolf_a / mk_sq_wolf_b). NPCs within hush_radius_m duck, go quiet and the music and radios duck for hush_s seconds (flag patrol_hush). They never block a door.",
+  "room": "market_square",
+  "wolves": [
+   "mk_sq_wolf_a",
+   "mk_sq_wolf_b"
+  ],
+  "speed_mps": 1.2,
+  "on_the_hour": true,
+  "hush_radius_m": 8.0,
+  "hush_s": 15.0,
+  "loop": [
+   [
+    20.0,
+    2.5
+   ],
+   [
+    20.0,
+    10.5
+   ],
+   [
+    6.0,
+    10.5
+   ],
+   [
+    6.0,
+    2.5
+   ],
+   [
+    20.0,
+    2.5
+   ]
+  ]
+ },
+ "pending": {
+  "junk_j1": "the junkyard's first room (docs/maps/junkyard.md); Gate 4's barrier door leads to it with spawn from_market"
+ },
+ "ambience": {
+  "_about": "Sound sources for the Audio Designer (market is loud and busy from the start). Positions are room metres [x, z]; rooms are market_* ids. kind: music (a stall or speaker stack), radio (a chatty counter radio), arcade (cabinet beeps), crowd (murmur and shouting), chimes (wind chimes on the poles). Every source ducks while patrol_hush is set. Loops: all of them.",
+  "market_square": [
+   {
+    "kind": "music",
+    "at": [
+     19.6,
+     6.0
+    ],
+    "node": "TapeBoombox"
+   },
+   {
+    "kind": "music",
+    "at": [
+     21.0,
+     9.6
+    ],
+    "node": "StackA"
+   },
+   {
+    "kind": "music",
+    "at": [
+     1.2,
+     10.4
+    ],
+    "node": "StackB"
+   },
+   {
+    "kind": "radio",
+    "at": [
+     16.2,
+     8.1
+    ],
+    "node": "NoodleRadio"
+   },
+   {
+    "kind": "chimes",
+    "at": [
+     11.0,
+     6.0
+    ],
+    "node": "TarpPole"
+   },
+   {
+    "kind": "crowd",
+    "at": [
+     11.0,
+     6.0
+    ]
+   }
+  ],
+  "market_wharf": [
+   {
+    "kind": "music",
+    "at": [
+     11.4,
+     3.2
+    ],
+    "node": "TrackStackA"
+   },
+   {
+    "kind": "music",
+    "at": [
+     21.4,
+     3.0
+    ],
+    "node": "TrackStackB"
+   },
+   {
+    "kind": "radio",
+    "at": [
+     20.6,
+     7.7
+    ],
+    "node": "LateRadio"
+   },
+   {
+    "kind": "crowd",
+    "at": [
+     16.0,
+     5.5
+    ]
+   }
+  ],
+  "market_arcade": [
+   {
+    "kind": "arcade",
+    "at": [
+     3.0,
+     0.6
+    ]
+   },
+   {
+    "kind": "arcade",
+    "at": [
+     8.5,
+     3.0
+    ]
+   },
+   {
+    "kind": "music",
+    "at": [
+     0.6,
+     0.4
+    ],
+    "node": "ArcadeSpeakerA"
+   },
+   {
+    "kind": "music",
+    "at": [
+     8.4,
+     5.2
+    ],
+    "node": "ArcadeSpeakerB"
+   }
+  ],
+  "market_gate": [],
+  "_quiet_rooms": "market_gate is the grim edge: only the searchlight hum and the radio from the booth."
+ },
+ "ending_payoff": {
+  "_about": "The old 'market gets loud after Kasp' payoff is gone (the market is loud from the start). Suggested small replacements for Ross to pick from; staging only, the Writer writes the words.",
+  "options": [
+   "A street party: stalls light up all at once, string lights flash, Pop hands Red a free bowl, the kids race drones on the square",
+   "B the propaganda posters and the screen torn down: Kasp's memo board is empty, the Admiral's face gets a sticker moustache for real",
+   "C the patrol wolves wave and walk past without the hush: nobody ducks any more"
+  ],
+  "recommended": "B with a dash of A: the screens go dark (the posters come down) and Pop gives her the free bowl; costs a flag swap on the screens and one conversation variant",
+  "flag": "market_party"
+ }
+}

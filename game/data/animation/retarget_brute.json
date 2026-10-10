@@ -1,0 +1,373 @@
+{
+ "_about": "Retarget of the free Quaternius Universal Animation Library (CC0) onto the sandbox Brute blockout (a 17-bone placeholder rig: no neck, chest, hands or feet, so only the main bones follow). Same tool as Red and the wolf.",
+ "target": "art/placeholder/enemies/sandbox_brute/enm_sandbox_brute.glb",
+ "output": "art/placeholder/enemies/sandbox_brute/enm_sandbox_brute_ual.glb",
+ "clip_keys": "data/combat/brute_clip_keys.json",
+ "clip_keys_about": "Key poses of the sandbox Brute's clips (30 fps, retarget_ual.py). Use these seconds as clip_s in moves.json anim.keys.",
+ "sources": {
+  "UAL1": "art/placeholder/animations/quaternius_ual/UAL1_Standard.glb",
+  "UAL2": "art/placeholder/animations/quaternius_ual/UAL2_Standard.glb"
+ },
+ "fps": 30,
+ "hips": {
+  "target": "hips",
+  "source": "pelvis",
+  "scale": 0.425
+ },
+ "ground": {
+  "scale": 0.425,
+  "target_points": [
+   {
+    "bone": "shin_l",
+    "offset": [
+     0,
+     -0.3,
+     -0.06
+    ]
+   },
+   {
+    "bone": "shin_l",
+    "offset": [
+     0,
+     -0.3,
+     0.14
+    ]
+   },
+   {
+    "bone": "shin_r",
+    "offset": [
+     0,
+     -0.3,
+     -0.06
+    ]
+   },
+   {
+    "bone": "shin_r",
+    "offset": [
+     0,
+     -0.3,
+     0.14
+    ]
+   },
+   {
+    "bone": "hips",
+    "offset": [
+     0,
+     0,
+     0
+    ],
+    "lift": 0.15
+   },
+   {
+    "bone": "spine",
+    "offset": [
+     0,
+     0.2,
+     0
+    ],
+    "lift": 0.2
+   },
+   {
+    "bone": "head",
+    "offset": [
+     0,
+     0.15,
+     0
+    ],
+    "lift": 0.25
+   }
+  ],
+  "source_points": [
+   {
+    "bone": "foot_l",
+    "offset": [
+     0,
+     -0.104,
+     -0.045
+    ]
+   },
+   {
+    "bone": "ball_l",
+    "offset": [
+     0,
+     -0.015,
+     0.0
+    ]
+   },
+   {
+    "bone": "ball_l",
+    "offset": [
+     0,
+     -0.015,
+     0.079
+    ]
+   },
+   {
+    "bone": "foot_r",
+    "offset": [
+     0,
+     -0.104,
+     -0.045
+    ]
+   },
+   {
+    "bone": "ball_r",
+    "offset": [
+     0,
+     -0.015,
+     0.0
+    ]
+   },
+   {
+    "bone": "ball_r",
+    "offset": [
+     0,
+     -0.015,
+     0.079
+    ]
+   },
+   {
+    "bone": "pelvis",
+    "offset": [
+     0,
+     0,
+     0
+    ],
+    "lift": 0.045
+   },
+   {
+    "bone": "spine_03",
+    "offset": [
+     0,
+     0.03,
+     0
+    ],
+    "lift": 0.07
+   },
+   {
+    "bone": "Head",
+    "offset": [
+     0,
+     0.08,
+     0
+    ],
+    "lift": 0.1
+   },
+   {
+    "bone": "hand_l",
+    "offset": [
+     0,
+     -0.04,
+     0
+    ],
+    "lift": 0.04
+   },
+   {
+    "bone": "hand_r",
+    "offset": [
+     0,
+     -0.04,
+     0
+    ],
+    "lift": 0.04
+   }
+  ],
+  "_about": "Contact points for the ground lock: [bone, offset in the rest world frame, lift]. Soles have lift 0, body points a radius. The source's ball bone is used for the toe so a sprint's toe-off does not sink through the floor."
+ },
+ "bones": [
+  {
+   "target": "hips",
+   "source": "pelvis"
+  },
+  {
+   "target": "spine",
+   "source": "spine_02"
+  },
+  {
+   "target": "head",
+   "source": "Head"
+  },
+  {
+   "target": "upper_arm_{s}",
+   "source": "upperarm_{s}",
+   "t_dir": "forearm_{s}",
+   "to": [
+    1,
+    0,
+    0
+   ]
+  },
+  {
+   "target": "forearm_{s}",
+   "source": "lowerarm_{s}",
+   "t_dir": "parent",
+   "to": [
+    1,
+    0,
+    0
+   ]
+  },
+  {
+   "target": "thigh_{s}",
+   "source": "thigh_{s}"
+  },
+  {
+   "target": "shin_{s}",
+   "source": "calf_{s}"
+  }
+ ],
+ "clips": [
+  {
+   "name": "idle",
+   "source": "UAL2:Zombie_Idle_Loop",
+   "loop": true
+  },
+  {
+   "name": "notice",
+   "source": "UAL2:Zombie_Scratch",
+   "from_s": 0.0,
+   "to_s": 0.5,
+   "note": "first half of Zombie_Scratch: the head and arm come up"
+  },
+  {
+   "name": "walk",
+   "source": "UAL2:Zombie_Walk_Fwd_Loop",
+   "loop": true
+  },
+  {
+   "name": "strafe",
+   "source": "UAL2:Zombie_Walk_Fwd_Loop",
+   "loop": true,
+   "note": "same clip as walk (the Combat Designer's catalog); strafe_l / strafe_r are the side-steps"
+  },
+  {
+   "name": "strafe_l",
+   "parts": [
+    {
+     "source": "UAL2:Zombie_Walk_Fwd_Loop"
+    }
+   ],
+   "loop": true,
+   "yaw": {
+    "deg": 90
+   }
+  },
+  {
+   "name": "strafe_r",
+   "parts": [
+    {
+     "source": "UAL2:Zombie_Walk_Fwd_Loop"
+    }
+   ],
+   "loop": true,
+   "yaw": {
+    "deg": -90
+   }
+  },
+  {
+   "name": "run",
+   "source": "UAL2:Zombie_Walk_Fwd_Loop",
+   "loop": true,
+   "note": "the brute's approach: the same shamble, played faster by the AI (speed_scale 1.3)"
+  },
+  {
+   "name": "retreat",
+   "parts": [
+    {
+     "source": "UAL2:Zombie_Walk_Fwd_Loop",
+     "reverse": true
+    }
+   ],
+   "loop": true
+  },
+  {
+   "name": "block_start",
+   "source": "UAL2:Sword_Block",
+   "from_s": 0.0,
+   "to_s": 0.3
+  },
+  {
+   "name": "block_hold",
+   "source": "UAL2:Idle_Shield_Loop",
+   "loop": true
+  },
+  {
+   "name": "block_impact",
+   "source": "UAL2:Shield_OneShot",
+   "contact_src_s": 0.1
+  },
+  {
+   "name": "block_break",
+   "source": "UAL2:Idle_Shield_Break",
+   "contact_src_s": 0.1
+  },
+  {
+   "name": "slam",
+   "source": "UAL2:Sword_Heavy_Combo",
+   "from_s": 2.1,
+   "to_s": 3.2,
+   "contact_src_s": 2.62,
+   "note": "overhead raise then slam, then a short recovery. moves.json has no keys for it, so the game stretches the clip to the move: contact is at 0.47 of the clip = 900 of 1900 ms (the clip is sliced for exactly that)"
+  },
+  {
+   "name": "enrage",
+   "source": "UAL2:Zombie_Scratch",
+   "note": "arms thrashing: reads as a roar"
+  },
+  {
+   "name": "attack_windup",
+   "source": "UAL2:Zombie_Scratch",
+   "from_s": 0.0,
+   "to_s": 0.55
+  },
+  {
+   "name": "attack_swing",
+   "source": "UAL2:Zombie_Scratch",
+   "from_s": 0.5,
+   "to_s": 1.4,
+   "contact_src_s": 0.6
+  },
+  {
+   "name": "hurt",
+   "source": "UAL1:Hit_Chest",
+   "contact_src_s": 0.1
+  },
+  {
+   "name": "stagger",
+   "parts": [
+    {
+     "source": "UAL1:Hit_Chest",
+     "speed": 0.5
+    }
+   ],
+   "hold_end_s": 2.0
+  },
+  {
+   "name": "knockdown",
+   "source": "UAL2:Hit_Knockback",
+   "from_s": 0.0,
+   "to_s": 0.83,
+   "contact_src_s": 0.3
+  },
+  {
+   "name": "getup",
+   "source": "UAL2:LayToIdle"
+  },
+  {
+   "name": "death",
+   "source": "UAL1:Death01"
+  }
+ ],
+ "keep_standins": [],
+ "importer_loops": [
+  "idle",
+  "walk",
+  "run",
+  "fall",
+  "battle_ready",
+  "climb",
+  "launched",
+  "stagger"
+ ],
+ "_importer_loops_about": "Clip names that scripts/tools/psx_post_import.gd (LOOPING_CLIPS) loops whatever the file says; the key data lists them as loops."
+}

@@ -1,0 +1,12 @@
+{
+  "_about": "Short messages from doors, pickups and crates (shown in the narrator box). {item}, {count} and {credits} are filled in.",
+  "got_item": "Got {item}!",
+  "got_items": "Got {item} x{count}!",
+  "got_credits": "Found {credits} credits!",
+  "crate_open": "The crate creaks open.",
+  "crate_empty": "The crate creaks open. Nothing inside\nbut dust and a sock.",
+  "bag_full": "You can't carry any more {item}.",
+  "locked_default": "It's locked.",
+  "unlocked_default": "Unlocked!",
+  "need_flag_default": "Not yet. Something has to happen first."
+}

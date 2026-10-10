@@ -1,0 +1,4 @@
+{
+  "_about": "Retired. Battle item effects now live in items/items.json (one source of truth for names, prices, targets and effects). This file stays so older code that looks for it still loads; anything added here would be a battle-only item.",
+  "items": []
+}

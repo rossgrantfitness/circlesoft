@@ -1,0 +1,482 @@
+{
+ "_about": "Key poses of Red's clips: where the strike lands (contact_s) and the poses the move data snaps to. 30 fps for Quaternius clips (retarget_ual.py), 15 fps stepped for the TA's hand-posed stand-ins. Use these seconds as clip_s in moves.json anim.keys.",
+ "fps": 30,
+ "clips": {
+  "idle": {
+   "length_s": 1.6667,
+   "loop": true,
+   "source": "UAL1:Sword_Idle",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 50,
+     "clip_s": 1.6667
+    }
+   ],
+   "note": "Sword_Idle: ready stance, sword held up in the right fist"
+  },
+  "walk": {
+   "length_s": 1.3333,
+   "loop": true,
+   "source": "UAL1:Walk_Loop",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 40,
+     "clip_s": 1.3333
+    }
+   ],
+   "stride_mps": 0.38
+  },
+  "run": {
+   "length_s": 0.6667,
+   "loop": true,
+   "source": "UAL1:Sprint_Loop",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 20,
+     "clip_s": 0.6667
+    }
+   ],
+   "stride_mps": 2.52
+  },
+  "jump_up": {
+   "length_s": 0.5,
+   "loop": false,
+   "source": "UAL1:Jump_Start",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 15,
+     "clip_s": 0.5
+    }
+   ],
+   "note": "takeoff stretch, arms swing up; holds the last pose"
+  },
+  "fall": {
+   "length_s": 2.5,
+   "loop": true,
+   "source": "UAL1:Jump_Loop",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 75,
+     "clip_s": 2.5
+    }
+   ]
+  },
+  "land": {
+   "length_s": 0.7,
+   "loop": false,
+   "source": "UAL1:Jump_Land",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 21,
+     "clip_s": 0.7
+    }
+   ]
+  },
+  "dash": {
+   "length_s": 0.7333,
+   "loop": false,
+   "source": "UAL2:Sword_Dash",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 22,
+     "clip_s": 0.7333
+    }
+   ]
+  },
+  "light_1": {
+   "length_s": 0.9333,
+   "loop": false,
+   "source": "UAL2:Sword_Regular_A + UAL2:Sword_Regular_A_Rec",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 8,
+     "clip_s": 0.25
+    },
+    {
+     "frame": 28,
+     "clip_s": 0.9333
+    }
+   ],
+   "contact_s": 0.25,
+   "contact_frame": 8
+  },
+  "light_2": {
+   "length_s": 1.0333,
+   "loop": false,
+   "source": "UAL2:Sword_Regular_B + UAL2:Sword_Regular_B_Rec",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 8,
+     "clip_s": 0.25
+    },
+    {
+     "frame": 31,
+     "clip_s": 1.0333
+    }
+   ],
+   "contact_s": 0.25,
+   "contact_frame": 8
+  },
+  "light_3": {
+   "length_s": 1.0667,
+   "loop": false,
+   "source": "UAL2:Sword_Regular_C",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 6,
+     "clip_s": 0.2
+    },
+    {
+     "frame": 32,
+     "clip_s": 1.0667
+    }
+   ],
+   "contact_s": 0.2,
+   "contact_frame": 6
+  },
+  "heavy": {
+   "length_s": 1.6,
+   "loop": false,
+   "source": "UAL2:Sword_Heavy_Combo",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 16,
+     "clip_s": 0.52
+    },
+    {
+     "frame": 48,
+     "clip_s": 1.6
+    }
+   ],
+   "contact_s": 0.52,
+   "contact_frame": 16
+  },
+  "launcher": {
+   "length_s": 0.9,
+   "loop": false,
+   "source": "UAL1:Sword_Attack",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 8,
+     "clip_s": 0.25
+    },
+    {
+     "frame": 27,
+     "clip_s": 0.9
+    }
+   ],
+   "contact_s": 0.25,
+   "contact_frame": 8
+  },
+  "parry": {
+   "length_s": 1.0,
+   "loop": false,
+   "source": "UAL2:Sword_Block",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 6,
+     "clip_s": 0.2
+    },
+    {
+     "frame": 30,
+     "clip_s": 1.0
+    }
+   ],
+   "contact_s": 0.2,
+   "contact_frame": 6
+  },
+  "hurt": {
+   "length_s": 0.3333,
+   "loop": false,
+   "source": "UAL1:Hit_Chest",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 3,
+     "clip_s": 0.1
+    },
+    {
+     "frame": 10,
+     "clip_s": 0.3333
+    }
+   ],
+   "contact_s": 0.1,
+   "contact_frame": 3
+  },
+  "knockdown": {
+   "length_s": 0.8333,
+   "loop": false,
+   "source": "UAL2:Hit_Knockback",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 9,
+     "clip_s": 0.3
+    },
+    {
+     "frame": 25,
+     "clip_s": 0.8333
+    }
+   ],
+   "contact_s": 0.3,
+   "contact_frame": 9
+  },
+  "getup": {
+   "length_s": 1.5333,
+   "loop": false,
+   "source": "UAL2:LayToIdle",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 46,
+     "clip_s": 1.5333
+    }
+   ]
+  },
+  "hack_zap": {
+   "length_s": 1.0333,
+   "loop": false,
+   "source": "UAL1:Spell_Simple_Enter + UAL1:Spell_Simple_Shoot",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 13,
+     "clip_s": 0.43
+    },
+    {
+     "frame": 31,
+     "clip_s": 1.0333
+    }
+   ],
+   "contact_s": 0.43,
+   "contact_frame": 13,
+   "note": "Zap Drone cast: left hand raised and pushed out (UAL1 Spell_Simple_Enter then Spell_Simple_Shoot); the drone leaves the open hand at the contact. The sword hand stays low."
+  },
+  "hack_emp": {
+   "length_s": 1.1,
+   "loop": false,
+   "source": "UAL2:NinjaJump_Land",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 6,
+     "clip_s": 0.2
+    },
+    {
+     "frame": 33,
+     "clip_s": 1.1
+    }
+   ],
+   "contact_s": 0.2,
+   "contact_frame": 6,
+   "note": "EMP cast: a crouch with a hand on the floor (UAL2 NinjaJump_Land), the pulse rings out from the slam, then she stands up."
+  },
+  "hack_overclock": {
+   "length_s": 1.3333,
+   "loop": false,
+   "source": "UAL2:Consume",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 12,
+     "clip_s": 0.4
+    },
+    {
+     "frame": 40,
+     "clip_s": 1.3333
+    }
+   ],
+   "contact_s": 0.4,
+   "contact_frame": 12,
+   "note": "Overclock cast: left hand reaches out palm up and holds (UAL2 Consume), the link takes hold at the contact."
+  },
+  "hack_reboot": {
+   "length_s": 1.1333,
+   "loop": false,
+   "source": "UAL2:LayToIdle",
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 16,
+     "clip_s": 0.55
+    },
+    {
+     "frame": 34,
+     "clip_s": 1.1333
+    }
+   ],
+   "contact_s": 0.55,
+   "contact_frame": 16,
+   "note": "Reboot cast: the second half of the get-up (UAL2 LayToIdle), crouch to standing; the heal pops as she rises."
+  },
+  "air_1": {
+   "length_s": 0.4667,
+   "loop": false,
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 2,
+     "clip_s": 0.1333
+    },
+    {
+     "frame": 4,
+     "clip_s": 0.2667
+    },
+    {
+     "frame": 6,
+     "clip_s": 0.4
+    }
+   ],
+   "note": "airborne forehand; strike f2",
+   "source": "stand-in (hand-posed by the Technical Artist; no free clip fits)",
+   "fps": 15
+  },
+  "air_2": {
+   "length_s": 0.4667,
+   "loop": false,
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 2,
+     "clip_s": 0.1333
+    },
+    {
+     "frame": 4,
+     "clip_s": 0.2667
+    },
+    {
+     "frame": 6,
+     "clip_s": 0.4
+    }
+   ],
+   "note": "airborne backhand; strike f2",
+   "source": "stand-in (hand-posed by the Technical Artist; no free clip fits)",
+   "fps": 15
+  },
+  "air_3": {
+   "length_s": 0.6,
+   "loop": false,
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 2,
+     "clip_s": 0.1333
+    },
+    {
+     "frame": 4,
+     "clip_s": 0.2667
+    },
+    {
+     "frame": 8,
+     "clip_s": 0.5333
+    }
+   ],
+   "note": "spin f0-f4 (the code adds the full yaw turn), slam f4",
+   "source": "stand-in (hand-posed by the Technical Artist; no free clip fits)",
+   "fps": 15
+  },
+  "parry_success": {
+   "length_s": 0.4,
+   "loop": false,
+   "keys": [
+    {
+     "frame": 0,
+     "clip_s": 0.0
+    },
+    {
+     "frame": 2,
+     "clip_s": 0.1333
+    },
+    {
+     "frame": 5,
+     "clip_s": 0.3333
+    }
+   ],
+   "note": "the flick after a clean parry",
+   "source": "stand-in (hand-posed by the Technical Artist; no free clip fits)",
+   "fps": 15
+  }
+ }
+}

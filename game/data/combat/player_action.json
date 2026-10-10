@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "_note": "Red in the combat sandbox (docs/pivot/combat_api.md 4.2 and 5). Times in ms or s as the key says, distances in metres. The numbers that Ross tunes live as feel knobs (data/combat/feel.json); 'knob_defaults' is only what Red uses if no knob panel is there.",
+  "models": [
+    {"path": "res://art/final/characters/red/red_ross_v1_rigged_ual.glb", "origin": "feet"},
+    {"path": "res://art/final/characters/red/red_ross_v1.glb", "origin": "middle", "height_m": 0.95}
+  ],
+  "model_scale": 1.0,
+  "body": {"radius_m": 0.3, "height_m": 0.9},
+  "hp_max": 120,
+  "knob_defaults": {
+    "run_speed_mps": 6.0,
+    "jump_height_m": 1.6,
+    "gravity_scale": 1.0,
+    "dash_distance_m": 5.25,
+    "dash_time_ms": 150,
+    "dash_iframes_ms": 150,
+    "air_dash_count": 1,
+    "dash_charges": 5,
+    "dash_recharge_s": 2.0,
+    "dash_chain_gap_s": 0.12,
+    "input_buffer_ms": 150
+  },
+  "move": {
+    "ground_accel_mps2": 95.0,
+    "ground_decel_mps2": 75.0,
+    "air_accel_mps2": 32.0,
+    "turn_rate_deg_per_s": 1200.0,
+    "walk_threshold": 0.35,
+    "walk_speed_mps": 2.4,
+    "lock_strafe": true
+  },
+  "jump": {
+    "rise_time_s": 0.36,
+    "fall_gravity_mult": 1.35,
+    "max_fall_mps": 28.0,
+    "coyote_s": 0.1,
+    "buffer_s": 0.12,
+    "release_cut_mult": 0.45
+  },
+  "dash": {
+    "cooldown_ms": 180,
+    "_cooldown_note": "RETIRED (Ross 2026-10-09, dash on charges): nothing reads cooldown_ms any more. Dash charges and the chain gap are the feel knobs dash_charges, dash_recharge_s and dash_chain_gap_s.",
+    "decay": 0.45,
+    "air_distance_mult": 0.85,
+    "end_speed_mult": 1.0,
+    "no_stick": "facing",
+    "attack_cancel_ms": 90,
+    "jump_cancel_ms": 60,
+    "dash_cancel_ms": 180
+  },
+  "hurt": {
+    "default_hitstun_ms": 320,
+    "knockdown_ms": 700,
+    "getup_ms": 450,
+    "downed_respawn_s": 2.0,
+    "invuln_after_getup_ms": 500,
+    "launch_gravity_mult": 0.8
+  },
+  "parry": {
+    "move": "parry",
+    "stick_scale": 0.25
+  },
+  "death": {
+    "_note": "'sandbox': at 0 health she gets up after a moment (the feel prototype). 'retry': she stays down and the room restarts her (the slice; ActionRoom sets this from data/slice/slice.json 'retry').",
+    "mode": "sandbox"
+  },
+  "town": {
+    "_note": "Town mode (the night market, no fighting; docs/slice/slice_tech_plan.md 3). The buttons listed do nothing there. The clip map turns the field clip names the town code uses (HeroLink.play_clip) into this model's clips.",
+    "blocked_buttons": ["light", "heavy", "parry"],
+    "clip_map": {"idle": "idle", "walk": "walk", "run": "run", "jump": "jump_up", "fall": "fall", "land": "idle"},
+    "blink_s": 1.5,
+    "blink_flash_s": 0.08
+  },
+  "anim": {
+    "blend_s": 0.08,
+    "clip_keys": "res://data/combat/red_clip_keys.json",
+    "playback_scale_min": 0.6,
+    "playback_scale_max": 2.4,
+    "walk_below_mps": 1.1
+  },
+  "lamp": {"fallback_bone": "chest", "offset": [0.0, 0.1, 0.15]}
+}

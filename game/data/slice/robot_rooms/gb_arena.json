@@ -1,0 +1,8 @@
+{
+ "_about": "THROWAWAY (VS-30 tests, not used by the game): a stand-in for Kasp's arena with both robots, to prove the per-phase retry (phase 2 restarts already docked) inside a real ActionRoom.",
+ "version": 1,
+ "ground": false,
+ "small_robot": {"pos": [8.0, 0.0, 12.0], "yaw_deg": 180.0},
+ "huge_robot": {"pos": [0.0, 0.0, -140.0], "yaw_deg": 0.0},
+ "props": []
+}

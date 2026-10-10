@@ -1,0 +1,20 @@
+{
+ "_about": "The Corner Shop's stock (market_corner), items. PLACEHOLDER stock copied from Harrow General so the counter works; the Combat Designer replaces it (VS-44, Level 2: decide, then show Ross).",
+ "id": "market_corner",
+ "name": "24H Corner Shop",
+ "kind": "general",
+ "greeting": "Cans, tea, batteries. Whisper your order, the shelves are listening.",
+ "stock": [
+  "ration_bar",
+  "can_of_chili",
+  "canned_coffee",
+  "juice_box",
+  "smelling_salts",
+  "burn_gel",
+  "ginger_chews",
+  "camp_stove",
+  "firecracker_string",
+  "hot_sauce_bomb",
+  "smoke_bomb"
+ ]
+}

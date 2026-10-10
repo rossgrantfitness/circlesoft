@@ -1,0 +1,7 @@
+{
+ "_about": "THROWAWAY (VS-21 tests, not used by the game): a sleeping loader in the graybox yard, six metres in front of the from_hub spawn, to prove wake and scripted boarding inside a real ActionRoom.",
+ "version": 1,
+ "ground": false,
+ "small_robot": {"pos": [0.0, 0.0, 2.0], "yaw_deg": 0.0, "wake_flag": "gb_loader_awake"},
+ "props": []
+}

@@ -1,0 +1,8 @@
+{
+  "_about": "Feel numbers for the exploration props (world units; Red is about 1 unit tall). door: trigger_depth is how far in front of a door counts as 'walking into it', trigger_half_width its sideways reach, min_push_speed how hard Red must push the stick toward it (0 to 1), panel is the placeholder slab. pickup: the glint bob and spin. crate: size and the lid angle when open. traversal: how long a climb or hop takes and how high the hop arcs, 'forward_hold' is the share of a climb spent going straight up before stepping onto the ledge. follow: teleport_distance is the jump in one frame that counts as a teleport, bob_* the walking bounce of the placeholder crew, turn_rate how fast they turn.",
+  "door": {"trigger_depth": 0.75, "trigger_half_width": 0.6, "min_push_speed": 0.6, "reach": 1.3, "panel": [1.1, 1.9, 0.14]},
+  "pickup": {"reach": 1.2, "size": 0.26, "lift": 0.5, "bob_height": 0.08, "bob_period_s": 1.4, "spin_deg_per_s": 110.0, "sparkle_period_s": 1.2},
+  "crate": {"reach": 1.4, "size": [0.8, 0.8, 0.8], "lid_open_deg": 70.0},
+  "traversal": {"reach": 1.0, "climb_s": 0.95, "hop_s": 0.6, "hop_height": 1.3, "forward_hold": 0.7, "pad": [0.9, 0.5]},
+  "follow": {"teleport_distance": 4.0, "arrive_distance": 0.03, "bob_height": 0.05, "bob_hz": 2.4, "turn_rate_deg_per_s": 540.0, "moving_speed": 0.4}
+}
